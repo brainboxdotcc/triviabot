@@ -1,0 +1,32 @@
+#pragma once
+#include <string>
+
+#define BACKEND_HOST "brainbox.cc"
+
+void set_io_context(class asio::io_context* ioc);
+std::string web_request(const std::string &_host, const std::string &_path, const std::string &_body);
+std::string fetch_page(const std::string _endpoint);
+std::vector<std::string> fetch_question(int64_t id);
+std::vector<std::string> fetch_shuffle_list();
+std::vector<std::string> get_disabled_list();
+std::vector<std::string> fetch_insane_round();
+void enable_all_categories();
+void enable_category(const std::string &cat);
+void disable_category(const std::string &cat);
+int32_t update_score_only(int64_t snowflake_id, int score);
+int32_t update_score(int64_t snowflake_id, time_t recordtime, int64_t id, int score);
+int32_t get_total_questions();
+std::vector<std::string> get_top_ten(int64_t guild_id);
+int32_t get_score_average(int64_t guild_id);
+int64_t get_day_winner(int64_t guild_id);
+std::string get_current_team(int64_t snowflake_id);
+void leave_team(int64_t snowflake_id);
+bool join_team(int64_t snowflake_id, const std::string &team);
+std::string get_rank(int64_t snowflake_id);
+void change_streak(int64_t snowflake_id, int score);
+int32_t get_streak(int64_t snowflake_id);
+std::string create_new_team(const std::string &teamname);
+bool check_team_exists(const std::string &team);
+void add_team_points(const std::string &team, int points, int64_t snowflake_id);
+int32_t get_team_points(const std::string &team);
+
