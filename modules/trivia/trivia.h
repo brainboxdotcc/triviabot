@@ -21,12 +21,18 @@ enum trivia_state_t
 
 class state_t
 {
+	class TriviaModule* creator;
  public:
+	bool terminating;
+	uint64_t channel_id;
+	uint64_t guild_id;
 	uint32_t numquestions;
 	uint32_t round;
-	std::vector<int64_t> shuffle_list;
+	uint32_t score;
+	std::vector<std::string> shuffle_list;
 	trivia_state_t gamestate;
 	int64_t curr_qid;
+	time_t recordtime;
 	std::string curr_question;
 	std::string curr_answer;
 	std::string curr_customhint1;
@@ -42,6 +48,12 @@ class state_t
 	time_t interval;
 	uint32_t insane_num;
 	uint32_t insane_left;
+	uint32_t curr_timesasked;
 	time_t next_quickfire;
 	std::map<std::string, bool> insane;
+	std::thread* timer;
+
+	state_t(class TriviaModule* _creator);
+	~state_t();
+	void tick();
 };

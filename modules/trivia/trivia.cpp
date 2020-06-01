@@ -42,7 +42,6 @@ class TriviaModule : public Module
 	PCRE* number_tidy_positive;
 	PCRE* number_tidy_negative;
 	std::map<int64_t, state_t*> states;
-
 public:
 	TriviaModule(Bot* instigator, ModuleLoader* ml) : Module(instigator, ml)
 	{
@@ -76,6 +75,11 @@ public:
 	virtual std::string GetDescription()
 	{
 		return "Trivia System";
+	}
+
+	int random(int min, int max)
+	{
+		return min + rand() % (( max + 1 ) - min);
 	}
 
 	std::string dec_to_roman(unsigned int decimal)
@@ -396,6 +400,137 @@ public:
 		exit(0);
 	}
 
+	void do_insane_round(state_t* state)
+	{
+	}
+
+	void do_normal_round(state_t* state)
+	{
+		std::vector<std::string> data = fetch_question(from_string<int64_t>(state->shuffle_list[state->round - 1], std::dec));
+		state->curr_qid = from_string<int64_t>(data[0], std::dec);
+		state->curr_question = data[1];
+		state->curr_answer = data[2];
+		state->curr_customhint1 = data[3];
+		state->curr_customhint2 = data[4];
+		state->curr_category = data[5];
+		state->curr_lastasked = from_string<time_t>(data[6],std::dec);
+		state->curr_timesasked = from_string<int32_t>(data[7], std::dec);
+		state->curr_lastcorrect = data[8];
+		state->recordtime = from_string<time_t>(data[9],std::dec);
+
+		if (state->curr_question != "") {
+			state->asktime = time(NULL);
+			state->curr_answer = trim(state->curr_answer);
+			std::string t = conv_num(state->curr_answer);
+			if (is_number(t) && t != "0") {
+				state->curr_answer = t;
+			}
+			state->curr_answer = tidy_num(state->curr_answer);
+			/* Handle hints */
+			if (state->curr_customhint1.empty()) {
+				/* No custom first hint, build one */
+				state->curr_customhint1 = state->curr_answer;
+				if (is_number(state->curr_customhint1)) {
+					state->curr_customhint1 = MakeFirstHint(state->curr_customhint1);
+				} else {
+					int32_t r = random(1, 12);
+					if (r <= 4) {
+						/* Leave only capital letters */
+						for (int x = 0; x < state->curr_customhint1.length(); ++x) {
+							if (state->curr_customhint1[x] >= 'a' || state->curr_customhint1[x] <= 'z' || state->curr_customhint1[x] == '1' || state->curr_customhint1[x] == '3' || state->curr_customhint1[x] == '5' || state->curr_customhint1[x]  == '7' || state->curr_customhint1[x] == '9') {
+								state->curr_customhint1[x] = '*';
+							}
+						}
+					} else if (r >= 5 && r <= 8) {
+						state->curr_customhint1 = letterlong(state->curr_customhint1);
+					} else {
+						state->curr_customhint1 = scramble(state->curr_customhint1);
+					}
+				}
+			}
+			if (state->curr_customhint2.empty()) {
+				/* No custom second hint, build one */
+				state->curr_customhint2 = state->curr_answer;
+				if (is_number(state->curr_customhint2) || PCRE("^\\$(\\d+)$").Match(state->curr_customhint2)) {
+					std::string currency = "";
+					std::vector<std::string> matches;
+					if (PCRE("^\\$(\\d+)$").Match(state->curr_customhint2, matches)) {
+						state->curr_customhint2 = matches[1];
+						currency = "$";
+					}
+					int32_t r = random(1, 13);
+					if ((r < 3 && from_string<int32_t>(state->curr_customhint2, std::dec) <= 10000)) {
+						state->curr_customhint2 = dec_to_roman(from_string<unsigned int>(state->curr_customhint2, std::dec));
+					} else if ((r >= 3 && r < 6) || from_string<int32_t>(state->curr_customhint2, std::dec) > 10000) {
+						state->curr_customhint2 = fmt::format("Hexadecimal: {0:x}", from_string<int32_t>(state->curr_customhint2, std::dec));
+					} else if (r >= 6 && r <= 10) {
+						state->curr_customhint2 = fmt::format("Octal: {0:o}", from_string<int32_t>(state->curr_customhint2, std::dec));
+					} else {
+						state->curr_customhint2 = fmt::format("Binary: {0:b}", from_string<int32_t>(state->curr_customhint2, std::dec));
+					}
+				} else {
+					int32_t r = random(1, 12);
+					if (r <= 4) {
+						/* Transpose only the vowels */
+						for (int x = 0; x < state->curr_customhint2.length(); ++x) {
+							if (toupper(state->curr_customhint2[x]) == 'A' || toupper(state->curr_customhint2[x]) == 'E' || toupper(state->curr_customhint2[x]) == 'I' || toupper(state->curr_customhint2[x]) == 'O' || toupper(state->curr_customhint2[x]) == 'U' || toupper(state->curr_customhint2[x]) == '2' || toupper(state->curr_customhint2[x]) == '4' || toupper(state->curr_customhint2[x]) == '6' || toupper(state->curr_customhint2[x]) == '8' || toupper(state->curr_customhint2[x]) == '0') {
+								state->curr_customhint2[x] = '*';
+							}
+						}
+					} else if (r >= 5 && r <= 6) {
+						state->curr_customhint2 = vowelcount(state->curr_customhint2);
+					} else {
+						state->curr_customhint2 = piglatin(state->curr_customhint2);
+					}
+
+				}
+			}
+
+			aegis::channel* c = bot->core.find_channel(state->channel_id);
+			if (c) {
+				c->create_message(fmt::format("Question **{}** of **{}**: [Category: **{}**] *{}*?", state->round, state->numquestions - 1, state->curr_category, state->curr_question));
+			}
+
+			state->score = (state->interval == 20 ? 4 : 8);
+
+			/* Advance state to first hint */
+			state->gamestate = TRIV_FIRST_HINT;
+		}
+	}
+
+	void Tick(state_t* state)
+	{
+		aegis::channel* c = bot->core.find_channel(state->channel_id);
+		if (c) {
+			switch (state->gamestate) {
+				case TRIV_ASK_QUESTION:
+					if (state->round % 10 == 0) {
+						do_insane_round(state);
+					} else {
+						do_normal_round(state);
+					}
+				break;
+				case TRIV_FIRST_HINT:
+				break;
+				case TRIV_SECOND_HINT:
+				break;
+				case TRIV_TIME_UP:
+				break;
+				case TRIV_ANSWER_CORRECT:
+				break;
+				case TRIV_END:
+				break;
+				default:
+				break;
+			}
+		}
+	}
+
+	void DisposeThread(std::thread* t)
+	{
+		bot->DisposeThread(t);
+	}
+
 	virtual bool OnMessage(const modevent::message_create &message, const std::string& clean_message, bool mentioned, const std::vector<std::string> &stringmentions)
 	{
 		std::vector<std::string> param;
@@ -481,15 +616,19 @@ public:
 									return false;
 								} else  {
 
-									state = new state_t();
+									state = new state_t(this);
 									states[channel_id] = state;
+									state->shuffle_list = sl;
 									state->gamestate = TRIV_ASK_QUESTION;
 									state->numquestions = questions + 1;
 									state->round = 1;
 									state->interval = 20;
+									state->channel_id = channel_id;
 									aegis::channel* c = bot->core.find_channel(msg.get_channel_id().get());
 									if (c) {
+										state->guild_id = c->get_guild().get_id();
 										c->create_message(fmt::format("**{}** started a trivia round of **{}** questions!\n**First** question coming up!", user.get_username(), questions));
+										 state->timer = new std::thread(&state_t::tick, state);
 									}
 	
 									return false;
@@ -500,6 +639,14 @@ public:
 								return false;
 							}
 						} else if (subcommand == "stop") {
+							if (game_in_progress) {
+								c->create_message(fmt::format("**{}** has stopped the round of trivia!", user.get_username()));
+								states.erase(states.find(channel_id));
+								delete state;
+							} else {
+								c->create_message(fmt::format("No trivia round is running here, **{}**!", user.get_username()));
+							}
+							return false;
 						}
 					}
 
@@ -514,6 +661,24 @@ public:
 		return true;
 	}
 };
+
+state_t::state_t(TriviaModule* _creator) : creator(_creator), terminating(false), timer(nullptr)
+{
+}
+
+state_t::~state_t()
+{
+	terminating = true;
+	creator->DisposeThread(timer);
+}
+
+void state_t::tick()
+{
+	while (!terminating) {
+		sleep(this->interval);
+		creator->Tick(this);
+	}
+}
 
 ENTRYPOINT(TriviaModule);
 
