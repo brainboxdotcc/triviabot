@@ -214,7 +214,7 @@ public:
 			str[y-1] = str[pos];
 			str[pos] = tmp;
 		}
-		return std::string("Scrambled answer: ") + str;
+		return std::string("Scrambled answer: ") + lowercase(str);
 	}
 
 	bool isVowel(char c) 
@@ -224,7 +224,7 @@ public:
 
 	std::string piglatinword(std::string s) 
 	{ 
-		int len = s.length(); 
+		int len = s.length();
 		int index = -1; 
 		for (int i = 0; i < len; i++) { 
 			if (isVowel(s[i])) { 
@@ -245,7 +245,7 @@ public:
 		while ((str >> word)) {
 			ret.append(piglatinword(word)).append(" ");
 		}
-		return std::string("Pig latin: ") + ret;
+		return std::string("Pig latin: ") + lowercase(ret);
 	}
 
 	std::string letterlong(std::string text)
@@ -402,10 +402,43 @@ public:
 
 	void do_insane_round(state_t* state)
 	{
+		if (state->round >= state->numquestions) {
+			state->gamestate = TRIV_END;
+			state->score = 0;
+			return;
+		}
+
+		std::vector<std::string> answers = fetch_insane_round();
+		state->insane = {};
+		for (auto n = answers.begin(); n != answers.end(); ++n) {
+			if (n == answers.begin()) {
+				state->curr_question = trim(*n);
+			} else {
+				if (*n != "***END***") {
+					state->insane[lowercase(trim(*n))] = true;
+				}
+			}
+		}
+		state->insane_left = state->insane.size();
+		state->insane_num = state->insane.size();
+		state->gamestate = TRIV_FIRST_HINT;
+
+		aegis::channel* c = bot->core.find_channel(state->channel_id);
+		if (c) {
+			c->create_message(fmt::format("Question **{}** of **{}**: [**Insane Round!**] *{}* (*{}* answers)", state->round, state->numquestions - 1, state->curr_question, state->insane_num));
+		} else {
+			bot->core.log->warn("do_insane_round(): Channel {} was deleted", state->channel_id);
+		}
 	}
 
 	void do_normal_round(state_t* state)
 	{
+		if (state->round >= state->numquestions) {
+			state->gamestate = TRIV_END;
+			state->score = 0;
+			return;
+		}
+
 		std::vector<std::string> data = fetch_question(from_string<int64_t>(state->shuffle_list[state->round - 1], std::dec));
 		state->curr_qid = from_string<int64_t>(data[0], std::dec);
 		state->curr_question = data[1];
@@ -437,8 +470,8 @@ public:
 					if (r <= 4) {
 						/* Leave only capital letters */
 						for (int x = 0; x < state->curr_customhint1.length(); ++x) {
-							if (state->curr_customhint1[x] >= 'a' || state->curr_customhint1[x] <= 'z' || state->curr_customhint1[x] == '1' || state->curr_customhint1[x] == '3' || state->curr_customhint1[x] == '5' || state->curr_customhint1[x]  == '7' || state->curr_customhint1[x] == '9') {
-								state->curr_customhint1[x] = '*';
+							if ((state->curr_customhint1[x] >= 'a' && state->curr_customhint1[x] <= 'z') || state->curr_customhint1[x] == '1' || state->curr_customhint1[x] == '3' || state->curr_customhint1[x] == '5' || state->curr_customhint1[x]  == '7' || state->curr_customhint1[x] == '9') {
+								state->curr_customhint1[x] = '#';
 							}
 						}
 					} else if (r >= 5 && r <= 8) {
@@ -474,7 +507,7 @@ public:
 						/* Transpose only the vowels */
 						for (int x = 0; x < state->curr_customhint2.length(); ++x) {
 							if (toupper(state->curr_customhint2[x]) == 'A' || toupper(state->curr_customhint2[x]) == 'E' || toupper(state->curr_customhint2[x]) == 'I' || toupper(state->curr_customhint2[x]) == 'O' || toupper(state->curr_customhint2[x]) == 'U' || toupper(state->curr_customhint2[x]) == '2' || toupper(state->curr_customhint2[x]) == '4' || toupper(state->curr_customhint2[x]) == '6' || toupper(state->curr_customhint2[x]) == '8' || toupper(state->curr_customhint2[x]) == '0') {
-								state->curr_customhint2[x] = '*';
+								state->curr_customhint2[x] = '#';
 							}
 						}
 					} else if (r >= 5 && r <= 6) {
@@ -489,6 +522,8 @@ public:
 			aegis::channel* c = bot->core.find_channel(state->channel_id);
 			if (c) {
 				c->create_message(fmt::format("Question **{}** of **{}**: [Category: **{}**] *{}*?", state->round, state->numquestions - 1, state->curr_category, state->curr_question));
+			} else {
+				 bot->core.log->warn("do_normal_round(): Channel {} was deleted", state->channel_id);
 			}
 
 			state->score = (state->interval == 20 ? 4 : 8);
@@ -496,6 +531,99 @@ public:
 			/* Advance state to first hint */
 			state->gamestate = TRIV_FIRST_HINT;
 		}
+	}
+
+	void do_first_hint(state_t* state)
+	{
+		aegis::channel* c = bot->core.find_channel(state->channel_id);
+		if (c) {
+			if (state->round % 10 == 0) {
+				/* Insane round countdown */
+				c->create_message(fmt::format("You have **{}** seconds remaining!", state->interval * 2));
+			} else {
+				/* First hint, not insane round */
+				c->create_message(fmt::format("First hint: **{}**", state->curr_customhint1));
+			}
+		} else {
+			 bot->core.log->warn("do_first_hint(): Channel {} was deleted", state->channel_id);
+		}
+		state->gamestate = TRIV_SECOND_HINT;
+		state->score = (state->interval == 20 ? 2 : 4);
+	}
+
+	void do_second_hint(state_t* state)
+	{
+		aegis::channel* c = bot->core.find_channel(state->channel_id);
+		if (c) {
+			if (state->round % 10 == 0) {
+				/* Insane round countdown */
+				c->create_message(fmt::format("You have **{}** seconds remaining!", state->interval));
+			} else {
+				/* Second hint, not insane round */
+				c->create_message(fmt::format("Second hint: **{}**", state->curr_customhint2));
+			}
+		} else {
+			 bot->core.log->warn("do_second_hint: Channel {} was deleted", state->channel_id);
+		}
+		state->gamestate = TRIV_TIME_UP;
+		state->score = (state->interval == 20 ? 1 : 2);
+	}
+
+	void do_time_up(state_t* state)
+	{
+		aegis::channel* c = bot->core.find_channel(state->channel_id);
+		if (c) {
+			if (state->round % 10 == 0) {
+				int32_t found = state->insane_num - state->insane_left;
+				c->create_message(fmt::format("Time up! **{}** answers were found!", found));
+			} else {
+				c->create_message(fmt::format("Out of time! The answer was: **{}**", state->curr_answer));
+				if (state->streak > 1 && state->last_to_answer) {
+					c->create_message(fmt::format("***{}**'s streak of **{}** answers in a row comes to a grinding halt!", state->last_to_answer, state->streak));
+				}
+				state->curr_answer = "************************DUMMY****************+++++++++++++++++++";
+				state->last_to_answer = 0;
+				state->streak = 1;
+				if (state->round <= state->numquestions -1) {
+					c->create_message(fmt::format("A little time to rest your fingers... Next question coming up in about **{}** seconds...", state->interval));
+				}
+			}
+		} else {
+			 bot->core.log->warn("do_time_up(): Channel {} was deleted", state->channel_id);
+		}
+		state->gamestate = (state->round > state->numquestions ? TRIV_END : TRIV_ASK_QUESTION);
+		state->round++;
+		state->score = 0;
+	}
+
+	void do_answer_correct(state_t* state)
+	{
+		aegis::channel* c = bot->core.find_channel(state->channel_id);
+
+		state->round++;
+		state->score = 0;
+
+		if (state->round <= state->numquestions - 1) {
+			if (c) {
+				c->create_message(fmt::format("A little time to rest your fingers... Next question coming up in about **{}** seconds...", state->interval));
+			} else {
+				bot->core.log->warn("do_answer_correct(): Channel {} was deleted", state->channel_id);
+			}
+			state->gamestate = TRIV_ASK_QUESTION;
+		} else {
+			state->gamestate = TRIV_END;
+		}
+	}
+
+	void do_end_game(state_t* state)
+	{
+		aegis::channel* c = bot->core.find_channel(state->channel_id);
+		if (c) {
+			c->create_message(fmt::format("End of the round of **{}** questions!", state->numquestions - 1));
+		} else {
+			bot->core.log->warn("do_end_game(): Channel {} was deleted", state->channel_id);
+		}
+		state->terminating = true;
 	}
 
 	void Tick(state_t* state)
@@ -511,18 +639,28 @@ public:
 					}
 				break;
 				case TRIV_FIRST_HINT:
+					do_first_hint(state);
 				break;
 				case TRIV_SECOND_HINT:
+					do_second_hint(state);
 				break;
 				case TRIV_TIME_UP:
+					do_time_up(state);
 				break;
 				case TRIV_ANSWER_CORRECT:
+					do_answer_correct(state);
 				break;
 				case TRIV_END:
+					do_end_game(state);
 				break;
 				default:
+					c->create_message(fmt::format("Invalid state '{}', ending round.", state->gamestate));
+					state->terminating = true;
 				break;
 			}
+		} else {
+			bot->core.log->warn("Tick(): Channel {} was deleted", state->channel_id);
+			state->terminating = true;
 		}
 	}
 
@@ -555,7 +693,14 @@ public:
 		state_t* state = nullptr;
 		if (state_iter != states.end()) {
 			state = state_iter->second;
-			game_in_progress = true;
+			/* Tombstoned session */
+			if (state->terminating) {
+				delete state;
+				states.erase(state_iter);
+				state = nullptr;
+			} else {
+				game_in_progress = true;
+			}
 		}
 
 		if (game_in_progress) {
@@ -563,15 +708,49 @@ public:
 				
 				if (state->round % 10 == 0) {
 					/* Insane round */
+					auto i = state->insane.find(lowercase(trivia_message));
+					if (i != state->insane.end()) {
+						state->insane.erase(i);
+						aegis::channel* c = bot->core.find_channel(msg.get_channel_id().get());						
+						if (--state->insane_left < 1) {
+							if (c) {
+								c->create_message(fmt::format("**{}** found the last answer!", user.get_username()));
+							}
+							if (state->round <= state->numquestions - 1) {
+								state->round++;
+								state->gamestate = TRIV_ANSWER_CORRECT;
+							} else {
+								state->gamestate = TRIV_END;
+							}
+						} else {
+							if (c) {
+								c->create_message(fmt::format("**{}** was correct with **{}**! **{}** answers remaining out of **{}**.", user.get_username(), trivia_message, state->insane_left, state->insane_num));
+							}
+						}
+					}
 				} else {
 					/* Normal round */
 
 					/* Answer on channel is an exact match for the current answer and/or it is numeric, OR, it's non-numeric and has a levenstein distance near enough to the current answer (account for misspellings) */
 					if ((trivia_message.length() >= state->curr_answer.length() && lowercase(state->curr_answer) == lowercase(trivia_message)) || (!PCRE("^\\$(\\d+)$").Match(state->curr_answer) && !PCRE("^(\\d+)$").Match(state->curr_answer) && levenstein(trivia_message, state->curr_answer) < 2)) {
 						/* Correct answer */
-						state->round++;
+						state->gamestate = TRIV_ANSWER_CORRECT;
 						time_t time_to_answer = time(NULL) - state->asktime;
+						std::string pts = (state->score > 1 ? "points" : "point");
+						time_t submit_time = state->recordtime;
 
+						aegis::channel* c = bot->core.find_channel(msg.get_channel_id().get());
+						if (c) {
+							c->create_message(fmt::format("Correct, **{}**! The answer was **{}**. You gain **{}** {} for answering in **{}** seconds!", user.get_username(), state->curr_answer, state->score, pts, time_to_answer));
+							if (time_to_answer < state->recordtime) {
+								c->create_message(fmt::format("**{}** has broken the record time for this question!", user.get_username()));
+								submit_time = time_to_answer;
+							}
+						}
+						int32_t newscore = update_score(user.get_id().get(), submit_time, state->curr_qid, state->score);
+						c->create_message(fmt::format("**{}**'s score is now **{}**.", user.get_username(), newscore));
+
+						state->curr_answer = "************************DUMMY****************+++++++++++++++++++";
 					}
 				}
 
@@ -597,14 +776,19 @@ public:
 						tokens >> subcommand;
 						subcommand = lowercase(subcommand);
 
-						if (subcommand == "start") {
+						if (subcommand == "start" || subcommand == "quickfire") {
 
 							int32_t questions;
 							tokens >> questions;
+							bool quickfire = (subcommand == "quickfire");
 
 							if (!game_in_progress) {
-								if (questions < 5 || questions > 200) {
-									c->create_message(fmt::format("**{}**, you can't create a normal trivia round of less than 5 or more than 200 questions!", user.get_username()));
+								if ((!quickfire && (questions < 5 || questions > 200)) || (quickfire && (questions < 5 || questions > 15))) {
+									if (quickfire) {
+										c->create_message(fmt::format("**{}**, you can't create a quickfire trivia round of less than 5 or more than 15 questions!", user.get_username()));
+									} else {
+										c->create_message(fmt::format("**{}**, you can't create a normal trivia round of less than 5 or more than 200 questions!", user.get_username()));
+									}
 									return false;
 								}
 
@@ -621,13 +805,15 @@ public:
 									state->shuffle_list = sl;
 									state->gamestate = TRIV_ASK_QUESTION;
 									state->numquestions = questions + 1;
+									state->streak = 0;
+									state->last_to_answer = 0;
 									state->round = 1;
 									state->interval = 20;
 									state->channel_id = channel_id;
 									aegis::channel* c = bot->core.find_channel(msg.get_channel_id().get());
 									if (c) {
 										state->guild_id = c->get_guild().get_id();
-										c->create_message(fmt::format("**{}** started a trivia round of **{}** questions!\n**First** question coming up!", user.get_username(), questions));
+										c->create_message(fmt::format("**{}** started a {} trivia round of **{}** questions!\n**First** question coming up!", user.get_username(), (quickfire ? "**QUICKFIRE**" : ""), questions));
 										 state->timer = new std::thread(&state_t::tick, state);
 									}
 	
@@ -647,6 +833,8 @@ public:
 								c->create_message(fmt::format("No trivia round is running here, **{}**!", user.get_username()));
 							}
 							return false;
+						} else if (subcommand == "rank") {
+							c->create_message(get_rank(user.get_id().get()));
 						}
 					}
 
