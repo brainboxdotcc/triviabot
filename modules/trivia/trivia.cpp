@@ -68,6 +68,86 @@ public:
 		delete number_tidy_negative;
 	}
 
+	/* Make a string safe to send as a JSON literal */
+	std::string escape_json(const std::string &s) {
+		std::ostringstream o;
+		for (auto c = s.cbegin(); c != s.cend(); c++) {
+			switch (*c) {
+			case '"': o << "\\\""; break;
+			case '\\': o << "\\\\"; break;
+			case '\b': o << "\\b"; break;
+			case '\f': o << "\\f"; break;
+			case '\n': o << "\\n"; break;
+			case '\r': o << "\\r"; break;
+			case '\t': o << "\\t"; break;
+			default:
+				if ('\x00' <= *c && *c <= '\x1f') {
+					o << "\\u"
+					  << std::hex << std::setw(4) << std::setfill('0') << (int)*c;
+				} else {
+					o << *c;
+				}
+			}
+		}
+		return o.str();
+	}
+
+	/* Create an embed from a JSON string and send it to a channel */
+	void ProcessEmbed(const std::string &embed_json, int64_t channelID)
+	{
+		json embed;
+		std::string cleaned_json = embed_json;
+		/* Put unicode zero-width spaces in @everyone and @here */
+		cleaned_json = ReplaceString(cleaned_json, "@everyone", "@‎everyone");
+		cleaned_json = ReplaceString(cleaned_json, "@here", "@‎here");
+		aegis::channel* channel = bot->core.find_channel(channelID);
+		try {
+			/* Tabs to spaces */
+			cleaned_json = ReplaceString(cleaned_json, "\t", " ");
+			embed = json::parse(cleaned_json);
+		}
+		catch (const std::exception &e) {
+			if (channel) {
+				if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == channel->get_guild().get_id()) {
+					channel->create_message("<:sporks_error:664735896251269130> I can't make an **embed** from this: ```js\n" + cleaned_json + "\n```**Error:** ``" + e.what() + "``");
+					bot->sent_messages++;
+				}
+			}
+		}
+		if (channel) {
+			if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == channel->get_guild().get_id()) {
+				channel->create_message_embed("", embed);
+				bot->sent_messages++;
+			}
+		}
+	}
+
+	void SimpleEmbed(const std::string &emoji, const std::string &text, int64_t channelID, const std::string title = "")
+	{
+		if (!title.empty()) {
+			ProcessEmbed("{\"title\":\"" + escape_json(title) + "\",\"color\":3238819,\"description\":\"" + emoji + " " + escape_json(text) + "\"}", channelID);
+		} else {
+			ProcessEmbed("{\"color\":3238819,\"description\":\"" + emoji + " " + escape_json(text) + "\"}", channelID);
+		}
+	}
+	
+	/* Send an embed containing one or more fields */
+	void EmbedWithFields(const std::string &title, std::vector<field_t> fields, int64_t channelID)
+	{
+		std::string json = "{\"title\":\"" + escape_json(title) + "\",\"color\":3238819,\"fields\":[";
+		for (auto v = fields.begin(); v != fields.end(); ++v) {
+			json += "{\"name\":\"" + escape_json(v->name) + "\",\"value\":\"" + escape_json(v->value) + "\",\"inline\":" + (v->_inline ? "true" : "false") + "}";
+			auto n = v;
+			if (++n != fields.end()) {
+				json += ",";
+			}
+		}
+		json += "],\"footer\":{\"link\":\"https://triviabot.co.uk/\",\"text\":\"Powered by TriviaBot\"}}";
+		ProcessEmbed(json, channelID);
+	}
+
+
+
 	virtual std::string GetVersion()
 	{
 		/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
@@ -437,7 +517,7 @@ public:
 
 		aegis::channel* c = bot->core.find_channel(state->channel_id);
 		if (c) {
-			c->create_message(fmt::format("Question **{}** of **{}**: [**Insane Round!**] *{}* (*{}* answers)", state->round, state->numquestions - 1, state->curr_question, state->insane_num));
+			EmbedWithFields(fmt::format(":question: Question {} of {}", state->round, state->numquestions - 1), {{"Insane Round!", fmt::format("Total of {} possible answers", state->insane_num), false}, {"Question", state->curr_question, false}}, c->get_id().get());
 		} else {
 			bot->core.log->warn("do_insane_round(): Channel {} was deleted", state->channel_id);
 		}
@@ -533,7 +613,7 @@ public:
 
 			aegis::channel* c = bot->core.find_channel(state->channel_id);
 			if (c) {
-				c->create_message(fmt::format("Question **{}** of **{}**: [Category: **{}**] *{}*?", state->round, state->numquestions - 1, state->curr_category, state->curr_question));
+				EmbedWithFields(fmt::format(":question: Question {} of {}", state->round, state->numquestions - 1), {{"Category", state->curr_category, false}, {"Question", state->curr_question, false}}, c->get_id().get());
 			} else {
 				 bot->core.log->warn("do_normal_round(): Channel {} was deleted", state->channel_id);
 			}
@@ -551,10 +631,10 @@ public:
 		if (c) {
 			if (state->round % 10 == 0) {
 				/* Insane round countdown */
-				c->create_message(fmt::format("You have **{}** seconds remaining!", state->interval * 2));
+				SimpleEmbed(":clock10:", fmt::format("You have **{}** seconds remaining!", state->interval * 2), c->get_id().get());
 			} else {
 				/* First hint, not insane round */
-				c->create_message(fmt::format("First hint: **{}**", state->curr_customhint1));
+				SimpleEmbed(":clock10:", state->curr_customhint1, c->get_id().get(), "First Hint");
 			}
 		} else {
 			 bot->core.log->warn("do_first_hint(): Channel {} was deleted", state->channel_id);
@@ -569,10 +649,10 @@ public:
 		if (c) {
 			if (state->round % 10 == 0) {
 				/* Insane round countdown */
-				c->create_message(fmt::format("You have **{}** seconds remaining!", state->interval));
+				SimpleEmbed(":clock1030:", fmt::format("You have **{}** seconds remaining!", state->interval), c->get_id().get());
 			} else {
 				/* Second hint, not insane round */
-				c->create_message(fmt::format("Second hint: **{}**", state->curr_customhint2));
+				SimpleEmbed(":clock1030:", state->curr_customhint2, c->get_id().get(), "Second Hint");
 			}
 		} else {
 			 bot->core.log->warn("do_second_hint: Channel {} was deleted", state->channel_id);
@@ -587,17 +667,17 @@ public:
 		if (c) {
 			if (state->round % 10 == 0) {
 				int32_t found = state->insane_num - state->insane_left;
-				c->create_message(fmt::format("Time up! **{}** answers were found!", found));
+				SimpleEmbed(":alarm_clock:", fmt::format("**{}** answers were found!", found), c->get_id().get(), "Time Up!");
 			} else {
-				c->create_message(fmt::format("Out of time! The answer was: **{}**", state->curr_answer));
+				SimpleEmbed(":alarm_clock:", fmt::format("The answer was: **{}**", state->curr_answer), c->get_id().get(), "Out of time!");
 				if (state->streak > 1 && state->last_to_answer) {
-					c->create_message(fmt::format("***{}**'s streak of **{}** answers in a row comes to a grinding halt!", state->last_to_answer, state->streak));
+					SimpleEmbed(":octagonal_sign:", fmt::format("***{}**'s streak of **{}** answers in a row comes to a grinding halt!", state->last_to_answer, state->streak), c->get_id().get());
 				}
 				state->curr_answer = "************************DUMMY****************+++++++++++++++++++";
 				state->last_to_answer = 0;
 				state->streak = 1;
 				if (state->round <= state->numquestions -1) {
-					c->create_message(fmt::format("A little time to rest your fingers... Next question coming up in about **{}** seconds...", state->interval));
+					SimpleEmbed("<a:loading:658667224067735562>", fmt::format("Next question coming up in about **{}** seconds...", state->interval), c->get_id().get(), "A little time to rest your fingers...");
 				}
 			}
 		} else {
@@ -617,7 +697,7 @@ public:
 
 		if (state->round <= state->numquestions - 1) {
 			if (c) {
-				c->create_message(fmt::format("A little time to rest your fingers... Next question coming up in about **{}** seconds...", state->interval));
+				SimpleEmbed("<a:loading:658667224067735562>", fmt::format("Next question coming up in about **{}** seconds...", state->interval), c->get_id().get(), "A little time to rest your fingers...");
 			} else {
 				bot->core.log->warn("do_answer_correct(): Channel {} was deleted", state->channel_id);
 			}
@@ -631,7 +711,7 @@ public:
 	{
 		aegis::channel* c = bot->core.find_channel(state->channel_id);
 		if (c) {
-			c->create_message(fmt::format("End of the round of **{}** questions!", state->numquestions - 1));
+			SimpleEmbed(":stop_button:", fmt::format("End of round of **{}** questions", state->numquestions - 1), c->get_id().get(), "End of the round");
 			show_stats(c->get_guild().get_id(), state->channel_id);
 		} else {
 			bot->core.log->warn("do_end_game(): Channel {} was deleted", state->channel_id);
@@ -641,9 +721,10 @@ public:
 
 	void show_stats(int64_t guild_id, int64_t channel_id)
 	{
-		std::string msg;
 		std::vector<std::string> topten = get_top_ten(guild_id);
 		size_t count = 1;
+		std::string msg;
+		std::vector<field_t> fields;
 		for(auto r = topten.begin(); r != topten.end(); ++r) {
 			std::stringstream score(*r);
 			std::string points;
@@ -651,16 +732,22 @@ public:
 			score >> points;
 			score >> snowflake_id;
 			aegis::user* u = bot->core.find_user(snowflake_id);
-			msg.append(fmt::format("[ {}. **{}** ({}) ]  ", count++, u->get_full_name(), points));
+			msg.append(fmt::format("{}. **{}** ({})\n", count++, u->get_full_name(), points));
+		}
+		if (msg.empty()) {
+			msg = "Nobody has played here today! :cry:";
 		}
 		aegis::channel* c = bot->core.find_channel(channel_id);
 		if (c) {
-			c->create_message(fmt::format("Trivia top ten: {}\n\nDetailed scores and statistics are available on the dashboard at <https://triviabot.co.uk>", msg));
+			EmbedWithFields("Trivia Leaderboard", {{"Today's Leaders", msg, false}, {"More information", "Detailed scores and statistics are available [on the dashboard](https://triviabot.co.uk)", false}}, c->get_id().get());
 		}
 	}
 
 	void Tick(state_t* state)
 	{
+		if (state->terminating) {
+			return;
+		}
 		aegis::channel* c = bot->core.find_channel(state->channel_id);
 		if (c) {
 			switch (state->gamestate) {
@@ -748,7 +835,7 @@ public:
 						cache_user(&user, &c->get_guild());
 						if (--state->insane_left < 1) {
 							if (c) {
-								c->create_message(fmt::format("**{}** found the last answer!", user.get_username()));
+								SimpleEmbed(":thumbsup:", fmt::format("**{}** found the last answer!", user.get_username()), c->get_id().get());
 							}
 							if (state->round <= state->numquestions - 1) {
 								state->round++;
@@ -758,7 +845,7 @@ public:
 							}
 						} else {
 							if (c) {
-								c->create_message(fmt::format("**{}** was correct with **{}**! **{}** answers remaining out of **{}**.", user.get_username(), trivia_message, state->insane_left, state->insane_num));
+								SimpleEmbed(":thumbsup:", fmt::format("**{}** was correct with **{}**! **{}** answers remaining out of **{}**.", user.get_username(), trivia_message, state->insane_left, state->insane_num), c->get_id().get());
 							}
 						}
 					}
@@ -776,7 +863,7 @@ public:
 
 
 						std::string ans_message;
-						ans_message.append(fmt::format("Correct, **{}**! The answer was **{}**. You gain **{}** {} for answering in **{}** seconds!", user.get_username(), state->curr_answer, score, pts, time_to_answer));
+						ans_message.append(fmt::format("The answer was **{}**. You gain **{}** {} for answering in **{}** seconds!", state->curr_answer, score, pts, time_to_answer));
 						if (time_to_answer < state->recordtime) {
 							ans_message.append(fmt::format("\n**{}** has broken the record time for this question!", user.get_username()));
 							submit_time = time_to_answer;
@@ -785,7 +872,7 @@ public:
 						ans_message.append(fmt::format("\n**{}**'s score is now **{}**.", user.get_username(), newscore));
 
 						std::string teamname = get_current_team(user.get_id().get());
-						if (!empty(teamname)) {
+						if (!empty(teamname) && teamname != "!NOTEAM") {
 							add_team_points(teamname, score, user.get_id().get());
 							int32_t newteamscore = get_team_points(teamname);
 							ans_message.append(fmt::format("\nTeam **{}** also gains **{}** {} and is now on **{}**", teamname, score, pts, newteamscore));
@@ -816,7 +903,7 @@ public:
 
 						aegis::channel* c = bot->core.find_channel(msg.get_channel_id().get());
 						if (c) {
-							c->create_message(ans_message);
+							SimpleEmbed(":thumbsup:", ans_message, c->get_id().get(), fmt::format("Correct, {}!", user.get_username()));
 						}
 
 
@@ -859,9 +946,9 @@ public:
 							if (!game_in_progress) {
 								if ((!quickfire && (questions < 5 || questions > 200)) || (quickfire && (questions < 5 || questions > 15))) {
 									if (quickfire) {
-										c->create_message(fmt::format("**{}**, you can't create a quickfire trivia round of less than 5 or more than 15 questions!", user.get_username()));
+										SimpleEmbed(":warning:", fmt::format("**{}**, you can't create a quickfire trivia round of less than 5 or more than 15 questions!", user.get_username()), c->get_id().get());
 									} else {
-										c->create_message(fmt::format("**{}**, you can't create a normal trivia round of less than 5 or more than 200 questions!", user.get_username()));
+										SimpleEmbed(":warning:", fmt::format("**{}**, you can't create a normal trivia round of less than 5 or more than 200 questions!", user.get_username()), c->get_id().get());
 									}
 									return false;
 								}
@@ -870,7 +957,7 @@ public:
 								if (sl.size() < 50) {
 									aegis::channel* c = bot->core.find_channel(msg.get_channel_id().get());
 									if (c)
-										c->create_message(fmt::format("**{}**, something spoopy happened. Please try again in a couple of minutes!", user.get_username()));
+										SimpleEmbed(":warning:", fmt::format("**{}**, something spoopy happened. Please try again in a couple of minutes!", user.get_username()), c->get_id().get(), "That wasn't supposed to happen...");
 									return false;
 								} else  {
 
@@ -887,37 +974,40 @@ public:
 									aegis::channel* c = bot->core.find_channel(msg.get_channel_id().get());
 									if (c) {
 										state->guild_id = c->get_guild().get_id();
-										c->create_message(fmt::format("**{}** started a {}trivia round of **{}** questions!\n**First** question coming up!", user.get_username(), (quickfire ? "**QUICKFIRE** " : ""), questions));
-										 state->timer = new std::thread(&state_t::tick, state);
+
+										EmbedWithFields(fmt::format(":question: New {}trivia round started by {}!", (quickfire ? "**QUICKFIRE** " : ""), user.get_username()), {{"Questions", fmt::format("{}", questions), false}, {"Get Ready", "First question coming up!", false}}, c->get_id().get());
+
+										//SimpleEmbed(":question:", fmt::format("**{}** started a {}trivia round of **{}** questions!\n\n**First** question coming up!", user.get_username(), (quickfire ? "**QUICKFIRE** " : ""), questions), c->get_id().get());
+										state->timer = new std::thread(&state_t::tick, state);
 									}
 	
 									return false;
 								}
 
 							} else {
-								c->create_message(fmt::format("Buhhh... a round is already running here, **{}**!", user.get_username()));
+								SimpleEmbed(":warning:", fmt::format("Buhhh... a round is already running here, **{}**!", user.get_username()), c->get_id().get());
 								return false;
 							}
 						} else if (subcommand == "stop") {
 							if (game_in_progress) {
-								c->create_message(fmt::format("**{}** has stopped the round of trivia!", user.get_username()));
+								SimpleEmbed(":octagonal_sign:", fmt::format("**{}** has stopped the round of trivia!", user.get_username()), c->get_id().get());
 								states.erase(states.find(channel_id));
 								delete state;
 							} else {
-								c->create_message(fmt::format("No trivia round is running here, **{}**!", user.get_username()));
+								SimpleEmbed(":warning:", fmt::format("No trivia round is running here, **{}**!", user.get_username()), c->get_id().get());
 							}
 							return false;
 						} else if (subcommand == "rank") {
-							c->create_message(get_rank(user.get_id().get()));
+							SimpleEmbed(":bar_chart:", get_rank(user.get_id().get()), c->get_id().get());
 						} else if (subcommand == "stats") {
 							show_stats(c->get_guild().get_id(), channel_id);
 						} else if (subcommand == "join") {
 							std::string teamname;
 							tokens >> teamname;
 							if (join_team(user.get_id().get(), teamname)) {
-								c->create_message(fmt::format("You have successfully joined the team \"**{}**\", **{}**", teamname, user.get_username()));
+								SimpleEmbed(":busts_in_silhouette:", fmt::format("You have successfully joined the team \"**{}**\", **{}**", teamname, user.get_username()), c->get_id().get(), "Call for backup!");
 							} else {
-								c->create_message(fmt::format("I cannot bring about world peace, make you a sandwich, or join that team, **{}**", user.get_username()));
+								SimpleEmbed(":warning:", fmt::format("I cannot bring about world peace, make you a sandwich, or join that team, **{}**", user.get_username()), c->get_id().get());
 							}
 						} else if (subcommand == "create") {
 							std::string newteamname;
@@ -926,22 +1016,24 @@ public:
 							if (teamname.empty() || teamname == "!NOTEAM") {
 								if (create_new_team(newteamname)) {
 									join_team(user.get_id().get(), newteamname);
-									c->create_message(fmt::format("You have successfully **created** and joined the team \"**{}**\", **{}**", newteamname, user.get_username()));
+									SimpleEmbed(":busts_in_silhouette:", fmt::format("You have successfully **created** and joined the team \"**{}**\", **{}**", newteamname, user.get_username()), c->get_id().get(), "It's unsafe to go alone...");
 								} else {
-									c->create_message(fmt::format("I couldn't create that team, **{}**...", user.get_username()));
+									SimpleEmbed(":warning:", fmt::format("I couldn't create that team, **{}**...", user.get_username()), c->get_id().get());
 								}
 							} else {
-								c->create_message(fmt::format("**{}**, you are already a member of team \"**{}**\"!", user.get_username(), teamname));
+								SimpleEmbed(":warning:", fmt::format("**{}**, you are already a member of team \"**{}**\"!", user.get_username(), teamname), c->get_id().get());
 							}
 						} else if (subcommand == "leave") {
 							std::string teamname = get_current_team(user.get_id().get());
 							if (teamname.empty() || teamname == "!NOTEAM") {
-								c->create_message(fmt::format("**{}**, you aren't a member of any team! Use **{}trivia join** to join a team!", user.get_username(), prefix));
+								SimpleEmbed(":warning:", fmt::format("**{}**, you aren't a member of any team! Use **{}trivia join** to join a team!", user.get_username(), prefix), c->get_id().get());
 							} else {
 								leave_team(user.get_id().get());
-								c->create_message(fmt::format("**{}** has left team **{}**", user.get_username(), teamname));
+								SimpleEmbed(":busts_in_silhouette:", fmt::format("**{}** has left team **{}**", user.get_username(), teamname), c->get_id().get(), "Come back, we'll miss you! :cry:");
 							}
 
+						} else {
+							SimpleEmbed(":warning:", fmt::format("**{}**, I don't know that command! Try ``{}trivia start 20`` :slight_smile:", user.get_username(), prefix), c->get_id().get(), "Need some help?");
 						}
 					}
 					/*bot->sent_messages++;*/

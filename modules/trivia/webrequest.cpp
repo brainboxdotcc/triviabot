@@ -231,9 +231,9 @@ streak_t get_streak(int64_t snowflake_id)
 {
 	streak_t s;
 	std::vector<std::string> data = to_list(ReplaceString(fetch_page(fmt::format("?opt=getstreak&nick={}", snowflake_id)), "/", "\n"));
-	s.personalbest = from_string<int32_t>(data[0], std::dec);
+	s.personalbest = data[0].empty() ? 0 : from_string<int32_t>(data[0], std::dec);
 	s.topstreaker = data[1];
-	s.bigstreak = from_string<int32_t>(data[1], std::dec);
+	s.bigstreak = data[2].empty() ? 0 : from_string<int32_t>(data[2], std::dec);
 	return s;
 }
 

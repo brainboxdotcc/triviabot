@@ -17,6 +17,13 @@ enum trivia_state_t
 	TRIV_END = 6
 };
 
+struct field_t
+{
+	std::string name;
+	std::string value;
+	bool _inline;
+};
+
 #define TRIV_INTERVAL 20
 
 class state_t
