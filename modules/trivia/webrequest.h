@@ -3,6 +3,13 @@
 
 #define BACKEND_HOST "brainbox.cc"
 
+struct streak_t
+{
+	int32_t personalbest;
+	std::string topstreaker;
+	int32_t bigstreak;
+};
+
 void set_io_context(class asio::io_context* ioc);
 std::string web_request(const std::string &_host, const std::string &_path, const std::string &_body);
 std::string fetch_page(const std::string _endpoint);
@@ -24,9 +31,9 @@ void leave_team(int64_t snowflake_id);
 bool join_team(int64_t snowflake_id, const std::string &team);
 std::string get_rank(int64_t snowflake_id);
 void change_streak(int64_t snowflake_id, int score);
-int32_t get_streak(int64_t snowflake_id);
-std::string create_new_team(const std::string &teamname);
+streak_t get_streak(int64_t snowflake_id);
+bool create_new_team(const std::string &teamname);
 bool check_team_exists(const std::string &team);
 void add_team_points(const std::string &team, int points, int64_t snowflake_id);
 int32_t get_team_points(const std::string &team);
-
+void cache_user(const class aegis::user *_user, const class aegis::guild *_guild);

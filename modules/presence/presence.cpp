@@ -79,7 +79,6 @@ public:
 		int64_t ram = GetRSS();
 
 		db::resultset rs_fact = db::query("show table status like '?'", {std::string("infobot")});
-		bot->core.update_presence(Comma(from_string<size_t>(rs_fact[0]["Rows"], std::dec)) + " facts, on " + Comma(servers) + " servers with " + Comma(users) + " users across " + Comma(bot->core.shard_max_count) + " shards", aegis::gateway::objects::activity::Watching);
 		db::query("INSERT INTO infobot_discord_counts (shard_id, dev, user_count, server_count, shard_count, channel_count, sent_messages, received_messages, memory_usage) VALUES('?','?','?','?','?','?','?','?','?') ON DUPLICATE KEY UPDATE user_count = '?', server_count = '?', shard_count = '?', channel_count = '?', sent_messages = '?', received_messages = '?', memory_usage = '?'",
 			{
 				0, bot->IsDevMode(), users, servers, bot->core.shard_max_count,

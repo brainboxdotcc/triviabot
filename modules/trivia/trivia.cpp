@@ -42,8 +42,10 @@ class TriviaModule : public Module
 	PCRE* number_tidy_positive;
 	PCRE* number_tidy_negative;
 	std::map<int64_t, state_t*> states;
+	std::thread* presence_update;
+	bool terminating;
 public:
-	TriviaModule(Bot* instigator, ModuleLoader* ml) : Module(instigator, ml)
+	TriviaModule(Bot* instigator, ModuleLoader* ml) : Module(instigator, ml), terminating(false)
 	{
 		srand(time(NULL) * time(NULL));
 		ml->Attach({ I_OnMessage }, this);
@@ -53,11 +55,12 @@ public:
 		number_tidy_positive = new PCRE("^[\\d\\,]+$");
 		number_tidy_negative = new PCRE("^\\-[\\d\\,]+$");
 		set_io_context(bot->io);
-		//t();
+		presence_update = new std::thread(&TriviaModule::UpdatePresenceLine, this);
 	}
 
 	virtual ~TriviaModule()
 	{
+		DisposeThread(presence_update);
 		delete notvowel;
 		delete number_tidy_dollars;
 		delete number_tidy_nodollars;
@@ -115,6 +118,15 @@ public:
 			num = ReplaceString(num, ",", "");
 		}
 		return num;
+	}
+
+	void UpdatePresenceLine()
+	{
+		while (!terminating) {
+			sleep(30);
+			int32_t questions = get_total_questions();
+			bot->core.update_presence(fmt::format("Trivia! {} questions, {} active games on {} shards", Comma(questions), Comma(states.size()), Comma(bot->core.shard_max_count)), aegis::gateway::objects::activity::Game);
+		}
 	}
 
 	std::string conv_num(std::string datain)
@@ -620,10 +632,31 @@ public:
 		aegis::channel* c = bot->core.find_channel(state->channel_id);
 		if (c) {
 			c->create_message(fmt::format("End of the round of **{}** questions!", state->numquestions - 1));
+			show_stats(c->get_guild().get_id(), state->channel_id);
 		} else {
 			bot->core.log->warn("do_end_game(): Channel {} was deleted", state->channel_id);
 		}
 		state->terminating = true;
+	}
+
+	void show_stats(int64_t guild_id, int64_t channel_id)
+	{
+		std::string msg;
+		std::vector<std::string> topten = get_top_ten(guild_id);
+		size_t count = 1;
+		for(auto r = topten.begin(); r != topten.end(); ++r) {
+			std::stringstream score(*r);
+			std::string points;
+			int64_t snowflake_id;
+			score >> points;
+			score >> snowflake_id;
+			aegis::user* u = bot->core.find_user(snowflake_id);
+			msg.append(fmt::format("[ {}. **{}** ({}) ]  ", count++, u->get_full_name(), points));
+		}
+		aegis::channel* c = bot->core.find_channel(channel_id);
+		if (c) {
+			c->create_message(fmt::format("Trivia top ten: {}\n\nDetailed scores and statistics are available on the dashboard at <https://triviabot.co.uk>", msg));
+		}
 	}
 
 	void Tick(state_t* state)
@@ -711,7 +744,8 @@ public:
 					auto i = state->insane.find(lowercase(trivia_message));
 					if (i != state->insane.end()) {
 						state->insane.erase(i);
-						aegis::channel* c = bot->core.find_channel(msg.get_channel_id().get());						
+						aegis::channel* c = bot->core.find_channel(msg.get_channel_id().get());
+						cache_user(&user, &c->get_guild());
 						if (--state->insane_left < 1) {
 							if (c) {
 								c->create_message(fmt::format("**{}** found the last answer!", user.get_username()));
@@ -738,17 +772,54 @@ public:
 						time_t time_to_answer = time(NULL) - state->asktime;
 						std::string pts = (state->score > 1 ? "points" : "point");
 						time_t submit_time = state->recordtime;
+						int32_t score = state->score;
+
+
+						std::string ans_message;
+						ans_message.append(fmt::format("Correct, **{}**! The answer was **{}**. You gain **{}** {} for answering in **{}** seconds!", user.get_username(), state->curr_answer, score, pts, time_to_answer));
+						if (time_to_answer < state->recordtime) {
+							ans_message.append(fmt::format("\n**{}** has broken the record time for this question!", user.get_username()));
+							submit_time = time_to_answer;
+						}
+						int32_t newscore = update_score(user.get_id().get(), submit_time, state->curr_qid, score);
+						ans_message.append(fmt::format("\n**{}**'s score is now **{}**.", user.get_username(), newscore));
+
+						std::string teamname = get_current_team(user.get_id().get());
+						if (!empty(teamname)) {
+							add_team_points(teamname, score, user.get_id().get());
+							int32_t newteamscore = get_team_points(teamname);
+							ans_message.append(fmt::format("\nTeam **{}** also gains **{}** {} and is now on **{}**", teamname, score, pts, newteamscore));
+						}
+
+						if (state->last_to_answer == user.get_id().get()) {
+							/* Amend current streak */
+							state->streak++;
+							ans_message.append(fmt::format("\n**{}** is on a streak! **{}** questions and counting", user.get_username(), state->streak));
+							streak_t s = get_streak(user.get_id().get());
+							if (state->streak > s.personalbest) {
+								ans_message.append(fmt::format(", and beat their personal best!"));
+							} else {
+								ans_message.append(fmt::format(", but has some way to go yet before they beat their personal best of **{}**", s.personalbest));
+							}
+							if (state->streak > s.bigstreak) {
+								if (is_number(s.topstreaker)) {
+									ans_message.append(fmt::format("\n**{}** just beat <@{}>'s record streak of {} answers!", user.get_username(), s.topstreaker, state->streak));
+								}
+							}
+						} else if (state->streak > 1 && !state->last_to_answer) {
+							ans_message.append(fmt::format("\n**{}** just ended <@{}>'s record streak of {} answers in a row!", user.get_username(), state->last_to_answer, state->streak));
+						}
+
+						/* Update last person to answer */
+						state->last_to_answer = user.get_id().get();
+
 
 						aegis::channel* c = bot->core.find_channel(msg.get_channel_id().get());
 						if (c) {
-							c->create_message(fmt::format("Correct, **{}**! The answer was **{}**. You gain **{}** {} for answering in **{}** seconds!", user.get_username(), state->curr_answer, state->score, pts, time_to_answer));
-							if (time_to_answer < state->recordtime) {
-								c->create_message(fmt::format("**{}** has broken the record time for this question!", user.get_username()));
-								submit_time = time_to_answer;
-							}
+							c->create_message(ans_message);
 						}
-						int32_t newscore = update_score(user.get_id().get(), submit_time, state->curr_qid, state->score);
-						c->create_message(fmt::format("**{}**'s score is now **{}**.", user.get_username(), newscore));
+
+
 
 						state->curr_answer = "************************DUMMY****************+++++++++++++++++++";
 					}
@@ -762,6 +833,9 @@ public:
 			std::string command = clean_message.substr(prefix.length(), clean_message.length() - prefix.length());
 			aegis::channel* c = bot->core.find_channel(msg.get_channel_id().get());
 			if (c) {
+
+				cache_user(&user, &c->get_guild());
+
 				if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == c->get_guild().get_id()) {
 
 
@@ -808,12 +882,12 @@ public:
 									state->streak = 0;
 									state->last_to_answer = 0;
 									state->round = 1;
-									state->interval = 20;
+									state->interval = quickfire ? 5 : 20;
 									state->channel_id = channel_id;
 									aegis::channel* c = bot->core.find_channel(msg.get_channel_id().get());
 									if (c) {
 										state->guild_id = c->get_guild().get_id();
-										c->create_message(fmt::format("**{}** started a {} trivia round of **{}** questions!\n**First** question coming up!", user.get_username(), (quickfire ? "**QUICKFIRE**" : ""), questions));
+										c->create_message(fmt::format("**{}** started a {}trivia round of **{}** questions!\n**First** question coming up!", user.get_username(), (quickfire ? "**QUICKFIRE** " : ""), questions));
 										 state->timer = new std::thread(&state_t::tick, state);
 									}
 	
@@ -835,11 +909,42 @@ public:
 							return false;
 						} else if (subcommand == "rank") {
 							c->create_message(get_rank(user.get_id().get()));
+						} else if (subcommand == "stats") {
+							show_stats(c->get_guild().get_id(), channel_id);
+						} else if (subcommand == "join") {
+							std::string teamname;
+							tokens >> teamname;
+							if (join_team(user.get_id().get(), teamname)) {
+								c->create_message(fmt::format("You have successfully joined the team \"**{}**\", **{}**", teamname, user.get_username()));
+							} else {
+								c->create_message(fmt::format("I cannot bring about world peace, make you a sandwich, or join that team, **{}**", user.get_username()));
+							}
+						} else if (subcommand == "create") {
+							std::string newteamname;
+							tokens >> newteamname;
+							std::string teamname = get_current_team(user.get_id().get());
+							if (teamname.empty() || teamname == "!NOTEAM") {
+								if (create_new_team(newteamname)) {
+									join_team(user.get_id().get(), newteamname);
+									c->create_message(fmt::format("You have successfully **created** and joined the team \"**{}**\", **{}**", newteamname, user.get_username()));
+								} else {
+									c->create_message(fmt::format("I couldn't create that team, **{}**...", user.get_username()));
+								}
+							} else {
+								c->create_message(fmt::format("**{}**, you are already a member of team \"**{}**\"!", user.get_username(), teamname));
+							}
+						} else if (subcommand == "leave") {
+							std::string teamname = get_current_team(user.get_id().get());
+							if (teamname.empty() || teamname == "!NOTEAM") {
+								c->create_message(fmt::format("**{}**, you aren't a member of any team! Use **{}trivia join** to join a team!", user.get_username(), prefix));
+							} else {
+								leave_team(user.get_id().get());
+								c->create_message(fmt::format("**{}** has left team **{}**", user.get_username(), teamname));
+							}
+
 						}
 					}
-
-					/*c->create_message(fmt::format("received command='{}' test response='``0:{} 1:{} 2:{}``'", command, shuf[0], shuf[1], shuf[2]));
-					bot->sent_messages++;*/
+					/*bot->sent_messages++;*/
 				}
 
 			}

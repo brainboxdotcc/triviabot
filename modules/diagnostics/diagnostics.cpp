@@ -91,7 +91,7 @@ public:
 
 	virtual std::string GetDescription()
 	{
-		return "Diagnostic Commands (sudo), '@Sporks sudo'";
+		return "Diagnostic Commands (sudo), '@mention sudo'";
 	}
 
 	virtual bool OnRestEnd(std::chrono::steady_clock::time_point start_time, uint16_t code)

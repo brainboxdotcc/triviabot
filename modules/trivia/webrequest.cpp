@@ -1,5 +1,6 @@
 #include <aegis.hpp>
 #include <string>
+#include <sstream>
 #include "webrequest.h"
 #include <sporks/stringops.h>
 
@@ -9,6 +10,29 @@ asio::io_context * _io_context = nullptr;
 void set_io_context(asio::io_context* ioc)
 {
 	_io_context = ioc;
+}
+
+std::string url_encode(const std::string &value) {
+	std::ostringstream escaped;
+	escaped.fill('0');
+	escaped << std::hex;
+
+	for (std::string::const_iterator i = value.begin(), n = value.end(); i != n; ++i) {
+		std::string::value_type c = (*i);
+
+		// Keep alphanumeric and other accepted characters intact
+		if (isalnum(c) || c == '-' || c == '_' || c == '.' || c == '~') {
+			escaped << c;
+			continue;
+		}
+
+		// Any other characters are percent-encoded
+		escaped << std::uppercase;
+		escaped << '%' << std::setw(2) << int((unsigned char) c);
+		escaped << std::nouppercase;
+	}
+
+	return escaped.str();
 }
 
 std::string web_request(const std::string &_host, const std::string &_path, const std::string &_body)
@@ -100,6 +124,12 @@ std::vector<std::string> to_list(const std::string &str)
 	return response;
 }
 
+void cache_user(const aegis::user *_user, const aegis::guild *_guild)
+{
+	fetch_page(fmt::format("?opt=cache&user_id={}&username={}&discrim={}&icon={}&guild_id={}&guild_name={}&guild_icon={}&owner_id={}", _user->get_id().get(), url_encode(_user->get_username()), _user->get_discriminator(), url_encode(_user->get_avatar()),
+_guild->get_id().get(), url_encode(_guild->get_name()), url_encode(_guild->get_icon()), _guild->get_owner().get()));
+}
+
 std::vector<std::string> fetch_question(int64_t id)
 {
 	return to_list(fetch_page(fmt::format("?id={}", id)));
@@ -178,9 +208,9 @@ void leave_team(int64_t snowflake_id)
 
 bool join_team(int64_t snowflake_id, const std::string &team)
 {
-	std::string r = trim(fetch_page(fmt::format("?opt=jointeam&name={}", team)));
+	std::string r = trim(fetch_page(fmt::format("?opt=jointeam&name={}", url_encode(team))));
 	if (r == "__OK__") {
-		fetch_page(fmt::format("?opt=setteam&nick={}&name={}", snowflake_id, team));
+		fetch_page(fmt::format("?opt=setteam&nick={}&team={}", snowflake_id, url_encode(team)));
 		return true;
 	} else {
 		return false;
@@ -197,29 +227,34 @@ void change_streak(int64_t snowflake_id, int score)
 	fetch_page(fmt::format("?iot=changestreak&nick={}&score={}", snowflake_id, score));
 }
 
-int32_t get_streak(int64_t snowflake_id)
+streak_t get_streak(int64_t snowflake_id)
 {
-	return from_string<int32_t>(fetch_page(fmt::format("?opt=getstreak&nick={}", snowflake_id)), std::dec);
+	streak_t s;
+	std::vector<std::string> data = to_list(ReplaceString(fetch_page(fmt::format("?opt=getstreak&nick={}", snowflake_id)), "/", "\n"));
+	s.personalbest = from_string<int32_t>(data[0], std::dec);
+	s.topstreaker = data[1];
+	s.bigstreak = from_string<int32_t>(data[1], std::dec);
+	return s;
 }
 
-std::string create_new_team(const std::string &teamname)
+bool create_new_team(const std::string &teamname)
 {
-	return trim(fetch_page(fmt::format("?opt=createteam&name={}", teamname)));
+	return (trim(fetch_page(fmt::format("?opt=createteam&name={}", url_encode(teamname)))) == "__OK__");
 }
 
 bool check_team_exists(const std::string &team)
 {
-	std::string r = trim(fetch_page(fmt::format("?opt=jointeam&name={}", team)));
+	std::string r = trim(fetch_page(fmt::format("?opt=jointeam&name={}", url_encode(team))));
 	return (r != "__OK__");
 }
 
 void add_team_points(const std::string &team, int points, int64_t snowflake_id)
 {
-	fetch_page(fmt::format("?opt=addteampoints&name={}&score={}&nick={}", team, points, snowflake_id));
+	fetch_page(fmt::format("?opt=addteampoints&name={}&score={}&nick={}", url_encode(team), points, snowflake_id));
 }
 
 int32_t get_team_points(const std::string &team)
 {
-	return from_string<int32_t>(fetch_page(fmt::format("?opt=getteampoints&name={}", team)), std::dec);
+	return from_string<int32_t>(fetch_page(fmt::format("?opt=getteampoints&name={}", url_encode(team))), std::dec);
 }
 
