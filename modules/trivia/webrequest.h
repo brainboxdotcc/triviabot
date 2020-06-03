@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 
-#define BACKEND_HOST "brainbox.cc"
+#define BACKEND_HOST "triviabot.co.uk"
 
 struct streak_t
 {

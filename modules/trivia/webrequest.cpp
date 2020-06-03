@@ -113,7 +113,7 @@ std::string web_request(const std::string &_host, const std::string &_path, cons
 
 std::string fetch_page(const std::string _endpoint)
 {
-	return web_request(BACKEND_HOST, fmt::format("/trivia_public/{}", _endpoint), "");
+	return web_request(BACKEND_HOST, fmt::format("/api/{}", _endpoint), "");
 }
 
 std::vector<std::string> to_list(const std::string &str)
