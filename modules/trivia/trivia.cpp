@@ -54,7 +54,7 @@ public:
 		number_tidy_nodollars = new PCRE("^([\\d\\,]+)\\s+(.+?)$");
 		number_tidy_positive = new PCRE("^[\\d\\,]+$");
 		number_tidy_negative = new PCRE("^\\-[\\d\\,]+$");
-		set_io_context(bot->io);
+		set_io_context(bot->io, Bot::GetConfig("apikey"));
 		presence_update = new std::thread(&TriviaModule::UpdatePresenceLine, this);
 	}
 

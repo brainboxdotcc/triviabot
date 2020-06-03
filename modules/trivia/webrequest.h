@@ -10,7 +10,7 @@ struct streak_t
 	int32_t bigstreak;
 };
 
-void set_io_context(class asio::io_context* ioc);
+void set_io_context(class asio::io_context* ioc, const std::string &apikey);
 std::string web_request(const std::string &_host, const std::string &_path, const std::string &_body);
 std::string fetch_page(const std::string _endpoint);
 std::vector<std::string> fetch_question(int64_t id);

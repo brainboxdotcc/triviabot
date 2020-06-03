@@ -6,10 +6,12 @@
 
 std::unordered_map<std::string, asio::ip::basic_resolver<asio::ip::tcp>::results_type> _resolver_cache;
 asio::io_context * _io_context = nullptr;
+std::string apikey;
 
-void set_io_context(asio::io_context* ioc)
+void set_io_context(asio::io_context* ioc, const std::string &_apikey)
 {
 	_io_context = ioc;
+	apikey = _apikey;
 }
 
 std::string url_encode(const std::string &value) {
@@ -78,7 +80,8 @@ std::string web_request(const std::string &_host, const std::string &_path, cons
 		request_stream << "User-Agent: TriviaBot (1.0.0)\r\n";
 		request_stream << "Connection: close\r\n";
 		request_stream << "Content-Length: " << _body.length() << "\r\n";
-		request_stream << "Content-Type: text/plain\r\n\r\n";
+		request_stream << "Content-Type: text/plain\r\n";
+		request_stream << "X-API-Auth: " << apikey << "\r\n\r\n";
 		request_stream << _body;
 
 		asio::write(socket, request);
