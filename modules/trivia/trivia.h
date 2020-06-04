@@ -24,6 +24,17 @@ struct field_t
 	bool _inline;
 };
 
+class guild_settings_t
+{
+ public:
+	int64_t guild_id;
+	std::string prefix;
+	uint32_t embedcolour;
+	std::vector<int64_t> moderator_roles;
+	bool premium;
+	guild_settings_t(int64_t _guild_id, const std::string &_prefix, const std::vector<int64_t> &_moderator_roles, uint32_t _embedcolour, bool _premium);
+};
+
 #define TRIV_INTERVAL 20
 
 class state_t

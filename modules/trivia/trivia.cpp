@@ -26,6 +26,7 @@
 #include <streambuf>
 #include <sporks/stringops.h>
 #include <sporks/statusfield.h>
+#include <sporks/database.h>
 #include "trivia.h"
 #include "numstrs.h"
 #include "webrequest.h"
@@ -68,6 +69,28 @@ public:
 		delete number_tidy_negative;
 	}
 
+	guild_settings_t GetGuildSettings(int64_t guild_id)
+	{
+		aegis::guild* guild = bot->core.find_guild(guild_id);
+		if (guild == nullptr) {
+			return guild_settings_t(guild_id, "!", {}, 3238819, false);
+		} else {
+			db::resultset r = db::query("SELECT snowflake_id, prefix, embedcolour, moderator_roles, premium FROM bot_guild_settings WHERE snowflake_id = ?", {guild_id});
+			if (!r.empty()) {
+				std::stringstream s(r[0]["moderator_roles"]);
+				int64_t role_id;
+				std::vector<int64_t> role_list;
+				while ((s >> role_id)) {
+					role_list.push_back(role_id);
+				}
+				return guild_settings_t(from_string<int64_t>(r[0]["snowflake_id"], std::dec), r[0]["prefix"], role_list, from_string<uint32_t>(r[0]["embedcolour"], std::dec), (r[0]["premium"] == "1"));
+			} else {
+				db::query("INSERT INTO bot_guild_settings (snowflake_id) VALUES('?')", {guild_id});
+				return guild_settings_t(guild_id, "!", {}, 3238819, false);
+			}
+		}
+	}
+
 	/* Make a string safe to send as a JSON literal */
 	std::string escape_json(const std::string &s) {
 		std::ostringstream o;
@@ -101,42 +124,53 @@ public:
 		cleaned_json = ReplaceString(cleaned_json, "@everyone", "@‎everyone");
 		cleaned_json = ReplaceString(cleaned_json, "@here", "@‎here");
 		aegis::channel* channel = bot->core.find_channel(channelID);
+		if (!channel) {
+			return;
+		}
 		try {
 			/* Tabs to spaces */
 			cleaned_json = ReplaceString(cleaned_json, "\t", " ");
 			embed = json::parse(cleaned_json);
 		}
 		catch (const std::exception &e) {
-			if (channel) {
-				if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == channel->get_guild().get_id()) {
-					channel->create_message("<:sporks_error:664735896251269130> I can't make an **embed** from this: ```js\n" + cleaned_json + "\n```**Error:** ``" + e.what() + "``");
-					bot->sent_messages++;
-				}
-			}
-		}
-		if (channel) {
 			if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == channel->get_guild().get_id()) {
-				channel->create_message_embed("", embed);
+				channel->create_message("<:sporks_error:664735896251269130> I can't make an **embed** from this: ```js\n" + cleaned_json + "\n```**Error:** ``" + e.what() + "``");
 				bot->sent_messages++;
 			}
+		}
+		if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == channel->get_guild().get_id()) {
+			channel->create_message_embed("", embed);
+			bot->sent_messages++;
 		}
 	}
 
 	void SimpleEmbed(const std::string &emoji, const std::string &text, int64_t channelID, const std::string title = "")
 	{
+		aegis::channel* c = bot->core.find_channel(channelID);
+		uint32_t colour = 3238819;
+		if (c) {
+			guild_settings_t settings = GetGuildSettings(c->get_guild().get_id().get());
+			colour = settings.embedcolour;
+		}
 		if (!title.empty()) {
-			ProcessEmbed("{\"title\":\"" + escape_json(title) + "\",\"color\":3238819,\"description\":\"" + emoji + " " + escape_json(text) + "\"}", channelID);
+			ProcessEmbed(fmt::format("{{\"title\":\"{}\",\"color\":{},\"description\":\"{} {}\"}}", escape_json(title), colour, emoji, escape_json(text)), channelID);
 		} else {
-			ProcessEmbed("{\"color\":3238819,\"description\":\"" + emoji + " " + escape_json(text) + "\"}", channelID);
+			ProcessEmbed(fmt::format("{{\"color\":{},\"description\":\"{} {}\"}}", colour, emoji, escape_json(text)), channelID);
 		}
 	}
 	
 	/* Send an embed containing one or more fields */
 	void EmbedWithFields(const std::string &title, std::vector<field_t> fields, int64_t channelID)
 	{
-		std::string json = "{\"title\":\"" + escape_json(title) + "\",\"color\":3238819,\"fields\":[";
+		aegis::channel* c = bot->core.find_channel(channelID);
+		uint32_t colour = 3238819;
+		if (c) {
+			guild_settings_t settings = GetGuildSettings(c->get_guild().get_id().get());
+			colour = settings.embedcolour;
+		}
+		std::string json = fmt::format("{{\"title\":\"{}\",\"color\":{},\"fields\":[", escape_json(title), colour);
 		for (auto v = fields.begin(); v != fields.end(); ++v) {
-			json += "{\"name\":\"" + escape_json(v->name) + "\",\"value\":\"" + escape_json(v->value) + "\",\"inline\":" + (v->_inline ? "true" : "false") + "}";
+			json += fmt::format("{{\"name\":\"{}\",\"value\":\"{}\",\"inline\":{}}}", escape_json(v->name), escape_json(v->value), v->_inline ? "true" : "false");
 			auto n = v;
 			if (++n != fields.end()) {
 				json += ",";
@@ -739,7 +773,7 @@ public:
 		}
 		aegis::channel* c = bot->core.find_channel(channel_id);
 		if (c) {
-			EmbedWithFields("Trivia Leaderboard", {{"Today's Leaders", msg, false}, {"More information", "Detailed scores and statistics are available [on the dashboard](https://triviabot.co.uk)", false}}, c->get_id().get());
+			EmbedWithFields("Trivia Leaderboard", {{"Today's Top Ten", msg, false}, {"More information", fmt::format("[View server leaderboards](https://triviabot.co.uk/stats/{})\nDaily scores reset at midnight GMT.", guild_id), false}}, c->get_id().get());
 		}
 	}
 
@@ -797,8 +831,6 @@ public:
 		const aegis::user& user = message.get_user();
 		bool game_in_progress = false;
 
-		const std::string prefix = "!";
-
 		std::string trivia_message = clean_message;
 		int x = from_string<int>(conv_num(clean_message), std::dec);
 		if (x > 0) {
@@ -809,6 +841,13 @@ public:
 		/* Retrieve current state for channel, if there is no state object, no game is in progress */
 		int64_t channel_id = msg.get_channel_id().get();
 		auto state_iter = states.find(channel_id);
+
+		int64_t guild_id = 0;
+		aegis::channel* c = bot->core.find_channel(msg.get_channel_id().get());
+		if (c) {
+			guild_id = c->get_guild().get_id().get();
+		}
+		guild_settings_t settings = GetGuildSettings(guild_id);
 
 		state_t* state = nullptr;
 		if (state_iter != states.end()) {
@@ -915,9 +954,9 @@ public:
 			}
 		}
 
-		if (lowercase(clean_message.substr(0, prefix.length())) == lowercase(prefix)) {
+		if (lowercase(clean_message.substr(0, settings.prefix.length())) == lowercase(settings.prefix)) {
 			/* Command */
-			std::string command = clean_message.substr(prefix.length(), clean_message.length() - prefix.length());
+			std::string command = clean_message.substr(settings.prefix.length(), clean_message.length() - settings.prefix.length());
 			aegis::channel* c = bot->core.find_channel(msg.get_channel_id().get());
 			if (c) {
 
@@ -1026,17 +1065,16 @@ public:
 						} else if (subcommand == "leave") {
 							std::string teamname = get_current_team(user.get_id().get());
 							if (teamname.empty() || teamname == "!NOTEAM") {
-								SimpleEmbed(":warning:", fmt::format("**{}**, you aren't a member of any team! Use **{}trivia join** to join a team!", user.get_username(), prefix), c->get_id().get());
+								SimpleEmbed(":warning:", fmt::format("**{}**, you aren't a member of any team! Use **{}trivia join** to join a team!", user.get_username(), settings.prefix), c->get_id().get());
 							} else {
 								leave_team(user.get_id().get());
 								SimpleEmbed(":busts_in_silhouette:", fmt::format("**{}** has left team **{}**", user.get_username(), teamname), c->get_id().get(), "Come back, we'll miss you! :cry:");
 							}
 
 						} else {
-							SimpleEmbed(":warning:", fmt::format("**{}**, I don't know that command! Try ``{}trivia start 20`` :slight_smile:", user.get_username(), prefix), c->get_id().get(), "Need some help?");
+							SimpleEmbed(":warning:", fmt::format("**{}**, I don't know that command! Try ``{}trivia start 20`` :slight_smile:", user.get_username(), settings.prefix), c->get_id().get(), "Need some help?");
 						}
 					}
-					/*bot->sent_messages++;*/
 				}
 
 			}
@@ -1063,6 +1101,10 @@ void state_t::tick()
 		sleep(this->interval);
 		creator->Tick(this);
 	}
+}
+
+guild_settings_t::guild_settings_t(int64_t _guild_id, const std::string &_prefix, const std::vector<int64_t> &_moderator_roles, uint32_t _embedcolour, bool _premium) : guild_id(_guild_id), prefix(_prefix), moderator_roles(_moderator_roles), embedcolour(_embedcolour), premium(_premium)
+{
 }
 
 ENTRYPOINT(TriviaModule);

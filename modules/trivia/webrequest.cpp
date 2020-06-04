@@ -108,6 +108,7 @@ std::string web_request(const std::string &_host, const std::string &_path, cons
 	/*return { static_cast<http_code>(hresponse.get_status_code()),
 		global, limit, remaining, reset, retry, hresponse.get_body(), http_date,
 		std::chrono::steady_clock::now() - start_time };*/
+
 	return hresponse.get_body();
 }
 
