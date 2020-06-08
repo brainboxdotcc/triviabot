@@ -1,52 +1,41 @@
 {
-	"title": ":user: help",
-	"color": 16767488,
-	"url": "https://sporks.gg",
-	"timestamp": ":ts:",
-	"thumbnail": {
-		"url": "https://www.sporks.gg/images/sporks-adopt.png"
-	},
-	"footer": {
-		"link": "https://sporks.gg/",
-		"text": "Powered by Sporks! - help requested by :author:",
-		"icon_url": "https://www.sporks.gg/images/sporks_2020.png"
-	},
-	"fields": [
-		{
-			"name": "Find help on the official wiki!",
-			"value": "All help for this bot can be found on the [Sporks Wiki on GitHub](https://github.com/brainboxdotcc/sporks/wiki). For further assistance, please join the [official brainbox.cc discord server](https://discord.gg/brainbox).\n<:blank:667278047006949386>",
-			"inline": false
-		},
-		{
-			"name": ":brain: Teaching Sporks",
-			"value": "[How to teach things to Sporks](https://github.com/brainboxdotcc/sporks/wiki/Teaching-Sporks)\n<:blank:667278047006949386>",
-			"inline": true
-		},
-		{
-			"name": ":gear: Configuration",
-			"value": "[Setting up Sporks for your server](https://github.com/brainboxdotcc/sporks/wiki/Configuration)\n<:blank:667278047006949386>",
-			"inline": true
-		},
-		{
-			"name": "<:testtube:667275669323120661> Advanced",
-			"value": "[Embeds, random choices, and more](https://github.com/brainboxdotcc/sporks/wiki/Advanced-Chat-Commands)\n<:blank:667278047006949386>",
-			"inline": true
-		},
-		{
-			"name": "<:variables:667275003473166336> Variables",
-			"value": "[Special values you can put in a reply](https://github.com/brainboxdotcc/sporks/wiki/Variables)\n<:blank:667278047006949386>",
-			"inline": true
-		},
-		{
-			"name": "<:download:667274535254360084> Script Repository",
-			"value": "[Finding Scripts to add to Sporks](https://github.com/brainboxdotcc/sporks/wiki/Downloading-scripts-from-codebottle.io-into-Sporks)\n<:blank:667278047006949386>",
-			"inline": true
-		},
-		{
-			"name": "<:javascript:667272799240585236> Programming",
-			"value": "[Adding your own JavaScript to Sporks](https://github.com/brainboxdotcc/sporks/wiki/Programming-Reference)\n<:blank:667278047006949386>",
-			"inline": true
-		}
-	],
-	"description": ""
-} 
+        "title": ":user: help",
+        "color": :color:,
+        "url": "https://triviabot.co.uk",
+        "timestamp": ":ts:",
+        "thumbnail": {
+                "url": "https://triviabot.co.uk/images/triviabot_tl_icon.png"
+        },
+        "footer": {
+                "text": "Powered by TriviaBot - help requested by :author:",
+                "icon_url": "https://triviabot.co.uk/images/triviabot_icon.png"
+        },
+        "fields": [
+                {
+                        "name": "Find help and configure :user: via the dashboard",
+                        "value": "All help and configuration for this bot can be managed via the [TriviaBot Dashboard](https://triviabot.co.uk/dashboard). For further assistance, please join the [official brainbox.cc discord server](https://discord.gg/brainbox).\n<:blank:667278047006949386>",
+                        "inline": false
+                },
+                {
+                        "name": ":game_die: Starting Trivia",
+                        "value": "[How to start and stop games of trivia](https://triviabot.co.uk/help/#start)\n<:blank:667278047006949386>",
+                        "inline": false
+                },
+                {
+                        "name": ":gear: Configuration",
+                        "value": "[Configuring TriviaBot for your server (including changing the bot's prefix)](https://triviabot.co.uk/help/#config)\n<:blank:667278047006949386>",
+                        "inline": false
+                },
+                {
+                        "name": ":gift: Community Rewards",
+                        "value": "[Setting up role rewards for your server](https://triviabot.co.uk/help/#rolerewards)\n<:blank:667278047006949386>",
+                        "inline": false
+                },
+                {
+                        "name": ":money_with_wings: Premium",
+                        "value": "[Find out how to get more with TriviaBot Premium](https://triviabot.co.uk/help/#premium)\n<:blank:667278047006949386>",
+                        "inline": false
+                }
+        ],
+        "description": ""
+}

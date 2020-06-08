@@ -74,7 +74,7 @@ std::string web_request(const std::string &_host, const std::string &_path, cons
 
 		asio::streambuf request;
 		std::ostream request_stream(&request);
-		request_stream << "GET " << _path << " HTTP/1.0\r\n";
+		request_stream << (_body.empty() ? "GET" : "POST") << " " << _path << " HTTP/1.0\r\n";
 		request_stream << "Host: " << tar_host << "\r\n";
 		request_stream << "Accept: */*\r\n";
 		request_stream << "User-Agent: TriviaBot (1.0.0)\r\n";
@@ -112,9 +112,9 @@ std::string web_request(const std::string &_host, const std::string &_path, cons
 	return hresponse.get_body();
 }
 
-std::string fetch_page(const std::string _endpoint)
+std::string fetch_page(const std::string _endpoint, const std::string &body)
 {
-	return web_request(BACKEND_HOST, fmt::format("/api/{}", _endpoint), "");
+	return web_request(BACKEND_HOST, fmt::format("/api/{}", _endpoint), body);
 }
 
 std::vector<std::string> to_list(const std::string &str)
@@ -128,10 +128,23 @@ std::vector<std::string> to_list(const std::string &str)
 	return response;
 }
 
-void cache_user(const aegis::user *_user, const aegis::guild *_guild)
+void cache_user(const aegis::user *_user, const aegis::guild *_guild, const aegis::user::guild_info* gi)
 {
-	fetch_page(fmt::format("?opt=cache&user_id={}&username={}&discrim={}&icon={}&guild_id={}&guild_name={}&guild_icon={}&owner_id={}", _user->get_id().get(), url_encode(_user->get_username()), _user->get_discriminator(), url_encode(_user->get_avatar()),
-_guild->get_id().get(), url_encode(_guild->get_name()), url_encode(_guild->get_icon()), _guild->get_owner().get()));
+	std::unordered_map<aegis::snowflake, aegis::gateway::objects::role> roles = _guild->get_roles();
+	std::stringstream body;
+	/* Serialise the guilds roles into a space separated list for POST to the cache endpoint */
+	for (auto n = roles.begin(); n != roles.end(); ++n) {
+		body << std::hex << n->second.color << std::dec << " " << n->second.id << " " << n->second._permission << " " << n->second.position << " ";
+	       	body << (n->second.hoist ? 1 : 0) << " " << (n->second.managed ? 1 : 0) << " " << (n->second.mentionable ? 1 : 0) << " ";
+		body << n->second.name << "\n";
+	}
+	std::string member_roles;
+	for (auto r = gi->roles.begin();r != gi->roles.end(); ++r) {
+		member_roles.append(std::to_string(r->get())).append(" ");
+	}
+	member_roles = trim(member_roles);
+	fetch_page(fmt::format("?opt=cache&user_id={}&username={}&discrim={}&icon={}&guild_id={}&guild_name={}&guild_icon={}&owner_id={}&roles={}", _user->get_id().get(), url_encode(_user->get_username()), _user->get_discriminator(), url_encode(_user->get_avatar()),
+_guild->get_id().get(), url_encode(_guild->get_name()), url_encode(_guild->get_icon()), _guild->get_owner().get(), url_encode(member_roles)), body.str());
 }
 
 std::vector<std::string> fetch_question(int64_t id)
@@ -235,9 +248,16 @@ streak_t get_streak(int64_t snowflake_id)
 {
 	streak_t s;
 	std::vector<std::string> data = to_list(ReplaceString(fetch_page(fmt::format("?opt=getstreak&nick={}", snowflake_id)), "/", "\n"));
-	s.personalbest = data[0].empty() ? 0 : from_string<int32_t>(data[0], std::dec);
-	s.topstreaker = data[1];
-	s.bigstreak = data[2].empty() ? 0 : from_string<int32_t>(data[2], std::dec);
+	if (data.size() == 3) {
+		s.personalbest = data[0].empty() ? 0 : from_string<int32_t>(data[0], std::dec);
+		s.topstreaker = data[1];
+		s.bigstreak = data[2].empty() ? 0 : from_string<int32_t>(data[2], std::dec);
+	} else {
+		/* Failed to retrieve correctly formatted data */
+		s.personalbest = 0;
+		s.topstreaker = "";
+		s.bigstreak = 99999999;
+	}
 	return s;
 }
 

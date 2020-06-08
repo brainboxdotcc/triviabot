@@ -239,7 +239,7 @@ public:
 		while (!terminating) {
 			sleep(30);
 			int32_t questions = get_total_questions();
-			bot->core.update_presence(fmt::format("Trivia! {} questions, {} active games on {} shards", Comma(questions), Comma(states.size()), Comma(bot->core.shard_max_count)), aegis::gateway::objects::activity::Game);
+			bot->core.update_presence(fmt::format("Trivia! {} questions, {} active games on {} servers through {} shards", Comma(questions), Comma(states.size()), Comma(bot->core.get_guild_count()), Comma(bot->core.shard_max_count)), aegis::gateway::objects::activity::Game);
 		}
 	}
 
@@ -566,16 +566,23 @@ public:
 		}
 
 		std::vector<std::string> data = fetch_question(from_string<int64_t>(state->shuffle_list[state->round - 1], std::dec));
-		state->curr_qid = from_string<int64_t>(data[0], std::dec);
-		state->curr_question = data[1];
-		state->curr_answer = data[2];
-		state->curr_customhint1 = data[3];
-		state->curr_customhint2 = data[4];
-		state->curr_category = data[5];
-		state->curr_lastasked = from_string<time_t>(data[6],std::dec);
-		state->curr_timesasked = from_string<int32_t>(data[7], std::dec);
-		state->curr_lastcorrect = data[8];
-		state->recordtime = from_string<time_t>(data[9],std::dec);
+		if (data.size() >= 10) {
+			state->curr_qid = from_string<int64_t>(data[0], std::dec);
+			state->curr_question = data[1];
+			state->curr_answer = data[2];
+			state->curr_customhint1 = data[3];
+			state->curr_customhint2 = data[4];
+			state->curr_category = data[5];
+			state->curr_lastasked = from_string<time_t>(data[6],std::dec);
+			state->curr_timesasked = from_string<int32_t>(data[7], std::dec);
+			state->curr_lastcorrect = data[8];
+			state->recordtime = from_string<time_t>(data[9],std::dec);
+		} else {
+			state->gamestate = TRIV_END;
+			state->score = 0;
+			state->curr_answer = "";
+			bot->core.log->warn("do_normal_round(): Attempted to retrieve question id {} but got a malformed response. Round was aborted.", state->shuffle_list[state->round - 1]);
+		}
 
 		if (state->curr_question != "") {
 			state->asktime = time(NULL);
@@ -707,7 +714,7 @@ public:
 				if (state->streak > 1 && state->last_to_answer) {
 					SimpleEmbed(":octagonal_sign:", fmt::format("***{}**'s streak of **{}** answers in a row comes to a grinding halt!", state->last_to_answer, state->streak), c->get_id().get());
 				}
-				state->curr_answer = "************************DUMMY****************+++++++++++++++++++";
+				state->curr_answer = "";
 				state->last_to_answer = 0;
 				state->streak = 1;
 				if (state->round <= state->numquestions -1) {
@@ -745,6 +752,7 @@ public:
 	{
 		aegis::channel* c = bot->core.find_channel(state->channel_id);
 		if (c) {
+			bot->core.log->info("End of game on guild {}, channel {} after {} seconds", state->guild_id, state->channel_id, time(NULL) - state->start_time);
 			SimpleEmbed(":stop_button:", fmt::format("End of round of **{}** questions", state->numquestions - 1), c->get_id().get(), "End of the round");
 			show_stats(c->get_guild().get_id(), state->channel_id);
 		} else {
@@ -871,7 +879,8 @@ public:
 					if (i != state->insane.end()) {
 						state->insane.erase(i);
 						aegis::channel* c = bot->core.find_channel(msg.get_channel_id().get());
-						cache_user(&user, &c->get_guild());
+						aegis::user::guild_info& gi = bot->core.find_user(user.get_id())->get_guild_info(c->get_guild().get_id());
+						cache_user(&user, &c->get_guild(), &gi);
 						if (--state->insane_left < 1) {
 							if (c) {
 								SimpleEmbed(":thumbsup:", fmt::format("**{}** found the last answer!", user.get_username()), c->get_id().get());
@@ -947,7 +956,7 @@ public:
 
 
 
-						state->curr_answer = "************************DUMMY****************+++++++++++++++++++";
+						state->curr_answer = "";
 					}
 				}
 
@@ -960,7 +969,10 @@ public:
 			aegis::channel* c = bot->core.find_channel(msg.get_channel_id().get());
 			if (c) {
 
-				cache_user(&user, &c->get_guild());
+				bot->core.log->info("CMD: {}", clean_message);
+
+				aegis::user::guild_info& gi = bot->core.find_user(user.get_id())->get_guild_info(c->get_guild().get_id());
+				cache_user(&user, &c->get_guild(), &gi);
 
 				if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == c->get_guild().get_id()) {
 
@@ -972,7 +984,11 @@ public:
 				
 					tokens >> base_command;
 
-					if (lowercase(base_command) == "trivia") {
+					if (lowercase(base_command) == "help") {
+						std::string section;
+						tokens >> section;
+						GetHelp(section, message.msg.get_channel_id().get(), bot->user.username, bot->user.id.get(), msg.get_user().get_username(), msg.get_user().get_id().get(), false, settings.embedcolour);
+					} else if (lowercase(base_command) == "trivia") {
 						tokens >> subcommand;
 						subcommand = lowercase(subcommand);
 
@@ -1002,6 +1018,7 @@ public:
 
 									state = new state_t(this);
 									states[channel_id] = state;
+									state->start_time = time(NULL);
 									state->shuffle_list = sl;
 									state->gamestate = TRIV_ASK_QUESTION;
 									state->numquestions = questions + 1;
@@ -1013,10 +1030,9 @@ public:
 									aegis::channel* c = bot->core.find_channel(msg.get_channel_id().get());
 									if (c) {
 										state->guild_id = c->get_guild().get_id();
+										bot->core.log->info("Started game on guild {}, channel {}, {} questions [{}]", state->guild_id, channel_id, questions + 1, quickfire ? "quickfire" : "normal");
 
 										EmbedWithFields(fmt::format(":question: New {}trivia round started by {}!", (quickfire ? "**QUICKFIRE** " : ""), user.get_username()), {{"Questions", fmt::format("{}", questions), false}, {"Get Ready", "First question coming up!", false}}, c->get_id().get());
-
-										//SimpleEmbed(":question:", fmt::format("**{}** started a {}trivia round of **{}** questions!\n\n**First** question coming up!", user.get_username(), (quickfire ? "**QUICKFIRE** " : ""), questions), c->get_id().get());
 										state->timer = new std::thread(&state_t::tick, state);
 									}
 	
@@ -1071,6 +1087,10 @@ public:
 								SimpleEmbed(":busts_in_silhouette:", fmt::format("**{}** has left team **{}**", user.get_username(), teamname), c->get_id().get(), "Come back, we'll miss you! :cry:");
 							}
 
+						} else if (subcommand == "help") {
+							std::string section;
+							tokens >> section;
+							GetHelp(section, message.msg.get_channel_id().get(), bot->user.username, bot->user.id.get(), msg.get_user().get_username(), msg.get_user().get_id().get(), false, settings.embedcolour);
 						} else {
 							SimpleEmbed(":warning:", fmt::format("**{}**, I don't know that command! Try ``{}trivia start 20`` :slight_smile:", user.get_username(), settings.prefix), c->get_id().get(), "Need some help?");
 						}
@@ -1083,6 +1103,59 @@ public:
 
 		return true;
 	}
+
+	/**
+	 * Emit help using a json file in the help/ directory. Missing help files emit a generic error message.
+	 */
+	void GetHelp(const std::string &section, int64_t channelID, const std::string &botusername, int64_t botid, const std::string &author, int64_t authorid, bool dm, uint32_t colour)
+	{
+		bool found = true;
+		json embed_json;
+		char timestamp[256];
+		time_t timeval = time(NULL);
+		aegis::channel* channel = bot->core.find_channel(channelID);
+
+		if (!channel) {
+			bot->core.log->error("Can't find channel {}!", channelID);
+			return;
+		}
+
+		std::ifstream t("../help/" + (section.empty() ? "basic" : section) + ".json");
+		if (!t) {
+			found = dm = false;
+			t = std::ifstream("../help/error.json");
+		}
+		std::string json((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
+
+		tm _tm;
+		gmtime_r(&timeval, &_tm);
+		strftime(timestamp, sizeof(timestamp), "%Y-%m-%d %H:%M:%S", &_tm);
+
+		json = ReplaceString(json, ":section:" , section);
+		json = ReplaceString(json, ":user:", botusername);
+		json = ReplaceString(json, ":id:", std::to_string(botid));
+		json = ReplaceString(json, ":author:", author);
+		json = ReplaceString(json, ":ts:", timestamp);
+		json = ReplaceString(json, ":color:", std::to_string(colour));
+
+		try {
+			embed_json = json::parse(json);
+		}
+		catch (const std::exception &e) {
+			if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == channel->get_guild().get_id()) {
+				channel->create_message("<@" + std::to_string(authorid) + ">, herp derp, theres a malformed help file. Please contact a developer on the official support server: https://discord.gg/brainbox");
+				bot->sent_messages++;
+			}
+			bot->core.log->error("Malformed help file {}.json!", section);
+			return;
+		}
+
+		if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == channel->get_guild().get_id()) {
+			channel->create_message_embed("", embed_json);
+			bot->sent_messages++;
+		}
+	}
+
 };
 
 state_t::state_t(TriviaModule* _creator) : creator(_creator), terminating(false), timer(nullptr)

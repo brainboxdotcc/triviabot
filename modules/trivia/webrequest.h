@@ -12,7 +12,7 @@ struct streak_t
 
 void set_io_context(class asio::io_context* ioc, const std::string &apikey);
 std::string web_request(const std::string &_host, const std::string &_path, const std::string &_body);
-std::string fetch_page(const std::string _endpoint);
+std::string fetch_page(const std::string _endpoint, const std::string &_body = "");
 std::vector<std::string> fetch_question(int64_t id);
 std::vector<std::string> fetch_shuffle_list();
 std::vector<std::string> get_disabled_list();
@@ -36,4 +36,4 @@ bool create_new_team(const std::string &teamname);
 bool check_team_exists(const std::string &team);
 void add_team_points(const std::string &team, int points, int64_t snowflake_id);
 int32_t get_team_points(const std::string &team);
-void cache_user(const class aegis::user *_user, const class aegis::guild *_guild);
+void cache_user(const class aegis::user *_user, const class aegis::guild *_guild, const class aegis::user::guild_info* gi);

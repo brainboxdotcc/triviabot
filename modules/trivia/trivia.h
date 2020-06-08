@@ -47,6 +47,7 @@ class state_t
 	uint32_t numquestions;
 	uint32_t round;
 	uint32_t score;
+	time_t start_time;
 	std::vector<std::string> shuffle_list;
 	trivia_state_t gamestate;
 	int64_t curr_qid;
