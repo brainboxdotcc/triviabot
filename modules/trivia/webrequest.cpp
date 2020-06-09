@@ -182,14 +182,14 @@ void disable_category(const std::string &cat)
 	fetch_page(fmt::format("?opt=disable&catname={}", cat));
 }
 
-int32_t update_score_only(int64_t snowflake_id, int score)
+int32_t update_score_only(int64_t snowflake_id, int64_t guild_id, int score)
 {
-	return from_string<int32_t>(fetch_page(fmt::format("?opt=scoreonly&nick={}&score={}", snowflake_id, score)), std::dec);
+	return from_string<int32_t>(fetch_page(fmt::format("?opt=scoreonly&nick={}&score={}&guild_id={}", snowflake_id, score, guild_id)), std::dec);
 }
 
-int32_t update_score(int64_t snowflake_id, time_t recordtime, int64_t id, int score)
+int32_t update_score(int64_t snowflake_id, int64_t guild_id, time_t recordtime, int64_t id, int score)
 {
-	return from_string<int32_t>(fetch_page(fmt::format("?opt=score&nick={}&recordtime={}&id={}&score={}", snowflake_id, recordtime, id, score)), std::dec);
+	return from_string<int32_t>(fetch_page(fmt::format("?opt=score&nick={}&recordtime={}&id={}&score={}&guild_id={}", snowflake_id, recordtime, id, score, guild_id)), std::dec);
 }
 
 
@@ -234,9 +234,9 @@ bool join_team(int64_t snowflake_id, const std::string &team)
 	}
 }
 
-std::string get_rank(int64_t snowflake_id)
+std::string get_rank(int64_t snowflake_id, int64_t guild_id)
 {
-	return trim(fetch_page(fmt::format("?opt=rank&nick={}", snowflake_id)));
+	return trim(fetch_page(fmt::format("?opt=rank&nick={}&guild_id={}", snowflake_id, guild_id)));
 }
 
 void change_streak(int64_t snowflake_id, int score)

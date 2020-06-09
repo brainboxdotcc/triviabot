@@ -13,7 +13,7 @@
         "fields": [
                 {
                         "name": "Find help and configure :user: via the dashboard",
-                        "value": "All help and configuration for this bot can be managed via the [TriviaBot Dashboard](https://triviabot.co.uk/dashboard). For further assistance, please join the [official brainbox.cc discord server](https://discord.gg/brainbox).\n<:blank:667278047006949386>",
+                        "value": "All settings and configuration for this bot can be managed via the [TriviaBot Dashboard](https://triviabot.co.uk/dashboard). For further assistance, please join the [official brainbox.cc discord server](https://discord.gg/brainbox).\n<:blank:667278047006949386>",
                         "inline": false
                 },
                 {

@@ -73,9 +73,9 @@ public:
 	{
 		aegis::guild* guild = bot->core.find_guild(guild_id);
 		if (guild == nullptr) {
-			return guild_settings_t(guild_id, "!", {}, 3238819, false, false);
+			return guild_settings_t(guild_id, "!", {}, 3238819, false, false, false, 0);
 		} else {
-			db::resultset r = db::query("SELECT snowflake_id, prefix, embedcolour, moderator_roles, premium, only_mods_stop FROM bot_guild_settings WHERE snowflake_id = ?", {guild_id});
+			db::resultset r = db::query("SELECT snowflake_id, prefix, embedcolour, moderator_roles, premium, only_mods_stop, role_reward_enabled, role_reward_id FROM bot_guild_settings WHERE snowflake_id = ?", {guild_id});
 			if (!r.empty()) {
 				std::stringstream s(r[0]["moderator_roles"]);
 				int64_t role_id;
@@ -83,10 +83,10 @@ public:
 				while ((s >> role_id)) {
 					role_list.push_back(role_id);
 				}
-				return guild_settings_t(from_string<int64_t>(r[0]["snowflake_id"], std::dec), r[0]["prefix"], role_list, from_string<uint32_t>(r[0]["embedcolour"], std::dec), (r[0]["premium"] == "1"), (r[0]["only_mods_stop"] == "1"));
+				return guild_settings_t(from_string<int64_t>(r[0]["snowflake_id"], std::dec), r[0]["prefix"], role_list, from_string<uint32_t>(r[0]["embedcolour"], std::dec), (r[0]["premium"] == "1"), (r[0]["only_mods_stop"] == "1"), (r[0]["role_reward_enabled"] == "1"), from_string<int64_t>(r[0]["role_reward_id"], std::dec));
 			} else {
 				db::query("INSERT INTO bot_guild_settings (snowflake_id) VALUES('?')", {guild_id});
-				return guild_settings_t(guild_id, "!", {}, 3238819, false, false);
+				return guild_settings_t(guild_id, "!", {}, 3238819, false, false, false, 0);
 			}
 		}
 	}
@@ -891,6 +891,7 @@ public:
 						aegis::channel* c = bot->core.find_channel(msg.get_channel_id().get());
 						aegis::user::guild_info& gi = bot->core.find_user(user.get_id())->get_guild_info(c->get_guild().get_id());
 						cache_user(&user, &c->get_guild(), &gi);
+
 						if (--state->insane_left < 1) {
 							if (c) {
 								SimpleEmbed(":thumbsup:", fmt::format("**{}** found the last answer!", user.get_username()), c->get_id().get());
@@ -906,6 +907,7 @@ public:
 								SimpleEmbed(":thumbsup:", fmt::format("**{}** was correct with **{}**! **{}** answers remaining out of **{}**.", user.get_username(), trivia_message, state->insane_left, state->insane_num), c->get_id().get());
 							}
 						}
+						update_score_only(user.get_id().get(), state->guild_id, 1);
 					}
 				} else {
 					/* Normal round */
@@ -926,7 +928,7 @@ public:
 							ans_message.append(fmt::format("\n**{}** has broken the record time for this question!", user.get_username()));
 							submit_time = time_to_answer;
 						}
-						int32_t newscore = update_score(user.get_id().get(), submit_time, state->curr_qid, score);
+						int32_t newscore = update_score(user.get_id().get(), state->guild_id, submit_time, state->curr_qid, score);
 						ans_message.append(fmt::format("\n**{}**'s score is now **{}**.", user.get_username(), newscore));
 
 						std::string teamname = get_current_team(user.get_id().get());
@@ -1069,7 +1071,7 @@ public:
 							}
 							return false;
 						} else if (subcommand == "rank") {
-							SimpleEmbed(":bar_chart:", get_rank(user.get_id().get()), c->get_id().get());
+							SimpleEmbed(":bar_chart:", get_rank(user.get_id().get(), c->get_guild().get_id().get()), c->get_id().get());
 						} else if (subcommand == "stats") {
 							show_stats(c->get_guild().get_id(), channel_id);
 						} else if (subcommand == "join") {
@@ -1192,8 +1194,8 @@ void state_t::tick()
 	}
 }
 
-guild_settings_t::guild_settings_t(int64_t _guild_id, const std::string &_prefix, const std::vector<int64_t> &_moderator_roles, uint32_t _embedcolour, bool _premium, bool _only_mods_stop)
-	: guild_id(_guild_id), prefix(_prefix), moderator_roles(_moderator_roles), embedcolour(_embedcolour), premium(_premium), only_mods_stop(_only_mods_stop)
+guild_settings_t::guild_settings_t(int64_t _guild_id, const std::string &_prefix, const std::vector<int64_t> &_moderator_roles, uint32_t _embedcolour, bool _premium, bool _only_mods_stop, bool _role_reward_enabled, int64_t _role_reward_id)
+	: guild_id(_guild_id), prefix(_prefix), moderator_roles(_moderator_roles), embedcolour(_embedcolour), premium(_premium), only_mods_stop(_only_mods_stop), role_reward_enabled(_role_reward_enabled), role_reward_id(_role_reward_id)
 {
 }
 
