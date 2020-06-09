@@ -712,7 +712,10 @@ public:
 			} else {
 				SimpleEmbed(":alarm_clock:", fmt::format("The answer was: **{}**", state->curr_answer), c->get_id().get(), "Out of time!");
 				if (state->streak > 1 && state->last_to_answer) {
-					SimpleEmbed(":octagonal_sign:", fmt::format("***{}**'s streak of **{}** answers in a row comes to a grinding halt!", state->last_to_answer, state->streak), c->get_id().get());
+					aegis::user* u = bot->core.find_user(state->last_to_answer);
+					if (u) {
+						SimpleEmbed(":octagonal_sign:", fmt::format("**{}**'s streak of **{}** answers in a row comes to a grinding halt!", u->get_username(), state->streak), c->get_id().get());
+					}
 				}
 				state->curr_answer = "";
 				state->last_to_answer = 0;
