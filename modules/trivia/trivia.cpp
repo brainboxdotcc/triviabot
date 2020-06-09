@@ -73,9 +73,9 @@ public:
 	{
 		aegis::guild* guild = bot->core.find_guild(guild_id);
 		if (guild == nullptr) {
-			return guild_settings_t(guild_id, "!", {}, 3238819, false);
+			return guild_settings_t(guild_id, "!", {}, 3238819, false, false);
 		} else {
-			db::resultset r = db::query("SELECT snowflake_id, prefix, embedcolour, moderator_roles, premium FROM bot_guild_settings WHERE snowflake_id = ?", {guild_id});
+			db::resultset r = db::query("SELECT snowflake_id, prefix, embedcolour, moderator_roles, premium, only_mods_stop FROM bot_guild_settings WHERE snowflake_id = ?", {guild_id});
 			if (!r.empty()) {
 				std::stringstream s(r[0]["moderator_roles"]);
 				int64_t role_id;
@@ -83,10 +83,10 @@ public:
 				while ((s >> role_id)) {
 					role_list.push_back(role_id);
 				}
-				return guild_settings_t(from_string<int64_t>(r[0]["snowflake_id"], std::dec), r[0]["prefix"], role_list, from_string<uint32_t>(r[0]["embedcolour"], std::dec), (r[0]["premium"] == "1"));
+				return guild_settings_t(from_string<int64_t>(r[0]["snowflake_id"], std::dec), r[0]["prefix"], role_list, from_string<uint32_t>(r[0]["embedcolour"], std::dec), (r[0]["premium"] == "1"), (r[0]["only_mods_stop"] == "1"));
 			} else {
 				db::query("INSERT INTO bot_guild_settings (snowflake_id) VALUES('?')", {guild_id});
-				return guild_settings_t(guild_id, "!", {}, 3238819, false);
+				return guild_settings_t(guild_id, "!", {}, 3238819, false, false);
 			}
 		}
 	}
@@ -870,6 +870,16 @@ public:
 			}
 		}
 
+		/* Check for moderator status - first check if owner */
+		bool moderator = (c->get_guild().get_owner() == user.get_id());
+		/* Now iterate the list of moderator roles from settings */
+		for (auto x = settings.moderator_roles.begin(); x != settings.moderator_roles.end(); ++x) {
+			if (c->get_guild().member_has_role(user.get_id(), *x)) {
+				moderator = true;
+				break;
+			}
+		}
+
 		if (game_in_progress) {
 			if (state->gamestate == TRIV_ASK_QUESTION || state->gamestate == TRIV_FIRST_HINT || state->gamestate == TRIV_SECOND_HINT || state->gamestate == TRIV_TIME_UP) {
 				
@@ -1045,6 +1055,12 @@ public:
 							}
 						} else if (subcommand == "stop") {
 							if (game_in_progress) {
+								if (settings.only_mods_stop) {
+									if (!moderator) {
+										SimpleEmbed(":warning:", fmt::format("**{}**, only trivia moderators can stop trivia on this server!", user.get_username()), c->get_id().get());
+										return false;
+									}
+								}
 								SimpleEmbed(":octagonal_sign:", fmt::format("**{}** has stopped the round of trivia!", user.get_username()), c->get_id().get());
 								states.erase(states.find(channel_id));
 								delete state;
@@ -1176,7 +1192,8 @@ void state_t::tick()
 	}
 }
 
-guild_settings_t::guild_settings_t(int64_t _guild_id, const std::string &_prefix, const std::vector<int64_t> &_moderator_roles, uint32_t _embedcolour, bool _premium) : guild_id(_guild_id), prefix(_prefix), moderator_roles(_moderator_roles), embedcolour(_embedcolour), premium(_premium)
+guild_settings_t::guild_settings_t(int64_t _guild_id, const std::string &_prefix, const std::vector<int64_t> &_moderator_roles, uint32_t _embedcolour, bool _premium, bool _only_mods_stop)
+	: guild_id(_guild_id), prefix(_prefix), moderator_roles(_moderator_roles), embedcolour(_embedcolour), premium(_premium), only_mods_stop(_only_mods_stop)
 {
 }
 

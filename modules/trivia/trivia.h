@@ -32,7 +32,8 @@ class guild_settings_t
 	uint32_t embedcolour;
 	std::vector<int64_t> moderator_roles;
 	bool premium;
-	guild_settings_t(int64_t _guild_id, const std::string &_prefix, const std::vector<int64_t> &_moderator_roles, uint32_t _embedcolour, bool _premium);
+	bool only_mods_stop;
+	guild_settings_t(int64_t _guild_id, const std::string &_prefix, const std::vector<int64_t> &_moderator_roles, uint32_t _embedcolour, bool _premium, bool _only_mods_stop);
 };
 
 #define TRIV_INTERVAL 20
