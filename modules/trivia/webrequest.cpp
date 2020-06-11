@@ -239,15 +239,15 @@ std::string get_rank(int64_t snowflake_id, int64_t guild_id)
 	return trim(fetch_page(fmt::format("?opt=rank&nick={}&guild_id={}", snowflake_id, guild_id)));
 }
 
-void change_streak(int64_t snowflake_id, int score)
+void change_streak(int64_t snowflake_id, int64_t guild_id, int score)
 {
-	fetch_page(fmt::format("?iot=changestreak&nick={}&score={}", snowflake_id, score));
+	fetch_page(fmt::format("?iot=changestreak&nick={}&score={}&guild_id={}", snowflake_id, score, guild_id));
 }
 
-streak_t get_streak(int64_t snowflake_id)
+streak_t get_streak(int64_t snowflake_id, int64_t guild_id)
 {
 	streak_t s;
-	std::vector<std::string> data = to_list(ReplaceString(fetch_page(fmt::format("?opt=getstreak&nick={}", snowflake_id)), "/", "\n"));
+	std::vector<std::string> data = to_list(ReplaceString(fetch_page(fmt::format("?opt=getstreak&nick={}&guild_id={}", snowflake_id, guild_id)), "/", "\n"));
 	if (data.size() == 3) {
 		s.personalbest = data[0].empty() ? 0 : from_string<int32_t>(data[0], std::dec);
 		s.topstreaker = data[1];

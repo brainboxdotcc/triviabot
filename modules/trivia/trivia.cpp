@@ -916,7 +916,7 @@ public:
 					/* Normal round */
 
 					/* Answer on channel is an exact match for the current answer and/or it is numeric, OR, it's non-numeric and has a levenstein distance near enough to the current answer (account for misspellings) */
-					if ((trivia_message.length() >= state->curr_answer.length() && lowercase(state->curr_answer) == lowercase(trivia_message)) || (!PCRE("^\\$(\\d+)$").Match(state->curr_answer) && !PCRE("^(\\d+)$").Match(state->curr_answer) && levenstein(trivia_message, state->curr_answer) < 2)) {
+					if (!state->curr_answer.empty() && ((trivia_message.length() >= state->curr_answer.length() && lowercase(state->curr_answer) == lowercase(trivia_message)) || (!PCRE("^\\$(\\d+)$").Match(state->curr_answer) && !PCRE("^(\\d+)$").Match(state->curr_answer) && levenstein(trivia_message, state->curr_answer) < 2))) {
 						/* Correct answer */
 						state->gamestate = TRIV_ANSWER_CORRECT;
 						time_t time_to_answer = time(NULL) - state->asktime;
@@ -945,9 +945,10 @@ public:
 							/* Amend current streak */
 							state->streak++;
 							ans_message.append(fmt::format("\n**{}** is on a streak! **{}** questions and counting", user.get_username(), state->streak));
-							streak_t s = get_streak(user.get_id().get());
+							streak_t s = get_streak(user.get_id().get(), state->guild_id);
 							if (state->streak > s.personalbest) {
 								ans_message.append(fmt::format(", and beat their personal best!"));
+								change_streak(user.get_id().get(), state->guild_id, state->streak);
 							} else {
 								ans_message.append(fmt::format(", but has some way to go yet before they beat their personal best of **{}**", s.personalbest));
 							}
@@ -984,7 +985,7 @@ public:
 			aegis::channel* c = bot->core.find_channel(msg.get_channel_id().get());
 			if (c) {
 
-				bot->core.log->info("CMD: {}", clean_message);
+				bot->core.log->info("CMD (USER={}, GUILD={}): <{}> {}", user.get_id().get(), c->get_guild().get_id().get(), user.get_username(), clean_message);
 
 				aegis::user::guild_info& gi = bot->core.find_user(user.get_id())->get_guild_info(c->get_guild().get_id());
 				cache_user(&user, &c->get_guild(), &gi);
@@ -1013,10 +1014,29 @@ public:
 							tokens >> questions;
 							bool quickfire = (subcommand == "quickfire");
 
+							if (!settings.premium) {
+								aegis::channel* c = bot->core.find_channel(msg.get_channel_id().get());
+								for (auto j = states.begin(); j != states.end(); ++j) {
+									if (j->second->guild_id == c->get_guild().get_id() && j->second->gamestate != TRIV_END) {
+										aegis::channel* active_channel = bot->core.find_channel(j->second->channel_id);
+										if (active_channel) {
+											EmbedWithFields(":warning: Can't start two rounds at once on one server!", {{"A round of trivia is already active", fmt::format("Please see <#{}> to join the game", c->get_id().get()), false},
+													{"Get TriviaBot Premium!", "If you want to do this, TriviaBot Premium lets you run as many concurrent games on the same server as you want. For more information please see the [TriviaBot Premium Page](https://triviabot.co.uk/premium/).", false}}, c->get_id().get());
+											return false;
+										}
+									}
+								}
+							}
+
 							if (!game_in_progress) {
-								if ((!quickfire && (questions < 5 || questions > 200)) || (quickfire && (questions < 5 || questions > 15))) {
+								int32_t max_quickfire = (settings.premium ? 200 : 15);
+								if ((!quickfire && (questions < 5 || questions > 200)) || (quickfire && (questions < 5 || questions > max_quickfire))) {
 									if (quickfire) {
-										SimpleEmbed(":warning:", fmt::format("**{}**, you can't create a quickfire trivia round of less than 5 or more than 15 questions!", user.get_username()), c->get_id().get());
+										if (questions > max_quickfire && !settings.premium) {
+											EmbedWithFields(":warning: Can't start a quickfire round of more than 15 questions", {{"Get TriviaBot Premium!", "If you want to do this, TriviaBot Premium lets you run quickfire rounds of up to 200 questions! For more information please see the [TriviaBot Premium Page](https://triviabot.co.uk/premium/).", false}}, c->get_id().get());
+										} else {
+											SimpleEmbed(":warning:", fmt::format("**{}**, you can't create a quickfire trivia round of less than 5 or more than {} questions!", user.get_username(), max_quickfire), c->get_id().get());
+										}
 									} else {
 										SimpleEmbed(":warning:", fmt::format("**{}**, you can't create a normal trivia round of less than 5 or more than 200 questions!", user.get_username()), c->get_id().get());
 									}
