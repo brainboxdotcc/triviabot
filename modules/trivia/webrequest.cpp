@@ -241,7 +241,7 @@ std::string get_rank(int64_t snowflake_id, int64_t guild_id)
 
 void change_streak(int64_t snowflake_id, int64_t guild_id, int score)
 {
-	fetch_page(fmt::format("?iot=changestreak&nick={}&score={}&guild_id={}", snowflake_id, score, guild_id));
+	fetch_page(fmt::format("?opt=changestreak&nick={}&score={}&guild_id={}", snowflake_id, score, guild_id));
 }
 
 streak_t get_streak(int64_t snowflake_id, int64_t guild_id)
