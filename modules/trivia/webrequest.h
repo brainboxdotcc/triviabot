@@ -6,7 +6,7 @@
 struct streak_t
 {
 	int32_t personalbest;
-	std::string topstreaker;
+	int64_t topstreaker;
 	int32_t bigstreak;
 };
 

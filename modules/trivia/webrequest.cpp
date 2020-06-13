@@ -250,12 +250,12 @@ streak_t get_streak(int64_t snowflake_id, int64_t guild_id)
 	std::vector<std::string> data = to_list(ReplaceString(fetch_page(fmt::format("?opt=getstreak&nick={}&guild_id={}", snowflake_id, guild_id)), "/", "\n"));
 	if (data.size() == 3) {
 		s.personalbest = data[0].empty() ? 0 : from_string<int32_t>(data[0], std::dec);
-		s.topstreaker = data[1];
+		s.topstreaker = data[1].empty() ? 0 : from_string<int64_t>(data[1], std::dec);
 		s.bigstreak = data[2].empty() ? 0 : from_string<int32_t>(data[2], std::dec);
 	} else {
 		/* Failed to retrieve correctly formatted data */
 		s.personalbest = 0;
-		s.topstreaker = "";
+		s.topstreaker = 0;
 		s.bigstreak = 99999999;
 	}
 	return s;

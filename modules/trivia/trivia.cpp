@@ -73,9 +73,9 @@ public:
 	{
 		aegis::guild* guild = bot->core.find_guild(guild_id);
 		if (guild == nullptr) {
-			return guild_settings_t(guild_id, "!", {}, 3238819, false, false, false, 0);
+			return guild_settings_t(guild_id, "!", {}, 3238819, false, false, false, 0, "");
 		} else {
-			db::resultset r = db::query("SELECT snowflake_id, prefix, embedcolour, moderator_roles, premium, only_mods_stop, role_reward_enabled, role_reward_id FROM bot_guild_settings WHERE snowflake_id = ?", {guild_id});
+			db::resultset r = db::query("SELECT * FROM bot_guild_settings WHERE snowflake_id = ?", {guild_id});
 			if (!r.empty()) {
 				std::stringstream s(r[0]["moderator_roles"]);
 				int64_t role_id;
@@ -83,10 +83,10 @@ public:
 				while ((s >> role_id)) {
 					role_list.push_back(role_id);
 				}
-				return guild_settings_t(from_string<int64_t>(r[0]["snowflake_id"], std::dec), r[0]["prefix"], role_list, from_string<uint32_t>(r[0]["embedcolour"], std::dec), (r[0]["premium"] == "1"), (r[0]["only_mods_stop"] == "1"), (r[0]["role_reward_enabled"] == "1"), from_string<int64_t>(r[0]["role_reward_id"], std::dec));
+				return guild_settings_t(from_string<int64_t>(r[0]["snowflake_id"], std::dec), r[0]["prefix"], role_list, from_string<uint32_t>(r[0]["embedcolour"], std::dec), (r[0]["premium"] == "1"), (r[0]["only_mods_stop"] == "1"), (r[0]["role_reward_enabled"] == "1"), from_string<int64_t>(r[0]["role_reward_id"], std::dec), r[0]["custom_url"]);
 			} else {
 				db::query("INSERT INTO bot_guild_settings (snowflake_id) VALUES('?')", {guild_id});
-				return guild_settings_t(guild_id, "!", {}, 3238819, false, false, false, 0);
+				return guild_settings_t(guild_id, "!", {}, 3238819, false, false, false, 0, "");
 			}
 		}
 	}
@@ -784,7 +784,12 @@ public:
 		}
 		aegis::channel* c = bot->core.find_channel(channel_id);
 		if (c) {
-			EmbedWithFields("Trivia Leaderboard", {{"Today's Top Ten", msg, false}, {"More information", fmt::format("[View server leaderboards](https://triviabot.co.uk/stats/{})\nDaily scores reset at midnight GMT.", guild_id), false}}, c->get_id().get());
+			guild_settings_t settings = GetGuildSettings(guild_id);
+			if (settings.premium && !settings.custom_url.empty()) {
+				EmbedWithFields("Trivia Leaderboard", {{"Today's Top Ten", msg, false}, {"More information", fmt::format("[View server leaderboards](https://triviabot.co.uk/stats/{})\nDaily scores reset at midnight GMT.", settings.custom_url), false}}, c->get_id().get());
+			} else {
+				EmbedWithFields("Trivia Leaderboard", {{"Today's Top Ten", msg, false}, {"More information", fmt::format("[View server leaderboards](https://triviabot.co.uk/stats/{})\nDaily scores reset at midnight GMT.", guild_id), false}}, c->get_id().get());
+			}
 		}
 	}
 
@@ -947,15 +952,13 @@ public:
 							ans_message.append(fmt::format("\n**{}** is on a streak! **{}** questions and counting", user.get_username(), state->streak));
 							streak_t s = get_streak(user.get_id().get(), state->guild_id);
 							if (state->streak > s.personalbest) {
-								ans_message.append(fmt::format(", and beat their personal best!"));
+								ans_message.append(fmt::format(", and has beaten their personal best!"));
 								change_streak(user.get_id().get(), state->guild_id, state->streak);
 							} else {
 								ans_message.append(fmt::format(", but has some way to go yet before they beat their personal best of **{}**", s.personalbest));
 							}
-							if (state->streak > s.bigstreak) {
-								if (is_number(s.topstreaker)) {
-									ans_message.append(fmt::format("\n**{}** just beat <@{}>'s record streak of {} answers!", user.get_username(), s.topstreaker, state->streak));
-								}
+							if (state->streak > s.bigstreak && s.topstreaker != user.get_id().get()) {
+								ans_message.append(fmt::format("\n**{}** just beat <@{}>'s record streak of {} answers!", user.get_username(), s.topstreaker, state->streak));
 							}
 						} else if (state->streak > 1 && !state->last_to_answer) {
 							ans_message.append(fmt::format("\n**{}** just ended <@{}>'s record streak of {} answers in a row!", user.get_username(), state->last_to_answer, state->streak));
@@ -1057,7 +1060,7 @@ public:
 									state->shuffle_list = sl;
 									state->gamestate = TRIV_ASK_QUESTION;
 									state->numquestions = questions + 1;
-									state->streak = 0;
+									state->streak = 1;
 									state->last_to_answer = 0;
 									state->round = 1;
 									state->interval = quickfire ? 5 : 20;
@@ -1217,8 +1220,8 @@ void state_t::tick()
 	}
 }
 
-guild_settings_t::guild_settings_t(int64_t _guild_id, const std::string &_prefix, const std::vector<int64_t> &_moderator_roles, uint32_t _embedcolour, bool _premium, bool _only_mods_stop, bool _role_reward_enabled, int64_t _role_reward_id)
-	: guild_id(_guild_id), prefix(_prefix), moderator_roles(_moderator_roles), embedcolour(_embedcolour), premium(_premium), only_mods_stop(_only_mods_stop), role_reward_enabled(_role_reward_enabled), role_reward_id(_role_reward_id)
+guild_settings_t::guild_settings_t(int64_t _guild_id, const std::string &_prefix, const std::vector<int64_t> &_moderator_roles, uint32_t _embedcolour, bool _premium, bool _only_mods_stop, bool _role_reward_enabled, int64_t _role_reward_id, const std::string &_custom_url)
+	: guild_id(_guild_id), prefix(_prefix), moderator_roles(_moderator_roles), embedcolour(_embedcolour), premium(_premium), only_mods_stop(_only_mods_stop), role_reward_enabled(_role_reward_enabled), role_reward_id(_role_reward_id), custom_url(_custom_url)
 {
 }
 
