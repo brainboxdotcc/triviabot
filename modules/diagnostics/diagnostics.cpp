@@ -197,18 +197,6 @@ public:
 								bot->sent_messages++;
 							}
 						}
-					} else if (lowercase(subcommand) == "lock") {
-						std::string keyword;
-						std::getline(tokens, keyword);
-						keyword = trim(keyword);
-						db::query("UPDATE infobot SET locked = 1 WHERE key_word = '?'", {keyword});
-						EmbedSimple("**Locked** key word: " + keyword, msg.get_channel_id().get());
-					} else if (lowercase(subcommand) == "unlock") {
-						std::string keyword;
-						std::getline(tokens, keyword);
-						keyword = trim(keyword);
-						db::query("UPDATE infobot SET locked = 0 WHERE key_word = '?'", {keyword});
-						EmbedSimple("**Unlocked** key word: " + keyword, msg.get_channel_id().get());
 					} else if (lowercase(subcommand) == "sql") {
 						std::string sql;
 						std::getline(tokens, sql);

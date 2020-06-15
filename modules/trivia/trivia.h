@@ -17,6 +17,7 @@ enum trivia_state_t
 	TRIV_END = 6
 };
 
+
 struct field_t
 {
 	std::string name;

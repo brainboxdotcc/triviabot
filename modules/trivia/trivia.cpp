@@ -45,11 +45,12 @@ class TriviaModule : public Module
 	std::map<int64_t, state_t*> states;
 	std::thread* presence_update;
 	bool terminating;
+	std::mutex states_mutex;
 public:
 	TriviaModule(Bot* instigator, ModuleLoader* ml) : Module(instigator, ml), terminating(false)
 	{
 		srand(time(NULL) * time(NULL));
-		ml->Attach({ I_OnMessage }, this);
+		ml->Attach({ I_OnMessage, I_OnPresenceUpdate, I_OnChannelDelete, I_OnGuildDelete }, this);
 		notvowel = new PCRE("/[^aeiou_]/", true);
 		number_tidy_dollars = new PCRE("^([\\d\\,]+)\\s+dollars$");
 		number_tidy_nodollars = new PCRE("^([\\d\\,]+)\\s+(.+?)$");
@@ -67,6 +68,64 @@ public:
 		delete number_tidy_nodollars;
 		delete number_tidy_positive;
 		delete number_tidy_negative;
+	}
+
+
+	virtual bool OnPresenceUpdate()
+	{
+		const aegis::shards::shard_mgr& s = bot->core.get_shard_mgr();
+		const std::vector<std::unique_ptr<aegis::shards::shard>>& shards = s.get_shards();
+		for (auto i = shards.begin(); i != shards.end(); ++i) {
+			const aegis::shards::shard* shard = i->get();
+			db::query("INSERT INTO infobot_shard_status (id, connected, online, uptime, transfer, transfer_compressed) VALUES('?','?','?','?','?','?') ON DUPLICATE KEY UPDATE connected = '?', online = '?', uptime = '?', transfer = '?', transfer_compressed = '?'",
+				{
+					shard->get_id(),
+					shard->is_connected(),
+					shard->is_online(),
+					shard->uptime(),
+					shard->get_transfer_u(),
+					shard->get_transfer(),
+					shard->is_connected(),
+					shard->is_online(),
+					shard->uptime(),
+					shard->get_transfer_u(),
+					shard->get_transfer()
+				}
+			);
+		}
+		return true;
+	}
+
+	virtual bool OnChannelDelete(const modevent::channel_delete cd)
+	{
+		bool one_deleted = false;
+		do {
+			std::lock_guard<std::mutex> user_cache_lock(states_mutex);
+			for (auto state = states.begin(); state != states.end(); ++state) {
+				if (state->second->channel_id == cd.channel.id.get()) {
+					auto s = state->second;
+					states.erase(state);
+					delete s;
+					one_deleted = true;
+					break;
+				}
+			}
+		} while (one_deleted);
+		return true;
+	}
+
+	virtual bool OnGuildDelete(const modevent::guild_delete gd)
+	{
+		std::lock_guard<std::mutex> user_cache_lock(states_mutex);
+		for (auto state = states.begin(); state != states.end(); ++state) {
+			if (state->second->guild_id = gd.guild_id.get()) {
+				auto s = state->second;
+				states.erase(state);
+				delete s;
+				break;
+			}
+		}
+		return true;
 	}
 
 	guild_settings_t GetGuildSettings(int64_t guild_id)
@@ -239,6 +298,7 @@ public:
 		while (!terminating) {
 			sleep(30);
 			int32_t questions = get_total_questions();
+			std::lock_guard<std::mutex> user_cache_lock(states_mutex);
 			bot->core.update_presence(fmt::format("Trivia! {} questions, {} active games on {} servers through {} shards", Comma(questions), Comma(states.size()), Comma(bot->core.get_guild_count()), Comma(bot->core.shard_max_count)), aegis::gateway::objects::activity::Game);
 		}
 	}
@@ -856,25 +916,28 @@ public:
 
 		/* Retrieve current state for channel, if there is no state object, no game is in progress */
 		int64_t channel_id = msg.get_channel_id().get();
-		auto state_iter = states.find(channel_id);
-
+		state_t* state = nullptr;
 		int64_t guild_id = 0;
+
 		aegis::channel* c = bot->core.find_channel(msg.get_channel_id().get());
 		if (c) {
 			guild_id = c->get_guild().get_id().get();
 		}
 		guild_settings_t settings = GetGuildSettings(guild_id);
 
-		state_t* state = nullptr;
-		if (state_iter != states.end()) {
-			state = state_iter->second;
-			/* Tombstoned session */
-			if (state->terminating) {
-				delete state;
-				states.erase(state_iter);
-				state = nullptr;
-			} else {
-				game_in_progress = true;
+		{
+			std::lock_guard<std::mutex> user_cache_lock(states_mutex);
+			auto state_iter = states.find(channel_id);
+			if (state_iter != states.end()) {
+				state = state_iter->second;
+				/* Tombstoned session */
+				if (state->terminating) {
+					delete state;
+					states.erase(state_iter);
+					state = nullptr;
+				} else {
+					game_in_progress = true;
+				}
 			}
 		}
 
@@ -937,7 +1000,7 @@ public:
 							submit_time = time_to_answer;
 						}
 						int32_t newscore = update_score(user.get_id().get(), state->guild_id, submit_time, state->curr_qid, score);
-						ans_message.append(fmt::format("\n**{}**'s score is now **{}**.", user.get_username(), newscore));
+						ans_message.append(fmt::format("\n**{}**'s score is now **{}**.", user.get_username(), newscore ? newscore : score));
 
 						std::string teamname = get_current_team(user.get_id().get());
 						if (!empty(teamname) && teamname != "!NOTEAM") {
@@ -1019,6 +1082,7 @@ public:
 
 							if (!settings.premium) {
 								aegis::channel* c = bot->core.find_channel(msg.get_channel_id().get());
+								std::lock_guard<std::mutex> user_cache_lock(states_mutex);
 								for (auto j = states.begin(); j != states.end(); ++j) {
 									if (j->second->guild_id == c->get_guild().get_id() && j->second->gamestate != TRIV_END) {
 										aegis::channel* active_channel = bot->core.find_channel(j->second->channel_id);
@@ -1053,9 +1117,7 @@ public:
 										SimpleEmbed(":warning:", fmt::format("**{}**, something spoopy happened. Please try again in a couple of minutes!", user.get_username()), c->get_id().get(), "That wasn't supposed to happen...");
 									return false;
 								} else  {
-
 									state = new state_t(this);
-									states[channel_id] = state;
 									state->start_time = time(NULL);
 									state->shuffle_list = sl;
 									state->gamestate = TRIV_ASK_QUESTION;
@@ -1065,10 +1127,16 @@ public:
 									state->round = 1;
 									state->interval = quickfire ? 5 : 20;
 									state->channel_id = channel_id;
+									state->curr_qid = 0;
+									state->curr_answer = "";
 									aegis::channel* c = bot->core.find_channel(msg.get_channel_id().get());
+									{
+										std::lock_guard<std::mutex> user_cache_lock(states_mutex);
+										states[channel_id] = state;
+									}
 									if (c) {
 										state->guild_id = c->get_guild().get_id();
-										bot->core.log->info("Started game on guild {}, channel {}, {} questions [{}]", state->guild_id, channel_id, questions + 1, quickfire ? "quickfire" : "normal");
+										bot->core.log->info("Started game on guild {}, channel {}, {} questions [{}]", state->guild_id, channel_id, questions, quickfire ? "quickfire" : "normal");
 
 										EmbedWithFields(fmt::format(":question: New {}trivia round started by {}!", (quickfire ? "**QUICKFIRE** " : ""), user.get_username()), {{"Questions", fmt::format("{}", questions), false}, {"Get Ready", "First question coming up!", false}}, c->get_id().get());
 										state->timer = new std::thread(&state_t::tick, state);
@@ -1090,7 +1158,10 @@ public:
 									}
 								}
 								SimpleEmbed(":octagonal_sign:", fmt::format("**{}** has stopped the round of trivia!", user.get_username()), c->get_id().get());
-								states.erase(states.find(channel_id));
+								{
+									std::lock_guard<std::mutex> user_cache_lock(states_mutex);
+									states.erase(states.find(channel_id));
+								}
 								delete state;
 							} else {
 								SimpleEmbed(":warning:", fmt::format("No trivia round is running here, **{}**!", user.get_username()), c->get_id().get());
@@ -1100,6 +1171,53 @@ public:
 							SimpleEmbed(":bar_chart:", get_rank(user.get_id().get(), c->get_guild().get_id().get()), c->get_id().get());
 						} else if (subcommand == "stats") {
 							show_stats(c->get_guild().get_id(), channel_id);
+						} else if (subcommand == "active") {
+							db::resultset rs = db::query("SELECT * FROM trivia_access WHERE user_id = ? AND enabled = 1", {user.get_id().get()});
+							if (rs.size() > 0) {
+								std::stringstream w;
+								w << "```diff\n";
+								int32_t state_id = 0;
+
+								const std::vector<std::string> state_name = {
+									"<unknown>",
+									"ASK_QUES",
+									"1ST_HINT",
+									"2ND_HINT",
+									"TIME_UP",
+									"ANS_RIGHT",
+									"END"
+								};
+
+								w << fmt::format("- ╭──────┬──────────┬──────────────────┬──────────────────┬────────────────────┬────────────┬───────┬────────────╮\n");
+								w << fmt::format("- │state#│game state│guild_id          │channel_id        │start time          │# questions │type   │question_id │\n");
+								w << fmt::format("- ├──────┼──────────┼──────────────────┼──────────────────┼────────────────────┼────────────┼───────┼────────────┤\n");
+
+								for (auto s = states.begin(); s != states.end(); ++s) {
+									state_t* st = s->second;
+									char timestamp[255];
+									tm _tm;
+									gmtime_r(&st->start_time, &_tm);
+									strftime(timestamp, sizeof(timestamp), "%H:%M:%S %d-%b-%Y", &_tm);
+
+									w << fmt::format("+ |{:6}|{:10}|{:11}|{:12}|{:>16}|{:12}|{:7}|{:12}|\n",
+										 state_id++,
+										 state_name[st->gamestate],
+										 st->guild_id,
+										 st->channel_id,
+										 timestamp,
+										 st->numquestions - 1,
+										 (st->interval == 20 ? "normal" : "quick"),
+										 st->curr_qid);
+								}
+
+								w << fmt::format("+ ╰──────┴──────────┴──────────────────┴──────────────────┴────────────────────┴────────────┴───────┴────────────╯\n");
+								w << "```";
+								c->create_message(w.str());
+								bot->sent_messages++;
+
+							} else {
+								SimpleEmbed(":warning:", fmt::format("**{}**, this command is restricted to the bot administration team only", user.get_username()), c->get_id().get());
+							}
 						} else if (subcommand == "join") {
 							std::string teamname;
 							tokens >> teamname;
