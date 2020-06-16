@@ -1190,7 +1190,7 @@ public:
 								SimpleEmbed(":warning:", fmt::format("No trivia round is running here, **{}**!", user.get_username()), c->get_id().get());
 							}
 							return false;
-						} else if (subcommand == "votehint" || subcommand = "vh") {
+						} else if (subcommand == "votehint" || subcommand == "vh") {
 							if (game_in_progress) {
 								if ((state->gamestate == TRIV_FIRST_HINT || state->gamestate == TRIV_SECOND_HINT || state->gamestate == TRIV_TIME_UP) && (state->round % 10) != 0 && state->curr_answer != "") {
 									db::resultset rs = db::query("SELECT *,(unix_timestamp(vote_time) + 43200 - unix_timestamp()) as remaining FROM infobot_votes WHERE snowflake_id = ? AND now() < vote_time + interval 12 hour", {user.get_id().get()});
