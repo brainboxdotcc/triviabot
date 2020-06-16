@@ -1190,6 +1190,45 @@ public:
 								SimpleEmbed(":warning:", fmt::format("No trivia round is running here, **{}**!", user.get_username()), c->get_id().get());
 							}
 							return false;
+						} else if (subcommand == "votehint" || subcommand = "vh") {
+							if (game_in_progress) {
+								if ((state->gamestate == TRIV_FIRST_HINT || state->gamestate == TRIV_SECOND_HINT || state->gamestate == TRIV_TIME_UP) && (state->round % 10) != 0 && state->curr_answer != "") {
+									db::resultset rs = db::query("SELECT *,(unix_timestamp(vote_time) + 43200 - unix_timestamp()) as remaining FROM infobot_votes WHERE snowflake_id = ? AND now() < vote_time + interval 12 hour", {user.get_id().get()});
+									if (rs.size() == 0) {
+										SimpleEmbed("<:wc_rs:667695516737470494>", "You haven't voted for the bot today! Vote for the bot every 12 hours to get eight uses of command, which delivers a personal hint for the current question to you via direct message.", c->get_id().get());
+										return false;
+									} else {
+										int64_t remaining_hints = from_string<int64_t>(rs[0]["dm_hints"], std::dec);
+										int32_t secs = from_string<int32_t>(rs[0]["remaining"], std::dec);
+										int32_t mins = secs / 60 % 60;
+										float hours = floor(secs / 60 / 60);
+										if (remaining_hints < 1) {
+											SimpleEmbed(":warning:", fmt::format("You are out of voter hints, **{}**!\n[Vote again](https://top.gg/bot/{}/vote) in **{} hours and {} minutes** to get eight uses of this command, which delivers a personal hint for the current question to you via direct message.", user.get_username(), bot->user.id.get(), hours, mins), c->get_id().get());
+										} else {
+											remaining_hints--;
+											if (remaining_hints > 0) {
+												SimpleEmbed(":white_check_mark:", fmt::format("**{}**, i've sent you a hint via DM!\nYou have **{}** voter hint(s) remaining which expire in **{} hours and {} minutes**.", user.get_username(), remaining_hints, hours, mins), c->get_id().get());
+											} else {
+												SimpleEmbed(":white_check_mark:", fmt::format("**{}**, i've sent you a hint via DM!\nYou have **NO MORE** voter hints remaining and can vote again in **{} hours and {} minutes**.", user.get_username(), hours, mins), c->get_id().get());
+											}
+											std::string personal_hint = state->curr_answer;
+											personal_hint = lowercase(personal_hint);
+											personal_hint[0] = '#';
+											personal_hint[personal_hint.length() - 1] = '#';
+											personal_hint = ReplaceString(personal_hint, " ", "#");
+											bot->core.create_dm_message(user.get_id().get(), fmt::format("Your personal hint is:\n**{}**", personal_hint));
+											db::query("UPDATE infobot_votes SET dm_hints = ? WHERE snowflake_id = ?", {remaining_hints, user.get_id().get()});
+											return false;
+										}
+									}
+								} else {
+									SimpleEmbed(":warning:", fmt::format("You should probaly wait until a non-insane round question is being asked, **{}**!", user.get_username()), c->get_id().get());
+									return false;
+								}
+							} else {
+								SimpleEmbed(":warning:", fmt::format("No trivia round is running here, **{}**!\n[Vote for the bot every 12 hours](https://top.gg/bot/{}/vote) to get eight uses of command, which delivers a personal hint for the current question to you via direct message.", user.get_username(), bot->user.id.get()), c->get_id().get());
+								return false;
+							}
 						} else if (subcommand == "rank") {
 							SimpleEmbed(":bar_chart:", get_rank(user.get_id().get(), c->get_guild().get_id().get()), c->get_id().get());
 						} else if (subcommand == "stats") {
