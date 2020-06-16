@@ -42,10 +42,12 @@ class TriviaModule : public Module
 	PCRE* number_tidy_nodollars;
 	PCRE* number_tidy_positive;
 	PCRE* number_tidy_negative;
+	PCRE* prefix_match;
 	std::map<int64_t, state_t*> states;
 	std::thread* presence_update;
 	bool terminating;
 	std::mutex states_mutex;
+	time_t startup;
 public:
 	TriviaModule(Bot* instigator, ModuleLoader* ml) : Module(instigator, ml), terminating(false)
 	{
@@ -56,18 +58,24 @@ public:
 		number_tidy_nodollars = new PCRE("^([\\d\\,]+)\\s+(.+?)$");
 		number_tidy_positive = new PCRE("^[\\d\\,]+$");
 		number_tidy_negative = new PCRE("^\\-[\\d\\,]+$");
+		prefix_match = new PCRE("prefix");
 		set_io_context(bot->io, Bot::GetConfig("apikey"));
 		presence_update = new std::thread(&TriviaModule::UpdatePresenceLine, this);
+		startup = time(NULL);
 	}
 
 	virtual ~TriviaModule()
 	{
 		DisposeThread(presence_update);
+		for (auto state = states.begin(); state != states.end(); ++state) {
+			delete state->second;
+		}
 		delete notvowel;
 		delete number_tidy_dollars;
 		delete number_tidy_nodollars;
 		delete number_tidy_positive;
 		delete number_tidy_negative;
+		delete prefix_match;
 	}
 
 
@@ -951,6 +959,11 @@ public:
 			}
 		}
 
+		if (mentioned && prefix_match->Match(clean_message)) {
+			c->create_message("My prefix on this server is ``" + settings.prefix + "``. Type ``" + settings.prefix + "help`` for help.");
+			return false;
+		}
+
 		if (game_in_progress) {
 			if (state->gamestate == TRIV_ASK_QUESTION || state->gamestate == TRIV_FIRST_HINT || state->gamestate == TRIV_SECOND_HINT || state->gamestate == TRIV_TIME_UP) {
 				
@@ -1171,6 +1184,65 @@ public:
 							SimpleEmbed(":bar_chart:", get_rank(user.get_id().get(), c->get_guild().get_id().get()), c->get_id().get());
 						} else if (subcommand == "stats") {
 							show_stats(c->get_guild().get_id(), channel_id);
+						} else if (subcommand == "info") {
+							std::stringstream s;
+							time_t diff = bot->core.uptime() / 1000;
+							int seconds = diff % 60;
+							diff /= 60;
+							int minutes = diff % 60;
+							diff /= 60;
+							int hours = diff % 24;
+							diff /= 24;
+							int days = diff;
+							int64_t servers = bot->core.get_guild_count();
+							int64_t users = bot->core.get_member_count();
+							char uptime[32];
+							snprintf(uptime, 32, "%d day%s, %02d:%02d:%02d", days, (days != 1 ? "s" : ""), hours, minutes, seconds);
+							char startstr[256];
+							tm _tm;
+							gmtime_r(&startup, &_tm);
+							strftime(startstr, 255, "%x, %I:%M%p", &_tm);
+
+							std::lock_guard<std::mutex> user_cache_lock(states_mutex);
+							const statusfield statusfields[] = {
+								statusfield("Active Games", Comma(states.size())),
+								statusfield("Total Servers", Comma(servers)),
+								statusfield("Connected Since", startstr),
+								statusfield("Online Users", Comma(users)),
+								statusfield("Uptime", std::string(uptime)),
+								statusfield("Shards", Comma(bot->core.shard_max_count)),
+								statusfield("Member Intent", bot->HasMemberIntents() ? ":white_check_mark: Yes" : "<:wc_rs:667695516737470494> No"),
+								statusfield("Test Mode", bot->IsTestMode() ? ":white_check_mark: Yes" : "<:wc_rs:667695516737470494> No"),
+								statusfield("Developer Mode", bot->IsDevMode() ? ":white_check_mark: Yes" : "<:wc_rs:667695516737470494> No"),
+								statusfield("Prefix", "``" + escape_json(settings.prefix) + "``"),
+								statusfield("Bot Version", std::string(TRIVIA_VERSION)),
+								statusfield("Library Version", std::string(AEGIS_VERSION_TEXT)),
+								statusfield("", "")
+							};
+
+							s << "{\"title\":\"" << bot->user.username << " Information";
+							s << "\",\"color\":" << settings.embedcolour << ",\"url\":\"https:\\/\\/triviabot.co.uk\\/\\/\",";
+							s << "\"footer\":{\"link\":\"https:\\/\\/triviabot.co.uk\\/\",\"text\":\"Powered by TriviaBot!\",\"icon_url\":\"https:\\/\\/triviabot.co.uk\\/images\\/triviabot_tl_icon.png\"},\"fields\":[";
+							for (int i = 0; statusfields[i].name != ""; ++i) {
+								s << "{\"name\":\"" +  statusfields[i].name + "\",\"value\":\"" + statusfields[i].value + "\", \"inline\": true}";
+								if (statusfields[i + 1].name != "") {
+									s << ",";
+								}
+							}
+
+							s << "],\"description\":\"" << (settings.premium ? ":star: This server has TriviaBot Premium! They rock! :star:" : "") << "\"}";
+
+							json embed_json;
+							try {
+								embed_json = json::parse(s.str());
+							}
+							catch (const std::exception &e) {
+								bot->core.log->error("Malformed json created when reporting info: {}", s.str());
+							}
+							if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == c->get_guild().get_id()) {
+								c->create_message_embed("", embed_json);
+								bot->sent_messages++;
+							}
 						} else if (subcommand == "active") {
 							db::resultset rs = db::query("SELECT * FROM trivia_access WHERE user_id = ? AND enabled = 1", {user.get_id().get()});
 							if (rs.size() > 0) {
@@ -1192,22 +1264,28 @@ public:
 								w << fmt::format("- │state#│game state│guild_id          │channel_id        │start time          │# questions │type   │question_id │\n");
 								w << fmt::format("- ├──────┼──────────┼──────────────────┼──────────────────┼────────────────────┼────────────┼───────┼────────────┤\n");
 
-								for (auto s = states.begin(); s != states.end(); ++s) {
-									state_t* st = s->second;
-									char timestamp[255];
-									tm _tm;
-									gmtime_r(&st->start_time, &_tm);
-									strftime(timestamp, sizeof(timestamp), "%H:%M:%S %d-%b-%Y", &_tm);
-
-									w << fmt::format("+ |{:6}|{:10}|{:11}|{:12}|{:>16}|{:12}|{:7}|{:12}|\n",
-										 state_id++,
-										 state_name[st->gamestate],
-										 st->guild_id,
-										 st->channel_id,
-										 timestamp,
-										 st->numquestions - 1,
-										 (st->interval == 20 ? "normal" : "quick"),
-										 st->curr_qid);
+								{
+									std::lock_guard<std::mutex> user_cache_lock(states_mutex);
+									for (auto s = states.begin(); s != states.end(); ++s) {
+										state_t* st = s->second;
+										if (st->gamestate == TRIV_END) {
+											continue;
+										}
+										char timestamp[255];
+										tm _tm;
+										gmtime_r(&st->start_time, &_tm);
+										strftime(timestamp, sizeof(timestamp), "%H:%M:%S %d-%b-%Y", &_tm);
+	
+										w << fmt::format("+ |{:6}|{:10}|{:11}|{:12}|{:>16}|{:12}|{:7}|{:12}|\n",
+											 state_id++,
+											 state_name[st->gamestate],
+											 st->guild_id,
+											 st->channel_id,
+											 timestamp,
+											 st->numquestions - 1,
+											 (st->interval == 20 ? "normal" : "quick"),
+											 st->curr_qid);
+									}
 								}
 
 								w << fmt::format("+ ╰──────┴──────────┴──────────────────┴──────────────────┴────────────────────┴────────────┴───────┴────────────╯\n");

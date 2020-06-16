@@ -4,6 +4,8 @@
 #include <map>
 #include <vector>
 
+#define TRIVIA_VERSION "1.0.0"
+
 typedef std::map<int64_t, int64_t> teamlist_t;
 typedef std::map<int64_t, std::string> numstrs_t;
 
