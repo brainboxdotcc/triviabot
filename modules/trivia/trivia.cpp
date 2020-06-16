@@ -1093,8 +1093,20 @@ public:
 							tokens >> questions;
 							bool quickfire = (subcommand == "quickfire");
 
+							json document;
+							std::ifstream configfile("../config.json");
+							configfile >> document;
+							json shitlist = document["shitlist"];
+							aegis::channel* c = bot->core.find_channel(msg.get_channel_id().get());
+							for (auto entry = shitlist.begin(); entry != shitlist.end(); ++entry) {
+								int64_t sl_guild_id = from_string<int64_t>(entry->get<std::string>(), std::dec);
+						                if (c->get_guild().get_id().get() == sl_guild_id) {
+									SimpleEmbed(":warning:", fmt::format("**{}**, you can't start a round of trivia here, as the bot owner has explicitly blocked games from being started on this server.\nIf you want to start a round of trivia, first [invite the bot](https://discord.com/oauth2/authorize?client_id={}&scope=bot+identify&permissions=268848192&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code) to your own server!", user.get_username(), bot->user.id.get()), c->get_id().get());
+									return false;
+								}
+						        }
+
 							if (!settings.premium) {
-								aegis::channel* c = bot->core.find_channel(msg.get_channel_id().get());
 								std::lock_guard<std::mutex> user_cache_lock(states_mutex);
 								for (auto j = states.begin(); j != states.end(); ++j) {
 									if (j->second->guild_id == c->get_guild().get_id() && j->second->gamestate != TRIV_END) {
@@ -1125,9 +1137,7 @@ public:
 
 								std::vector<std::string> sl = fetch_shuffle_list();
 								if (sl.size() < 50) {
-									aegis::channel* c = bot->core.find_channel(msg.get_channel_id().get());
-									if (c)
-										SimpleEmbed(":warning:", fmt::format("**{}**, something spoopy happened. Please try again in a couple of minutes!", user.get_username()), c->get_id().get(), "That wasn't supposed to happen...");
+									SimpleEmbed(":warning:", fmt::format("**{}**, something spoopy happened. Please try again in a couple of minutes!", user.get_username()), c->get_id().get(), "That wasn't supposed to happen...");
 									return false;
 								} else  {
 									state = new state_t(this);
