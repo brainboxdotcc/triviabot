@@ -1280,7 +1280,7 @@ public:
 								if ((state->gamestate == TRIV_FIRST_HINT || state->gamestate == TRIV_SECOND_HINT || state->gamestate == TRIV_TIME_UP) && (state->round % 10) != 0 && state->curr_answer != "") {
 									db::resultset rs = db::query("SELECT *,(unix_timestamp(vote_time) + 43200 - unix_timestamp()) as remaining FROM infobot_votes WHERE snowflake_id = ? AND now() < vote_time + interval 12 hour", {user.get_id().get()});
 									if (rs.size() == 0) {
-										SimpleEmbed("<:wc_rs:667695516737470494>", "You haven't voted for the bot today! Vote for the bot every 12 hours to get eight uses of command, which delivers a personal hint for the current question to you via direct message.", c->get_id().get());
+										SimpleEmbed("<:wc_rs:667695516737470494>", "You haven't voted for the bot today!\n[Vote for the bot every 12 hours](https://top.gg/bot/{}/vote) to get eight uses of command, which delivers a personal hint for the current question to you via direct message.", c->get_id().get());
 										return false;
 									} else {
 										int64_t remaining_hints = from_string<int64_t>(rs[0]["dm_hints"], std::dec);
