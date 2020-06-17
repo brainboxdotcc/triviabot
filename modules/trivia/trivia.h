@@ -6,6 +6,13 @@
 
 #define TRIVIA_VERSION "1.0.0"
 
+// Number of seconds after which a game is considered hung and its thread exits.
+// This can happen if a game gets lost in a discord gateway outage (!)
+#define GAME_REAP_SECS 20000
+
+// Number of seconds between states in a normal round. Quickfire is 0.25 of this.
+#define TRIV_INTERVAL 20
+
 typedef std::map<int64_t, int64_t> teamlist_t;
 typedef std::map<int64_t, std::string> numstrs_t;
 
@@ -41,8 +48,6 @@ class guild_settings_t
 	std::string custom_url;
 	guild_settings_t(int64_t _guild_id, const std::string &_prefix, const std::vector<int64_t> &_moderator_roles, uint32_t _embedcolour, bool _premium, bool _only_mods_stop, bool _role_reward_enabled, int64_t _role_reward_id, const std::string &_custom_url);
 };
-
-#define TRIV_INTERVAL 20
 
 class state_t
 {

@@ -1,8 +1,10 @@
 /************************************************************************************
  * 
- * Sporks, the learning, scriptable Discord bot!
+ * TriviaBot, The trivia bot for discord based on Fruitloopy Trivia for ChatSpike IRC
  *
- * Copyright 2019 Craig Edwards <support@sporks.gg>
+ * Copyright 2020 Craig Edwards <support@brainbox.cc>
+ *
+ * Core based on Sporks, the Learning Discord Bot, Craig Edwards (c) 2019.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,9 +69,11 @@ public:
 	virtual ~TriviaModule()
 	{
 		DisposeThread(presence_update);
+		std::lock_guard<std::mutex> user_cache_lock(states_mutex);
 		for (auto state = states.begin(); state != states.end(); ++state) {
 			delete state->second;
 		}
+		states.clear();
 		delete notvowel;
 		delete number_tidy_dollars;
 		delete number_tidy_nodollars;
@@ -134,6 +138,18 @@ public:
 			}
 		}
 		return true;
+	}
+
+	int64_t GetActiveGames()
+	{
+		int64_t a = 0;
+		std::lock_guard<std::mutex> user_cache_lock(states_mutex);
+		for (auto state = states.begin(); state != states.end(); ++state) {
+			if (state->second->gamestate != TRIV_END) {
+				++a;
+			}
+		}
+		return a;
 	}
 
 	guild_settings_t GetGuildSettings(int64_t guild_id)
@@ -306,8 +322,7 @@ public:
 		while (!terminating) {
 			sleep(30);
 			int32_t questions = get_total_questions();
-			std::lock_guard<std::mutex> user_cache_lock(states_mutex);
-			bot->core.update_presence(fmt::format("Trivia! {} questions, {} active games on {} servers through {} shards", Comma(questions), Comma(states.size()), Comma(bot->core.get_guild_count()), Comma(bot->core.shard_max_count)), aegis::gateway::objects::activity::Game);
+			bot->core.update_presence(fmt::format("Trivia! {} questions, {} active games on {} servers through {} shards", Comma(questions), Comma(GetActiveGames()), Comma(bot->core.get_guild_count()), Comma(bot->core.shard_max_count)), aegis::gateway::objects::activity::Game);
 		}
 	}
 
@@ -727,7 +742,7 @@ public:
 				 bot->core.log->warn("do_normal_round(): Channel {} was deleted", state->channel_id);
 			}
 
-			state->score = (state->interval == 20 ? 4 : 8);
+			state->score = (state->interval == TRIV_INTERVAL ? 4 : 8);
 
 			/* Advance state to first hint */
 			state->gamestate = TRIV_FIRST_HINT;
@@ -749,7 +764,7 @@ public:
 			 bot->core.log->warn("do_first_hint(): Channel {} was deleted", state->channel_id);
 		}
 		state->gamestate = TRIV_SECOND_HINT;
-		state->score = (state->interval == 20 ? 2 : 4);
+		state->score = (state->interval == TRIV_INTERVAL ? 2 : 4);
 	}
 
 	void do_second_hint(state_t* state)
@@ -767,7 +782,7 @@ public:
 			 bot->core.log->warn("do_second_hint: Channel {} was deleted", state->channel_id);
 		}
 		state->gamestate = TRIV_TIME_UP;
-		state->score = (state->interval == 20 ? 1 : 2);
+		state->score = (state->interval == TRIV_INTERVAL ? 1 : 2);
 	}
 
 	void do_time_up(state_t* state)
@@ -845,7 +860,11 @@ public:
 			score >> points;
 			score >> snowflake_id;
 			aegis::user* u = bot->core.find_user(snowflake_id);
-			msg.append(fmt::format("{}. **{}** ({})\n", count++, u->get_full_name(), points));
+			if (u) {
+				msg.append(fmt::format("{}. **{}** ({})\n", count++, u->get_full_name(), points));
+			} else {
+				msg.append(fmt::format("{}. **Deleted User#0000** ({})\n", count++, points));
+			}
 		}
 		if (msg.empty()) {
 			msg = "Nobody has played here today! :cry:";
@@ -866,39 +885,33 @@ public:
 		if (state->terminating) {
 			return;
 		}
-		aegis::channel* c = bot->core.find_channel(state->channel_id);
-		if (c) {
-			switch (state->gamestate) {
-				case TRIV_ASK_QUESTION:
-					if (state->round % 10 == 0) {
-						do_insane_round(state);
-					} else {
-						do_normal_round(state);
-					}
-				break;
-				case TRIV_FIRST_HINT:
-					do_first_hint(state);
-				break;
-				case TRIV_SECOND_HINT:
-					do_second_hint(state);
-				break;
-				case TRIV_TIME_UP:
-					do_time_up(state);
-				break;
-				case TRIV_ANSWER_CORRECT:
-					do_answer_correct(state);
-				break;
-				case TRIV_END:
-					do_end_game(state);
-				break;
-				default:
-					c->create_message(fmt::format("Invalid state '{}', ending round.", state->gamestate));
-					state->terminating = true;
-				break;
-			}
-		} else {
-			bot->core.log->warn("Tick(): Channel {} was deleted", state->channel_id);
-			state->terminating = true;
+		switch (state->gamestate) {
+			case TRIV_ASK_QUESTION:
+				if (state->round % 10 == 0) {
+					do_insane_round(state);
+				} else {
+					do_normal_round(state);
+				}
+			break;
+			case TRIV_FIRST_HINT:
+				do_first_hint(state);
+			break;
+			case TRIV_SECOND_HINT:
+				do_second_hint(state);
+			break;
+			case TRIV_TIME_UP:
+				do_time_up(state);
+			break;
+			case TRIV_ANSWER_CORRECT:
+				do_answer_correct(state);
+			break;
+			case TRIV_END:
+				do_end_game(state);
+			break;
+			default:
+				bot->core.log->warn("Invalid state '{}', ending round.", state->gamestate);
+				state->terminating = true;
+			break;
 		}
 	}
 
@@ -1112,7 +1125,7 @@ public:
 									if (j->second->guild_id == c->get_guild().get_id() && j->second->gamestate != TRIV_END) {
 										aegis::channel* active_channel = bot->core.find_channel(j->second->channel_id);
 										if (active_channel) {
-											EmbedWithFields(":warning: Can't start two rounds at once on one server!", {{"A round of trivia is already active", fmt::format("Please see <#{}> to join the game", c->get_id().get()), false},
+											EmbedWithFields(":warning: Can't start two rounds at once on one server!", {{"A round of trivia is already active", fmt::format("Please see <#{}> to join the game", active_channel->get_id().get()), false},
 													{"Get TriviaBot Premium!", "If you want to do this, TriviaBot Premium lets you run as many concurrent games on the same server as you want. For more information please see the [TriviaBot Premium Page](https://triviabot.co.uk/premium/).", false}}, c->get_id().get());
 											return false;
 										}
@@ -1148,7 +1161,7 @@ public:
 									state->streak = 1;
 									state->last_to_answer = 0;
 									state->round = 1;
-									state->interval = quickfire ? 5 : 20;
+									state->interval = (quickfire ? (TRIV_INTERVAL / 4) : TRIV_INTERVAL);
 									state->channel_id = channel_id;
 									state->curr_qid = 0;
 									state->curr_answer = "";
@@ -1252,9 +1265,8 @@ public:
 							gmtime_r(&startup, &_tm);
 							strftime(startstr, 255, "%x, %I:%M%p", &_tm);
 
-							std::lock_guard<std::mutex> user_cache_lock(states_mutex);
 							const statusfield statusfields[] = {
-								statusfield("Active Games", Comma(states.size())),
+								statusfield("Active Games", Comma(GetActiveGames())),
 								statusfield("Total Servers", Comma(servers)),
 								statusfield("Connected Since", startstr),
 								statusfield("Online Users", Comma(users)),
@@ -1325,15 +1337,7 @@ public:
 										gmtime_r(&st->start_time, &_tm);
 										strftime(timestamp, sizeof(timestamp), "%H:%M:%S %d-%b-%Y", &_tm);
 	
-										w << fmt::format("+ |{:6}|{:10}|{:11}|{:12}|{:>16}|{:12}|{:7}|{:12}|\n",
-											 state_id++,
-											 state_name[st->gamestate],
-											 st->guild_id,
-											 st->channel_id,
-											 timestamp,
-											 st->numquestions - 1,
-											 (st->interval == 20 ? "normal" : "quick"),
-											 st->curr_qid);
+										w << fmt::format("+ |{:6}|{:10}|{:11}|{:12}|{:>16}|{:12}|{:7}|{:12}|\n", state_id++, state_name[st->gamestate], st->guild_id, st->channel_id, timestamp, fmt::format("{}/{}", st->round, st->numquestions - 1), (st->interval == TRIV_INTERVAL ? "normal" : "quick"), st->curr_qid);
 									}
 								}
 
@@ -1462,6 +1466,11 @@ void state_t::tick()
 	while (!terminating) {
 		sleep(this->interval);
 		creator->Tick(this);
+		int64_t game_length = time(NULL) - start_time;
+		if (game_length >= GAME_REAP_SECS) {
+			terminating = true;
+			gamestate = TRIV_END;
+		}
 	}
 }
 
