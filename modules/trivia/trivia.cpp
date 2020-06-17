@@ -1275,6 +1275,8 @@ public:
 								SimpleEmbed(":warning:", fmt::format("No trivia round is running here, **{}**!", user.get_username()), c->get_id().get());
 							}
 							return false;
+						} else if (subcommand == "vote") {
+							SimpleEmbed("<:wc_rs:667695516737470494>", "**Get Private Hints By Voting**\n[Vote for the bot every 12 hours](https://top.gg/bot/{}/vote) to get eight uses of command, which gives you a personal hint via direct message!", c->get_id().get());
 						} else if (subcommand == "votehint" || subcommand == "vh") {
 							if (game_in_progress) {
 								if ((state->gamestate == TRIV_FIRST_HINT || state->gamestate == TRIV_SECOND_HINT || state->gamestate == TRIV_TIME_UP) && (state->round % 10) != 0 && state->curr_answer != "") {
