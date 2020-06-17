@@ -52,7 +52,7 @@ $payload = [
 	'format' => 'json',
 	'logs' => '0',
 	'types' => '5',
-	'search' => 'Discord Bot Shard ',
+	'search' => 'TriviaBot Shard ',
 ];
 $context = [
 	'http' => [
@@ -65,7 +65,7 @@ $context = [
 $response = @file_get_contents("https://api.uptimerobot.com/v2/getMonitors", false, stream_context_create($context));
 $monitors = json_decode($response);
 foreach($monitors->monitors as $monitor) {
-	if (preg_match("/^Discord Bot Shard (\d+)$/", $monitor->friendly_name, $m)) {
+	if (preg_match("/^TriviaBot Shard (\d+)$/", $monitor->friendly_name, $m)) {
 		$shard_id = $m[1];
 		$url = $monitor->url;
 		$shardinfo = mysqli_fetch_object(mysqli_query($conn, "SELECT * FROM infobot_shard_status WHERE id = " . mysqli_real_escape_string($conn, $m[1])));

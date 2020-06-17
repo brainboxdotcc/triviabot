@@ -984,6 +984,11 @@ public:
 		std::vector<std::string> param;
 		std::string botusername = bot->user.username;
 		aegis::gateway::objects::message msg = message.msg;
+
+		if (!message.has_user()) {
+			return true;
+		}
+
 		const aegis::user& user = message.get_user();
 		bool game_in_progress = false;
 
@@ -1002,7 +1007,11 @@ public:
 		aegis::channel* c = bot->core.find_channel(msg.get_channel_id().get());
 		if (c) {
 			guild_id = c->get_guild().get_id().get();
+		} else {
+			bot->core.log->warn("Channel is missing!!! C:{}", msg.get_channel_id().get());
+			return true;
 		}
+
 		guild_settings_t settings = GetGuildSettings(guild_id);
 
 		{
@@ -1012,22 +1021,13 @@ public:
 				state = state_iter->second;
 				/* Tombstoned session */
 				if (state->terminating) {
+					bot->core.log->warn("Removed terminated thread from C:{}", channel_id);
 					delete state;
 					states.erase(state_iter);
 					state = nullptr;
 				} else {
 					game_in_progress = true;
 				}
-			}
-		}
-
-		/* Check for moderator status - first check if owner */
-		bool moderator = (c->get_guild().get_owner() == user.get_id());
-		/* Now iterate the list of moderator roles from settings */
-		for (auto x = settings.moderator_roles.begin(); x != settings.moderator_roles.end(); ++x) {
-			if (c->get_guild().member_has_role(user.get_id(), *x)) {
-				moderator = true;
-				break;
 			}
 		}
 
@@ -1132,6 +1132,7 @@ public:
 
 		if (lowercase(clean_message.substr(0, settings.prefix.length())) == lowercase(settings.prefix)) {
 			/* Command */
+
 			std::string command = clean_message.substr(settings.prefix.length(), clean_message.length() - settings.prefix.length());
 			aegis::channel* c = bot->core.find_channel(msg.get_channel_id().get());
 			if (c) {
@@ -1143,13 +1144,25 @@ public:
 
 				if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == c->get_guild().get_id()) {
 
-
 					std::stringstream tokens(command);
 
 					std::string base_command;
 					std::string subcommand;
 				
 					tokens >> base_command;
+
+					/* Check for moderator status - first check if owner */
+					aegis::guild* g = bot->core.find_guild(guild_id);
+					bool moderator = (g && g->get_owner() == user.get_id());
+					/* Now iterate the list of moderator roles from settings */
+					if (!moderator) {
+						for (auto x = settings.moderator_roles.begin(); x != settings.moderator_roles.end(); ++x) {
+							if (c->get_guild().member_has_role(user.get_id(), *x)) {
+								moderator = true;
+								break;
+							}
+						}
+					}
 
 					if (lowercase(base_command) == "help") {
 						std::string section;
