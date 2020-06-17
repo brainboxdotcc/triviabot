@@ -17,7 +17,7 @@
                         "inline": false
                 },
                 {
-                        "name": ":game_die: Starting Trivia",
+                        "name": "<:dice:722798416765255800> Starting Trivia",
                         "value": "[How to start and stop games of trivia](https://triviabot.co.uk/help/#start)\n<:blank:667278047006949386>",
                         "inline": false
                 },
@@ -27,10 +27,15 @@
                         "inline": false
                 },
                 {
-                        "name": ":gift: Community Rewards",
+                        "name": "<:gift:722798417197268992> Community Rewards",
                         "value": "[Setting up role rewards for your server](https://triviabot.co.uk/help/#rolerewards)\n<:blank:667278047006949386>",
                         "inline": false
                 },
+		{
+			"name": "<:crystalball:722798415045460008> Vote For TriviaBot",
+			"value": "[Vote for TriviaBot on top.gg for personal hints via direct message](https://top.gg/bot/715906723982082139/vote)\n<:blank:667278047006949386>",
+			"inline": false
+		},
                 {
                         "name": ":money_with_wings: Premium",
                         "value": "[Find out how to get more with TriviaBot Premium](https://triviabot.co.uk/premium/)\n<:blank:667278047006949386>",
