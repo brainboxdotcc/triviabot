@@ -134,14 +134,18 @@ public:
 	virtual bool OnGuildDelete(const modevent::guild_delete gd)
 	{
 		std::lock_guard<std::mutex> user_cache_lock(states_mutex);
-		for (auto state = states.begin(); state != states.end(); ++state) {
-			if (state->second->guild_id = gd.guild_id.get()) {
-				auto s = state->second;
-				states.erase(state);
-				delete s;
-				break;
+		bool one_deleted = true;
+		do {
+			for (auto state = states.begin(); state != states.end(); ++state) {
+				if (state->second->guild_id = gd.guild_id.get()) {
+					auto s = state->second;
+					states.erase(state);
+					delete s;
+					one_deleted = true;
+					break;
+				}
 			}
-		}
+		} while (one_deleted);
 		return true;
 	}
 
