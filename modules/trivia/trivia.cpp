@@ -113,10 +113,13 @@ public:
 		return true;
 	}
 
-	virtual bool OnChannelDelete(const modevent::channel_delete cd)
+	virtual bool OnChannelDelete(const modevent::channel_delete &cd)
 	{
+		bot->core.log->error("Channel {} deleted, removing active game states", cd.channel.id.get());
 		bool one_deleted = false;
+		uint32_t removed = 0;
 		do {
+			one_deleted = false;
 			std::lock_guard<std::mutex> user_cache_lock(states_mutex);
 			for (auto state = states.begin(); state != states.end(); ++state) {
 				if (state->second->channel_id == cd.channel.id.get()) {
@@ -124,28 +127,35 @@ public:
 					states.erase(state);
 					delete s;
 					one_deleted = true;
+					removed++;
 					break;
 				}
 			}
 		} while (one_deleted);
+		bot->core.log->error("Removed {} active game states", removed);
 		return true;
 	}
 
-	virtual bool OnGuildDelete(const modevent::guild_delete gd)
+	virtual bool OnGuildDelete(const modevent::guild_delete &gd)
 	{
+		bot->core.log->error("Guild {} deleted (bot kicked?), removing active game states", gd.guild_id.get());
 		std::lock_guard<std::mutex> user_cache_lock(states_mutex);
-		bool one_deleted = true;
+		bool one_deleted = false;
+		uint32_t removed = 0;
 		do {
+			one_deleted = false;
 			for (auto state = states.begin(); state != states.end(); ++state) {
 				if (state->second->guild_id = gd.guild_id.get()) {
 					auto s = state->second;
 					states.erase(state);
 					delete s;
 					one_deleted = true;
+					removed++;
 					break;
 				}
 			}
 		} while (one_deleted);
+		bot->core.log->error("Removed {} active game states", removed);
 		return true;
 	}
 
@@ -154,7 +164,7 @@ public:
 		int64_t a = 0;
 		std::lock_guard<std::mutex> user_cache_lock(states_mutex);
 		for (auto state = states.begin(); state != states.end(); ++state) {
-			if (state->second->gamestate != TRIV_END) {
+			if (state->second->gamestate != TRIV_END && !state->second->terminating) {
 				++a;
 			}
 		}
@@ -942,6 +952,7 @@ public:
 			sleep(5);
 			if (waits++ > 30) {
 				bot->core.log->warn("Waited too long for re-connection of G:{} C:{}, ending round.", state->guild_id, state->channel_id);
+				state->gamestate = TRIV_END;
 				state->terminating = true;
 			}
 		}
@@ -972,6 +983,7 @@ public:
 				break;
 				default:
 					bot->core.log->warn("Invalid state '{}', ending round.", state->gamestate);
+					state->gamestate = TRIV_END;
 					state->terminating = true;
 				break;
 			}
@@ -1385,6 +1397,12 @@ public:
 						} else if (subcommand == "active") {
 							db::resultset rs = db::query("SELECT * FROM trivia_access WHERE user_id = ? AND enabled = 1", {user.get_id().get()});
 							if (rs.size() > 0) {
+
+								if (GetActiveGames() == 0) {
+									SimpleEmbed(":warning:", fmt::format("No trivia games are currently active."), c->get_id().get());
+									return false;
+								}
+
 								std::stringstream w;
 								w << "```diff\n";
 								int32_t state_id = 0;
@@ -1407,7 +1425,7 @@ public:
 									std::lock_guard<std::mutex> user_cache_lock(states_mutex);
 									for (auto s = states.begin(); s != states.end(); ++s) {
 										state_t* st = s->second;
-										if (st->gamestate == TRIV_END) {
+										if (st->gamestate == TRIV_END || st->terminating) {
 											continue;
 										}
 										char timestamp[255];
@@ -1536,6 +1554,7 @@ state_t::state_t(TriviaModule* _creator) : creator(_creator), terminating(false)
 state_t::~state_t()
 {
 	terminating = true;
+	gamestate = TRIV_END;
 	creator->GetBot()->core.log->debug("state_t::~state(): G:{} C:{}", guild_id, channel_id);
 	creator->DisposeThread(timer);
 }
