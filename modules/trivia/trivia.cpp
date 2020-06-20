@@ -145,7 +145,7 @@ public:
 		do {
 			one_deleted = false;
 			for (auto state = states.begin(); state != states.end(); ++state) {
-				if (state->second->guild_id = gd.guild_id.get()) {
+				if (state->second->guild_id == gd.guild_id.get()) {
 					auto s = state->second;
 					states.erase(state);
 					delete s;
@@ -1054,15 +1054,16 @@ public:
 
 		if (game_in_progress) {
 			if (state->gamestate == TRIV_ASK_QUESTION || state->gamestate == TRIV_FIRST_HINT || state->gamestate == TRIV_SECOND_HINT || state->gamestate == TRIV_TIME_UP) {
+
+				aegis::channel* c = bot->core.find_channel(msg.get_channel_id().get());
+				aegis::user::guild_info& gi = bot->core.find_user(user.get_id())->get_guild_info(c->get_guild().get_id());
+				cache_user(&user, &c->get_guild(), &gi);
 				
 				if (state->round % 10 == 0) {
 					/* Insane round */
 					auto i = state->insane.find(lowercase(trivia_message));
 					if (i != state->insane.end()) {
 						state->insane.erase(i);
-						aegis::channel* c = bot->core.find_channel(msg.get_channel_id().get());
-						aegis::user::guild_info& gi = bot->core.find_user(user.get_id())->get_guild_info(c->get_guild().get_id());
-						cache_user(&user, &c->get_guild(), &gi);
 
 						if (--state->insane_left < 1) {
 							if (c) {
