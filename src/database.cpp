@@ -115,7 +115,7 @@ namespace db {
 		 *       It would scale a lot better.
 		 */
 		for (auto v = format.begin(); v != format.end(); ++v) {
-			if (*v == '?') {
+			if (*v == '?' && escaped_parameters.size() >= param + 1) {
 				querystring.append(escaped_parameters[param]);
 				if (param != escaped_parameters.size() - 1) {
 					param++;
