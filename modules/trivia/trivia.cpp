@@ -1459,7 +1459,8 @@ public:
 							tokens >> newteamname;
 							std::string teamname = get_current_team(user.get_id().get());
 							if (teamname.empty() || teamname == "!NOTEAM") {
-								if (create_new_team(newteamname)) {
+								newteamname = create_new_team(newteamname);
+								if (newteamname != "__NO__") {
 									join_team(user.get_id().get(), newteamname);
 									SimpleEmbed(":busts_in_silhouette:", fmt::format("You have successfully **created** and joined the team \"**{}**\", **{}**", newteamname, user.get_username()), c->get_id().get(), "It's unsafe to go alone...");
 								} else {

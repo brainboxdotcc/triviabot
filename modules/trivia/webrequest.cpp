@@ -261,9 +261,9 @@ streak_t get_streak(int64_t snowflake_id, int64_t guild_id)
 	return s;
 }
 
-bool create_new_team(const std::string &teamname)
+std::string create_new_team(const std::string &teamname)
 {
-	return (trim(fetch_page(fmt::format("?opt=createteam&name={}", url_encode(teamname)))) == "__OK__");
+	return trim(fetch_page(fmt::format("?opt=createteam&name={}", url_encode(teamname))));
 }
 
 bool check_team_exists(const std::string &team)

@@ -32,7 +32,7 @@ bool join_team(int64_t snowflake_id, const std::string &team);
 std::string get_rank(int64_t snowflake_id, int64_t guild_id);
 void change_streak(int64_t snowflake_id, int64_t guild_id, int score);
 streak_t get_streak(int64_t snowflake_id, int64_t guild_id);
-bool create_new_team(const std::string &teamname);
+std::string create_new_team(const std::string &teamname);
 bool check_team_exists(const std::string &team);
 void add_team_points(const std::string &team, int points, int64_t snowflake_id);
 int32_t get_team_points(const std::string &team);
