@@ -1448,7 +1448,7 @@ public:
 							}
 						} else if (subcommand == "join") {
 							std::string teamname;
-							tokens >> teamname;
+							std::getline(tokens, teamname);
 							if (join_team(user.get_id().get(), teamname)) {
 								SimpleEmbed(":busts_in_silhouette:", fmt::format("You have successfully joined the team \"**{}**\", **{}**", teamname, user.get_username()), c->get_id().get(), "Call for backup!");
 							} else {
@@ -1456,7 +1456,7 @@ public:
 							}
 						} else if (subcommand == "create") {
 							std::string newteamname;
-							tokens >> newteamname;
+							std::getline(tokens, newteamname);
 							std::string teamname = get_current_team(user.get_id().get());
 							if (teamname.empty() || teamname == "!NOTEAM") {
 								newteamname = create_new_team(newteamname);
