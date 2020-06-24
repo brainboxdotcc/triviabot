@@ -51,26 +51,15 @@ std::string web_request(const std::string &_host, const std::string &_path, cons
 		if (it == _resolver_cache.end())
 		{
 			asio::ip::tcp::resolver resolver(*_io_context);
-			r = resolver.resolve(tar_host, "443");
+			r = resolver.resolve(tar_host, "80");
 			_resolver_cache.emplace(tar_host, r);
 		}
 		else
 			r = it->second;
 
-		asio::ssl::context ctx(asio::ssl::context::tlsv12);
 
-		ctx.set_options(
-			asio::ssl::context::default_workarounds
-			| asio::ssl::context::no_sslv2
-			| asio::ssl::context::no_sslv3);
-
-		asio::ssl::stream<asio::ip::tcp::socket> socket(*_io_context, ctx);
-		SSL_set_tlsext_host_name(socket.native_handle(), tar_host.data());
-
-		asio::connect(socket.lowest_layer(), r);
-
-		asio::error_code handshake_ec;
-		socket.handshake(asio::ssl::stream_base::client, handshake_ec);
+		asio::ip::tcp::socket socket(*_io_context);
+		asio::connect(socket, r);
 
 		asio::streambuf request;
 		std::ostream request_stream(&request);
@@ -90,24 +79,13 @@ std::string web_request(const std::string &_host, const std::string &_path, cons
 		std::stringstream response_content;
 		response_content << &response;
 
-		asio::error_code error;
-		while (asio::read(socket, response, asio::transfer_at_least(1), error))
-			response_content << &response;
-
 		std::istringstream istrm(response_content.str());
 		hresponse.consume(istrm);
-
-		if (error != asio::error::eof && error != asio::ssl::error::stream_truncated)
-			throw asio::system_error(error);
 	}
 	catch (std::exception& e)
 	{
 		std::cout << "Exception: " << e.what() << "\n";
 	}
-
-	/*return { static_cast<http_code>(hresponse.get_status_code()),
-		global, limit, remaining, reset, retry, hresponse.get_body(), http_date,
-		std::chrono::steady_clock::now() - start_time };*/
 
 	return hresponse.get_body();
 }
