@@ -1156,8 +1156,11 @@ public:
 
 				bot->core.log->info("CMD (USER={}, GUILD={}): <{}> {}", user.get_id().get(), c->get_guild().get_id().get(), user.get_username(), clean_message);
 
-				aegis::user::guild_info& gi = bot->core.find_user(user.get_id())->get_guild_info(c->get_guild().get_id());
-				cache_user(&user, &c->get_guild(), &gi);
+				aegis::user* _user = bot->core.find_user(msg.get_user().get_id());
+				if (_user) {
+					aegis::user::guild_info& gi = _user->get_guild_info(c->get_guild().get_id());
+					cache_user(_user, &c->get_guild(), &gi);
+				}
 
 				if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == c->get_guild().get_id()) {
 
