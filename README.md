@@ -1,18 +1,24 @@
-# Sporks, the backchatting, learning, scriptable discord bot
-This github project contains the source code for Sporks, the learning, scriptable Discord chat bot, written in C++ using the aegis.cpp library.
+# TriviaBot, the discord bot with 88,000 questions!
+This project contains the source code for the Brainbox.cc TriviaBot.
+
+It was originally FruitLoopy Trivia on irc.chatspike.net and i've been running this bot in some form since 2004.
+
+
+This source code repository is for reference and learning only as it wont work without a TriviaBot API key, which i'm not prepared to give out to people (no, this isn't "open trivia database").
+, the learning, scriptable Discord chat bot, written in C++ using the aegis.cpp library.
 Remember you can still find my original perl/botnix version of Sporks on IRC at irc.chatspike.net!
 
 ## Project and System status
 
-![Discord](https://img.shields.io/discord/537746810471448576?label=discord) ![CircleCI](https://img.shields.io/circleci/build/github/brainboxdotcc/sporks/master) ![Dashboard](https://img.shields.io/website?down_color=red&label=dashboard&url=https%3A%2F%2Fsporks.gg)
+![Discord](https://img.shields.io/discord/537746810471448576?label=discord) ![Dashboard](https://img.shields.io/website?down_color=red&label=dashboard&url=https%3A%2F%2Ftriviabot.co.uk)
 
-[Service Status](https://status.sporks.gg)
+[Service Status](https://status.triviabot.co.uk)
 
 ## Listing Badges
 
-[![Discord Bots](https://top.gg/api/widget/630730262765895680.svg)](https://top.gg/bot/630730262765895680)
-![Discord Boats](https://discord.boats/api/widget/630730262765895680) 
-![DiscordBotList](https://discordbotlist.com/bots/630730262765895680/widget) [![Bots for Discord](https://botsfordiscord.com/api/bot/630730262765895680/widget)](https://botsfordiscord.com/bots/630730262765895680)
+[![Discord Bots](https://top.gg/api/widget/715906723982082139.svg)](https://top.gg/bot/715906723982082139)
+![Discord Boats](https://discord.boats/api/widget/715906723982082139) 
+![DiscordBotList](https://discordbotlist.com/bots/715906723982082139/widget) [![Bots for Discord](https://botsfordiscord.com/api/bot/715906723982082139/widget)](https://botsfordiscord.com/bots/715906723982082139)
 
 ## Supported Platforms
 
