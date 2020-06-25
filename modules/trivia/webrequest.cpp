@@ -79,6 +79,10 @@ std::string web_request(const std::string &_host, const std::string &_path, cons
 		std::stringstream response_content;
 		response_content << &response;
 
+		asio::error_code error;
+		while (asio::read(socket, response, asio::transfer_at_least(1), error))
+			response_content << &response;
+
 		std::istringstream istrm(response_content.str());
 		hresponse.consume(istrm);
 	}
