@@ -51,7 +51,23 @@ You should have a database configured with the mysql schemas from the mysql-sche
 
 ## 3. Edit Configuration File
 
-Edit the config-example.json file and save it as config.json. The configuration variables in the file should be self explainatory.
+Edit the config-example.json file and save it as config.json. The configuration variables are documented below:
+
+| Key Name | Description |
+|----------|-------------|
+|devtoken  | Discord bot token for a development version of the bot, allowing you to keep development and live copies separate |
+|livetoken | Discord bot token for live version of the bot (see above) |
+| dbhost   | Hostname or IP address of MySQL server where the triviabot client schema is hosted |
+| dbuser   | Username for MySQL server |
+| dbpass   | Password for MySQL server |
+| dbname   | Database name for MySQL database on the server containing the triviabot schema |
+| dbport   | TCP Port number for the MySQL server |
+| utr_readonly_key | Readonly API key for uptimerobot, used to update status pages if you are using uptimerobot to monitor uptime |
+| error_recipient | E-Mail address to receive core files in the event of a client crash (!) |
+| owner | Snowflake ID of the bot owner. There can only be one bot owner |
+| apikey | TriviaBot API key. This is NOT an *Open Trivia Database* key. Speak to Brain#0001 about API keys. |
+| modules | A list of modules to load. For basic functionality you should load at least module_diagnostics.so and module_trivia.so |
+| shitlist | An array of snowflake IDs of guilds where trivia cannot be started. Instead, the person issuing the ``!trivia start`` command will get a friendly message encouraging them to invite the bot to their own server. Put places like bot lists in here. |
 
 ## 4. Start Bot
 
