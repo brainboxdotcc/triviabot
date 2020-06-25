@@ -8,18 +8,13 @@
 	"dbport": "3306",
 	"utr_readonly_key": "<readonly api key for uptimerobot>",
 	"error_recipient": "<email address of user to receive runtime errors>",
-	"home": "<discord snowflake id of home server>",
-	"vote_role": "<discord snowflake id of vanity role for voting for the bot>",
 	"owner": "<discord snowflake id of bot owner>",
 	"apikey": "<triviabot api key>",
 	"modules":[
-		"module_help.so",
-		"module_config.so",
 		"module_diagnostics.so",
-		"module_js.so",
-		"module_infobot.so",
-		"module_voting.so",
-		"module_presence.so"
+		"module_bandwidth.so",
+		"module_presence.so",
+		"module_trivia.so"
 	],
 	"shitlist":[
 		12345678901234567
