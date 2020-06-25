@@ -1,8 +1,10 @@
 /************************************************************************************
  * 
- * Sporks, the learning, scriptable Discord bot!
+ * TriviaBot, the Discord Quiz Bot with over 80,000 questions!
  *
- * Copyright 2019 Craig Edwards <support@sporks.gg>
+ * Copyright 2004 Craig Edwards <support@sporks.gg>
+ *
+ * Core based on Sporks, the Learning Discord Bot, Craig Edwards (c) 2019.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +49,7 @@ public:
 	virtual std::string GetVersion()
 	{
 		/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-		std::string version = "$ModVer 6$";
+		std::string version = "$ModVer 7$";
 		return "1.0." + version.substr(8,version.length() - 9);
 	}
 

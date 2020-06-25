@@ -75,3 +75,12 @@ run.sh will restart the bot executable continually if it dies. If the bot quits,
 | --dev           | Run using the development token in the config file. Mutually exclusive with ``--test``     |
 | --test          | Run using the live token in the config file, but squelch all outbound messages unless they originate from the test server (also defined in the config file)  |
 | --members       | Send a GUILD_MEMBERS intent when identifying to the discord gateway. Note that you'll need this after October 2020 for bots in over 100 servers. |
+
+# Version History
+
+| Version/Date    | Protocol              | Platform/Libraries                                                                 | Language            | Status       |
+| ----------------|-----------------------|------------------------------------------------------------------------------------|---------------------|--------------|
+| 1.0 / 2004      | IRC                   | [WinBot](https://www.winbot.co.uk) 2.3                                             | WinBotScript (WBS)  | Discontinued |
+| 2.0 / 2005      | IRC                   | [WinBot](https://www.winbot.co.uk) 2.3                                             | PlugPerl (Perl 5.6) | Discontinued |
+| 3.0 / 2005      | IRC                   | [Botnix](https://www.botnix.org) 1.0 Beta 1                                        | Perl 5.6            | Discontinued |
+| 4.0 / 2020      | IRC                   | [Discord](https://discord.com), [aegis.cpp](https://github.com/zeroxs/aegis.cpp)   | C++17               | Active       |

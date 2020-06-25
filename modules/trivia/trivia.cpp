@@ -2,7 +2,7 @@
  * 
  * TriviaBot, The trivia bot for discord based on Fruitloopy Trivia for ChatSpike IRC
  *
- * Copyright 2020 Craig Edwards <support@brainbox.cc>
+ * Copyright 2004 Craig Edwards <support@brainbox.cc>
  *
  * Core based on Sporks, the Learning Discord Bot, Craig Edwards (c) 2019.
  *
@@ -287,7 +287,7 @@ public:
 	virtual std::string GetVersion()
 	{
 		/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-		std::string version = "$ModVer 0$";
+		std::string version = "$ModVer 1$";
 		return "1.0." + version.substr(8,version.length() - 9);
 	}
 

@@ -2,9 +2,11 @@
 
 /***********************************************************************************************************
  * 
- * Sporks, the learning, scriptable Discord bot!
+ * TriviaBot, the Discord Quiz Bot with over 80,000 questions!
  *
- * Copyright 2019 Craig Edwards <support@sporks.gg>
+ * Copyright 2004 Craig Edwards <support@sporks.gg>
+ *
+ * Core based on Sporks, the Learning Discord Bot, Craig Edwards (c) 2019.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
