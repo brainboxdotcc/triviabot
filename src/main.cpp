@@ -31,7 +31,6 @@
 #include <sys/types.h>
 #include <sys/sysinfo.h>
 #include <sporks/database.h>
-#include <sporks/config.h>
 #include <sporks/stringops.h>
 #include <sporks/modules.h>
 
@@ -161,17 +160,7 @@ void Bot::onMessage(aegis::gateway::events::message_create message) {
 	/* Ignore self, and bots */
 	if (message.msg.get_user().get_id() != user.id && message.msg.get_user().is_bot() == false) {
 
-		json settings;
-		settings = getSettings(this, message.msg.get_channel_id().get(), message.msg.get_guild_id().get());
-
 		received_messages++;
-
-		/* Ignore anyone on ignore list */
-		std::vector<uint64_t> ignorelist = settings::GetIgnoreList(settings);
-		if (std::find(ignorelist.begin(), ignorelist.end(), message.msg.get_user().get_id().get()) != ignorelist.end()) {
-			core.log->info("Message #{} dropped, user on channel ignore list", message.msg.get_id().get());
-			return;
-		}
 
 		/* Replace all mentions with raw nicknames */
 		bool mentioned = false;
