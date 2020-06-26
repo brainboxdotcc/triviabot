@@ -1,4 +1,4 @@
-# Sporks Code of Conduct for Developers
+# TriviaBot Code of Conduct for Developers
 
 The code of conduct for this project is short and simple and a breath of fresh air.
 
