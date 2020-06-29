@@ -26,7 +26,7 @@ jobs:
           command: tar fpx mysql-server_8.0.18-1debian10_amd64.deb-bundle.tar && dpkg -i mysql-common_8.0.18-1debian10_amd64.deb && dpkg -i libmysqlclient21_8.0.18-1debian10_amd64.deb && dpkg -i libmysqlclient-dev_8.0.18-1debian10_amd64.deb && cp -rv /usr/include/mysql/* /usr/local/include/
       - run:
           name: Cloning aegis
-          command: 'git clone --branch develop https://github.com/zeroxs/aegis.cpp'
+          command: 'git clone --branch master https://github.com/zeroxs/aegis.cpp'
       - run:
           name: Checking out and building aegis deps
           command: 'cd aegis.cpp && git submodule init lib/asio && git submodule init lib/json && git submodule init lib/spdlog &&  git submodule init lib/websocketpp && git submodule update && ./install-deps.sh'
