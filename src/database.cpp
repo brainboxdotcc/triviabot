@@ -38,7 +38,7 @@ namespace db {
 	bool connect(const std::string &host, const std::string &user, const std::string &pass, const std::string &db, int port) {
 		std::lock_guard<std::mutex> db_lock(db_mutex);
 		if (mysql_init(&connection) != nullptr) {
-			my_bool reconnect = 1;
+			char reconnect = 1;
 			if (mysql_options(&connection, MYSQL_OPT_RECONNECT, &reconnect) == 0) {
 				return mysql_real_connect(&connection, host.c_str(), user.c_str(), pass.c_str(), db.c_str(), port, NULL, CLIENT_MULTI_RESULTS | CLIENT_MULTI_STATEMENTS);
 			} else {
