@@ -20,7 +20,7 @@ This source code repository is for reference and learning only as it **wont work
 
 ## Supported Platforms
 
-Currently only Linux is supported, but other UNIX-style platforms should build and run the bot fine. I build the bot under Debian Linux.
+Currently only Linux is supported, but other UNIX-style platforms should build and run the bot fine. I build the bot under Debian Linux 10.
 
 ## Dependencies
 
