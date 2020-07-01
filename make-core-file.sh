@@ -20,4 +20,4 @@
 #
 # Produce a core file of a running bot without killing it
 cd build
-gcore `ps aux | grep "./bot$" | awk '{print $2}'`
+gcore $(ps aux | grep "./bot$" | awk '{print $2}')

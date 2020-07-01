@@ -116,7 +116,7 @@ std::string web_request(const std::string &_host, const std::string &_path, cons
 	return hresponse.get_body();
 }
 
-std::string fetch_page(const std::string _endpoint, const std::string &body)
+std::string fetch_page(const std::string &_endpoint, const std::string &body)
 {
 	return web_request(BACKEND_HOST, fmt::format("/api/{}", _endpoint), body);
 }

@@ -105,9 +105,6 @@ public:
 	virtual bool OnMessage(const modevent::message_create &message, const std::string& clean_message, bool mentioned, const std::vector<std::string> &stringmentions)
 	{
 		std::vector<std::string> param;
-		std::string botusername = bot->user.username;
-		aegis::gateway::objects::message msg = message.msg;
-
 		shards[message.shard.get_id()].last_message = std::chrono::steady_clock::now();
 
 		if (mentioned && diagnosticmessage->Match(clean_message, param) && param.size() >= 3) {

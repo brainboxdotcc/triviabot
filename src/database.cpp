@@ -139,11 +139,11 @@ namespace db {
 				while ((a_row = mysql_fetch_row(a_res))) {
 					MYSQL_FIELD *fields = mysql_fetch_fields(a_res);
 					row thisrow;
-					unsigned int field_count = 0;
 					if (mysql_num_fields(a_res) == 0) {
 						break;
 					}
 					if (fields && mysql_num_fields(a_res)) {
+						unsigned int field_count = 0;
 						while (field_count < mysql_num_fields(a_res)) {
 							std::string a = (fields[field_count].name ? fields[field_count].name : "");
 							std::string b = (a_row[field_count] ? a_row[field_count] : "");

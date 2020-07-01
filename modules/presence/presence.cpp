@@ -80,7 +80,6 @@ public:
 		int64_t channel_count = bot->core.channels.size();
 		int64_t ram = GetRSS();
 
-		db::resultset rs_fact = db::query("show table status like '?'", {std::string("infobot")});
 		db::query("INSERT INTO infobot_discord_counts (shard_id, dev, user_count, server_count, shard_count, channel_count, sent_messages, received_messages, memory_usage) VALUES('?','?','?','?','?','?','?','?','?') ON DUPLICATE KEY UPDATE user_count = '?', server_count = '?', shard_count = '?', channel_count = '?', sent_messages = '?', received_messages = '?', memory_usage = '?'",
 			{
 				0, bot->IsDevMode(), users, servers, bot->core.shard_max_count,

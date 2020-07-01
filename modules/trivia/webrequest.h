@@ -34,7 +34,7 @@ struct streak_t
 
 void set_io_context(class asio::io_context* ioc, const std::string &apikey);
 std::string web_request(const std::string &_host, const std::string &_path, const std::string &_body);
-std::string fetch_page(const std::string _endpoint, const std::string &_body = "");
+std::string fetch_page(const std::string &_endpoint, const std::string &_body = "");
 std::vector<std::string> fetch_question(int64_t id);
 std::vector<std::string> fetch_shuffle_list();
 std::vector<std::string> get_disabled_list();

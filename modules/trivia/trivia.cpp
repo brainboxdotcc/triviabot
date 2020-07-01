@@ -246,11 +246,11 @@ public:
 		}
 	}
 
-	void SimpleEmbed(const std::string &emoji, const std::string &text, int64_t channelID, const std::string title = "")
+	void SimpleEmbed(const std::string &emoji, const std::string &text, int64_t channelID, const std::string &title = "")
 	{
 		aegis::channel* c = bot->core.find_channel(channelID);
-		uint32_t colour = 3238819;
 		if (c) {
+			uint32_t colour = 3238819;
 			guild_settings_t settings = GetGuildSettings(c->get_guild().get_id().get());
 			colour = settings.embedcolour;
 			if (!title.empty()) {
@@ -744,12 +744,13 @@ public:
 				/* No custom second hint, build one */
 				state->curr_customhint2 = state->curr_answer;
 				if (is_number(state->curr_customhint2) || PCRE("^\\$(\\d+)$").Match(state->curr_customhint2)) {
-					std::string currency = "";
+					std::string currency;
 					std::vector<std::string> matches;
 					if (PCRE("^\\$(\\d+)$").Match(state->curr_customhint2, matches)) {
 						state->curr_customhint2 = matches[1];
 						currency = "$";
 					}
+					state->curr_customhint2 = currency + state->curr_customhint2;
 					int32_t r = random(1, 13);
 					if ((r < 3 && from_string<int32_t>(state->curr_customhint2, std::dec) <= 10000)) {
 						state->curr_customhint2 = dec_to_roman(from_string<unsigned int>(state->curr_customhint2, std::dec));
@@ -1187,7 +1188,7 @@ public:
 					if (lowercase(base_command) == "help") {
 						std::string section;
 						tokens >> section;
-						GetHelp(section, message.msg.get_channel_id().get(), bot->user.username, bot->user.id.get(), msg.get_user().get_username(), msg.get_user().get_id().get(), false, settings.embedcolour);
+						GetHelp(section, message.msg.get_channel_id().get(), bot->user.username, bot->user.id.get(), msg.get_user().get_username(), msg.get_user().get_id().get(), settings.embedcolour);
 					} else if (lowercase(base_command) == "trivia") {
 						tokens >> subcommand;
 						subcommand = lowercase(subcommand);
@@ -1484,7 +1485,7 @@ public:
 						} else if (subcommand == "help") {
 							std::string section;
 							tokens >> section;
-							GetHelp(section, message.msg.get_channel_id().get(), bot->user.username, bot->user.id.get(), msg.get_user().get_username(), msg.get_user().get_id().get(), false, settings.embedcolour);
+							GetHelp(section, message.msg.get_channel_id().get(), bot->user.username, bot->user.id.get(), msg.get_user().get_username(), msg.get_user().get_id().get(), settings.embedcolour);
 						} else {
 							SimpleEmbed(":warning:", fmt::format("**{}**, I don't know that command! Try ``{}trivia start 20`` :slight_smile:", user.get_username(), settings.prefix), c->get_id().get(), "Need some help?");
 						}
@@ -1501,9 +1502,8 @@ public:
 	/**
 	 * Emit help using a json file in the help/ directory. Missing help files emit a generic error message.
 	 */
-	void GetHelp(const std::string &section, int64_t channelID, const std::string &botusername, int64_t botid, const std::string &author, int64_t authorid, bool dm, uint32_t colour)
+	void GetHelp(const std::string &section, int64_t channelID, const std::string &botusername, int64_t botid, const std::string &author, int64_t authorid, uint32_t colour)
 	{
-		bool found = true;
 		json embed_json;
 		char timestamp[256];
 		time_t timeval = time(NULL);
@@ -1516,7 +1516,6 @@ public:
 
 		std::ifstream t("../help/" + (section.empty() ? "basic" : section) + ".json");
 		if (!t) {
-			found = dm = false;
 			t = std::ifstream("../help/error.json");
 		}
 		std::string json((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
@@ -1552,7 +1551,10 @@ public:
 
 };
 
-state_t::state_t(TriviaModule* _creator) : creator(_creator), terminating(false), timer(nullptr)
+state_t::state_t(TriviaModule* _creator) : creator(_creator), terminating(false), channel_id(0), guild_id(0), numquestions(0), round(0), score(0), start_time(0), shuffle_list({}), gamestate(TRIV_ASK_QUESTION), curr_qid(0),
+					recordtime(0), curr_question(""), curr_answer(""), curr_customhint1(""), curr_customhint2(""), curr_category(""), curr_lastasked(0), curr_recordtime(0), curr_lastcorrect(""),
+					last_to_answer(0), streak(0), asktime(0), found(false), interval(20), insane_num(0), insane_left(0), curr_timesasked(0), next_quickfire(0), insane({}), timer(nullptr)
+
 {
 }
 

@@ -338,7 +338,7 @@ int main(int argc, char** argv) {
 			aegis_bot.run();
 			aegis_bot.yield();
 		}
-		catch (std::exception e) {
+		catch (const std::exception &e) {
 			aegis_bot.log->error("Oof! {}", e.what());
 		}
 
