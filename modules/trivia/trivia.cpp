@@ -236,7 +236,12 @@ public:
 		}
 		catch (const std::exception &e) {
 			if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == channel->get_guild().get_id()) {
-				channel->create_message("<:sporks_error:664735896251269130> I can't make an **embed** from this: ```js\n" + cleaned_json + "\n```**Error:** ``" + e.what() + "``");
+				try {
+					channel->create_message("<:sporks_error:664735896251269130> I can't make an **embed** from this: ```js\n" + cleaned_json + "\n```**Error:** ``" + e.what() + "``");
+				}
+				catch (const std::exception &e) {
+					bot->core.log->error("Malformed unicode in embed: {}", e.what());
+				}
 				bot->sent_messages++;
 			}
 		}
