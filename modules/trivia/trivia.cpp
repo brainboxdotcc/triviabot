@@ -292,7 +292,7 @@ public:
 	virtual std::string GetVersion()
 	{
 		/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-		std::string version = "$ModVer 1$";
+		std::string version = "$ModVer 2$";
 		return "1.0." + version.substr(8,version.length() - 9);
 	}
 
@@ -1158,7 +1158,7 @@ public:
 
 			std::string command = clean_message.substr(settings.prefix.length(), clean_message.length() - settings.prefix.length());
 			aegis::channel* c = bot->core.find_channel(msg.get_channel_id().get());
-			if (c) {
+			if (c && &user != nullptr) {
 
 				bot->core.log->info("CMD (USER={}, GUILD={}): <{}> {}", user.get_id().get(), c->get_guild().get_id().get(), user.get_username(), clean_message);
 
