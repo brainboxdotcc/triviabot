@@ -176,6 +176,11 @@ void enable_all_categories()
 	fetch_page("?opt=enableall");
 }
 
+void send_hint(int64_t snowflake_id, const std::string &hint, uint32_t remaining)
+{
+	fetch_page(fmt::format("?opt=customhint&user_id={}&hint={}&remaining={}", snowflake_id, url_encode(hint), remaining));
+}
+
 void enable_category(const std::string &cat)
 {
 	fetch_page(fmt::format("?opt=enable&catname={}", cat));

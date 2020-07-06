@@ -1329,8 +1329,11 @@ public:
 											personal_hint[0] = '#';
 											personal_hint[personal_hint.length() - 1] = '#';
 											personal_hint = ReplaceString(personal_hint, " ", "#");
-											bot->core.create_dm_message(user.get_id().get(), fmt::format("Your personal hint is:\n**{}**", personal_hint));
+											// Get the API to do this, because DMs in aegis are unreliable right now.
+											// WARNING: Bypasses rate limit!
+											send_hint(user.get_id().get(), personal_hint, remaining_hints);
 											db::query("UPDATE infobot_votes SET dm_hints = ? WHERE snowflake_id = ?", {remaining_hints, user.get_id().get()});
+
 											return false;
 										}
 									}
