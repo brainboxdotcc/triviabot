@@ -292,7 +292,7 @@ public:
 	virtual std::string GetVersion()
 	{
 		/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-		std::string version = "$ModVer 3$";
+		std::string version = "$ModVer 4$";
 		return "1.0." + version.substr(8,version.length() - 9);
 	}
 
@@ -1197,7 +1197,7 @@ public:
 						base_command = lowercase(base_command);
 					}
 
-					if (base_command == "start" || base_command == "quickfire" || base_command == "trivia") {
+					if (base_command == "start" || base_command == "quickfire" || base_command == "trivia" || base_command == "fstart") {
 
 						int32_t questions;
 						std::string str_q;
@@ -1209,6 +1209,29 @@ public:
 						}
 
 						bool quickfire = (base_command == "quickfire");
+						bool resumed = false;
+
+						if (base_command == "fstart") {
+							if (moderator) {
+								int64_t cid;
+								tokens >> cid;
+								auto newc = bot->core.find_channel(cid);
+								if (!newc) {
+									SimpleEmbed(":warning:", fmt::format("**{}**, this channel ID does not exist!", user.get_username()), c->get_id().get());
+									return false;
+								} else {
+									SimpleEmbed(":white_check_mark:", fmt::format("Round of {} questions started on channel id {}", questions, cid), c->get_id().get());
+									c = newc;
+									channel_id = cid;
+									resumed = true;
+									guild_id = c->get_guild().get_id().get();
+									settings = GetGuildSettings(guild_id);
+									SimpleEmbed(":white_check_mark:", fmt::format("Because the bot was restarted, your game was stopped. This game has been resumed."), c->get_id().get());
+								}
+							} else {
+								SimpleEmbed(":warning:", fmt::format("Only bot moderators can use this command"), c->get_id().get());
+							}
+						}
 
 						json document;
 						std::ifstream configfile("../config.json");
@@ -1269,7 +1292,7 @@ public:
 								state->channel_id = channel_id;
 								state->curr_qid = 0;
 								state->curr_answer = "";
-								aegis::channel* c = bot->core.find_channel(msg.get_channel_id().get());
+								aegis::channel* c = bot->core.find_channel(channel_id);
 								{
 									std::lock_guard<std::mutex> user_cache_lock(states_mutex);
 									states[channel_id] = state;
@@ -1277,7 +1300,7 @@ public:
 								if (c) {
 									state->guild_id = c->get_guild().get_id();
 									bot->core.log->info("Started game on guild {}, channel {}, {} questions [{}]", state->guild_id, channel_id, questions, quickfire ? "quickfire" : "normal");
-									EmbedWithFields(fmt::format(":question: New {}trivia round started by {}!", (quickfire ? "**QUICKFIRE** " : ""), user.get_username()), {{"Questions", fmt::format("{}", questions), false}, {"Get Ready", "First question coming up!", false}}, c->get_id().get());
+									EmbedWithFields(fmt::format(":question: New {}trivia round {} by {}!", (quickfire ? "**QUICKFIRE** " : ""), (resumed ? "resumed" : "started"), (resumed ? "a bot admin" : user.get_username())), {{"Questions", fmt::format("{}", questions), false}, {"Get Ready", "First question coming up!", false}}, c->get_id().get());
 									state->timer = new std::thread(&state_t::tick, state);
 								}
 
@@ -1306,7 +1329,7 @@ public:
 						}
 						return false;
 					} else if (base_command == "vote") {
-						SimpleEmbed("<:wc_rs:667695516737470494>", fmt::format("**Get Private Hints By Voting**\n[Vote for the bot every 12 hours](https://top.gg/bot/{}/vote) to get eight uses of the ``{}trivia votehint`` command, which gives you a personal hint via direct message!", bot->user.id.get(), settings.prefix), c->get_id().get());
+						SimpleEmbed(":white_check_mark:", fmt::format("**Get Private Hints By Voting**\n[Vote for the bot every 12 hours](https://top.gg/bot/{}/vote) to get eight uses of the ``{}trivia votehint`` command, which gives you a personal hint via direct message!", bot->user.id.get(), settings.prefix), c->get_id().get());
 					} else if (base_command == "votehint" || base_command == "vh") {
 						if (game_in_progress) {
 							if ((state->gamestate == TRIV_FIRST_HINT || state->gamestate == TRIV_SECOND_HINT || state->gamestate == TRIV_TIME_UP) && (state->round % 10) != 0 && state->curr_answer != "") {
@@ -1495,8 +1518,6 @@ public:
 						std::string section;
 						tokens >> section;
 						GetHelp(section, message.msg.get_channel_id().get(), bot->user.username, bot->user.id.get(), msg.get_user().get_username(), msg.get_user().get_id().get(), settings.embedcolour);
-					} else {
-						SimpleEmbed(":warning:", fmt::format("**{}**, I don't know that command! Try ``{}trivia start 20`` :slight_smile:", user.get_username(), settings.prefix), c->get_id().get(), "Need some help?");
 					}
 				}
 
