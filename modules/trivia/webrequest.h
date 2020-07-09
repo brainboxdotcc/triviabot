@@ -60,3 +60,4 @@ void add_team_points(const std::string &team, int points, int64_t snowflake_id);
 int32_t get_team_points(const std::string &team);
 void cache_user(const class aegis::user *_user, const class aegis::guild *_guild, const class aegis::user::guild_info* gi);
 void send_hint(int64_t snowflake_id, const std::string &hint, uint32_t remaining);
+std::string custom_command(const std::string &command, const std::string &parameters, int64_t user_id, int64_t channel_id);

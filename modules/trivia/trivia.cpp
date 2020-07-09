@@ -868,7 +868,7 @@ public:
 		state->last_to_answer = 0;
 		state->streak = 1;
 
-		if (c && state->round <= state->numquestions - 1) {
+		if (c && state->round <= state->numquestions - 2) {
 			SimpleEmbed("<a:loading:658667224067735562>", fmt::format("Next question coming up in about **{}** seconds...", state->interval), c->get_id().get(), "A little time to rest your fingers...");
 		}
 
@@ -886,7 +886,7 @@ public:
 		state->round++;
 		state->score = 0;
 
-		if (state->round <= state->numquestions - 1) {
+		if (state->round <= state->numquestions - 2) {
 			if (c) {
 				SimpleEmbed("<a:loading:658667224067735562>", fmt::format("Next question coming up in about **{}** seconds...", state->interval), c->get_id().get(), "A little time to rest your fingers...");
 			} else {
@@ -1518,6 +1518,14 @@ public:
 						std::string section;
 						tokens >> section;
 						GetHelp(section, message.msg.get_channel_id().get(), bot->user.username, bot->user.id.get(), msg.get_user().get_username(), msg.get_user().get_id().get(), settings.embedcolour);
+					} else {
+						/* Custom commands handled completely by the API */
+						std::string rest;
+						std::getline(tokens, rest);
+						std::string reply = trim(custom_command(base_command, rest, msg.get_user().get_id(), message.msg.get_channel_id().get()));
+						if (!reply.empty()) {
+							ProcessEmbed(reply, message.msg.get_channel_id().get());
+						}
 					}
 				}
 
