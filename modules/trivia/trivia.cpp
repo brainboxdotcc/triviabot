@@ -292,7 +292,7 @@ public:
 	virtual std::string GetVersion()
 	{
 		/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-		std::string version = "$ModVer 4$";
+		std::string version = "$ModVer 5$";
 		return "1.0." + version.substr(8,version.length() - 9);
 	}
 
@@ -1329,13 +1329,13 @@ public:
 						}
 						return false;
 					} else if (base_command == "vote") {
-						SimpleEmbed(":white_check_mark:", fmt::format("**Get Private Hints By Voting**\n[Vote for the bot every 12 hours](https://top.gg/bot/{}/vote) to get eight uses of the ``{}trivia votehint`` command, which gives you a personal hint via direct message!", bot->user.id.get(), settings.prefix), c->get_id().get());
+						SimpleEmbed(":white_check_mark:", fmt::format("**Get Private Hints By Voting**\n[Vote for the bot every 12 hours](https://top.gg/bot/{}/vote) to get eight uses of the ``{}votehint`` command, which gives you a personal hint via direct message!", bot->user.id.get(), settings.prefix), c->get_id().get());
 					} else if (base_command == "votehint" || base_command == "vh") {
 						if (game_in_progress) {
 							if ((state->gamestate == TRIV_FIRST_HINT || state->gamestate == TRIV_SECOND_HINT || state->gamestate == TRIV_TIME_UP) && (state->round % 10) != 0 && state->curr_answer != "") {
 								db::resultset rs = db::query("SELECT *,(unix_timestamp(vote_time) + 43200 - unix_timestamp()) as remaining FROM infobot_votes WHERE snowflake_id = ? AND now() < vote_time + interval 12 hour", {user.get_id().get()});
 								if (rs.size() == 0) {
-									SimpleEmbed("<:wc_rs:667695516737470494>", fmt::format("You haven't voted for the bot today!\n[Vote for the bot every 12 hours](https://top.gg/bot/{}/vote) to get eight uses of the ``{}trivia votehint`` command, which delivers a personal hint for the current question to you via direct message.", bot->user.id.get(), settings.prefix), c->get_id().get());
+									SimpleEmbed("<:wc_rs:667695516737470494>", fmt::format("You haven't voted for the bot today!\n[Vote for the bot every 12 hours](https://top.gg/bot/{}/vote) to get eight uses of the ``{}votehint`` command, which delivers a personal hint for the current question to you via direct message.", bot->user.id.get(), settings.prefix), c->get_id().get());
 									return false;
 								} else {
 									int64_t remaining_hints = from_string<int64_t>(rs[0]["dm_hints"], std::dec);
@@ -1509,7 +1509,7 @@ public:
 					} else if (base_command == "leave") {
 						std::string teamname = get_current_team(user.get_id().get());
 						if (teamname.empty() || teamname == "!NOTEAM") {
-							SimpleEmbed(":warning:", fmt::format("**{}**, you aren't a member of any team! Use **{}trivia join** to join a team!", user.get_username(), settings.prefix), c->get_id().get());
+							SimpleEmbed(":warning:", fmt::format("**{}**, you aren't a member of any team! Use **{}join** to join a team!", user.get_username(), settings.prefix), c->get_id().get());
 						} else {
 							leave_team(user.get_id().get());
 							SimpleEmbed(":busts_in_silhouette:", fmt::format("**{}** has left team **{}**", user.get_username(), teamname), c->get_id().get(), "Come back, we'll miss you! :cry:");
