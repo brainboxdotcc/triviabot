@@ -43,6 +43,8 @@
 $settings = json_decode(file_get_contents("config.json"));
 $conn = mysqli_connect($settings->dbhost, $settings->dbuser, $settings->dbpass);
 
+date_default_timezone_set("Europe/London");
+
 if (!$conn) {
 	die("Can't connect to database, check config.json\n");
 }
@@ -73,9 +75,10 @@ foreach($monitors->monitors as $monitor) {
 		$shardinfo = mysqli_fetch_object(mysqli_query($conn, "SELECT * FROM infobot_shard_status WHERE id = " . mysqli_real_escape_string($conn, $m[1])));
 		if ($shardinfo) {
 			mysqli_query($conn, "UPDATE infobot_shard_status SET uptimerobot_heartbeat = '" . mysqli_real_escape_string($conn, $monitor->url) . "' WHERE id = " . mysqli_real_escape_string($conn, $m[1]));
-			if ($shardinfo->connected && $shardinfo->online && time() - strtotime($shardinfo->updated) < 90) {
+			if ($shardinfo->connected && $shardinfo->online && (time() - date('Z')) - strtotime($shardinfo->updated) < 240) {
 				$utr_response = file_get_contents($monitor->url);
 				mysqli_query($conn, "UPDATE infobot_shard_status SET uptimerobot_response = '" . mysqli_real_escape_string($conn, $utr_response) . "' WHERE id = " . mysqli_real_escape_string($conn, $m[1]));
+				print $utr_response . "\n";
 			}
 		}
 	}

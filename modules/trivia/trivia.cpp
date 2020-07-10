@@ -292,7 +292,7 @@ public:
 	virtual std::string GetVersion()
 	{
 		/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-		std::string version = "$ModVer 5$";
+		std::string version = "$ModVer 6$";
 		return "1.0." + version.substr(8,version.length() - 9);
 	}
 
@@ -892,10 +892,8 @@ public:
 			} else {
 				bot->core.log->warn("do_answer_correct(): Channel {} was deleted", state->channel_id);
 			}
-			state->gamestate = TRIV_ASK_QUESTION;
-		} else {
-			state->gamestate = TRIV_END;
 		}
+		state->gamestate = TRIV_ASK_QUESTION;
 	}
 
 	void do_end_game(state_t* state)
