@@ -292,7 +292,7 @@ public:
 	virtual std::string GetVersion()
 	{
 		/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-		std::string version = "$ModVer 6$";
+		std::string version = "$ModVer 7$";
 		return "1.0." + version.substr(8,version.length() - 9);
 	}
 
@@ -343,9 +343,11 @@ public:
 
 	void UpdatePresenceLine()
 	{
+		bot->counters["activegames"] = 0;
 		while (!terminating) {
 			sleep(30);
 			int32_t questions = get_total_questions();
+			bot->counters["activegames"] = GetActiveGames();
 			bot->core.update_presence(fmt::format("Trivia! {} questions, {} active games on {} servers through {} shards", Comma(questions), Comma(GetActiveGames()), Comma(bot->core.get_guild_count()), Comma(bot->core.shard_max_count)), aegis::gateway::objects::activity::Game);
 		}
 	}
