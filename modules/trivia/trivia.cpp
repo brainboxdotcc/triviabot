@@ -292,7 +292,7 @@ public:
 	virtual std::string GetVersion()
 	{
 		/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-		std::string version = "$ModVer 7$";
+		std::string version = "$ModVer 8$";
 		return "1.0." + version.substr(8,version.length() - 9);
 	}
 
@@ -1321,7 +1321,12 @@ public:
 							SimpleEmbed(":octagonal_sign:", fmt::format("**{}** has stopped the round of trivia!", user.get_username()), c->get_id().get());
 							{
 								std::lock_guard<std::mutex> user_cache_lock(states_mutex);
-								states.erase(states.find(channel_id));
+								auto i = states.find(channel_id);
+								if (i != states.end()) {
+									states.erase(i);
+								} else{
+									bot->core.log->error("Channel deleted while game stopping on this channel, cid={}", channel_id);
+								}
 							}
 							delete state;
 						} else {
