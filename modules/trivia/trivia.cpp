@@ -267,7 +267,7 @@ public:
 	}
 	
 	/* Send an embed containing one or more fields */
-	void EmbedWithFields(const std::string &title, std::vector<field_t> fields, int64_t channelID)
+	void EmbedWithFields(const std::string &title, std::vector<field_t> fields, int64_t channelID, const std::string &url = "")
 	{
 		aegis::channel* c = bot->core.find_channel(channelID);
 		uint32_t colour = 3238819;
@@ -275,7 +275,7 @@ public:
 			guild_settings_t settings = GetGuildSettings(c->get_guild().get_id().get());
 			colour = settings.embedcolour;
 		}
-		std::string json = fmt::format("{{\"title\":\"{}\",\"color\":{},\"fields\":[", escape_json(title), colour);
+		std::string json = fmt::format("{{" + (!url.empty() ? "\"url\":\"" + escape_json(url) + "\"," : "") + "\"title\":\"{}\",\"color\":{},\"fields\":[", escape_json(title), colour);
 		for (auto v = fields.begin(); v != fields.end(); ++v) {
 			json += fmt::format("{{\"name\":\"{}\",\"value\":\"{}\",\"inline\":{}}}", escape_json(v->name), escape_json(v->value), v->_inline ? "true" : "false");
 			auto n = v;
@@ -283,7 +283,7 @@ public:
 				json += ",";
 			}
 		}
-		json += "],\"footer\":{\"link\":\"https://triviabot.co.uk/\",\"text\":\"Powered by TriviaBot\"}}";
+		json += "],\"footer\":{\"link\":\"https://triviabot.co.uk/\",\"text\":\"Powered By TriviaBot!\",\"icon_url\":\"https:\\/\\/triviabot.co.uk\\/images\\/triviabot_tl_icon.png\"}}";
 		ProcessEmbed(json, channelID);
 	}
 
@@ -662,7 +662,7 @@ public:
 
 		aegis::channel* c = bot->core.find_channel(state->channel_id);
 		if (c) {
-			EmbedWithFields(fmt::format(":question: Question {} of {}", state->round, state->numquestions - 1), {{"Insane Round!", fmt::format("Total of {} possible answers", state->insane_num), false}, {"Question", state->curr_question, false}}, c->get_id().get());
+			EmbedWithFields(fmt::format(":question: Question {} of {}", state->round, state->numquestions - 1), {{"Insane Round!", fmt::format("Total of {} possible answers", state->insane_num), false}, {"Question", state->curr_question, false}}, c->get_id().get(), fmt::format("https://triviabot.co.uk/report/?c={}&g={}&insane={}", state->channel_id, state->guild_id, state->curr_qid + state->channel_id));
 		} else {
 			bot->core.log->warn("do_insane_round(): Channel {} was deleted", state->channel_id);
 		}
@@ -788,7 +788,7 @@ public:
 
 			aegis::channel* c = bot->core.find_channel(state->channel_id);
 			if (c) {
-				EmbedWithFields(fmt::format(":question: Question {} of {}", state->round, state->numquestions - 1), {{"Category", state->curr_category, false}, {"Question", state->curr_question, false}}, c->get_id().get());
+				EmbedWithFields(fmt::format(":question: Question {} of {}", state->round, state->numquestions - 1), {{"Category", state->curr_category, false}, {"Question", state->curr_question, false}}, c->get_id().get(), fmt::format("https://triviabot.co.uk/report/?c={}&g={}&normal={}", state->channel_id, state->guild_id, state->curr_qid + state->channel_id));
 			} else {
 				bot->core.log->warn("do_normal_round(): Channel {} was deleted", state->channel_id);
 			}
@@ -1300,7 +1300,7 @@ public:
 								if (c) {
 									state->guild_id = c->get_guild().get_id();
 									bot->core.log->info("Started game on guild {}, channel {}, {} questions [{}]", state->guild_id, channel_id, questions, quickfire ? "quickfire" : "normal");
-									EmbedWithFields(fmt::format(":question: New {}trivia round {} by {}!", (quickfire ? "**QUICKFIRE** " : ""), (resumed ? "resumed" : "started"), (resumed ? "a bot admin" : user.get_username())), {{"Questions", fmt::format("{}", questions), false}, {"Get Ready", "First question coming up!", false}}, c->get_id().get());
+									EmbedWithFields(fmt::format(":question: New {}trivia round {} by {}!", (quickfire ? "**QUICKFIRE** " : ""), (resumed ? "resumed" : "started"), (resumed ? "a bot admin" : user.get_username())), {{"Questions", fmt::format("{}", questions), false}, {"Get Ready", "First question coming up!", false}, {"How to play", "Type your answer on channel to answer a question. The first to answer gets the points. To report any incorrect or invalid question, click the link in the title of the question's message."}}, c->get_id().get());
 									state->timer = new std::thread(&state_t::tick, state);
 								}
 
