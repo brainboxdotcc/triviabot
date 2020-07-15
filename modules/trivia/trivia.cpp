@@ -292,7 +292,7 @@ public:
 	virtual std::string GetVersion()
 	{
 		/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-		std::string version = "$ModVer 8$";
+		std::string version = "$ModVer 9$";
 		return "1.0." + version.substr(8,version.length() - 9);
 	}
 
@@ -1527,7 +1527,7 @@ public:
 						/* Custom commands handled completely by the API */
 						std::string rest;
 						std::getline(tokens, rest);
-						std::string reply = trim(custom_command(base_command, rest, msg.get_user().get_id(), message.msg.get_channel_id().get()));
+						std::string reply = trim(custom_command(base_command, trim(rest), msg.get_user().get_id(), message.msg.get_channel_id().get(), c->get_guild().get_id().get()));
 						if (!reply.empty()) {
 							ProcessEmbed(reply, message.msg.get_channel_id().get());
 						}

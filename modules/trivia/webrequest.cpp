@@ -181,9 +181,9 @@ void send_hint(int64_t snowflake_id, const std::string &hint, uint32_t remaining
 	fetch_page(fmt::format("?opt=customhint&user_id={}&hint={}&remaining={}", snowflake_id, url_encode(hint), remaining));
 }
 
-std::string custom_command(const std::string &command, const std::string &parameters, int64_t user_id, int64_t channel_id)
+std::string custom_command(const std::string &command, const std::string &parameters, int64_t user_id, int64_t channel_id, int64_t guild_id)
 {
-	return fetch_page(fmt::format("?opt=command&user_id={}&channel_id={}&command={}&parameters={}", user_id, channel_id, url_encode(command), url_encode(parameters)));
+	return fetch_page(fmt::format("?opt=command&user_id={}&channel_id={}&command={}&guild_id={}&parameters={}", user_id, channel_id, guild_id, url_encode(command), url_encode(parameters)));
 }
 
 void enable_category(const std::string &cat)
