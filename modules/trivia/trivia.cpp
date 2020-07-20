@@ -333,7 +333,7 @@ public:
 	virtual std::string GetVersion()
 	{
 		/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-		std::string version = "$ModVer 12$";
+		std::string version = "$ModVer 13$";
 		return "1.0." + version.substr(8,version.length() - 9);
 	}
 
@@ -947,6 +947,8 @@ public:
 	void do_end_game(state_t* state)
 	{
 		bot->core.log->debug("do_end_game: G:{} C:{}", state->guild_id, state->channel_id);
+
+		log_game_end(state->guild_id, state->channel_id);
 
 		aegis::channel* c = bot->core.find_channel(state->channel_id);
 		if (c) {
