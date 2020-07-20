@@ -54,7 +54,7 @@ public:
 	TriviaModule(Bot* instigator, ModuleLoader* ml) : Module(instigator, ml), terminating(false)
 	{
 		srand(time(NULL) * time(NULL));
-		ml->Attach({ I_OnMessage, I_OnPresenceUpdate, I_OnChannelDelete, I_OnGuildDelete }, this);
+		ml->Attach({ I_OnMessage, I_OnPresenceUpdate, I_OnChannelDelete, I_OnGuildDelete, I_OnAllShardsReady }, this);
 		notvowel = new PCRE("/[^aeiou_]/", true);
 		number_tidy_dollars = new PCRE("^([\\d\\,]+)\\s+dollars$");
 		number_tidy_nodollars = new PCRE("^([\\d\\,]+)\\s+(.+?)$");
@@ -113,6 +113,45 @@ public:
 		return true;
 	}
 
+	virtual bool OnAllShardsReady()
+	{
+		char hostname[1024];
+		hostname[1023] = '\0';
+		gethostname(hostname, 1023);
+		json active = get_active(hostname);
+		for (auto game = active.begin(); game != active.end(); ++game) {
+			bool quickfire = (*game)["quickfire"].get<std::string>() == "1";
+			std::vector<std::string> sl = fetch_shuffle_list();
+			if (sl.size() >= 50) {
+				state_t* state = new state_t(this);
+				state->start_time = time(NULL);
+				state->shuffle_list = sl;
+				state->gamestate = TRIV_ASK_QUESTION;
+				state->numquestions = from_string<uint32_t>((*game)["questions"].get<std::string>(), std::dec) + 1;
+				state->streak = from_string<uint32_t>((*game)["streak"].get<std::string>(), std::dec);
+				state->last_to_answer = from_string<int64_t>((*game)["lastanswered"].get<std::string>(), std::dec);
+				state->round = from_string<uint32_t>((*game)["question_index"].get<std::string>(), std::dec);
+				state->interval = (quickfire ? (TRIV_INTERVAL / 4) : TRIV_INTERVAL);
+				state->channel_id = from_string<int64_t>((*game)["channel_id"].get<std::string>(), std::dec);
+				state->guild_id = from_string<int64_t>((*game)["guild_id"].get<std::string>(), std::dec);
+				state->curr_qid = 0;
+				state->curr_answer = "";
+				aegis::channel* c = bot->core.find_channel(state->channel_id);
+				{
+					std::lock_guard<std::mutex> user_cache_lock(states_mutex);
+					states[state->channel_id] = state;
+				}
+				if (c) {
+					bot->core.log->info("Resumed game on guild {}, channel {}, {} questions [{}]", state->guild_id, state->channel_id, state->numquestions, quickfire ? "quickfire" : "normal");
+					state->timer = new std::thread(&state_t::tick, state);
+				} else {
+					state->terminating = true;
+				}
+			}
+		}
+		return true;
+	}
+
 	virtual bool OnChannelDelete(const modevent::channel_delete &cd)
 	{
 		bot->core.log->error("Channel {} deleted, removing active game states", cd.channel.id.get());
@@ -124,6 +163,7 @@ public:
 			for (auto state = states.begin(); state != states.end(); ++state) {
 				if (state->second->channel_id == cd.channel.id.get()) {
 					auto s = state->second;
+					log_game_end(s->guild_id, s->channel_id);
 					states.erase(state);
 					delete s;
 					one_deleted = true;
@@ -147,6 +187,7 @@ public:
 			for (auto state = states.begin(); state != states.end(); ++state) {
 				if (state->second->guild_id == gd.guild_id.get()) {
 					auto s = state->second;
+					log_game_end(s->guild_id, s->channel_id);
 					states.erase(state);
 					delete s;
 					one_deleted = true;
@@ -292,7 +333,7 @@ public:
 	virtual std::string GetVersion()
 	{
 		/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-		std::string version = "$ModVer 11$";
+		std::string version = "$ModVer 12$";
 		return "1.0." + version.substr(8,version.length() - 9);
 	}
 
@@ -646,6 +687,8 @@ public:
 		}
 
 		std::vector<std::string> answers = fetch_insane_round(state->curr_qid);
+		log_question_index(state->guild_id, state->channel_id, state->round, state->streak, state->last_to_answer);
+
 		state->insane = {};
 		for (auto n = answers.begin(); n != answers.end(); ++n) {
 			if (n == answers.begin()) {
@@ -680,6 +723,8 @@ public:
 
 		bool valid = false;
 		int32_t tries = 0;
+
+		log_question_index(state->guild_id, state->channel_id, state->round, state->streak, state->last_to_answer);
 
 		do {
 			state->curr_qid = 0;
@@ -1045,6 +1090,7 @@ public:
 				/* Tombstoned session */
 				if (state->terminating) {
 					bot->core.log->warn("Removed terminated thread from C:{}", channel_id);
+					log_game_end(state->guild_id, state->channel_id);
 					delete state;
 					states.erase(state_iter);
 					state = nullptr;
@@ -1213,7 +1259,8 @@ public:
 						bool resumed = false;
 
 						if (base_command == "fstart") {
-							if (moderator) {
+							db::resultset rs = db::query("SELECT * FROM trivia_access WHERE user_id = ? AND enabled = 1", {user.get_id().get()});
+							if (rs.size() > 0) {
 								int64_t cid;
 								tokens >> cid;
 								auto newc = bot->core.find_channel(cid);
@@ -1303,6 +1350,10 @@ public:
 									bot->core.log->info("Started game on guild {}, channel {}, {} questions [{}]", state->guild_id, channel_id, questions, quickfire ? "quickfire" : "normal");
 									EmbedWithFields(fmt::format(":question: New {}trivia round {} by {}!", (quickfire ? "**QUICKFIRE** " : ""), (resumed ? "resumed" : "started"), (resumed ? "a bot admin" : user.get_username())), {{"Questions", fmt::format("{}", questions), false}, {"Get Ready", "First question coming up!", false}, {"How to play", "Type your answer on channel to answer a question. The first to answer gets the points. To report any incorrect or invalid question, click the link in the title of the question's message."}}, c->get_id().get());
 									state->timer = new std::thread(&state_t::tick, state);
+
+									log_game_start(state->guild_id, state->channel_id, questions, quickfire, c->get_name(), user.get_id().get());
+								} else {
+									state->terminating = true;
 								}
 
 								return false;
@@ -1320,6 +1371,7 @@ public:
 								}
 							}
 							SimpleEmbed(":octagonal_sign:", fmt::format("**{}** has stopped the round of trivia!", user.get_username()), c->get_id().get());
+							log_game_end(c->get_guild().get_id().get(), c->get_id().get());
 							{
 								std::lock_guard<std::mutex> user_cache_lock(states_mutex);
 								auto i = states.find(channel_id);
@@ -1612,7 +1664,12 @@ state_t::~state_t()
 void state_t::tick()
 {
 	while (!terminating) {
-		sleep(this->interval);
+		for (int j = 0; j < this->interval; j++) {
+			sleep(1);
+			if (terminating) {
+				break;
+			}
+		}
 		creator->Tick(this);
 		int64_t game_length = time(NULL) - start_time;
 		if (game_length >= GAME_REAP_SECS) {
