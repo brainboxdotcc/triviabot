@@ -292,7 +292,7 @@ public:
 	virtual std::string GetVersion()
 	{
 		/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-		std::string version = "$ModVer 10$";
+		std::string version = "$ModVer 11$";
 		return "1.0." + version.substr(8,version.length() - 9);
 	}
 
@@ -645,7 +645,7 @@ public:
 			return;
 		}
 
-		std::vector<std::string> answers = fetch_insane_round();
+		std::vector<std::string> answers = fetch_insane_round(state->curr_qid);
 		state->insane = {};
 		for (auto n = answers.begin(); n != answers.end(); ++n) {
 			if (n == answers.begin()) {

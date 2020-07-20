@@ -166,9 +166,17 @@ std::vector<std::string> get_disabled_list()
 	return to_list(fetch_page("?opt=listdis"));
 }
 
-std::vector<std::string> fetch_insane_round()
+std::vector<std::string> fetch_insane_round(int64_t &question_id)
 {
-	return to_list(fetch_page("?opt=insane"));
+	std::vector<std::string> list = to_list(fetch_page("?opt=newinsane"));
+	if (list.size() >= 3) {
+		question_id = from_string<int64_t>(list[0], std::dec);
+		list.erase(list.begin());
+
+	} else {
+		question_id = 0;
+	}
+	return list;
 }
 
 void enable_all_categories()
