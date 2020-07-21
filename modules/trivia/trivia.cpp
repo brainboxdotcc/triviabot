@@ -706,7 +706,10 @@ public:
 		}
 
 		std::vector<std::string> answers = fetch_insane_round(state->curr_qid);
-		log_question_index(state->guild_id, state->channel_id, state->round, state->streak, state->last_to_answer, state->gamestate);
+		if (log_question_index(state->guild_id, state->channel_id, state->round, state->streak, state->last_to_answer, state->gamestate)) {
+			StopGame(state);
+			return;
+		}
 
 		state->insane = {};
 		for (auto n = answers.begin(); n != answers.end(); ++n) {
@@ -871,7 +874,9 @@ public:
 		state->score = (state->interval == TRIV_INTERVAL ? 4 : 8);
 		/* Advance state to first hint */
 		state->gamestate = TRIV_FIRST_HINT;
-		log_question_index(state->guild_id, state->channel_id, state->round, state->streak, state->last_to_answer, state->gamestate);
+		if (log_question_index(state->guild_id, state->channel_id, state->round, state->streak, state->last_to_answer, state->gamestate)) {
+			StopGame(state);
+		}
 
 	}
 
@@ -892,7 +897,9 @@ public:
 		}
 		state->gamestate = TRIV_SECOND_HINT;
 		state->score = (state->interval == TRIV_INTERVAL ? 2 : 4);
-		log_question_index(state->guild_id, state->channel_id, state->round, state->streak, state->last_to_answer, state->gamestate);
+		if (log_question_index(state->guild_id, state->channel_id, state->round, state->streak, state->last_to_answer, state->gamestate)) {
+			StopGame(state);
+		}
 	}
 
 	void do_second_hint(state_t* state)
@@ -912,7 +919,9 @@ public:
 		}
 		state->gamestate = TRIV_TIME_UP;
 		state->score = (state->interval == TRIV_INTERVAL ? 1 : 2);
-		log_question_index(state->guild_id, state->channel_id, state->round, state->streak, state->last_to_answer, state->gamestate);
+		if (log_question_index(state->guild_id, state->channel_id, state->round, state->streak, state->last_to_answer, state->gamestate)) {
+			StopGame(state);
+		}
 	}
 
 	void do_time_up(state_t* state)
@@ -947,7 +956,9 @@ public:
 		state->gamestate = (state->round > state->numquestions ? TRIV_END : TRIV_ASK_QUESTION);
 		state->round++;
 		state->score = 0;
-		log_question_index(state->guild_id, state->channel_id, state->round, state->streak, state->last_to_answer, state->gamestate);
+		if (log_question_index(state->guild_id, state->channel_id, state->round, state->streak, state->last_to_answer, state->gamestate)) {
+			StopGame(state);
+		}
 	}
 
 	void do_answer_correct(state_t* state)
@@ -967,7 +978,9 @@ public:
 			}
 		}
 		state->gamestate = TRIV_ASK_QUESTION;
-		log_question_index(state->guild_id, state->channel_id, state->round, state->streak, state->last_to_answer, state->gamestate);
+		if (log_question_index(state->guild_id, state->channel_id, state->round, state->streak, state->last_to_answer, state->gamestate)) {
+			StopGame(state);
+		}
 	}
 
 	void do_end_game(state_t* state)
@@ -1076,6 +1089,15 @@ public:
 		bot->DisposeThread(t);
 	}
 
+	void StopGame(state_t* state)
+	{
+		if (state->gamestate != TRIV_END) {
+			SimpleEmbed(":octagonal_sign:", "The round of trivia was stopped from the [dashboard](https://triviabot.co.uk/dashboard/)!", state->channel_id, "Round Stopping!");
+			state->gamestate = TRIV_END;
+			state->terminating = false;
+		}
+	}
+
 	virtual bool OnMessage(const modevent::message_create &message, const std::string& clean_message, bool mentioned, const std::vector<std::string> &stringmentions)
 	{
 		std::vector<std::string> param;
@@ -1163,7 +1185,10 @@ public:
 							}
 						}
 						update_score_only(user.get_id().get(), state->guild_id, 1);
-						log_question_index(state->guild_id, state->channel_id, state->round, state->streak, state->last_to_answer, state->gamestate);
+						if (log_question_index(state->guild_id, state->channel_id, state->round, state->streak, state->last_to_answer, state->gamestate)) {
+							StopGame(state);
+							return false;
+						}
 					}
 				} else {
 					/* Normal round */
@@ -1221,7 +1246,10 @@ public:
 						}
 
 						state->curr_answer = "";
-						log_question_index(state->guild_id, state->channel_id, state->round, state->streak, state->last_to_answer, state->gamestate);
+						if (log_question_index(state->guild_id, state->channel_id, state->round, state->streak, state->last_to_answer, state->gamestate)) {
+							StopGame(state);
+							return false;
+						}
 					}
 				}
 
