@@ -405,10 +405,11 @@ public:
 	{
 		bot->counters["activegames"] = 0;
 		while (!terminating) {
-			sleep(30);
+			sleep(20);
 			int32_t questions = get_total_questions();
 			bot->counters["activegames"] = GetActiveGames();
 			bot->core.update_presence(fmt::format("Trivia! {} questions, {} active games on {} servers through {} shards", Comma(questions), Comma(GetActiveGames()), Comma(bot->core.get_guild_count()), Comma(bot->core.shard_max_count)), aegis::gateway::objects::activity::Game);
+			CheckForQueuedStarts();
 		}
 	}
 
@@ -1098,6 +1099,31 @@ public:
 		}
 	}
 
+	void CheckForQueuedStarts()
+	{
+		db::resultset rs = db::query("SELECT * FROM start_queue ORDER BY queuetime", {});
+		for (auto r = rs.begin(); r != rs.end(); ++r) {
+			int64_t guild_id = from_string<int64_t>((*r)["guild_id"], std::dec);
+			int64_t channel_id = from_string<int64_t>((*r)["channel_id"], std::dec);
+			int64_t user_id = from_string<int64_t>((*r)["user_id"], std::dec);
+			int32_t questions = from_string<int32_t>((*r)["questions"], std::dec);
+			int32_t quickfire = from_string<int32_t>((*r)["quickfire"], std::dec);
+			bot->core.log->info("Remote start, guild_id={} channel_id={} user_id={} questions={} type={}", guild_id, channel_id, user_id, questions, quickfire ? "quickfire" : "normal");
+			guild_settings_t settings = GetGuildSettings(guild_id);
+			aegis::gateway::objects::message m(fmt::format("{}{} {}", settings.prefix, (quickfire ? "quickfire" : "start"), questions), bot->core.find_channel(channel_id), bot->core.find_guild(guild_id));
+
+			struct modevent::message_create msg = {
+				*(bot->core.get_shard_mgr().get_shards()[0]),
+				*(bot->core.find_user(user_id)),
+				*(bot->core.find_channel(channel_id)),
+				m
+			};
+
+			OnMessage(msg, msg.msg.get_content(), false, {});
+			db::query("DELETE FROM start_queue WHERE channel_id = ?", {channel_id});
+		}
+	}
+
 	virtual bool OnMessage(const modevent::message_create &message, const std::string& clean_message, bool mentioned, const std::vector<std::string> &stringmentions)
 	{
 		std::vector<std::string> param;
@@ -1119,17 +1145,29 @@ public:
 		trivia_message = tidy_num(trivia_message);
 
 		/* Retrieve current state for channel, if there is no state object, no game is in progress */
-		int64_t channel_id = msg.get_channel_id().get();
 		state_t* state = nullptr;
 		int64_t guild_id = 0;
+		aegis::channel* c = nullptr;
 
-		aegis::channel* c = bot->core.find_channel(msg.get_channel_id().get());
-		if (c) {
-			guild_id = c->get_guild().get_id().get();
+		if (msg.has_channel()) {
+			if (msg.get_channel_id().get() == 0) {
+				c = bot->core.find_channel(msg.get_channel().get_id().get());
+			} else {
+				c = bot->core.find_channel(msg.get_channel_id().get());
+			}
+			if (c) {
+				guild_id = c->get_guild().get_id().get();
+			} else {
+				bot->core.log->warn("Channel is missing!!! C:{}", msg.get_channel_id().get());
+				return true;
+			}
 		} else {
-			bot->core.log->warn("Channel is missing!!! C:{}", msg.get_channel_id().get());
+			/* No channel! */
+			bot->core.log->debug("Message without channel, {}", msg.get_id().get());
 			return true;
 		}
+
+		int64_t channel_id = c->get_id().get();
 
 		guild_settings_t settings = GetGuildSettings(guild_id);
 
@@ -1159,7 +1197,7 @@ public:
 		if (game_in_progress) {
 			if (state->gamestate == TRIV_ASK_QUESTION || state->gamestate == TRIV_FIRST_HINT || state->gamestate == TRIV_SECOND_HINT || state->gamestate == TRIV_TIME_UP) {
 
-				aegis::channel* c = bot->core.find_channel(msg.get_channel_id().get());
+				aegis::channel* c = bot->core.find_channel(channel_id);
 				aegis::user::guild_info& gi = bot->core.find_user(user.get_id())->get_guild_info(c->get_guild().get_id());
 				cache_user(&user, &c->get_guild(), &gi);
 				
@@ -1240,7 +1278,7 @@ public:
 						/* Update last person to answer */
 						state->last_to_answer = user.get_id().get();
 
-						aegis::channel* c = bot->core.find_channel(msg.get_channel_id().get());
+						aegis::channel* c = bot->core.find_channel(channel_id);
 						if (c) {
 							SimpleEmbed(":thumbsup:", ans_message, c->get_id().get(), fmt::format("Correct, {}!", user.get_username()));
 						}
@@ -1260,15 +1298,17 @@ public:
 			/* Command */
 
 			std::string command = clean_message.substr(settings.prefix.length(), clean_message.length() - settings.prefix.length());
-			aegis::channel* c = bot->core.find_channel(msg.get_channel_id().get());
+			aegis::channel* c = bot->core.find_channel(channel_id);
 			if (c && &user != nullptr) {
 
 				bot->core.log->info("CMD (USER={}, GUILD={}): <{}> {}", user.get_id().get(), c->get_guild().get_id().get(), user.get_username(), clean_message);
 
-				aegis::user* _user = bot->core.find_user(msg.get_user().get_id());
+				aegis::user* _user = bot->core.find_user(user.get_id().get());
 				if (_user) {
 					aegis::user::guild_info& gi = _user->get_guild_info(c->get_guild().get_id());
 					cache_user(_user, &c->get_guild(), &gi);
+				} else {
+					bot->core.log->debug("Command with no user!");
 				}
 
 				if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == c->get_guild().get_id()) {
@@ -1341,7 +1381,7 @@ public:
 						std::ifstream configfile("../config.json");
 						configfile >> document;
 						json shitlist = document["shitlist"];
-						aegis::channel* c = bot->core.find_channel(msg.get_channel_id().get());
+						aegis::channel* c = bot->core.find_channel(channel_id);
 						for (auto entry = shitlist.begin(); entry != shitlist.end(); ++entry) {
 							int64_t sl_guild_id = from_string<int64_t>(entry->get<std::string>(), std::dec);
 					                if (c->get_guild().get_id().get() == sl_guild_id) {
@@ -1631,20 +1671,21 @@ public:
 					} else if (base_command == "help") {
 						std::string section;
 						tokens >> section;
-						GetHelp(section, message.msg.get_channel_id().get(), bot->user.username, bot->user.id.get(), msg.get_user().get_username(), msg.get_user().get_id().get(), settings.embedcolour);
+						GetHelp(section, channel_id, bot->user.username, bot->user.id.get(), msg.get_user().get_username(), msg.get_user().get_id().get(), settings.embedcolour);
 					} else {
 						/* Custom commands handled completely by the API */
 						std::string rest;
 						std::getline(tokens, rest);
-						std::string reply = trim(custom_command(base_command, trim(rest), msg.get_user().get_id(), message.msg.get_channel_id().get(), c->get_guild().get_id().get()));
+						std::string reply = trim(custom_command(base_command, trim(rest), msg.get_user().get_id(), channel_id, c->get_guild().get_id().get()));
 						if (!reply.empty()) {
-							ProcessEmbed(reply, message.msg.get_channel_id().get());
+							ProcessEmbed(reply, channel_id);
 						}
 					}
 				}
 
+			} else {
+				bot->core.log->error("Invalid user record in command");
 			}
-
 		}
 
 		return true;
