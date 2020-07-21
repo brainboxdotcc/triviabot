@@ -352,7 +352,7 @@ public:
 	virtual std::string GetVersion()
 	{
 		/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-		std::string version = "$ModVer 13$";
+		std::string version = "$ModVer 14$";
 		return "1.0." + version.substr(8,version.length() - 9);
 	}
 
@@ -1198,8 +1198,12 @@ public:
 			if (state->gamestate == TRIV_ASK_QUESTION || state->gamestate == TRIV_FIRST_HINT || state->gamestate == TRIV_SECOND_HINT || state->gamestate == TRIV_TIME_UP) {
 
 				aegis::channel* c = bot->core.find_channel(channel_id);
-				aegis::user::guild_info& gi = bot->core.find_user(user.get_id())->get_guild_info(c->get_guild().get_id());
-				cache_user(&user, &c->get_guild(), &gi);
+				if (&user != nullptr) {
+					aegis::user::guild_info& gi = bot->core.find_user(user.get_id())->get_guild_info(c->get_guild().get_id());
+					cache_user(&user, &c->get_guild(), &gi);
+				} else {
+					return true;
+				}
 				
 				if (state->round % 10 == 0) {
 					/* Insane round */
