@@ -127,13 +127,20 @@ public:
 				state->start_time = time(NULL);
 
 			/* Get shuffle list from state */
-			json shuffle = json::parse((*game)["qlist"].get<std::string>());
-			for (auto s = shuffle.begin(); s != shuffle.end(); ++s) {
-				state->shuffle_list.push_back(s->get<std::string>());
+			if (!(*game)["qlist"].get<std::string>().empty()) {
+				json shuffle = json::parse((*game)["qlist"].get<std::string>());
+	
+				for (auto s = shuffle.begin(); s != shuffle.end(); ++s) {
+					state->shuffle_list.push_back(s->get<std::string>());
+				}
+				bot->core.log->debug("Resume shuffle list length: {}", state->shuffle_list.size());
+				state->gamestate = (trivia_state_t)from_string<uint32_t>((*game)["state"].get<std::string>(), std::dec);
+			} else {
+				/* No shuffle list to resume from, create a new one */
+				state->shuffle_list = fetch_shuffle_list();
+				state->gamestate = TRIV_ASK_QUESTION;
 			}
-			bot->core.log->debug("Resume shuffle list length: {}", state->shuffle_list.size());
 
-			state->gamestate = (trivia_state_t)from_string<uint32_t>((*game)["state"].get<std::string>(), std::dec);
 			state->numquestions = from_string<uint32_t>((*game)["questions"].get<std::string>(), std::dec) + 1;
 			state->streak = from_string<uint32_t>((*game)["streak"].get<std::string>(), std::dec);
 			state->last_to_answer = from_string<int64_t>((*game)["lastanswered"].get<std::string>(), std::dec);
