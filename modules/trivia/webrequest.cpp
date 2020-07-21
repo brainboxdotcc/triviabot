@@ -209,12 +209,12 @@ int32_t update_score_only(int64_t snowflake_id, int64_t guild_id, int score)
 	return from_string<int32_t>(fetch_page(fmt::format("?opt=scoreonly&nick={}&score={}&guild_id={}", snowflake_id, score, guild_id)), std::dec);
 }
 
-void log_game_start(int64_t guild_id, int64_t channel_id, int64_t number_questions, bool quickfire, const std::string &channel_name, int64_t user_id)
+void log_game_start(int64_t guild_id, int64_t channel_id, int64_t number_questions, bool quickfire, const std::string &channel_name, int64_t user_id, const std::vector<std::string> &questions)
 {
 	char hostname[1024];
 	hostname[1023] = '\0';
 	gethostname(hostname, 1023);
-	fetch_page(fmt::format("?opt=gamestart&guild_id={}&channel_id={}&questions={}&quickfire={}&user_id={}&channel_name={}&hostname={}", guild_id, channel_id, number_questions, quickfire, user_id, url_encode(channel_name), url_encode(hostname)));
+	fetch_page(fmt::format("?opt=gamestart&guild_id={}&channel_id={}&questions={}&quickfire={}&user_id={}&channel_name={}&hostname={}", guild_id, channel_id, number_questions, quickfire, user_id, url_encode(channel_name), url_encode(hostname)), json(questions).dump());
 }
 
 void log_game_end(int64_t guild_id, int64_t channel_id)
@@ -225,12 +225,12 @@ void log_game_end(int64_t guild_id, int64_t channel_id)
 	fetch_page(fmt::format("?opt=gameend&guild_id={}&channel_id={}&hostname={}", guild_id, channel_id, url_encode(hostname)));
 }
 
-void log_question_index(int64_t guild_id, int64_t channel_id, int32_t index, uint32_t streak, int64_t lastanswered)
+void log_question_index(int64_t guild_id, int64_t channel_id, int32_t index, uint32_t streak, int64_t lastanswered, int32_t state)
 {
 	char hostname[1024];
 	hostname[1023] = '\0';
 	gethostname(hostname, 1023);
-	fetch_page(fmt::format("?opt=gameindex&guild_id={}&channel_id={}&index={}&hostname={}&streak={}&lastanswered={}", guild_id, channel_id, index, url_encode(hostname), streak, lastanswered));
+	fetch_page(fmt::format("?opt=gameindex&guild_id={}&channel_id={}&index={}&hostname={}&streak={}&lastanswered={}&state={}", guild_id, channel_id, index, url_encode(hostname), streak, lastanswered, state));
 }
 
 int32_t update_score(int64_t snowflake_id, int64_t guild_id, time_t recordtime, int64_t id, int score)
