@@ -1236,7 +1236,7 @@ public:
 					/* Normal round */
 
 					/* Answer on channel is an exact match for the current answer and/or it is numeric, OR, it's non-numeric and has a levenstein distance near enough to the current answer (account for misspellings) */
-					if (!state->curr_answer.empty() && ((trivia_message.length() >= state->curr_answer.length() && lowercase(state->curr_answer) == lowercase(trivia_message)) || (!PCRE("^\\$(\\d+)$").Match(state->curr_answer) && !PCRE("^(\\d+)$").Match(state->curr_answer) && levenstein(trivia_message, state->curr_answer) < 2))) {
+					if (!state->curr_answer.empty() && ((trivia_message.length() >= state->curr_answer.length() && lowercase(state->curr_answer) == lowercase(trivia_message)) || (!PCRE("^\\$(\\d+)$").Match(state->curr_answer) && !PCRE("^(\\d+)$").Match(state->curr_answer) && (state->curr_answer.length() > 5 && levenstein(trivia_message, state->curr_answer) < 2)))) {
 						/* Correct answer */
 						state->gamestate = TRIV_ANSWER_CORRECT;
 						time_t time_to_answer = time(NULL) - state->asktime;
@@ -1530,8 +1530,6 @@ public:
 							SimpleEmbed(":warning:", fmt::format("No trivia round is running here, **{}**!\n[Vote for the bot every 12 hours](https://top.gg/bot/{}/vote) to get eight uses of this command, which delivers a personal hint for the current question to you via direct message.", user.get_username(), bot->user.id.get()), c->get_id().get());
 							return false;
 						}
-					} else if (base_command == "rank") {
-						SimpleEmbed(":bar_chart:", get_rank(user.get_id().get(), c->get_guild().get_id().get()), c->get_id().get());
 					} else if (base_command == "stats") {
 						show_stats(c->get_guild().get_id(), channel_id);
 					} else if (base_command == "info") {
