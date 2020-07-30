@@ -352,7 +352,7 @@ public:
 	virtual std::string GetVersion()
 	{
 		/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-		std::string version = "$ModVer 14$";
+		std::string version = "$ModVer 15$";
 		return "1.0." + version.substr(8,version.length() - 9);
 	}
 
@@ -1244,9 +1244,12 @@ public:
 						time_t submit_time = state->recordtime;
 						int32_t score = state->score;
 
+						/* Clear the answer here or there is a race condition where two may answer at the same time during the web requests below */
+						std::string saved_answer = state->curr_answer;
+						state->curr_answer = "";
 
 						std::string ans_message;
-						ans_message.append(fmt::format("The answer was **{}**. You gain **{}** {} for answering in **{}** seconds!", state->curr_answer, score, pts, time_to_answer));
+						ans_message.append(fmt::format("The answer was **{}**. You gain **{}** {} for answering in **{}** seconds!", saved_answer, score, pts, time_to_answer));
 						if (time_to_answer < state->recordtime) {
 							ans_message.append(fmt::format("\n**{}** has broken the record time for this question!", user.get_username()));
 							submit_time = time_to_answer;
@@ -1287,7 +1290,6 @@ public:
 							SimpleEmbed(":thumbsup:", ans_message, c->get_id().get(), fmt::format("Correct, {}!", user.get_username()));
 						}
 
-						state->curr_answer = "";
 						if (log_question_index(state->guild_id, state->channel_id, state->round, state->streak, state->last_to_answer, state->gamestate)) {
 							StopGame(state);
 							return false;
@@ -1642,6 +1644,7 @@ public:
 					} else if (base_command == "join") {
 						std::string teamname;
 						std::getline(tokens, teamname);
+						teamname = trim(teamname);
 						if (join_team(user.get_id().get(), teamname)) {
 							SimpleEmbed(":busts_in_silhouette:", fmt::format("You have successfully joined the team \"**{}**\", **{}**", teamname, user.get_username()), c->get_id().get(), "Call for backup!");
 						} else {
@@ -1650,6 +1653,7 @@ public:
 					} else if (base_command == "create") {
 						std::string newteamname;
 						std::getline(tokens, newteamname);
+						newteamname = trim(newteamname);
 						std::string teamname = get_current_team(user.get_id().get());
 						if (teamname.empty() || teamname == "!NOTEAM") {
 							newteamname = create_new_team(newteamname);
@@ -1678,6 +1682,7 @@ public:
 						/* Custom commands handled completely by the API */
 						std::string rest;
 						std::getline(tokens, rest);
+						rest = trim(rest);
 						std::string reply = trim(custom_command(base_command, trim(rest), msg.get_user().get_id(), channel_id, c->get_guild().get_id().get()));
 						if (!reply.empty()) {
 							ProcessEmbed(reply, channel_id);
