@@ -31,7 +31,20 @@ if (!$conn) {
 
 mysqli_select_db($conn, $settings->dbname);
 
+require_once("../www/conf.php");
+require_once("../www/functions.php");
+
+$s = hrtime(true);
+$r = botApiRequest("channels/537746810471448580", 'GET');
+$discord_api_ping = (hrtime(true) - $s) / 1000000;
+$s = hrtime(true);
+file_get_contents("http://triviabot.co.uk/api/");
+$tb_api_ping = (hrtime(true) - $s) / 1000000;
+$s = hrtime(true);
+mysqli_query($link, "SHOW TABLES");
+$db_ping = (hrtime(true) - $s) / 1000000;
+
 mysqli_query($conn, "DELETE FROM infobot_cpu_graph WHERE logdate < now() - INTERVAL 1 DAY");
 $cpu_percent =  trim(`ps aux | grep "./bot " | grep -v grep | awk -F ' ' '{ print $3 }'`);
 $current = mysqli_fetch_object(mysqli_query($conn, "SELECT * FROM infobot_discord_counts WHERE dev = 0"));
-mysqli_query($conn, "INSERT INTO trivia_graphs (entry_date, cpu, user_count, server_count, channel_count, memory_usage, games) VALUES(now(), $cpu_percent, $current->user_count, $current->server_count, $current->channel_count, $current->memory_usage, $current->games)");
+mysqli_query($conn, "INSERT INTO trivia_graphs (entry_date, cpu, user_count, server_count, channel_count, memory_usage, games, discord_ping, trivia_ping, db_ping) VALUES(now(), $cpu_percent, $current->user_count, $current->server_count, $current->channel_count, $current->memory_usage, $current->games, $discord_api_ping, $tb_api_ping, $db_ping)");
