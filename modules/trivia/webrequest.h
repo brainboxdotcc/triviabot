@@ -52,7 +52,7 @@ int32_t get_score_average(int64_t guild_id);
 int64_t get_day_winner(int64_t guild_id);
 std::string get_current_team(int64_t snowflake_id);
 void leave_team(int64_t snowflake_id);
-bool join_team(int64_t snowflake_id, const std::string &team);
+bool join_team(int64_t snowflake_id, const std::string &team, int64_t channel_id);
 std::string get_rank(int64_t snowflake_id, int64_t guild_id);
 void change_streak(int64_t snowflake_id, int64_t guild_id, int score);
 streak_t get_streak(int64_t snowflake_id, int64_t guild_id);
