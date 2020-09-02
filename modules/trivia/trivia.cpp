@@ -352,7 +352,7 @@ public:
 	virtual std::string GetVersion()
 	{
 		/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-		std::string version = "$ModVer 15$";
+		std::string version = "$ModVer 16$";
 		return "1.0." + version.substr(8,version.length() - 9);
 	}
 
@@ -1346,6 +1346,10 @@ public:
 						base_command = lowercase(base_command);
 					}
 
+					if (base_command == "qf") {
+						base_command = "quickfire";
+					}
+
 					if (base_command == "start" || base_command == "quickfire" || base_command == "trivia" || base_command == "fstart") {
 
 						int32_t questions;
@@ -1645,7 +1649,7 @@ public:
 						std::string teamname;
 						std::getline(tokens, teamname);
 						teamname = trim(teamname);
-						if (join_team(user.get_id().get(), teamname)) {
+						if (join_team(user.get_id().get(), teamname, c->get_id().get())) {
 							SimpleEmbed(":busts_in_silhouette:", fmt::format("You have successfully joined the team \"**{}**\", **{}**", teamname, user.get_username()), c->get_id().get(), "Call for backup!");
 						} else {
 							SimpleEmbed(":warning:", fmt::format("I cannot bring about world peace, make you a sandwich, or join that team, **{}**", user.get_username()), c->get_id().get());
@@ -1658,7 +1662,7 @@ public:
 						if (teamname.empty() || teamname == "!NOTEAM") {
 							newteamname = create_new_team(newteamname);
 							if (newteamname != "__NO__") {
-								join_team(user.get_id().get(), newteamname);
+								join_team(user.get_id().get(), newteamname, c->get_id().get());
 								SimpleEmbed(":busts_in_silhouette:", fmt::format("You have successfully **created** and joined the team \"**{}**\", **{}**", newteamname, user.get_username()), c->get_id().get(), "It's unsafe to go alone...");
 							} else {
 								SimpleEmbed(":warning:", fmt::format("I couldn't create that team, **{}**...", user.get_username()), c->get_id().get());

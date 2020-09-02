@@ -274,12 +274,16 @@ void leave_team(int64_t snowflake_id)
 	fetch_page(fmt::format("?opt=leaveteam&nick={}", snowflake_id));
 }
 
-bool join_team(int64_t snowflake_id, const std::string &team)
+bool join_team(int64_t snowflake_id, const std::string &team, int64_t channel_id)
 {
-	std::string r = trim(fetch_page(fmt::format("?opt=jointeam&name={}", url_encode(team))));
+	std::string r = trim(fetch_page(fmt::format("?opt=jointeam&name={}&channel_id={}&nick={}", url_encode(team), channel_id, snowflake_id)));
 	if (r == "__OK__") {
-		fetch_page(fmt::format("?opt=setteam&nick={}&team={}", snowflake_id, url_encode(team)));
-		return true;
+		std::string r = trim(fetch_page(fmt::format("?opt=setteam&nick={}&team={}&channel_id={}", snowflake_id, url_encode(team), channel_id)));
+		if (r == "__OK__") {
+			return true;
+		} else {
+			return false;
+		}
 	} else {
 		return false;
 	}
