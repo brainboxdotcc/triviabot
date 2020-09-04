@@ -352,7 +352,7 @@ public:
 	virtual std::string GetVersion()
 	{
 		/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-		std::string version = "$ModVer 17$";
+		std::string version = "$ModVer 18$";
 		return "1.0." + version.substr(8,version.length() - 9);
 	}
 
@@ -947,8 +947,11 @@ public:
 		}
 
 		state->curr_answer = "";
-		state->last_to_answer = 0;
-		state->streak = 1;
+
+		if (state->round % 10 == 0) {
+			state->last_to_answer = 0;
+			state->streak = 1;
+		}
 
 		if (c && state->round <= state->numquestions - 2) {
 			SimpleEmbed("<a:loading:658667224067735562>", fmt::format("Next question coming up in about **{}** seconds...", state->interval), c->get_id().get(), "A little time to rest your fingers...");
