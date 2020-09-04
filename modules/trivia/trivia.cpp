@@ -352,7 +352,7 @@ public:
 	virtual std::string GetVersion()
 	{
 		/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-		std::string version = "$ModVer 16$";
+		std::string version = "$ModVer 17$";
 		return "1.0." + version.substr(8,version.length() - 9);
 	}
 
@@ -1278,8 +1278,11 @@ public:
 							if (state->streak > s.bigstreak && s.topstreaker != user.get_id().get()) {
 								ans_message.append(fmt::format("\n**{}** just beat <@{}>'s record streak of {} answers!", user.get_username(), s.topstreaker, state->streak));
 							}
-						} else if (state->streak > 1 && !state->last_to_answer) {
+						} else if (state->streak > 1 && state->last_to_answer && state->last_to_answer != user.get_id().get()) {
 							ans_message.append(fmt::format("\n**{}** just ended <@{}>'s record streak of {} answers in a row!", user.get_username(), state->last_to_answer, state->streak));
+							state->streak = 1;
+						} else {
+							state->streak = 1;
 						}
 
 						/* Update last person to answer */
