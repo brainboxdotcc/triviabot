@@ -352,7 +352,7 @@ public:
 	virtual std::string GetVersion()
 	{
 		/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-		std::string version = "$ModVer 18$";
+		std::string version = "$ModVer 19$";
 		return "1.0." + version.substr(8,version.length() - 9);
 	}
 
@@ -928,29 +928,33 @@ public:
 	void do_time_up(state_t* state)
 	{
 		bot->core.log->debug("do_time_up: G:{} C:{}", state->guild_id, state->channel_id);
-
 		aegis::channel* c = bot->core.find_channel(state->channel_id);
-		if (c) {
-			if (state->round % 10 == 0) {
-				int32_t found = state->insane_num - state->insane_left;
-				SimpleEmbed(":alarm_clock:", fmt::format("**{}** answers were found!", found), c->get_id().get(), "Time Up!");
-			} else {
-				SimpleEmbed(":alarm_clock:", fmt::format("The answer was: **{}**", state->curr_answer), c->get_id().get(), "Out of time!");
-			}
-		}
-		/* FIX: You can only lose your streak on a non-insane round */
-		if (state->round % 10 != 0 && state->streak > 1 && state->last_to_answer) {
-			aegis::user* u = bot->core.find_user(state->last_to_answer);
-			if (u) {
-				SimpleEmbed(":octagonal_sign:", fmt::format("**{}**'s streak of **{}** answers in a row comes to a grinding halt!", u->get_username(), state->streak), c->get_id().get());
-			}
-		}
 
-		state->curr_answer = "";
+		/* Prevent race conditon if user answered before this triggered */
+		if (state->curr_answer != "" && state->round % 10 != 0) {
+		
+			if (c) {
+				if (state->round % 10 == 0) {
+					int32_t found = state->insane_num - state->insane_left;
+					SimpleEmbed(":alarm_clock:", fmt::format("**{}** answers were found!", found), c->get_id().get(), "Time Up!");
+				} else {
+					SimpleEmbed(":alarm_clock:", fmt::format("The answer was: **{}**", state->curr_answer), c->get_id().get(), "Out of time!");
+				}
+			}
+			/* FIX: You can only lose your streak on a non-insane round */
+			if (state->round % 10 != 0 && state->streak > 1 && state->last_to_answer) {
+				aegis::user* u = bot->core.find_user(state->last_to_answer);
+				if (u) {
+					SimpleEmbed(":octagonal_sign:", fmt::format("**{}**'s streak of **{}** answers in a row comes to a grinding halt!", u->get_username(), state->streak), c->get_id().get());
+				}
+			}
+	
+			state->curr_answer = "";
 
-		if (state->round % 10 == 0) {
-			state->last_to_answer = 0;
-			state->streak = 1;
+			if (state->round % 10 != 0) {
+				state->last_to_answer = 0;
+				state->streak = 1;
+			}
 		}
 
 		if (c && state->round <= state->numquestions - 2) {
@@ -1282,7 +1286,7 @@ public:
 								ans_message.append(fmt::format("\n**{}** just beat <@{}>'s record streak of {} answers!", user.get_username(), s.topstreaker, state->streak));
 							}
 						} else if (state->streak > 1 && state->last_to_answer && state->last_to_answer != user.get_id().get()) {
-							ans_message.append(fmt::format("\n**{}** just ended <@{}>'s record streak of {} answers in a row!", user.get_username(), state->last_to_answer, state->streak));
+							ans_message.append(fmt::format("\n**{}** just ended <@{}>'s streak of {} answers in a row!", user.get_username(), state->last_to_answer, state->streak));
 							state->streak = 1;
 						} else {
 							state->streak = 1;
