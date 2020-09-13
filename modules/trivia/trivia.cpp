@@ -67,6 +67,10 @@ public:
 		set_io_context(bot->io, Bot::GetConfig("apikey"));
 		presence_update = new std::thread(&TriviaModule::UpdatePresenceLine, this);
 		startup = time(NULL);
+		{
+			std::lock_guard<std::mutex> cmd_list_lock(cmds_mutex);
+			api_commands = get_api_command_names();
+		}
 	}
 
 	Bot* GetBot()
