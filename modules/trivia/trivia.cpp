@@ -70,6 +70,10 @@ public:
 		{
 			std::lock_guard<std::mutex> cmd_list_lock(cmds_mutex);
 			api_commands = get_api_command_names();
+			bot->core.log->info("Initial API command count: {}", api_commands.size());
+			for (auto m : api_commands) {
+				bot->core.log->info("command='{}'", m);
+			}
 		}
 	}
 
@@ -1712,7 +1716,7 @@ public:
 						bool command_exists = false;
 						{
 							std::lock_guard<std::mutex> cmd_list_lock(cmds_mutex);
-							command_exists = (std::find(api_commands.begin(), api_commands.end(), trim(base_command)) != api_commands.end());
+							command_exists = (std::find(api_commands.begin(), api_commands.end(), trim(lowercase(base_command))) != api_commands.end());
 						}
 						if (command_exists) {
 							bool can_execute = false;
@@ -1735,7 +1739,10 @@ public:
 							} else {
 								/* Display rate limit message */
 								SimpleEmbed(":snail:", fmt::format("Please wait {} seconds before trying the **{}** command again!", PER_CHANNEL_RATE_LIMIT, base_command), c->get_id().get(), "Woah there!");
+								bot->core.log->debug("Command '{}' not sent to API, rate limited", trim(lowercase(base_command)));
 							}
+						} else {
+							bot->core.log->debug("Command '{}' not known to API", trim(lowercase(base_command)));
 						}
 					}
 				}

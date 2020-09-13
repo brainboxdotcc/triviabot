@@ -158,7 +158,7 @@ std::vector<std::string> fetch_question(int64_t id)
 
 std::vector<std::string> get_api_command_names()
 {
-	return to_list(fetch_page("?listcommands"));
+	return to_list(fetch_page("?opt=listcommands"));
 }
 
 std::vector<std::string> fetch_shuffle_list(int64_t guild_id)
