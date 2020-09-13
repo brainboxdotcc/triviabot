@@ -35,6 +35,9 @@
 // Number of seconds between states in a normal round. Quickfire is 0.25 of this.
 #define TRIV_INTERVAL 20
 
+// Number of seconds between allowed API-bound calls, per channel
+#define PER_CHANNEL_RATE_LIMIT 4
+
 typedef std::map<int64_t, int64_t> teamlist_t;
 typedef std::map<int64_t, std::string> numstrs_t;
 

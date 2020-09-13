@@ -156,9 +156,14 @@ std::vector<std::string> fetch_question(int64_t id)
 	return to_list(fetch_page(fmt::format("?id={}", id)));
 }
 
-std::vector<std::string> fetch_shuffle_list()
+std::vector<std::string> get_api_command_names()
 {
-	return to_list(fetch_page("?opt=shuffle"));
+	return to_list(fetch_page("?listcommands"));
+}
+
+std::vector<std::string> fetch_shuffle_list(int64_t guild_id)
+{
+	return to_list(fetch_page(fmt::format("?opt=shuffle&guild_id={}",guild_id)));
 }
 
 std::vector<std::string> get_disabled_list()

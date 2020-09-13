@@ -56,7 +56,11 @@ Bot::Bot(bool development, bool testing, bool intents, aegis::core &aegiscore, a
  */
 void Bot::DisposeThread(std::thread* t) {
 	if (t) {
-		t->join();
+		try {
+			t->join();
+		}
+		catch (std::exception &e) {
+		}
 		delete t;
 	}
 

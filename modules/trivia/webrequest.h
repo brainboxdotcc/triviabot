@@ -38,7 +38,7 @@ void set_io_context(class asio::io_context* ioc, const std::string &apikey);
 std::string web_request(const std::string &_host, const std::string &_path, const std::string &_body);
 std::string fetch_page(const std::string &_endpoint, const std::string &_body = "");
 std::vector<std::string> fetch_question(int64_t id);
-std::vector<std::string> fetch_shuffle_list();
+std::vector<std::string> fetch_shuffle_list(int64_t guild_id);
 std::vector<std::string> get_disabled_list();
 std::vector<std::string> fetch_insane_round(int64_t &question_id);
 void enable_all_categories();
@@ -67,4 +67,5 @@ void log_game_start(int64_t guild_id, int64_t channel_id, int64_t number_questio
 void log_game_end(int64_t guild_id, int64_t channel_id);
 bool log_question_index(int64_t guild_id, int64_t channel_id, int32_t index, uint32_t streak, int64_t lastanswered, int32_t state);
 json get_active(const std::string &hostname);
+std::vector<std::string> get_api_command_names();
 

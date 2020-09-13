@@ -46,9 +46,12 @@ class TriviaModule : public Module
 	PCRE* number_tidy_negative;
 	PCRE* prefix_match;
 	std::map<int64_t, state_t*> states;
+	std::unordered_map<int64_t, time_t> limits;
+	std::vector<std::string> api_commands;
 	std::thread* presence_update;
 	bool terminating;
 	std::mutex states_mutex;
+	std::mutex cmds_mutex;
 	time_t startup;
 public:
 	TriviaModule(Bot* instigator, ModuleLoader* ml) : Module(instigator, ml), terminating(false)
@@ -110,6 +113,10 @@ public:
 				}
 			);
 		}
+		{
+			std::lock_guard<std::mutex> cmd_list_lock(cmds_mutex);
+			api_commands = get_api_command_names();
+		}
 		return true;
 	}
 
@@ -124,7 +131,7 @@ public:
 			bool quickfire = (*game)["quickfire"].get<std::string>() == "1";
 
 			state_t* state = new state_t(this);
-				state->start_time = time(NULL);
+			state->start_time = time(NULL);
 
 			/* Get shuffle list from state */
 			if (!(*game)["qlist"].get<std::string>().empty()) {
@@ -137,7 +144,7 @@ public:
 				state->gamestate = (trivia_state_t)from_string<uint32_t>((*game)["state"].get<std::string>(), std::dec);
 			} else {
 				/* No shuffle list to resume from, create a new one */
-				state->shuffle_list = fetch_shuffle_list();
+				state->shuffle_list = fetch_shuffle_list(from_string<int64_t>((*game)["guild_id"].get<std::string>(), std::dec));
 				state->gamestate = TRIV_ASK_QUESTION;
 			}
 
@@ -352,7 +359,7 @@ public:
 	virtual std::string GetVersion()
 	{
 		/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-		std::string version = "$ModVer 20$";
+		std::string version = "$ModVer 21$";
 		return "1.0." + version.substr(8,version.length() - 9);
 	}
 
@@ -762,10 +769,14 @@ public:
 				state->curr_timesasked = from_string<int32_t>(data[7], std::dec);
 				state->curr_lastcorrect = data[8];
 				state->recordtime = from_string<time_t>(data[9],std::dec);
-				valid = true;
+				valid = !state->curr_question.empty();
+				if (!valid) {
+					sleep(2);
+					tries++;
+				}
 			} else {
 				bot->core.log->debug("do_normal_round: Invalid question response size {} retrieving question {}", data.size(), state->shuffle_list[state->round - 1]);
-				sleep(1);
+				sleep(2);
 				tries++;
 				valid = false;
 			}
@@ -1181,7 +1192,9 @@ public:
 			if (state_iter != states.end()) {
 				state = state_iter->second;
 				/* Tombstoned session */
-				if (state->terminating) {
+				if (!state) {
+					states.erase(state_iter);
+				} else if (state->terminating) {
 					bot->core.log->warn("Removed terminated thread from C:{}", channel_id);
 					log_game_end(state->guild_id, state->channel_id);
 					delete state;
@@ -1436,7 +1449,7 @@ public:
 								return false;
 							}
 
-							std::vector<std::string> sl = fetch_shuffle_list();
+							std::vector<std::string> sl = fetch_shuffle_list(c->get_guild().get_id());
 							if (sl.size() < 50) {
 								SimpleEmbed(":warning:", fmt::format("**{}**, something spoopy happened. Please try again in a couple of minutes!", user.get_username()), c->get_id().get(), "That wasn't supposed to happen...");
 								return false;
@@ -1484,17 +1497,18 @@ public:
 								}
 							}
 							SimpleEmbed(":octagonal_sign:", fmt::format("**{}** has stopped the round of trivia!", user.get_username()), c->get_id().get());
-							log_game_end(c->get_guild().get_id().get(), c->get_id().get());
 							{
 								std::lock_guard<std::mutex> user_cache_lock(states_mutex);
 								auto i = states.find(channel_id);
 								if (i != states.end()) {
+									delete i->second;
 									states.erase(i);
-								} else{
+								} else {
 									bot->core.log->error("Channel deleted while game stopping on this channel, cid={}", channel_id);
 								}
+								state = nullptr;
 							}
-							delete state;
+							log_game_end(c->get_guild().get_id().get(), c->get_id().get());
 						} else {
 							SimpleEmbed(":warning:", fmt::format("No trivia round is running here, **{}**!", user.get_username()), c->get_id().get());
 						}
@@ -1691,12 +1705,33 @@ public:
 						GetHelp(section, channel_id, bot->user.username, bot->user.id.get(), msg.get_user().get_username(), msg.get_user().get_id().get(), settings.embedcolour);
 					} else {
 						/* Custom commands handled completely by the API */
-						std::string rest;
-						std::getline(tokens, rest);
-						rest = trim(rest);
-						std::string reply = trim(custom_command(base_command, trim(rest), msg.get_user().get_id(), channel_id, c->get_guild().get_id().get()));
-						if (!reply.empty()) {
-							ProcessEmbed(reply, channel_id);
+						bool command_exists = false;
+						{
+							std::lock_guard<std::mutex> cmd_list_lock(cmds_mutex);
+							command_exists = (api_commands.find(trim(base_command)) != api_commands.end());
+						}
+						if (command_exists) {
+							bool can_execute = false;
+							auto check = limits.find(channel_id);
+							if (check == limits.end()) {
+								can_execute = true;
+								limits[channel_id] = time(NULL) + PER_CHANNEL_RATE_LIMIT;
+							} else if (time(NULL) > check->second) {
+								can_execute = true;
+								limits[channel_id] = time(NULL) + PER_CHANNEL_RATE_LIMIT;
+							}
+							if (can_execute) {
+								std::string rest;
+								std::getline(tokens, rest);
+								rest = trim(rest);
+								std::string reply = trim(custom_command(base_command, trim(rest), msg.get_user().get_id(), channel_id, c->get_guild().get_id().get()));
+								if (!reply.empty()) {
+									ProcessEmbed(reply, channel_id);
+								}
+							} else {
+								/* Display rate limit message */
+								SimpleEmbed(":snail:", fmt::format("Please wait {} seconds before trying the **{}** command again!", PER_CHANNEL_RATE_LIMIT, base_command), c->get_id().get(), "Woah there!");
+							}
 						}
 					}
 				}
@@ -1772,8 +1807,10 @@ state_t::~state_t()
 {
 	terminating = true;
 	gamestate = TRIV_END;
-	creator->GetBot()->core.log->debug("state_t::~state(): G:{} C:{}", guild_id, channel_id);
-	creator->DisposeThread(timer);
+	if (creator) {
+		creator->GetBot()->core.log->debug("state_t::~state(): G:{} C:{}", guild_id, channel_id);
+		creator->DisposeThread(timer);
+	}
 }
 
 void state_t::tick()
