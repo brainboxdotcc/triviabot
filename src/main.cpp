@@ -81,7 +81,13 @@ Bot::~Bot() {
  * Returns the named string value from config.json
  */
 std::string Bot::GetConfig(const std::string &name) {
-	return configdocument[name].get<std::string>();
+	try {
+		return configdocument[name].get<std::string>();
+	}
+	catch (const std::exception &e) {
+		/* Malformed config or missing key */
+		return "";
+	}
 }
 
 /**
