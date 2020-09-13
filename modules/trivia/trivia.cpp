@@ -359,7 +359,7 @@ public:
 	virtual std::string GetVersion()
 	{
 		/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-		std::string version = "$ModVer 21$";
+		std::string version = "$ModVer 22$";
 		return "1.0." + version.substr(8,version.length() - 9);
 	}
 
@@ -1708,7 +1708,7 @@ public:
 						bool command_exists = false;
 						{
 							std::lock_guard<std::mutex> cmd_list_lock(cmds_mutex);
-							command_exists = (api_commands.find(trim(base_command)) != api_commands.end());
+							command_exists = (std::find(api_commands.begin(), api_commands.end(), trim(base_command)) != api_commands.end());
 						}
 						if (command_exists) {
 							bool can_execute = false;
