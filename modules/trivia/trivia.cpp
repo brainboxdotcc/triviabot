@@ -250,7 +250,7 @@ public:
 	{
 		aegis::guild* guild = bot->core.find_guild(guild_id);
 		if (guild == nullptr) {
-			return guild_settings_t(guild_id, "!", {}, 3238819, false, false, false, 0, "");
+			return guild_settings_t(guild_id, "!", {}, 3238819, false, false, false, 0, "", "en");
 		} else {
 			db::resultset r = db::query("SELECT * FROM bot_guild_settings WHERE snowflake_id = ?", {guild_id});
 			if (!r.empty()) {
@@ -260,10 +260,10 @@ public:
 				while ((s >> role_id)) {
 					role_list.push_back(role_id);
 				}
-				return guild_settings_t(from_string<int64_t>(r[0]["snowflake_id"], std::dec), r[0]["prefix"], role_list, from_string<uint32_t>(r[0]["embedcolour"], std::dec), (r[0]["premium"] == "1"), (r[0]["only_mods_stop"] == "1"), (r[0]["role_reward_enabled"] == "1"), from_string<int64_t>(r[0]["role_reward_id"], std::dec), r[0]["custom_url"]);
+				return guild_settings_t(from_string<int64_t>(r[0]["snowflake_id"], std::dec), r[0]["prefix"], role_list, from_string<uint32_t>(r[0]["embedcolour"], std::dec), (r[0]["premium"] == "1"), (r[0]["only_mods_stop"] == "1"), (r[0]["role_reward_enabled"] == "1"), from_string<int64_t>(r[0]["role_reward_id"], std::dec), r[0]["custom_url"], r[0]["language"]);
 			} else {
 				db::query("INSERT INTO bot_guild_settings (snowflake_id) VALUES('?')", {guild_id});
-				return guild_settings_t(guild_id, "!", {}, 3238819, false, false, false, 0, "");
+				return guild_settings_t(guild_id, "!", {}, 3238819, false, false, false, 0, "", "en");
 			}
 		}
 	}
@@ -515,19 +515,6 @@ public:
 		return currency + std::to_string(initial);
 	}
 
-	std::string scramble(std::string str)
-	{
-		int x = str.length();
-		for(int y = x; y > 0; y--) 
-		{ 
-			int pos = rand()%x;
-			char tmp = str[y-1];
-			str[y-1] = str[pos];
-			str[pos] = tmp;
-		}
-		return std::string("Scrambled answer: ") + lowercase(str);
-	}
-
 	bool isVowel(char c) 
 	{ 
 		return (c == 'A' || c == 'E' || c == 'I' || c == 'O' || c == 'U' || c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u'); 
@@ -690,8 +677,6 @@ public:
 		std::cout << "conv_num('five'): " << conv_num("five") << "\n";
 		std::cout << "conf_num('ten pin bowling'): " << conv_num("ten pin bowling") << "\n";
 		std::cout << "conv_num('zero'): " << conv_num("zero") << "\n";
-		std::cout << "scramble('abcdef'): " << scramble("abcdef") <<"\n";
-		std::cout << "scramble('A'): " << scramble("A") << "\n";
        		std::cout << "piglatin('easy with the pig latin my friend'): " << piglatin("easy with the pig latin my friend") << "\n";
 		std::cout << "conv_num('one million dollars'): " << conv_num("one million dollars") << "\n";
 		std::cout << "tidy_num('$1,000,000'): " << tidy_num("$1,000,000") << "\n";
@@ -721,7 +706,7 @@ public:
 			return;
 		}
 
-		std::vector<std::string> answers = fetch_insane_round(state->curr_qid);
+		std::vector<std::string> answers = fetch_insane_round(state->curr_qid, state->guild_id);
 		if (log_question_index(state->guild_id, state->channel_id, state->round, state->streak, state->last_to_answer, state->gamestate)) {
 			StopGame(state);
 			return;
@@ -765,8 +750,8 @@ public:
 		do {
 			state->curr_qid = 0;
 			bot->core.log->debug("do_normal_round: fetch_question: '{}'", state->shuffle_list[state->round - 1]);
-			std::vector<std::string> data = fetch_question(from_string<int64_t>(state->shuffle_list[state->round - 1], std::dec));
-			if (data.size() >= 10) {
+			std::vector<std::string> data = fetch_question(from_string<int64_t>(state->shuffle_list[state->round - 1], std::dec), state->guild_id);
+			if (data.size() >= 12) {
 				state->curr_qid = from_string<int64_t>(data[0], std::dec);
 				state->curr_question = data[1];
 				state->curr_answer = data[2];
@@ -777,14 +762,18 @@ public:
 				state->curr_timesasked = from_string<int32_t>(data[7], std::dec);
 				state->curr_lastcorrect = data[8];
 				state->recordtime = from_string<time_t>(data[9],std::dec);
+				state->shuffle1 = data[10];
+				state->shuffle2 = data[11];
 				valid = !state->curr_question.empty();
 				if (!valid) {
+					state->curr_qid = 0;
 					sleep(2);
 					tries++;
 				}
 			} else {
 				bot->core.log->debug("do_normal_round: Invalid question response size {} retrieving question {}", data.size(), state->shuffle_list[state->round - 1]);
 				sleep(2);
+				state->curr_qid = 0;
 				tries++;
 				valid = false;
 			}
@@ -828,12 +817,13 @@ public:
 					} else if (r >= 5 && r <= 8) {
 						state->curr_customhint1 = letterlong(state->curr_customhint1);
 					} else {
-						state->curr_customhint1 = scramble(state->curr_customhint1);
+						state->curr_customhint1 = std::string("Scrambled Answer: ") + state->shuffle1;
 					}
 				}
 			}
 			if (state->curr_customhint2.empty()) {
 				/* No custom second hint, build one */
+				guild_settings_t settings = GetGuildSettings(state->guild_id);
 				state->curr_customhint2 = state->curr_answer;
 				if (is_number(state->curr_customhint2) || PCRE("^\\$(\\d+)$").Match(state->curr_customhint2)) {
 					std::string currency;
@@ -862,9 +852,10 @@ public:
 								state->curr_customhint2[x] = '#';
 							}
 						}
-					} else if (r >= 5 && r <= 6) {
+					} else if ((r >= 5 && r <= 6) || settings.language != "en") {
 						state->curr_customhint2 = vowelcount(state->curr_customhint2);
 					} else {
+						/* settings.language check for en above, because piglatin only makes sense in english */
 						state->curr_customhint2 = piglatin(state->curr_customhint2);
 					}
 
@@ -1809,7 +1800,7 @@ public:
 
 state_t::state_t(TriviaModule* _creator) : creator(_creator), terminating(false), channel_id(0), guild_id(0), numquestions(0), round(0), score(0), start_time(0), shuffle_list({}), gamestate(TRIV_ASK_QUESTION), curr_qid(0),
 					recordtime(0), curr_question(""), curr_answer(""), curr_customhint1(""), curr_customhint2(""), curr_category(""), curr_lastasked(0), curr_recordtime(0), curr_lastcorrect(""),
-					last_to_answer(0), streak(0), asktime(0), found(false), interval(20), insane_num(0), insane_left(0), curr_timesasked(0), next_quickfire(0), insane({}), timer(nullptr)
+					last_to_answer(0), streak(0), asktime(0), found(false), interval(20), insane_num(0), insane_left(0), curr_timesasked(0), next_quickfire(0), insane({}), timer(nullptr), shuffle1(""), shuffle2("")
 
 {
 }
@@ -1843,8 +1834,8 @@ void state_t::tick()
 	}
 }
 
-guild_settings_t::guild_settings_t(int64_t _guild_id, const std::string &_prefix, const std::vector<int64_t> &_moderator_roles, uint32_t _embedcolour, bool _premium, bool _only_mods_stop, bool _role_reward_enabled, int64_t _role_reward_id, const std::string &_custom_url)
-	: guild_id(_guild_id), prefix(_prefix), moderator_roles(_moderator_roles), embedcolour(_embedcolour), premium(_premium), only_mods_stop(_only_mods_stop), role_reward_enabled(_role_reward_enabled), role_reward_id(_role_reward_id), custom_url(_custom_url)
+guild_settings_t::guild_settings_t(int64_t _guild_id, const std::string &_prefix, const std::vector<int64_t> &_moderator_roles, uint32_t _embedcolour, bool _premium, bool _only_mods_stop, bool _role_reward_enabled, int64_t _role_reward_id, const std::string &_custom_url, const std::string &_language)
+	: guild_id(_guild_id), prefix(_prefix), moderator_roles(_moderator_roles), embedcolour(_embedcolour), premium(_premium), only_mods_stop(_only_mods_stop), role_reward_enabled(_role_reward_enabled), role_reward_id(_role_reward_id), custom_url(_custom_url), language(_language)
 {
 }
 

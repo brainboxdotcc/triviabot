@@ -71,7 +71,8 @@ class guild_settings_t
 	bool role_reward_enabled;
 	int64_t role_reward_id;
 	std::string custom_url;
-	guild_settings_t(int64_t _guild_id, const std::string &_prefix, const std::vector<int64_t> &_moderator_roles, uint32_t _embedcolour, bool _premium, bool _only_mods_stop, bool _role_reward_enabled, int64_t _role_reward_id, const std::string &_custom_url);
+	std::string language;
+	guild_settings_t(int64_t _guild_id, const std::string &_prefix, const std::vector<int64_t> &_moderator_roles, uint32_t _embedcolour, bool _premium, bool _only_mods_stop, bool _role_reward_enabled, int64_t _role_reward_id, const std::string &_custom_url, const std::string &_language);
 };
 
 class state_t
@@ -94,6 +95,8 @@ class state_t
 	std::string curr_customhint1;
 	std::string curr_customhint2;
 	std::string curr_category;
+	std::string shuffle1;
+	std::string shuffle2;
 	time_t curr_lastasked;
 	time_t curr_recordtime;
 	std::string curr_lastcorrect;

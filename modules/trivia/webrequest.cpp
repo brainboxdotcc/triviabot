@@ -151,9 +151,9 @@ void cache_user(const aegis::user *_user, const aegis::guild *_guild, const aegi
 _guild->get_id().get(), url_encode(_guild->get_name()), url_encode(_guild->get_icon()), _guild->get_owner().get(), url_encode(member_roles)), body.str());
 }
 
-std::vector<std::string> fetch_question(int64_t id)
+std::vector<std::string> fetch_question(int64_t id, int64_t guild_id)
 {
-	return to_list(fetch_page(fmt::format("?id={}", id)));
+	return to_list(fetch_page(fmt::format("?id={}&guild_id={}", id, guild_id)));
 }
 
 std::vector<std::string> get_api_command_names()
@@ -171,9 +171,9 @@ std::vector<std::string> get_disabled_list()
 	return to_list(fetch_page("?opt=listdis"));
 }
 
-std::vector<std::string> fetch_insane_round(int64_t &question_id)
+std::vector<std::string> fetch_insane_round(int64_t &question_id, int64_t guild_id)
 {
-	std::vector<std::string> list = to_list(fetch_page("?opt=newinsane"));
+	std::vector<std::string> list = to_list(fetch_page(fmt::format("?opt=newinsane&guild_id={}", guild_id)));
 	if (list.size() >= 3) {
 		question_id = from_string<int64_t>(list[0], std::dec);
 		list.erase(list.begin());

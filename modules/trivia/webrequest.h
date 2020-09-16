@@ -37,10 +37,10 @@ struct streak_t
 void set_io_context(class asio::io_context* ioc, const std::string &apikey);
 std::string web_request(const std::string &_host, const std::string &_path, const std::string &_body);
 std::string fetch_page(const std::string &_endpoint, const std::string &_body = "");
-std::vector<std::string> fetch_question(int64_t id);
+std::vector<std::string> fetch_question(int64_t id, int64_t guild_id);
 std::vector<std::string> fetch_shuffle_list(int64_t guild_id);
 std::vector<std::string> get_disabled_list();
-std::vector<std::string> fetch_insane_round(int64_t &question_id);
+std::vector<std::string> fetch_insane_round(int64_t &question_id, int64_t guild_id);
 void enable_all_categories();
 void enable_category(const std::string &cat);
 void disable_category(const std::string &cat);
