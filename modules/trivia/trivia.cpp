@@ -76,8 +76,9 @@ public:
 		numstrs = get_num_strs();
 		bot->core.log->info("Numstrs count: {}", numstrs.size());
 
-		std::ifstream langfile("../config.json");
+		std::ifstream langfile("../lang.json");
 		langfile >> lang;
+		bot->core.log->info("Language strings count: {}", lang.size());
 	}
 
 	Bot* GetBot()
@@ -133,11 +134,11 @@ public:
 
 	std::string _(const std::string &k, const guild_settings_t& settings)
 	{
-		for (auto entry = lang.begin(); entry != lang.end(); ++entry) {
-			std::string key = (*entry)["key"].get<std::string>();
-			if (key == k) {
-				return (*entry)[settings.language].get<std::string>();
-			}
+		auto o = lang.find(k);
+		if (o != lang.end()) {
+			return o->find(settings.language)->get<std::string>();
+		} else {
+			bot->core.log->debug("Missing language string '{}'", k);
 		}
 		return k;
 	}

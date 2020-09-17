@@ -1,1290 +1,1100 @@
-[
-	{
-		"key": "EMBED_ERROR_1",
+{
+	"EMBED_ERROR_1": {
 		"en": "<:sporks_error:664735896251269130> I can't make an **embed** from this: ```js\n{}\n```**Error:** ``{}`",
 		"tr": "",
 		"pt": "",
 		"fr": ""
 	},
-	{
-		"key": "MALFORMED_UNICODE",
+
+	"MALFORMED_UNICODE": {
 		"en": "Malformed unicode in embed: {}",
 		"tr": "",
 		"pt": "",
 		"fr": ""
 	},
-	{
-		"key": "POWERED_BY",
+
+	"POWERED_BY": {
 		"en": "Powered By TriviaBot!",
 		"tr": "",
 		"pt": "",
 		"fr": ""
 	},
-        {
-                "key": "ROMAN",
-                "en": "Roman numerals: {}",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "ONE",
-                "en": "one",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "TWO",
-                "en": "two",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "THREE",
-                "en": "three",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "FOUR",
-                "en": "four",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "FIVE",
-                "en": "five",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "SIX",
-                "en": "six",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "SEVEN",
-                "en": "seven",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "EIGHT",
-                "en": "eight",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "NINE",
-                "en": "nine",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "TEN",
-                "en": "ten",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "ELEVEN",
-                "en": "eleven",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "TWELVE",
-                "en": "twelve",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "THIRTEEN",
-                "en": "thirteen",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "FOURTEEN",
-                "en": "fourteen",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "FIFTEEN",
-                "en": "fifteen",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "SIXTEEN",
-                "en": "sixteen",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "SEVENTEEN",
-                "en": "seventeen",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "EIGHTEEN",
-                "en": "eighteen",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "NINETEEN",
-                "en": "nineteen",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "TWENTY",
-                "en": "twenty",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "THIRTY",
-                "en": "thirty",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "FOURTY",
-                "en": "fourty",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "FIFTY",
-                "en": "fifty",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "SIXTY",
-                "en": "sixty",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "SEVENTY",
-                "en": "seventy",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "EIGHTY",
-                "en": "eighty",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "NINETY",
-                "en": "ninety",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "HUNDRED",
-                "en": "hundred",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "THOUSAND",
-                "en": "thousand",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "DOLLARS",
-                "en": "dollars",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "ZERO",
-                "en": "zero",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "AND_SPACED",
-                "en": " and ",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "MILLION",
-                "en": "million",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "HTM_REGEX",
-                "en": "hundred|thousand|million",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "HINT_LETTERLONG",
-                "en": "{} letters long. Starts with '{}' and ends with '{}'.",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "HINT_VOWELCOUNT",
-                "en": "{} letters long and contains {} vowels.",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "COMMA_PLUS_SPACE",
-                "en": ", plus ",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "LOWEST_NONNEG",
-                "en": "The lowest non-negative number",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "INDOLLARS",
-                "en": "{}, in dollars",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "QUESTION_COUNTER",
-                "en": ":question: Question {} of {}",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "INSANE_ROUND",
-                "en": "Insane Round!",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "INSANE_ANS_COUNT",
-                "en": "Total of {} possible answers",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "QUESTION",
-                "en": "Question",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "Q_FETCH_ERROR",
-                "en": ":question: Couldn't fetch question from API",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "Q_SPOOPY",
-                "en": "This seems spoopy",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "Q_CONTACT_DEVS",
-                "en": "[Please contact the developers](https://discord.gg/brainbox)",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "ROUND_STOPPING",
-                "en": "Round stopping",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "ERROR_BROKE_IT",
-                "en": "Error has stopped play!",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "SCRAMBPED_ANSWER",
-                "en": "Scrambled Answer: {}",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "HEX",
-                "en": "Hexadecimal: {0:x}",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "OCT",
-                "en": "Octal: {0:o}",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "BIN",
-                "en": "Binary: {0:b}",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "CATEGORY",
-                "en": "Category",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "BRAIN_BROKE_IT",
-                "en": "Something's up, got a question with no text! This shouldn't happen...",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "FETCH_Q",
-                "en": "Fetch Question",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "SECS_LEFT",
-                "en": "You have **{}** seconds remaining!",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "FIRST_HINT",
-                "en": "First Hint",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "SECOND_HINT",
-                "en": "Second Hint",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "INSANE_FOUND",
-                "en": "**{}** answers were found!",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "ANS_WAS",
-                "en": "The answer was: **{}**",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "STREAK_SMASHED",
-                "en": "**{}**'s streak of **{}** answers in a row comes to a grinding halt!",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "TIME_UP",
-                "en": "Time Up!",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "OUT_OF_TIME",
-                "en": "Out of time!",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "COMING_UP",
-                "en": "Next question coming up in about **{}** seconds...",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "REST",
-                "en": "A little time to rest your fingers...",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "END1",
-                "en": "End of round of **{}** questions",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "END_TITLE",
-                "en": "End of the round",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "LEADERBOARD",
-                "en": "Trivia Leaderboard",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "TOP_TEN",
-                "en": "Today's Top Ten",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "MORE_INFO",
-                "en": "More Information",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "LEADER_LINK",
-                "en": "[View server leaderboards](https://triviabot.co.uk/stats/{})\nDaily scores reset at midnight GMT.",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "DASH_STOP",
-                "en": "The round of trivia was stopped from the [dashboard](https://triviabot.co.uk/dashboard/)!",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "STOPPING",
-                "en": "Round Stopping!",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "PREFIX",
-                "en": "My prefix on this server is ``{}``. Type ``{}help`` for help.",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "LAST_ONE",
-                "en": "**{}** found the last answer!",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "INSANE_CORRECT",
-                "en": "**{}** was correct with **{}**! **{}** answers remaining out of **{}**.",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "POINT",
-                "en": "point",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "POINTS",
-                "en": "points",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "NORM_CORRECT",
-                "en": "The answer was **{}**. You gain **{}** {} for answering in **{}** seconds!",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "RECORD_TIME",
-                "en": "\n**{}** has broken the record time for this question!",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "SCORE_UPDATE",
-                "en": "\n**{}**'s score is now **{}**.",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "TEAM_SCORE",
-                "en": "\nTeam **{}** also gains **{}** {} and is now on **{}**",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "ON_A_STREAK",
-                "en": "\n**{}** is on a streak! **{}** questions and counting",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "BEATEN_BEST",
-                "en": ", and has beaten their personal best!",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "NOT_THERE_YET",
-                "en": ", but has some way to go yet before they beat their personal best of **{}**",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "STREAK_BEATDOWN",
-                "en": "\n**{}** just beat <@{}>'s record streak of {} answers!",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "STREAK_ENDER",
-                "en": "\n**{}** just ended <@{}>'s streak of {} answers in a row!",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "CORRECT",
-                "en": "Correct, {}!",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "CHANNEL_WUT",
-                "en": "**{}**, this channel ID does not exist!",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "ROUND_START_ID",
-                "en": "Round of {} questions started on channel id {}",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "RESTART_RESUME",
-                "en": "Because the bot was restarted, your game was stopped. This game has been resumed.",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "STAFF_ONLY",
-                "en": "Only bot moderators can use this command",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "SHITLISTED",
-                "en": "**{}**, you can't start a round of trivia here, as the bot owner has explicitly blocked games from being started on this server.\nIf you want to start a round of trivia, first [invite the bot](https://discord.com/oauth2/authorize?client_id={}&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code) to your own server!",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "NOWAY",
-                "en": ":warning: Can't start two rounds at once on one server!",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "ALREADYACTIVE",
-                "en": "A round of trivia is already active",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "CHANNELREF",
-                "en": "Please see <#{}> to join the game",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "GETPREMIUM",
-                "en": "Get TriviaBot Premium!",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "PREMDETAIL1",
-                "en": "If you want to do this, TriviaBot Premium lets you run as many concurrent games on the same server as you want. For more information please see the [TriviaBot Premium Page](https://triviabot.co.uk/premium/).",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "PREMDETAIL2",
-                "en": "If you want to do this, TriviaBot Premium lets you run quickfire rounds of up to 200 questions! For more information please see the [TriviaBot Premium Page](https://triviabot.co.uk/premium/).",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "MAX15",
-                "en": ":warning: Can't start a quickfire round of more than 15 questions",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "MAX15DETAIL",
-                "en": "**{}**, you can't create a quickfire trivia round of less than 5 or more than {} questions!",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "MAX200",
-                "en": "**{}**, you can't create a normal trivia round of less than 5 or more than 200 questions!",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "SPOOPY2",
-                "en": "**{}**, something spoopy happened. Please try again in a couple of minutes!",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "BROKED",
-                "en": "That wasn't supposed to happen...",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "RESUMED",
-                "en": "resumed",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "STARTED",
-                "en": "started",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "ABOTADMIN",
-                "en": "a bot admin",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "NEWROUND",
-                "en": ":question: New {}trivia round {} by {}!",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "GETREADY",
-                "en": "Get Ready",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "FIRSTCOMING",
-                "en": "First question coming up!",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "HOWPLAY",
-                "en": "How to play",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "INSTRUCTIONS",
-                "en": "Type your answer on channel to answer a question. The first to answer gets the points. To report any incorrect or invalid question, click the link in the title of the question's message.",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "ALREADYRUN",
-                "en": "Buhhh... a round is already running here, **{}**!",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "CANTSTOPMEIMTHEGINGERBREADMAN",
-                "en": "**{}**, only trivia moderators can stop trivia on this server!",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "STOPOK",
-                "en": "**{}** has stopped the round of trivia!",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "NOTRIVIA",
-                "en": "No trivia round is running here, **{}**!",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "VOTEAD",
-                "en": "[Vote for the bot every 12 hours](https://top.gg/bot/{}/vote) to get eight uses of the ``{}votehint`` command, which gives you a personal hint via direct message!",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "PRIVHINT",
-                "en": "**Get Private Hints by Voting!**\n",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "NOTVOTED",
-                "en": "You haven't voted for the bot today!\n",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "NOMOREHINTS",
-                "en": "You are out of voter hints, **{}**!\n",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "VH1",
-                "en": "**{}**, i've sent you a hint via DM!\nYou have **{}** voter hint(s) remaining which expire in **{} hours and {} minutes**.",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "VH2",
-                "en": "**{}**, i've sent you a hint via DM!\nYou have **NO MORE** voter hints remaining and can vote again in **{} hours and {} minutes**.",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "WAITABIT",
-                "en": "You should probaly wait until a non-insane round question is being asked, **{}**!",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "NOROUND",
-                "en": "No trivia round is running here, **{}**!",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "ACTIVEGAMES",
-                "en": "Active Games",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "TOTALSERVERS",
-                "en": "Total Servers",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "CONNSINCE",
-                "en": "Connected Since",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "ONLINEUSERS",
-                "en": "Online Users",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "UPTIME",
-                "en": "Uptime",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "SHARDS",
-                "en": "Shards",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "MEMBERINTENT",
-                "en": "Member Intent",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "TESTMODE",
-                "en": "Test Mode",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "DEVMODE",
-                "en": "Developer Mode",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "MYPREFIX",
-                "en": "Prefix",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "BOTVER",
-                "en": "Bot Version",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "LIBVER",
-                "en": "Library Version",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "INFO",
-                "en": "Information",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "TICKYES",
-                "en": ":white_check_mark: Yes",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "CROSSNO",
-                "en": "<:wc_rs:667695516737470494> No",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "YAYPREMIUM",
-                "en": ":star: This server has TriviaBot Premium! They rock! :star:",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "JOINED",
-                "en": "You have successfully joined the team \"**{}**\", **{}**",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "CALLFORBACKUP",
-                "en": "Call for backup!",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "CANTJOIN",
-                "en": "I cannot bring about world peace, make you a sandwich, or join that team, **{}**",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "CREATED",
-                "en": "You have successfully **created** and joined the team \"**{}**\", **{}**",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "CANTCREATE",
-                "en": "I couldn't create that team, **{}**...",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "ALREADYMEMBER",
-                "en": "**{}**, you are already a member of team \"**{}**\"!",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "ZELDAREFERENCE",
-                "en": "It's unsafe to go alone...",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "YOULONER",
-                "en": "**{}**, you aren't a member of any team! Use **{}join** to join a team!",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "LEFTTEAM",
-                "en": ""**{}** has left team **{}**",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "COMEBACK",
-                "en": "Come back, we'll miss you! :cry:",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "HERPDERP",
-                "en": "<@{}>, herp derp, theres a malformed help file. Please contact a developer on the official support server: https://discord.gg/brainbox",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "WOAH",
-                "en": "Woah there!",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "RATELIMITED",
-                "en": "Please wait {} seconds before trying the **{}** command again!",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "",
-                "en": "",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "",
-                "en": "",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "",
-                "en": "",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "",
-                "en": "",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "",
-                "en": "",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "",
-                "en": "",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "",
-                "en": "",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "",
-                "en": "",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "",
-                "en": "",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "",
-                "en": "",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "",
-                "en": "",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "",
-                "en": "",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "",
-                "en": "",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "",
-                "en": "",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "",
-                "en": "",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "",
-                "en": "",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "",
-                "en": "",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "",
-                "en": "",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "",
-                "en": "",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "",
-                "en": "",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "",
-                "en": "",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "",
-                "en": "",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "",
-                "en": "",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "",
-                "en": "",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "",
-                "en": "",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "",
-                "en": "",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        },
-        {
-                "key": "",
-                "en": "",
-                "tr": "",
-                "pt": "",
-                "fr": ""
-        }
-]
+
+	"ROMAN": {
+		"en": "Roman numerals: {}",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+
+	"ONE": {
+		"en": "one",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+
+	"TWO": { 
+		"en": "two",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+
+	"THREE": {
+		"en": "three",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+
+	"FOUR": {
+		"en": "four",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+
+	"FIVE": {
+		"en": "five",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+
+	"SIX": {
+		"en": "six",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+
+	"SEVEN": {
+		"en": "seven",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+
+	"EIGHT": {
+		"en": "eight",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"NINE": {
+		"en": "nine",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"TEN": {
+		"en": "ten",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"ELEVEN": {
+		"en": "eleven",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"TWELVE": {
+		"en": "twelve",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"THIRTEEN": {
+		"en": "thirteen",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"FOURTEEN": {
+		"en": "fourteen",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"FIFTEEN": {
+		"en": "fifteen",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"SIXTEEN": {
+		"en": "sixteen",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"SEVENTEEN": {
+		"en": "seventeen",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"EIGHTEEN": {
+		"en": "eighteen",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"NINETEEN": {
+		"en": "nineteen",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"TWENTY": {
+		"en": "twenty",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"THIRTY": {
+		"en": "thirty",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"FOURTY": {
+		"en": "fourty",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"FIFTY": {
+		"en": "fifty",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"SIXTY": {
+		"en": "sixty",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"SEVENTY": {
+		"en": "seventy",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"EIGHTY": {
+		"en": "eighty",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"NINETY": {
+		"en": "ninety",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"HUNDRED": {
+		"en": "hundred",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"THOUSAND": {
+		"en": "thousand",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"DOLLARS": {
+		"en": "dollars",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"ZERO": {
+		"en": "zero",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"AND_SPACED": {
+		"en": " and ",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"MILLION": {
+		"en": "million",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"HTM_REGEX": {
+		"en": "hundred|thousand|million",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"HINT_LETTERLONG": {
+		"en": "{} letters long. Starts with '{}' and ends with '{}'.",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"HINT_VOWELCOUNT": {
+		"en": "{} letters long and contains {} vowels.",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"COMMA_PLUS_SPACE": {
+		"en": ", plus ",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"LOWEST_NONNEG": {
+		"en": "The lowest non-negative number",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"INDOLLARS": {
+		"en": "{}, in dollars",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"QUESTION_COUNTER": {
+		"en": ":question: Question {} of {}",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"INSANE_ROUND": {
+		"en": "Insane Round!",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"INSANE_ANS_COUNT": {
+		"en": "Total of {} possible answers",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"QUESTION": {
+		"en": "Question",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"Q_FETCH_ERROR": {
+		"en": ":question: Couldn't fetch question from API",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"Q_SPOOPY": {
+		"en": "This seems spoopy",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"Q_CONTACT_DEVS": {
+		"en": "[Please contact the developers](https://discord.gg/brainbox)",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"ROUND_STOPPING": {
+		"en": "Round stopping",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"ERROR_BROKE_IT": {
+		"en": "Error has stopped play!",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"SCRAMBLED_ANSWER": {
+		"en": "Scrambled Answer: {}",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"HEX": {
+		"en": "Hexadecimal: {0:x}",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"OCT": {
+		"en": "Octal: {0:o}",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"BIN": {
+		"en": "Binary: {0:b}",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"CATEGORY": {
+		"en": "Category",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"BRAIN_BROKE_IT": {
+		"en": "Something's up, got a question with no text! This shouldn't happen...",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"FETCH_Q": {
+		"en": "Fetch Question",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"SECS_LEFT": {
+		"en": "You have **{}** seconds remaining!",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"FIRST_HINT": {
+		"en": "First Hint",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"SECOND_HINT": {
+		"en": "Second Hint",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"INSANE_FOUND": {
+		"en": "**{}** answers were found!",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"ANS_WAS": {
+		"en": "The answer was: **{}**",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"STREAK_SMASHED": {
+		"en": "**{}**'s streak of **{}** answers in a row comes to a grinding halt!",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"TIME_UP": {
+		"en": "Time Up!",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"OUT_OF_TIME": {
+		"en": "Out of time!",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"COMING_UP": {
+		"en": "Next question coming up in about **{}** seconds...",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"REST": {
+		"en": "A little time to rest your fingers...",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"END1": {
+		"en": "End of round of **{}** questions",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"END_TITLE": {
+		"en": "End of the round",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"LEADERBOARD": {
+		"en": "Trivia Leaderboard",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"TOP_TEN": {
+		"en": "Today's Top Ten",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"MORE_INFO": {
+		"en": "More Information",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"LEADER_LINK": {
+		"en": "[View server leaderboards](https://triviabot.co.uk/stats/{})\nDaily scores reset at midnight GMT.",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"DASH_STOP": {
+		"en": "The round of trivia was stopped from the [dashboard](https://triviabot.co.uk/dashboard/)!",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"STOPPING": {
+		"en": "Round Stopping!",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"PREFIX": {
+		"en": "My prefix on this server is ``{}``. Type ``{}help`` for help.",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"LAST_ONE": {
+		"en": "**{}** found the last answer!",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"INSANE_CORRECT": {
+		"en": "**{}** was correct with **{}**! **{}** answers remaining out of **{}**.",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"POINT": {
+		"en": "point",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"POINTS": {
+		"en": "points",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"NORM_CORRECT": {
+		"en": "The answer was **{}**. You gain **{}** {} for answering in **{}** seconds!",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"RECORD_TIME": {
+		"en": "\n**{}** has broken the record time for this question!",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"SCORE_UPDATE": {
+		"en": "\n**{}**'s score is now **{}**.",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"TEAM_SCORE": {
+		"en": "\nTeam **{}** also gains **{}** {} and is now on **{}**",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"ON_A_STREAK": {
+		"en": "\n**{}** is on a streak! **{}** questions and counting",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"BEATEN_BEST": {
+		"en": ", and has beaten their personal best!",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"NOT_THERE_YET": {
+		"en": ", but has some way to go yet before they beat their personal best of **{}**",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"STREAK_BEATDOWN": {
+		"en": "\n**{}** just beat <@{}>'s record streak of {} answers!",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"STREAK_ENDER": {
+		"en": "\n**{}** just ended <@{}>'s streak of {} answers in a row!",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"CORRECT": {
+		"en": "Correct, {}!",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"CHANNEL_WUT": {
+		"en": "**{}**, this channel ID does not exist!",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"ROUND_START_ID": {
+		"en": "Round of {} questions started on channel id {}",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"RESTART_RESUME": {
+		"en": "Because the bot was restarted, your game was stopped. This game has been resumed.",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"STAFF_ONLY": {
+		"en": "Only bot moderators can use this command",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"SHITLISTED": {
+		"en": "**{}**, you can't start a round of trivia here, as the bot owner has explicitly blocked games from being started on this server.\nIf you want to start a round of trivia, first [invite the bot](https://discord.com/oauth2/authorize?client_id={}&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code) to your own server!",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"NOWAY": {
+		"en": ":warning: Can't start two rounds at once on one server!",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"ALREADYACTIVE": {
+		"en": "A round of trivia is already active",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"CHANNELREF": {
+		"en": "Please see <#{}> to join the game",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"GETPREMIUM": {
+		"en": "Get TriviaBot Premium!",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"PREMDETAIL1": {
+		"en": "If you want to do this, TriviaBot Premium lets you run as many concurrent games on the same server as you want. For more information please see the [TriviaBot Premium Page](https://triviabot.co.uk/premium/).",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"PREMDETAIL2": {
+		"en": "If you want to do this, TriviaBot Premium lets you run quickfire rounds of up to 200 questions! For more information please see the [TriviaBot Premium Page](https://triviabot.co.uk/premium/).",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"MAX15": {
+		"en": ":warning: Can't start a quickfire round of more than 15 questions",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"MAX15DETAIL": {
+		"en": "**{}**, you can't create a quickfire trivia round of less than 5 or more than {} questions!",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"MAX200": {
+		"en": "**{}**, you can't create a normal trivia round of less than 5 or more than 200 questions!",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"SPOOPY2": {
+		"en": "**{}**, something spoopy happened. Please try again in a couple of minutes!",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"BROKED": {
+		"en": "That wasn't supposed to happen...",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"RESUMED": {
+		"en": "resumed",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"STARTED": {
+		"en": "started",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"ABOTADMIN": {
+		"en": "a bot admin",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"NEWROUND": {
+		"en": ":question: New {}trivia round {} by {}!",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"GETREADY": {
+		"en": "Get Ready",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"FIRSTCOMING": {
+		"en": "First question coming up!",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"HOWPLAY": {
+		"en": "How to play",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"INSTRUCTIONS": {
+		"en": "Type your answer on channel to answer a question. The first to answer gets the points. To report any incorrect or invalid question, click the link in the title of the question's message.",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"ALREADYRUN": {
+		"en": "Buhhh... a round is already running here, **{}**!",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"CANTSTOPMEIMTHEGINGERBREADMAN": {
+		"en": "**{}**, only trivia moderators can stop trivia on this server!",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"STOPOK": {
+		"en": "**{}** has stopped the round of trivia!",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"NOTRIVIA": {
+		"en": "No trivia round is running here, **{}**!",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"VOTEAD": {
+		"en": "[Vote for the bot every 12 hours](https://top.gg/bot/{}/vote) to get eight uses of the ``{}votehint`` command, which gives you a personal hint via direct message!",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"PRIVHINT": {
+		"en": "**Get Private Hints by Voting!**\n",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"NOTVOTED": {
+		"en": "You haven't voted for the bot today!\n",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"NOMOREHINTS": {
+		"en": "You are out of voter hints, **{}**!\n",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"VH1": {
+		"en": "**{}**, i've sent you a hint via DM!\nYou have **{}** voter hint(s) remaining which expire in **{} hours and {} minutes**.",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"VH2": {
+		"en": "**{}**, i've sent you a hint via DM!\nYou have **NO MORE** voter hints remaining and can vote again in **{} hours and {} minutes**.",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"WAITABIT": {
+		"en": "You should probaly wait until a non-insane round question is being asked, **{}**!",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"NOROUND": {
+		"en": "No trivia round is running here, **{}**!",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"ACTIVEGAMES": {
+		"en": "Active Games",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"TOTALSERVERS": {
+		"en": "Total Servers",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"CONNSINCE": {
+		"en": "Connected Since",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"ONLINEUSERS": {
+		"en": "Online Users",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"UPTIME": {
+		"en": "Uptime",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"SHARDS": {
+		"en": "Shards",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"MEMBERINTENT": {
+		"en": "Member Intent",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"TESTMODE": {
+		"en": "Test Mode",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"DEVMODE": {
+		"en": "Developer Mode",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"MYPREFIX": {
+		"en": "Prefix",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"BOTVER": {
+		"en": "Bot Version",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"LIBVER": {
+		"en": "Library Version",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"INFO": {
+		"en": "Information",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"TICKYES": {
+		"en": ":white_check_mark: Yes",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"CROSSNO": {
+		"en": "<:wc_rs:667695516737470494> No",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"YAYPREMIUM": {
+		"en": ":star: This server has TriviaBot Premium! They rock! :star:",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"JOINED": {
+		"en": "You have successfully joined the team \"**{}**\", **}**",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"CALLFORBACKUP": {
+		"en": "Call for backup!",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"CANTJOIN": {
+		"en": "I cannot bring about world peace, make you a sandwich, or join that team, **{}**",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"CREATED": {
+		"en": "You have successfully **created** and joined the team \"**{}**\", **{}**",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"CANTCREATE": {
+		"en": "I couldn't create that team, **{}**...",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"ALREADYMEMBER": {
+		"en": "**{}**, you are already a member of team \"**{}**\"!",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"ZELDAREFERENCE": {
+		"en": "It's unsafe to go alone...",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"YOULONER": {
+		"en": "**{}**, you aren't a member of any team! Use **{}join** to join a team!",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"LEFTTEAM": {
+		"en": "**{}** has left team **{}**",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"COMEBACK": {
+		"en": "Come back, we'll miss you! :cry:",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"HERPDERP": {
+		"en": "<@{}>, herp derp, theres a malformed help file. Please contact a developer on the official support server: https://discord.gg/brainbox",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"WOAHTHERE": {
+		"en": "Woah there!",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"RATELIMITED": {
+		"en": "Please wait {} seconds before trying the **{}** command again!",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	}
+}
