@@ -1,13 +1,13 @@
 {
 	"EMBED_ERROR_1": {
-		"en": "<:sporks_error:664735896251269130> I can't make an **embed** from this: ```js\n{}\n```**Error:** ``{}`",
+		"en": "<:sporks_error:664735896251269130> I can't make an **embed** from this: ```js\n{0}\n```**Error:** ``{1}`",
 		"tr": "",
 		"pt": "",
 		"fr": ""
 	},
 
 	"MALFORMED_UNICODE": {
-		"en": "Malformed unicode in embed: {}",
+		"en": "Malformed unicode in embed: {0}",
 		"tr": "",
 		"pt": "",
 		"fr": ""
@@ -21,7 +21,7 @@
 	},
 
 	"ROMAN": {
-		"en": "Roman numerals: {}",
+		"en": "Roman numerals: {0}",
 		"tr": "",
 		"pt": "",
 		"fr": ""
@@ -266,14 +266,14 @@
 	},
 	
 	"HINT_LETTERLONG": {
-		"en": "{} letters long. Starts with '{}' and ends with '{}'.",
+		"en": "{0} letters long. Starts with '{1}' and ends with '{2}'.",
 		"tr": "",
 		"pt": "",
 		"fr": ""
 	},
 	
 	"HINT_VOWELCOUNT": {
-		"en": "{} letters long and contains {} vowels.",
+		"en": "{0} letters long and contains {1} vowels.",
 		"tr": "",
 		"pt": "",
 		"fr": ""
@@ -294,14 +294,14 @@
 	},
 	
 	"INDOLLARS": {
-		"en": "{}, in dollars",
+		"en": "{0}, in dollars",
 		"tr": "",
 		"pt": "",
 		"fr": ""
 	},
 	
 	"QUESTION_COUNTER": {
-		"en": ":question: Question {} of {}",
+		"en": ":question: Question {0} of {1}",
 		"tr": "",
 		"pt": "",
 		"fr": ""
@@ -315,7 +315,7 @@
 	},
 	
 	"INSANE_ANS_COUNT": {
-		"en": "Total of {} possible answers",
+		"en": "Total of {0} possible answers",
 		"tr": "",
 		"pt": "",
 		"fr": ""
@@ -364,7 +364,7 @@
 	},
 	
 	"SCRAMBLED_ANSWER": {
-		"en": "Scrambled Answer: {}",
+		"en": "Scrambled Answer: {0}",
 		"tr": "",
 		"pt": "",
 		"fr": ""
@@ -413,7 +413,7 @@
 	},
 	
 	"SECS_LEFT": {
-		"en": "You have **{}** seconds remaining!",
+		"en": "You have **{0}** seconds remaining!",
 		"tr": "",
 		"pt": "",
 		"fr": ""
@@ -434,21 +434,21 @@
 	},
 	
 	"INSANE_FOUND": {
-		"en": "**{}** answers were found!",
+		"en": "**{0}** answers were found!",
 		"tr": "",
 		"pt": "",
 		"fr": ""
 	},
 	
 	"ANS_WAS": {
-		"en": "The answer was: **{}**",
+		"en": "The answer was: **{0}**",
 		"tr": "",
 		"pt": "",
 		"fr": ""
 	},
 	
 	"STREAK_SMASHED": {
-		"en": "**{}**'s streak of **{}** answers in a row comes to a grinding halt!",
+		"en": "**{0}**'s streak of **{1}** answers in a row comes to a grinding halt!",
 		"tr": "",
 		"pt": "",
 		"fr": ""
@@ -469,7 +469,7 @@
 	},
 	
 	"COMING_UP": {
-		"en": "Next question coming up in about **{}** seconds...",
+		"en": "Next question coming up in about **{0}** seconds...",
 		"tr": "",
 		"pt": "",
 		"fr": ""
@@ -483,7 +483,7 @@
 	},
 	
 	"END1": {
-		"en": "End of round of **{}** questions",
+		"en": "End of round of **{0}** questions",
 		"tr": "",
 		"pt": "",
 		"fr": ""
@@ -518,7 +518,7 @@
 	},
 	
 	"LEADER_LINK": {
-		"en": "[View server leaderboards](https://triviabot.co.uk/stats/{})\nDaily scores reset at midnight GMT.",
+		"en": "[View server leaderboards](https://triviabot.co.uk/stats/{0})\nDaily scores reset at midnight GMT.",
 		"tr": "",
 		"pt": "",
 		"fr": ""
@@ -539,21 +539,21 @@
 	},
 	
 	"PREFIX": {
-		"en": "My prefix on this server is ``{}``. Type ``{}help`` for help.",
+		"en": "My prefix on this server is ``{0}``. Type ``{1}help`` for help.",
 		"tr": "",
 		"pt": "",
 		"fr": ""
 	},
 	
 	"LAST_ONE": {
-		"en": "**{}** found the last answer!",
+		"en": "**{0}** found the last answer!",
 		"tr": "",
 		"pt": "",
 		"fr": ""
 	},
 	
 	"INSANE_CORRECT": {
-		"en": "**{}** was correct with **{}**! **{}** answers remaining out of **{}**.",
+		"en": "**{0}** was correct with **{1}**! **{2}** answers remaining out of **{3}**.",
 		"tr": "",
 		"pt": "",
 		"fr": ""
@@ -574,35 +574,35 @@
 	},
 	
 	"NORM_CORRECT": {
-		"en": "The answer was **{}**. You gain **{}** {} for answering in **{}** seconds!",
+		"en": "The answer was **{0}**. You gain **{1}** {2} for answering in **{3}** seconds!",
 		"tr": "",
 		"pt": "",
 		"fr": ""
 	},
 	
 	"RECORD_TIME": {
-		"en": "\n**{}** has broken the record time for this question!",
+		"en": "\n**{0}** has broken the record time for this question!",
 		"tr": "",
 		"pt": "",
 		"fr": ""
 	},
 	
 	"SCORE_UPDATE": {
-		"en": "\n**{}**'s score is now **{}**.",
+		"en": "\n**{0}**'s score is now **{1}**.",
 		"tr": "",
 		"pt": "",
 		"fr": ""
 	},
 	
 	"TEAM_SCORE": {
-		"en": "\nTeam **{}** also gains **{}** {} and is now on **{}**",
+		"en": "\nTeam **{0}** also gains **{1}** {2} and is now on **{3}**",
 		"tr": "",
 		"pt": "",
 		"fr": ""
 	},
 	
 	"ON_A_STREAK": {
-		"en": "\n**{}** is on a streak! **{}** questions and counting",
+		"en": "\n**{0}** is on a streak! **{1}** questions and counting",
 		"tr": "",
 		"pt": "",
 		"fr": ""
@@ -616,42 +616,42 @@
 	},
 	
 	"NOT_THERE_YET": {
-		"en": ", but has some way to go yet before they beat their personal best of **{}**",
+		"en": ", but has some way to go yet before they beat their personal best of **{0}**",
 		"tr": "",
 		"pt": "",
 		"fr": ""
 	},
 	
 	"STREAK_BEATDOWN": {
-		"en": "\n**{}** just beat <@{}>'s record streak of {} answers!",
+		"en": "\n**{0}** just beat <@{1}>'s record streak of {2} answers!",
 		"tr": "",
 		"pt": "",
 		"fr": ""
 	},
 	
 	"STREAK_ENDER": {
-		"en": "\n**{}** just ended <@{}>'s streak of {} answers in a row!",
+		"en": "\n**{0}** just ended <@{1}>'s streak of {2} answers in a row!",
 		"tr": "",
 		"pt": "",
 		"fr": ""
 	},
 	
 	"CORRECT": {
-		"en": "Correct, {}!",
+		"en": "Correct, {0}!",
 		"tr": "",
 		"pt": "",
 		"fr": ""
 	},
 	
 	"CHANNEL_WUT": {
-		"en": "**{}**, this channel ID does not exist!",
+		"en": "**{0}**, this channel ID does not exist!",
 		"tr": "",
 		"pt": "",
 		"fr": ""
 	},
 	
 	"ROUND_START_ID": {
-		"en": "Round of {} questions started on channel id {}",
+		"en": "Round of {0} questions started on channel id {1}",
 		"tr": "",
 		"pt": "",
 		"fr": ""
@@ -672,7 +672,7 @@
 	},
 	
 	"SHITLISTED": {
-		"en": "**{}**, you can't start a round of trivia here, as the bot owner has explicitly blocked games from being started on this server.\nIf you want to start a round of trivia, first [invite the bot](https://discord.com/oauth2/authorize?client_id={}&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code) to your own server!",
+		"en": "**{0}**, you can't start a round of trivia here, as the bot owner has explicitly blocked games from being started on this server.\nIf you want to start a round of trivia, first [invite the bot](https://discord.com/oauth2/authorize?client_id={1}&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code) to your own server!",
 		"tr": "",
 		"pt": "",
 		"fr": ""
@@ -693,7 +693,7 @@
 	},
 	
 	"CHANNELREF": {
-		"en": "Please see <#{}> to join the game",
+		"en": "Please see <#{0}> to join the game",
 		"tr": "",
 		"pt": "",
 		"fr": ""
@@ -728,21 +728,21 @@
 	},
 	
 	"MAX15DETAIL": {
-		"en": "**{}**, you can't create a quickfire trivia round of less than 5 or more than {} questions!",
+		"en": "**{0}**, you can't create a quickfire trivia round of less than 5 or more than {1} questions!",
 		"tr": "",
 		"pt": "",
 		"fr": ""
 	},
 	
 	"MAX200": {
-		"en": "**{}**, you can't create a normal trivia round of less than 5 or more than 200 questions!",
+		"en": "**{0}**, you can't create a normal trivia round of less than 5 or more than 200 questions!",
 		"tr": "",
 		"pt": "",
 		"fr": ""
 	},
 	
 	"SPOOPY2": {
-		"en": "**{}**, something spoopy happened. Please try again in a couple of minutes!",
+		"en": "**{0}**, something spoopy happened. Please try again in a couple of minutes!",
 		"tr": "",
 		"pt": "",
 		"fr": ""
@@ -777,7 +777,7 @@
 	},
 	
 	"NEWROUND": {
-		"en": ":question: New {}trivia round {} by {}!",
+		"en": ":question: New {0}trivia round {1} by {2}!",
 		"tr": "",
 		"pt": "",
 		"fr": ""
@@ -812,35 +812,35 @@
 	},
 	
 	"ALREADYRUN": {
-		"en": "Buhhh... a round is already running here, **{}**!",
+		"en": "Buhhh... a round is already running here, **{0}**!",
 		"tr": "",
 		"pt": "",
 		"fr": ""
 	},
 	
 	"CANTSTOPMEIMTHEGINGERBREADMAN": {
-		"en": "**{}**, only trivia moderators can stop trivia on this server!",
+		"en": "**{0}**, only trivia moderators can stop trivia on this server!",
 		"tr": "",
 		"pt": "",
 		"fr": ""
 	},
 	
 	"STOPOK": {
-		"en": "**{}** has stopped the round of trivia!",
+		"en": "**{0}** has stopped the round of trivia!",
 		"tr": "",
 		"pt": "",
 		"fr": ""
 	},
 	
 	"NOTRIVIA": {
-		"en": "No trivia round is running here, **{}**!",
+		"en": "No trivia round is running here, **{0}**!",
 		"tr": "",
 		"pt": "",
 		"fr": ""
 	},
 	
 	"VOTEAD": {
-		"en": "[Vote for the bot every 12 hours](https://top.gg/bot/{}/vote) to get eight uses of the ``{}votehint`` command, which gives you a personal hint via direct message!",
+		"en": "[Vote for the bot every 12 hours](https://top.gg/bot/{0}/vote) to get eight uses of the ``{1}votehint`` command, which gives you a personal hint via direct message!",
 		"tr": "",
 		"pt": "",
 		"fr": ""
@@ -868,28 +868,28 @@
 	},
 	
 	"VH1": {
-		"en": "**{}**, i've sent you a hint via DM!\nYou have **{}** voter hint(s) remaining which expire in **{} hours and {} minutes**.",
+		"en": "**{0}**, i've sent you a hint via DM!\nYou have **{1}** voter hint(s) remaining which expire in **{2} hours and {3} minutes**.",
 		"tr": "",
 		"pt": "",
 		"fr": ""
 	},
 	
 	"VH2": {
-		"en": "**{}**, i've sent you a hint via DM!\nYou have **NO MORE** voter hints remaining and can vote again in **{} hours and {} minutes**.",
+		"en": "**{0}**, i've sent you a hint via DM!\nYou have **NO MORE** voter hints remaining and can vote again in **{1} hours and {2} minutes**.",
 		"tr": "",
 		"pt": "",
 		"fr": ""
 	},
 	
 	"WAITABIT": {
-		"en": "You should probaly wait until a non-insane round question is being asked, **{}**!",
+		"en": "You should probaly wait until a non-insane round question is being asked, **{0}**!",
 		"tr": "",
 		"pt": "",
 		"fr": ""
 	},
 	
 	"NOROUND": {
-		"en": "No trivia round is running here, **{}**!",
+		"en": "No trivia round is running here, **{0}**!",
 		"tr": "",
 		"pt": "",
 		"fr": ""
@@ -1008,7 +1008,7 @@
 	},
 	
 	"JOINED": {
-		"en": "You have successfully joined the team \"**{}**\", **}**",
+		"en": "You have successfully joined the team \"**{0}**\", **{1}**",
 		"tr": "",
 		"pt": "",
 		"fr": ""
@@ -1022,28 +1022,28 @@
 	},
 	
 	"CANTJOIN": {
-		"en": "I cannot bring about world peace, make you a sandwich, or join that team, **{}**",
+		"en": "I cannot bring about world peace, make you a sandwich, or join that team, **{0}**",
 		"tr": "",
 		"pt": "",
 		"fr": ""
 	},
 	
 	"CREATED": {
-		"en": "You have successfully **created** and joined the team \"**{}**\", **{}**",
+		"en": "You have successfully **created** and joined the team \"**{0}**\", **{1}**",
 		"tr": "",
 		"pt": "",
 		"fr": ""
 	},
 	
 	"CANTCREATE": {
-		"en": "I couldn't create that team, **{}**...",
+		"en": "I couldn't create that team, **{0}**...",
 		"tr": "",
 		"pt": "",
 		"fr": ""
 	},
 	
 	"ALREADYMEMBER": {
-		"en": "**{}**, you are already a member of team \"**{}**\"!",
+		"en": "**{0}**, you are already a member of team \"**{1}**\"!",
 		"tr": "",
 		"pt": "",
 		"fr": ""
@@ -1057,14 +1057,14 @@
 	},
 	
 	"YOULONER": {
-		"en": "**{}**, you aren't a member of any team! Use **{}join** to join a team!",
+		"en": "**{0}**, you aren't a member of any team! Use **{1}join** to join a team!",
 		"tr": "",
 		"pt": "",
 		"fr": ""
 	},
 	
 	"LEFTTEAM": {
-		"en": "**{}** has left team **{}**",
+		"en": "**{0}** has left team **{1}**",
 		"tr": "",
 		"pt": "",
 		"fr": ""
@@ -1078,7 +1078,7 @@
 	},
 	
 	"HERPDERP": {
-		"en": "<@{}>, herp derp, theres a malformed help file. Please contact a developer on the official support server: https://discord.gg/brainbox",
+		"en": "<@{0}>, herp derp, theres a malformed help file. Please contact a developer on the official support server: https://discord.gg/brainbox",
 		"tr": "",
 		"pt": "",
 		"fr": ""
@@ -1092,7 +1092,7 @@
 	},
 	
 	"RATELIMITED": {
-		"en": "Please wait {} seconds before trying the **{}** command again!",
+		"en": "Please wait {0} seconds before trying the **{1}** command again!",
 		"tr": "",
 		"pt": "",
 		"fr": ""
