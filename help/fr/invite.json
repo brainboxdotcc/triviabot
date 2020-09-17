@@ -1,0 +1,17 @@
+{
+	"author": {
+		"name": "Want :user: on your server?"
+	},
+	"title": "Click here for the invite link",
+	"color": 16767488,
+	"thumbnail": {
+		"url": "https://www.sporks.gg/images/sporks-adopt.png"
+	},
+	"footer": {
+		"link": "https://sporks.gg",
+		"text": "Requested by :author:",
+		"icon_url": "https://www.sporks.gg/images/sporks_2020.png"
+	},
+	"url": "https://sporks.gg/",
+	"description": ""
+}

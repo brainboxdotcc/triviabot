@@ -184,6 +184,11 @@ std::vector<std::string> fetch_insane_round(int64_t &question_id, int64_t guild_
 	return list;
 }
 
+json get_num_strs()
+{
+	return json::parse(fetch_page("?opt=numstrs"));
+}
+
 void enable_all_categories()
 {
 	fetch_page("?opt=enableall");

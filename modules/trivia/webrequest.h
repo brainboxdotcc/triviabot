@@ -68,4 +68,4 @@ void log_game_end(int64_t guild_id, int64_t channel_id);
 bool log_question_index(int64_t guild_id, int64_t channel_id, int32_t index, uint32_t streak, int64_t lastanswered, int32_t state);
 json get_active(const std::string &hostname);
 std::vector<std::string> get_api_command_names();
-
+json get_num_strs();

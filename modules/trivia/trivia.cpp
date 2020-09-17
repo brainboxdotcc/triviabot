@@ -30,7 +30,6 @@
 #include <sporks/statusfield.h>
 #include <sporks/database.h>
 #include "trivia.h"
-#include "numstrs.h"
 #include "webrequest.h"
 
 /**
@@ -53,6 +52,8 @@ class TriviaModule : public Module
 	std::mutex states_mutex;
 	std::mutex cmds_mutex;
 	time_t startup;
+	json numstrs;
+	json lang;
 public:
 	TriviaModule(Bot* instigator, ModuleLoader* ml) : Module(instigator, ml), terminating(false)
 	{
@@ -71,10 +72,12 @@ public:
 			std::lock_guard<std::mutex> cmd_list_lock(cmds_mutex);
 			api_commands = get_api_command_names();
 			bot->core.log->info("Initial API command count: {}", api_commands.size());
-			for (auto m : api_commands) {
-				bot->core.log->info("command='{}'", m);
-			}
 		}
+		numstrs = get_num_strs();
+		bot->core.log->info("Numstrs count: {}", numstrs.size());
+
+		std::ifstream langfile("../config.json");
+		langfile >> lang;
 	}
 
 	Bot* GetBot()
@@ -126,6 +129,17 @@ public:
 			api_commands = get_api_command_names();
 		}
 		return true;
+	}
+
+	std::string _(const std::string &k, const guild_settings_t& settings)
+	{
+		for (auto entry = lang.begin(); entry != lang.end(); ++entry) {
+			std::string key = (*entry)["key"].get<std::string>();
+			if (key == k) {
+				return (*entry)[settings.language].get<std::string>();
+			}
+		}
+		return k;
 	}
 
 	virtual bool OnAllShardsReady()
@@ -310,12 +324,13 @@ public:
 			embed = json::parse(cleaned_json);
 		}
 		catch (const std::exception &e) {
+			guild_settings_t settings = GetGuildSettings(channel->get_guild().get_id().get());
 			if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == channel->get_guild().get_id()) {
 				try {
-					channel->create_message("<:sporks_error:664735896251269130> I can't make an **embed** from this: ```js\n" + cleaned_json + "\n```**Error:** ``" + e.what() + "``");
+					channel->create_message(fmt::format(_("EMBED_ERROR_1", settings), cleaned_json, e.what()));
 				}
 				catch (const std::exception &e) {
-					bot->core.log->error("Malformed unicode in embed: {}", e.what());
+					bot->core.log->error(_("MALFORMED_UNICODE", settings), e.what());
 				}
 				bot->sent_messages++;
 			}
@@ -349,17 +364,17 @@ public:
 		if (c) {
 			guild_settings_t settings = GetGuildSettings(c->get_guild().get_id().get());
 			colour = settings.embedcolour;
-		}
-		std::string json = fmt::format("{{" + (!url.empty() ? "\"url\":\"" + escape_json(url) + "\"," : "") + "\"title\":\"{}\",\"color\":{},\"fields\":[", escape_json(title), colour);
-		for (auto v = fields.begin(); v != fields.end(); ++v) {
-			json += fmt::format("{{\"name\":\"{}\",\"value\":\"{}\",\"inline\":{}}}", escape_json(v->name), escape_json(v->value), v->_inline ? "true" : "false");
-			auto n = v;
-			if (++n != fields.end()) {
-				json += ",";
+			std::string json = fmt::format("{{" + (!url.empty() ? "\"url\":\"" + escape_json(url) + "\"," : "") + "\"title\":\"{}\",\"color\":{},\"fields\":[", escape_json(title), colour);
+			for (auto v = fields.begin(); v != fields.end(); ++v) {
+				json += fmt::format("{{\"name\":\"{}\",\"value\":\"{}\",\"inline\":{}}}", escape_json(v->name), escape_json(v->value), v->_inline ? "true" : "false");
+				auto n = v;
+				if (++n != fields.end()) {
+					json += ",";
+				}
 			}
+			json += "],\"footer\":{\"link\":\"https://triviabot.co.uk/\",\"text\":\"" + _("POWERED_BY", settings) + "\",\"icon_url\":\"https:\\/\\/triviabot.co.uk\\/images\\/triviabot_tl_icon.png\"}}";
+			ProcessEmbed(json, channelID);
 		}
-		json += "],\"footer\":{\"link\":\"https://triviabot.co.uk/\",\"text\":\"Powered By TriviaBot!\",\"icon_url\":\"https:\\/\\/triviabot.co.uk\\/images\\/triviabot_tl_icon.png\"}}";
-		ProcessEmbed(json, channelID);
 	}
 
 
@@ -368,7 +383,7 @@ public:
 	{
 		/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
 		std::string version = "$ModVer 22$";
-		return "1.0." + version.substr(8,version.length() - 9);
+		return "3.0." + version.substr(8,version.length() - 9);
 	}
 
 	virtual std::string GetDescription()
@@ -381,7 +396,7 @@ public:
 		return min + rand() % (( max + 1 ) - min);
 	}
 
-	std::string dec_to_roman(unsigned int decimal)
+	std::string dec_to_roman(unsigned int decimal, const guild_settings_t &settings)
 	{
 		std::vector<int> numbers =  { 1, 4 ,5, 9, 10, 40, 50, 90, 100, 400, 500, 900, 1000 };
 		std::vector<std::string> romans = { "I", "IV", "V", "IX", "X", "XL", "L", "XC", "C", "CD", "D", "CM", "M" };
@@ -392,7 +407,7 @@ public:
 				result.append(romans[x]);
 			}
 		}
-		return std::string("Roman numerals: ") + result;
+		return fmt::format(_("ROMAN", settings), result);
 	}
 
 	std::string tidy_num(std::string num)
@@ -423,50 +438,49 @@ public:
 			sleep(20);
 			int32_t questions = get_total_questions();
 			bot->counters["activegames"] = GetActiveGames();
+			/* Can't translate this, it's per-shard! */
 			bot->core.update_presence(fmt::format("Trivia! {} questions, {} active games on {} servers through {} shards", Comma(questions), Comma(GetActiveGames()), Comma(bot->core.get_guild_count()), Comma(bot->core.shard_max_count)), aegis::gateway::objects::activity::Game);
 			CheckForQueuedStarts();
 		}
 	}
 
-	std::string conv_num(std::string datain)
+	std::string conv_num(std::string datain, const guild_settings_t &settings)
 	{
-		std::map<std::string, int> nn = {
-			{ "one", 1 },
-			{ "two", 2 },
-			{ "three", 3 },
-			{ "four", 4 },
-			{ "five", 5 },
-			{ "six", 6 },
-			{ "seven", 7 },
-			{ "eight", 8 },
-			{ "nine", 9 },
-			{ "ten", 10 },
-			{ "eleven", 11 },
-			{ "twelve", 12 },
-			{ "thirteen", 13 },
-			{ "fourteen", 14 },
-			{ "forteen", 14 },
-			{ "fifteen", 15 },
-			{ "sixteen", 16 },
-			{ "seventeen", 17 },
-			{ "eighteen", 18 },
-			{ "nineteen", 19 },
-			{ "twenty", 20 },
-			{ "thirty", 30 },
-			{ "fourty", 40 },
-			{ "forty", 40 },
-			{ "fifty", 50 },
-			{ "sixty", 60 },
-			{ "seventy", 70 },
-			{ "eighty", 80 },
-			{ "ninety", 90 }
+		std::map<std::string, int> nn= {
+			{ _("ONE", settings), 1 },
+			{ _("TWO", settings), 2 },
+			{ _("THREE", settings), 3 },
+			{ _("FOUR", settings), 4 },
+			{ _("FIVE", settings), 5 },
+			{ _("SIX", settings), 6 },
+			{ _("SEVEN", settings), 7 },
+			{ _("EIGHT", settings), 8 },
+			{ _("NINE", settings), 9 },
+			{ _("TEN", settings), 10 },
+			{ _("ELEVEN", settings), 11 },
+			{ _("TWELVE", settings), 12 },
+			{ _("THIRTEEN", settings), 13 },
+			{ _("FOURTEEN", settings), 14 },
+			{ _("FIFTEEN", settings), 15 },
+			{ _("SIXTEEN", settings), 16 },
+			{ _("SEVENTEEN", settings), 17 },
+			{ _("EIGHTEEN", settings), 18 },
+			{ _("NINETEEN", settings), 19 },
+			{ _("TWENTY", settings), 20 },
+			{ _("THIRTY", settings), 30 },
+			{ _("FOURTY", settings), 40 },
+			{ _("FIFTY", settings), 50 },
+			{ _("SIXTY", settings), 60 },
+			{ _("SEVENTY", settings), 70 },
+			{ _("EIGHTY", settings), 80 },
+			{ _("NINETY", settings), 90 }
 		};
 		if (datain.empty()) {
-			datain = "zero";
+			datain = _("ZERO", settings);
 		}
 		datain = ReplaceString(datain, "  ", " ");
 		datain = ReplaceString(datain, "-", "");
-		datain = ReplaceString(datain, " and ", " ");
+		datain = ReplaceString(datain, _("AND_SPACED", settings), " ");
 		int last = 0;
 		int initial = 0;
 		std::string currency;
@@ -477,7 +491,7 @@ public:
 			nums.push_back(v);
 		}
 		for (auto x = nums.begin(); x != nums.end(); ++x) {
-			if (nn.find(lowercase(*x)) == nn.end() && !PCRE("million", true).Match(*x) && !PCRE("thousand", true).Match(*x) && !PCRE("hundred", true).Match(*x) && !PCRE("dollars", true).Match(*x)) {
+			if (nn.find(lowercase(*x)) == nn.end() && !PCRE(_("MILLION", settings), true).Match(*x) && !PCRE(_("THOUSAND", settings), true).Match(*x) && !PCRE(_("HUNDRED", settings), true).Match(*x) && !PCRE(_("DOLLARS", settings), true).Match(*x)) {
 				return "0";
 			}
 		}
@@ -492,21 +506,21 @@ public:
 			if (nn.find(nextnum) != nn.end()) {
 				last = nn.find(nextnum)->second;
 			}
-			if (PCRE("dollars", true).Match(nextnum)) {
+			if (PCRE(_("DOLLARS", settings), true).Match(nextnum)) {
 				currency = "$";
 				last = 0;
 			}
-			if (!PCRE("hundred|thousand|million", true).Match(lookahead)) {
+			if (!PCRE(_("HTM_REGEX", settings), true).Match(lookahead)) {
 				initial += last;
 				last = 0;
 			} else {
-				if (PCRE("hundred", true).Match(lookahead)) {
+				if (PCRE(_("HUNDRED", settings), true).Match(lookahead)) {
 					initial += last * 100;
 					last = 0;
-				} else if (PCRE("thousand", true).Match(lookahead)) {
+				} else if (PCRE(_("THOUSAND", settings), true).Match(lookahead)) {
 					initial += last * 1000;
 					last = 0;
-				} else if (PCRE("million", true).Match(lookahead)) {
+				} else if (PCRE(_("MILLION", settings), true).Match(lookahead)) {
 					initial += last * 1000000;
 					last = 0;
 				}
@@ -536,27 +550,28 @@ public:
 		return s.substr(index) + s.substr(0, index) + "ay"; 
 	}
 
-	std::string piglatin(std::string s) {
+	std::string piglatin(const std::string &s) {
 		std::stringstream str(s);
 		std::string word;
 		std::string ret;
 		while ((str >> word)) {
 			ret.append(piglatinword(word)).append(" ");
 		}
-		return std::string("Pig latin: ") + lowercase(ret);
+		/* No translation needed, Pig Latin is English only */
+		return std::string("Pig Latin: ") + lowercase(ret);
 	}
 
-	std::string letterlong(std::string text)
+	std::string letterlong(std::string text, const guild_settings_t &settings)
 	{
 		text = ReplaceString(text, " ", "");
 		if (text.length()) {
-			return fmt::format("{} letters long. Starts with '{}' and ends with '{}'.", text.length(), text[0], text[text.length() - 1]);
+			return fmt::format(_("HINT_LETTERLONG", settings), text.length(), text[0], text[text.length() - 1]);
 		} else {
 			return "An empty answer";
 		}
 	}
 
-	std::string vowelcount(std::string text)
+	std::string vowelcount(std::string text, const guild_settings_t &settings)
 	{
 		text = ReplaceString(lowercase(text), " ", "");
 		int v = 0;
@@ -565,32 +580,44 @@ public:
 				++v;
 			}
 		}
-		return fmt::format("{} letters long and contains {} vowels.", text.length(), v);
+		return fmt::format(_("HINT_VOWELCOUNT", settings), text.length(), v);
 	}
 
-	std::string numbertoname(int64_t number)
+	std::string numbertoname(int64_t number, const guild_settings_t& settings)
 	{
-		if (numstrs.find(number) != numstrs.end()) {
-			return numstrs.find(number)->second;
+
+		for (auto x = numstrs.begin(); x != numstrs.end(); ++x) {
+			uint64_t value = (*x)["value"].get<uint64_t>();
+			if (value == number) {
+				if (settings.language == "en")
+					return (*x)["description"].get<std::string>();
+				else
+					return (*x)[fmt::format("trans_{}", settings.language)].get<std::string>();
+			}
 		}
 		return std::to_string(number);
 	}
 
-	std::string GetNearestNumber(int64_t number)
+	std::string GetNearestNumber(int64_t number, const guild_settings_t& settings)
 	{
-		for (numstrs_t::reverse_iterator x = numstrs.rbegin(); x != numstrs.rend(); ++x) {
-			if (x->first <= number) {
-				return x->second;
+		for (auto x = numstrs.begin(); x != numstrs.end(); ++x) {
+			uint64_t value = (*x)["value"].get<uint64_t>();
+			if (value <= number) {
+				if (settings.language == "en")
+					return (*x)["description"].get<std::string>();
+				else
+					return (*x)[fmt::format("trans_{}", settings.language)].get<std::string>();
 			}
 		}
 		return "0";
 	}
 
-	int64_t GetNearestNumberVal(int64_t number)
+	int64_t GetNearestNumberVal(int64_t number, const guild_settings_t& settings)
 	{
-		for (numstrs_t::reverse_iterator x = numstrs.rbegin(); x != numstrs.rend(); ++x) {
-			if (x->first <= number) {
-				return x->first;
+		for (auto x = numstrs.begin(); x != numstrs.end(); ++x) {
+			uint64_t value = (*x)["value"].get<uint64_t>();
+			if (value <= number) {
+				return value;
 			}
 		}
 		return 0;
@@ -644,56 +671,29 @@ public:
 		return !s.empty() && std::find_if(s.begin(), s.end(), [](unsigned char c) { return !std::isdigit(c); }) == s.end();
 	}
 
-	std::string MakeFirstHint(std::string s, bool indollars = false)
+	std::string MakeFirstHint(const std::string &s, const guild_settings_t &settings,  bool indollars = false)
 	{
 		std::string Q;
 		if (is_number(s)) {
+			std::string plus = _("COMMA_PLUS_SPACE", settings);
 			int64_t n = from_string<int64_t>(s, std::dec);
-			while (GetNearestNumberVal(n) != 0 && n > 0) {
-				Q.append(GetNearestNumber(n)).append(", plus ");
-				n -= GetNearestNumberVal(n);
+			while (GetNearestNumberVal(n, settings) != 0 && n > 0) {
+				Q.append(GetNearestNumber(n, settings)).append(plus);
+				n -= GetNearestNumberVal(n, settings);
 			}
 			if (n > 0) {
-				Q.append(numbertoname(n));
+				Q.append(numbertoname(n, settings));
 			}
-			Q = Q.substr(0, Q.length() - 7);
+			Q = Q.substr(0, Q.length() - plus.length());
 		}
 		if (Q.empty()) {
-			return "The lowest non-negative number";
+			return _("LOWEST_NONNEG", settings);
 		}
 		if (indollars) {
-			return Q + ", in DOLLARS";
+			return fmt::format(_("INDOLLARS", settings), Q);
 		} else {
 			return Q;
 		}
-	}
-
-	void t()
-	{
-		std::cout << "\n\nMakeFirstHint(12345): " << MakeFirstHint("12345") << "\n";
-		std::cout << "MakeFirstHint(0): " << MakeFirstHint("0") << "\n";
-		std::cout << "dec_to_roman(15): " << dec_to_roman(15) << "\n";
-		std::cout << "conv_num('two thousand one hundred and fifty four'): " << conv_num("two thousand one hundred and fifty four") << "\n";
-		std::cout << "conv_num('five'): " << conv_num("five") << "\n";
-		std::cout << "conf_num('ten pin bowling'): " << conv_num("ten pin bowling") << "\n";
-		std::cout << "conv_num('zero'): " << conv_num("zero") << "\n";
-       		std::cout << "piglatin('easy with the pig latin my friend'): " << piglatin("easy with the pig latin my friend") << "\n";
-		std::cout << "conv_num('one million dollars'): " << conv_num("one million dollars") << "\n";
-		std::cout << "tidy_num('$1,000,000'): " << tidy_num("$1,000,000") << "\n";
-		std::cout << "tidy_num('1,000'): " << tidy_num("1,000") << "\n";
-		std::cout << "tidy_num('1000'): " << tidy_num("1000") << "\n";
-		std::cout << "tidy_num('asdfghjk'): " << tidy_num("asdfghjk") << "\n";
-		std::cout << "tidy_num('abc def ghi'): " << tidy_num("abc def ghi") << "\n";
-		std::cout << "tidy_num('1000 dollars') " << tidy_num("1000 dollars") << "\n";
-		std::cout << "tidy_num('1,000 dollars') " << tidy_num("1,000 dollars") << "\n";
-		std::cout << "tidy_num('1,000 armadillos') " << tidy_num("1,000 armadillos") << "\n";
-		std::cout << "tidy_num('27 feet') " << tidy_num("27 feet") << "\n";
-		std::cout << "tidy_num('twenty seven feet') " << tidy_num("twenty seven feet") << "\n";
-		std::cout << "letterlong('a herd of gnus') " << letterlong("a herd of gnus") << "\n";
-		std::cout << "vowelcount('a herd of gnus') " << vowelcount("a herd of gnus") << "\n";
-		std::cout << "levenstein('a herd of cows','a herd of wocs') " << levenstein("a herd of cows","a herd of wocs") << "\n";
-		std::cout << "levenstein('Cows','coWz')  " << levenstein("Cows","coWz") << "\n";
-		exit(0);
 	}
 
 	void do_insane_round(state_t* state, bool silent)
@@ -706,9 +706,11 @@ public:
 			return;
 		}
 
+		guild_settings_t settings = GetGuildSettings(state->guild_id);
+
 		std::vector<std::string> answers = fetch_insane_round(state->curr_qid, state->guild_id);
 		if (log_question_index(state->guild_id, state->channel_id, state->round, state->streak, state->last_to_answer, state->gamestate)) {
-			StopGame(state);
+			StopGame(state, settings);
 			return;
 		}
 
@@ -728,7 +730,7 @@ public:
 
 		aegis::channel* c = bot->core.find_channel(state->channel_id);
 		if (c) {
-			EmbedWithFields(fmt::format(":question: Question {} of {}", state->round, state->numquestions - 1), {{"Insane Round!", fmt::format("Total of {} possible answers", state->insane_num), false}, {"Question", state->curr_question, false}}, c->get_id().get(), fmt::format("https://triviabot.co.uk/report/?c={}&g={}&insane={}", state->channel_id, state->guild_id, state->curr_qid + state->channel_id));
+			EmbedWithFields(fmt::format(_("QUESTION_COUNTER", settings), state->round, state->numquestions - 1), {{_("INSANE_ROUND", settings), fmt::format(_("INSANE_ANS_COUNT", settings), state->insane_num), false}, {_("QUESTION", settings), state->curr_question, false}}, c->get_id().get(), fmt::format("https://triviabot.co.uk/report/?c={}&g={}&insane={}", state->channel_id, state->guild_id, state->curr_qid + state->channel_id));
 		} else {
 			bot->core.log->warn("do_insane_round(): Channel {} was deleted", state->channel_id);
 		}
@@ -746,6 +748,8 @@ public:
 
 		bool valid = false;
 		int32_t tries = 0;
+
+		guild_settings_t settings = GetGuildSettings(state->guild_id);
 
 		do {
 			state->curr_qid = 0;
@@ -767,11 +771,12 @@ public:
 				valid = !state->curr_question.empty();
 				if (!valid) {
 					state->curr_qid = 0;
+					bot->core.log->debug("do_normal_round: Invalid question response size {} with empty question retrieving question {}, round {} shuffle size {}", data.size(), state->shuffle_list[state->round - 1], state->round - 1, state->shuffle_list.size());
 					sleep(2);
 					tries++;
 				}
 			} else {
-				bot->core.log->debug("do_normal_round: Invalid question response size {} retrieving question {}", data.size(), state->shuffle_list[state->round - 1]);
+				bot->core.log->debug("do_normal_round: Invalid question response size {} retrieving question {}, round {} shuffle size {}", data.size(), state->shuffle_list[state->round - 1], state->round - 1, state->shuffle_list.size());
 				sleep(2);
 				state->curr_qid = 0;
 				tries++;
@@ -786,15 +791,16 @@ public:
 			bot->core.log->warn("do_normal_round(): Attempted to retrieve question id {} but got a malformed response. Round was aborted.", state->shuffle_list[state->round - 1]);
 			aegis::channel* c = bot->core.find_channel(state->channel_id);
 			if (c && !silent) {
-				EmbedWithFields(fmt::format(":question: Couldn't fetch question from API"), {{"This seems spoopy", "[Please contact the developers](https://discord.gg/brainbox)", false}, {"Round stopping", "Error has stopped play!", false}}, c->get_id().get());
+				EmbedWithFields(fmt::format(_("Q_FETCH_ERROR", settings)), {{_("Q_SPOOPY", settings), _("Q_CONTACT_DEVS", settings), false}, {_("ROUND_STOPPING", settings), _("ERROR_BROKE_IT", settings), false}}, c->get_id().get());
 			}
 			return;
 		}
 
 		if (state->curr_question != "") {
 			state->asktime = time(NULL);
+			guild_settings_t settings = GetGuildSettings(state->guild_id);
 			state->curr_answer = trim(state->curr_answer);
-			std::string t = conv_num(state->curr_answer);
+			std::string t = conv_num(state->curr_answer, settings);
 			if (is_number(t) && t != "0") {
 				state->curr_answer = t;
 			}
@@ -804,7 +810,7 @@ public:
 				/* No custom first hint, build one */
 				state->curr_customhint1 = state->curr_answer;
 				if (is_number(state->curr_customhint1)) {
-					state->curr_customhint1 = MakeFirstHint(state->curr_customhint1);
+					state->curr_customhint1 = MakeFirstHint(state->curr_customhint1, settings);
 				} else {
 					int32_t r = random(1, 12);
 					if (r <= 4) {
@@ -815,15 +821,14 @@ public:
 							}
 						}
 					} else if (r >= 5 && r <= 8) {
-						state->curr_customhint1 = letterlong(state->curr_customhint1);
+						state->curr_customhint1 = letterlong(state->curr_customhint1, settings);
 					} else {
-						state->curr_customhint1 = std::string("Scrambled Answer: ") + state->shuffle1;
+						state->curr_customhint1 = fmt::format(_("SCRAMBLED_ANSWER", settings), state->shuffle1);
 					}
 				}
 			}
 			if (state->curr_customhint2.empty()) {
 				/* No custom second hint, build one */
-				guild_settings_t settings = GetGuildSettings(state->guild_id);
 				state->curr_customhint2 = state->curr_answer;
 				if (is_number(state->curr_customhint2) || PCRE("^\\$(\\d+)$").Match(state->curr_customhint2)) {
 					std::string currency;
@@ -835,13 +840,13 @@ public:
 					state->curr_customhint2 = currency + state->curr_customhint2;
 					int32_t r = random(1, 13);
 					if ((r < 3 && from_string<int32_t>(state->curr_customhint2, std::dec) <= 10000)) {
-						state->curr_customhint2 = dec_to_roman(from_string<unsigned int>(state->curr_customhint2, std::dec));
+						state->curr_customhint2 = dec_to_roman(from_string<unsigned int>(state->curr_customhint2, std::dec), settings);
 					} else if ((r >= 3 && r < 6) || from_string<int32_t>(state->curr_customhint2, std::dec) > 10000) {
-						state->curr_customhint2 = fmt::format("Hexadecimal: {0:x}", from_string<int32_t>(state->curr_customhint2, std::dec));
+						state->curr_customhint2 = fmt::format(_("HEX", settings), from_string<int32_t>(state->curr_customhint2, std::dec));
 					} else if (r >= 6 && r <= 10) {
-						state->curr_customhint2 = fmt::format("Octal: {0:o}", from_string<int32_t>(state->curr_customhint2, std::dec));
+						state->curr_customhint2 = fmt::format(_("OCT", settings), from_string<int32_t>(state->curr_customhint2, std::dec));
 					} else {
-						state->curr_customhint2 = fmt::format("Binary: {0:b}", from_string<int32_t>(state->curr_customhint2, std::dec));
+						state->curr_customhint2 = fmt::format(_("BIN", settings), from_string<int32_t>(state->curr_customhint2, std::dec));
 					}
 				} else {
 					int32_t r = random(1, 12);
@@ -853,7 +858,7 @@ public:
 							}
 						}
 					} else if ((r >= 5 && r <= 6) || settings.language != "en") {
-						state->curr_customhint2 = vowelcount(state->curr_customhint2);
+						state->curr_customhint2 = vowelcount(state->curr_customhint2, settings);
 					} else {
 						/* settings.language check for en above, because piglatin only makes sense in english */
 						state->curr_customhint2 = piglatin(state->curr_customhint2);
@@ -865,7 +870,7 @@ public:
 			aegis::channel* c = bot->core.find_channel(state->channel_id);
 			if (c) {
 				if (!silent) {
-					EmbedWithFields(fmt::format(":question: Question {} of {}", state->round, state->numquestions - 1), {{"Category", state->curr_category, false}, {"Question", state->curr_question, false}}, c->get_id().get(), fmt::format("https://triviabot.co.uk/report/?c={}&g={}&normal={}", state->channel_id, state->guild_id, state->curr_qid + state->channel_id));
+					EmbedWithFields(fmt::format(_("QUESTION_COUNTER", settings), state->round, state->numquestions - 1), {{_("CATEGORY", settings), state->curr_category, false}, {_("QUESTION", settings), state->curr_question, false}}, c->get_id().get(), fmt::format("https://triviabot.co.uk/report/?c={}&g={}&normal={}", state->channel_id, state->guild_id, state->curr_qid + state->channel_id));
 				}
 			} else {
 				bot->core.log->warn("do_normal_round(): Channel {} was deleted", state->channel_id);
@@ -875,7 +880,7 @@ public:
 			aegis::channel* c = bot->core.find_channel(state->channel_id);
 			if (c) {
 				if (!silent) {
-					SimpleEmbed(":ghost:", "Something's up, got a question with no text! This shouldn't happen...", c->get_id().get(), "Fetch Question");
+					SimpleEmbed(":ghost:", _("BRAIN_BROKE_IT", settings), c->get_id().get(), _("FETCH_Q", settings));
 				}
 			} else {
 				bot->core.log->debug("do_normal_round: G:{} C:{} channel vanished! -- question with no text!", state->guild_id, state->channel_id);
@@ -886,7 +891,7 @@ public:
 		/* Advance state to first hint */
 		state->gamestate = TRIV_FIRST_HINT;
 		if (log_question_index(state->guild_id, state->channel_id, state->round, state->streak, state->last_to_answer, state->gamestate)) {
-			StopGame(state);
+			StopGame(state, settings);
 		}
 
 	}
@@ -895,13 +900,14 @@ public:
 	{
 		bot->core.log->debug("do_first_hint: G:{} C:{}", state->guild_id, state->channel_id);
 		aegis::channel* c = bot->core.find_channel(state->channel_id);
+		guild_settings_t settings = GetGuildSettings(state->guild_id);
 		if (c) {
 			if (state->round % 10 == 0) {
 				/* Insane round countdown */
-				SimpleEmbed(":clock10:", fmt::format("You have **{}** seconds remaining!", state->interval * 2), c->get_id().get());
+				SimpleEmbed(":clock10:", fmt::format(_("SECS_LEFT", settings), state->interval * 2), c->get_id().get());
 			} else {
 				/* First hint, not insane round */
-				SimpleEmbed(":clock10:", state->curr_customhint1, c->get_id().get(), "First Hint");
+				SimpleEmbed(":clock10:", state->curr_customhint1, c->get_id().get(), _("FIRST_HINT", settings));
 			}
 		} else {
 			 bot->core.log->warn("do_first_hint(): Channel {} was deleted", state->channel_id);
@@ -909,7 +915,7 @@ public:
 		state->gamestate = TRIV_SECOND_HINT;
 		state->score = (state->interval == TRIV_INTERVAL ? 2 : 4);
 		if (log_question_index(state->guild_id, state->channel_id, state->round, state->streak, state->last_to_answer, state->gamestate)) {
-			StopGame(state);
+			StopGame(state, settings);
 		}
 	}
 
@@ -917,13 +923,14 @@ public:
 	{
 		bot->core.log->debug("do_second_hint: G:{} C:{}", state->guild_id, state->channel_id);
 		aegis::channel* c = bot->core.find_channel(state->channel_id);
+		guild_settings_t settings = GetGuildSettings(state->guild_id);
 		if (c) {
 			if (state->round % 10 == 0) {
 				/* Insane round countdown */
-				SimpleEmbed(":clock1030:", fmt::format("You have **{}** seconds remaining!", state->interval), c->get_id().get());
+				SimpleEmbed(":clock1030:", fmt::format(_("SECS_LEFT", settings), state->interval), c->get_id().get());
 			} else {
 				/* Second hint, not insane round */
-				SimpleEmbed(":clock1030:", state->curr_customhint2, c->get_id().get(), "Second Hint");
+				SimpleEmbed(":clock1030:", state->curr_customhint2, c->get_id().get(), _("SECOND_HINT", settings));
 			}
 		} else {
 			 bot->core.log->warn("do_second_hint: Channel {} was deleted", state->channel_id);
@@ -931,7 +938,7 @@ public:
 		state->gamestate = TRIV_TIME_UP;
 		state->score = (state->interval == TRIV_INTERVAL ? 1 : 2);
 		if (log_question_index(state->guild_id, state->channel_id, state->round, state->streak, state->last_to_answer, state->gamestate)) {
-			StopGame(state);
+			StopGame(state, settings);
 		}
 	}
 
@@ -939,20 +946,21 @@ public:
 	{
 		bot->core.log->debug("do_time_up: G:{} C:{}", state->guild_id, state->channel_id);
 		aegis::channel* c = bot->core.find_channel(state->channel_id);
+		guild_settings_t settings = GetGuildSettings(state->guild_id);
 
 		if (c) {
 			if (state->round % 10 == 0) {
 				int32_t found = state->insane_num - state->insane_left;
-				SimpleEmbed(":alarm_clock:", fmt::format("**{}** answers were found!", found), c->get_id().get(), "Time Up!");
+				SimpleEmbed(":alarm_clock:", fmt::format(_("INSANE_FOUND", settings), found), c->get_id().get(), _("TIME_UP", settings));
 			} else if (state->curr_answer != "") {
-				SimpleEmbed(":alarm_clock:", fmt::format("The answer was: **{}**", state->curr_answer), c->get_id().get(), "Out of time!");
+				SimpleEmbed(":alarm_clock:", fmt::format(_("ANS_WAS", settings), state->curr_answer), c->get_id().get(), _("OUT_OF_TIME", settings));
 			}
 		}
 		/* FIX: You can only lose your streak on a non-insane round */
 		if (state->curr_answer != "" && state->round % 10 != 0 && state->streak > 1 && state->last_to_answer) {
 			aegis::user* u = bot->core.find_user(state->last_to_answer);
 			if (u) {
-				SimpleEmbed(":octagonal_sign:", fmt::format("**{}**'s streak of **{}** answers in a row comes to a grinding halt!", u->get_username(), state->streak), c->get_id().get());
+				SimpleEmbed(":octagonal_sign:", fmt::format(_("STREAK_SMASHED", settings), u->get_username(), state->streak), c->get_id().get());
 			}
 		}
 	
@@ -965,14 +973,14 @@ public:
 		}
 
 		if (c && state->round <= state->numquestions - 2) {
-			SimpleEmbed("<a:loading:658667224067735562>", fmt::format("Next question coming up in about **{}** seconds...", state->interval), c->get_id().get(), "A little time to rest your fingers...");
+			SimpleEmbed("<a:loading:658667224067735562>", fmt::format(_("COMING_UP", settings), state->interval), c->get_id().get(), _("REST", settings));
 		}
 
 		state->gamestate = (state->round > state->numquestions ? TRIV_END : TRIV_ASK_QUESTION);
 		state->round++;
 		state->score = 0;
 		if (log_question_index(state->guild_id, state->channel_id, state->round, state->streak, state->last_to_answer, state->gamestate)) {
-			StopGame(state);
+			StopGame(state, settings);
 		}
 	}
 
@@ -981,20 +989,21 @@ public:
 		bot->core.log->debug("do_answer_correct: G:{} C:{}", state->guild_id, state->channel_id);
 
 		aegis::channel* c = bot->core.find_channel(state->channel_id);
+		guild_settings_t settings = GetGuildSettings(state->guild_id);
 
 		state->round++;
 		state->score = 0;
 
 		if (state->round <= state->numquestions - 2) {
 			if (c) {
-				SimpleEmbed("<a:loading:658667224067735562>", fmt::format("Next question coming up in about **{}** seconds...", state->interval), c->get_id().get(), "A little time to rest your fingers...");
+				SimpleEmbed("<a:loading:658667224067735562>", fmt::format(_("COMING_UP", settings), state->interval), c->get_id().get(), _("REST", settings));
 			} else {
 				bot->core.log->warn("do_answer_correct(): Channel {} was deleted", state->channel_id);
 			}
 		}
 		state->gamestate = TRIV_ASK_QUESTION;
 		if (log_question_index(state->guild_id, state->channel_id, state->round, state->streak, state->last_to_answer, state->gamestate)) {
-			StopGame(state);
+			StopGame(state, settings);
 		}
 	}
 
@@ -1006,8 +1015,9 @@ public:
 
 		aegis::channel* c = bot->core.find_channel(state->channel_id);
 		if (c) {
+			guild_settings_t settings = GetGuildSettings(state->guild_id);
 			bot->core.log->info("End of game on guild {}, channel {} after {} seconds", state->guild_id, state->channel_id, time(NULL) - state->start_time);
-			SimpleEmbed(":stop_button:", fmt::format("End of round of **{}** questions", state->numquestions - 1), c->get_id().get(), "End of the round");
+			SimpleEmbed(":stop_button:", fmt::format(_("END1", settings), state->numquestions - 1), c->get_id().get(), _("END_TITLE", settings));
 			show_stats(c->get_guild().get_id(), state->channel_id);
 		} else {
 			bot->core.log->warn("do_end_game(): Channel {} was deleted", state->channel_id);
@@ -1041,9 +1051,9 @@ public:
 		if (c) {
 			guild_settings_t settings = GetGuildSettings(guild_id);
 			if (settings.premium && !settings.custom_url.empty()) {
-				EmbedWithFields("Trivia Leaderboard", {{"Today's Top Ten", msg, false}, {"More information", fmt::format("[View server leaderboards](https://triviabot.co.uk/stats/{})\nDaily scores reset at midnight GMT.", settings.custom_url), false}}, c->get_id().get());
+				EmbedWithFields(_("LEADERBOARD", settings), {{_("TOP_TEN", settings), msg, false}, {_("MORE_INFO", settings), fmt::format(_("LEADER_LINK", settings), settings.custom_url), false}}, c->get_id().get());
 			} else {
-				EmbedWithFields("Trivia Leaderboard", {{"Today's Top Ten", msg, false}, {"More information", fmt::format("[View server leaderboards](https://triviabot.co.uk/stats/{})\nDaily scores reset at midnight GMT.", guild_id), false}}, c->get_id().get());
+				EmbedWithFields(_("LEADERBOARD", settings), {{_("TOP_TEN", settings), msg, false}, {_("MORE_INFO", settings), fmt::format(_("LEADER_LINK", settings), guild_id), false}}, c->get_id().get());
 			}
 		}
 	}
@@ -1104,10 +1114,10 @@ public:
 		bot->DisposeThread(t);
 	}
 
-	void StopGame(state_t* state)
+	void StopGame(state_t* state, const guild_settings_t &settings)
 	{
 		if (state->gamestate != TRIV_END) {
-			SimpleEmbed(":octagonal_sign:", "The round of trivia was stopped from the [dashboard](https://triviabot.co.uk/dashboard/)!", state->channel_id, "Round Stopping!");
+			SimpleEmbed(":octagonal_sign:", _("DASH_STOP", settings), state->channel_id, _("STOPPING", settings));
 			state->gamestate = TRIV_END;
 			state->terminating = false;
 		}
@@ -1151,13 +1161,6 @@ public:
 		const aegis::user& user = message.get_user();
 		bool game_in_progress = false;
 
-		std::string trivia_message = clean_message;
-		int x = from_string<int>(conv_num(clean_message), std::dec);
-		if (x > 0) {
-			trivia_message = conv_num(clean_message);
-		}
-		trivia_message = tidy_num(trivia_message);
-
 		/* Retrieve current state for channel, if there is no state object, no game is in progress */
 		state_t* state = nullptr;
 		int64_t guild_id = 0;
@@ -1185,6 +1188,13 @@ public:
 
 		guild_settings_t settings = GetGuildSettings(guild_id);
 
+                std::string trivia_message = clean_message;
+                int x = from_string<int>(conv_num(clean_message, settings), std::dec);
+                if (x > 0) {
+                        trivia_message = conv_num(clean_message, settings);
+                }
+                trivia_message = tidy_num(trivia_message);
+
 		{
 			std::lock_guard<std::mutex> user_cache_lock(states_mutex);
 			auto state_iter = states.find(channel_id);
@@ -1206,7 +1216,7 @@ public:
 		}
 
 		if (mentioned && prefix_match->Match(clean_message)) {
-			c->create_message("My prefix on this server is ``" + settings.prefix + "``. Type ``" + settings.prefix + "help`` for help.");
+			c->create_message(fmt::format(_("PREFIX", settings), settings.prefix, settings.prefix));
 			return false;
 		}
 
@@ -1229,7 +1239,7 @@ public:
 
 						if (--state->insane_left < 1) {
 							if (c) {
-								SimpleEmbed(":thumbsup:", fmt::format("**{}** found the last answer!", user.get_username()), c->get_id().get());
+								SimpleEmbed(":thumbsup:", fmt::format(_("LAST_ONE", settings), user.get_username()), c->get_id().get());
 							}
 							if (state->round <= state->numquestions - 1) {
 								state->round++;
@@ -1239,12 +1249,12 @@ public:
 							}
 						} else {
 							if (c) {
-								SimpleEmbed(":thumbsup:", fmt::format("**{}** was correct with **{}**! **{}** answers remaining out of **{}**.", user.get_username(), trivia_message, state->insane_left, state->insane_num), c->get_id().get());
+								SimpleEmbed(":thumbsup:", fmt::format(_("INSANE_CORRECT", settings), user.get_username(), trivia_message, state->insane_left, state->insane_num), c->get_id().get());
 							}
 						}
 						update_score_only(user.get_id().get(), state->guild_id, 1);
 						if (log_question_index(state->guild_id, state->channel_id, state->round, state->streak, state->last_to_answer, state->gamestate)) {
-							StopGame(state);
+							StopGame(state, settings);
 							return false;
 						}
 					}
@@ -1256,7 +1266,7 @@ public:
 						/* Correct answer */
 						state->gamestate = TRIV_ANSWER_CORRECT;
 						time_t time_to_answer = time(NULL) - state->asktime;
-						std::string pts = (state->score > 1 ? "points" : "point");
+						std::string pts = (state->score > 1 ? _("POINTS", settings) : _("POINT", settings));
 						time_t submit_time = state->recordtime;
 						int32_t score = state->score;
 
@@ -1265,37 +1275,37 @@ public:
 						state->curr_answer = "";
 
 						std::string ans_message;
-						ans_message.append(fmt::format("The answer was **{}**. You gain **{}** {} for answering in **{}** seconds!", saved_answer, score, pts, time_to_answer));
+						ans_message.append(fmt::format(_("NORM_CORRECT", settings), saved_answer, score, pts, time_to_answer));
 						if (time_to_answer < state->recordtime) {
-							ans_message.append(fmt::format("\n**{}** has broken the record time for this question!", user.get_username()));
+							ans_message.append(fmt::format(_("RECORD_TIME", settings), user.get_username()));
 							submit_time = time_to_answer;
 						}
 						int32_t newscore = update_score(user.get_id().get(), state->guild_id, submit_time, state->curr_qid, score);
-						ans_message.append(fmt::format("\n**{}**'s score is now **{}**.", user.get_username(), newscore ? newscore : score));
+						ans_message.append(fmt::format(_("SCORE_UPDATE", settings), user.get_username(), newscore ? newscore : score));
 
 						std::string teamname = get_current_team(user.get_id().get());
 						if (!empty(teamname) && teamname != "!NOTEAM") {
 							add_team_points(teamname, score, user.get_id().get());
 							int32_t newteamscore = get_team_points(teamname);
-							ans_message.append(fmt::format("\nTeam **{}** also gains **{}** {} and is now on **{}**", teamname, score, pts, newteamscore));
+							ans_message.append(fmt::format(_("TEAM_SCORE", settings), teamname, score, pts, newteamscore));
 						}
 
 						if (state->last_to_answer == user.get_id().get()) {
 							/* Amend current streak */
 							state->streak++;
-							ans_message.append(fmt::format("\n**{}** is on a streak! **{}** questions and counting", user.get_username(), state->streak));
+							ans_message.append(fmt::format(_("ON_A_STREAK", settings), user.get_username(), state->streak));
 							streak_t s = get_streak(user.get_id().get(), state->guild_id);
 							if (state->streak > s.personalbest) {
-								ans_message.append(fmt::format(", and has beaten their personal best!"));
+								ans_message.append(_("BEATEN_BEST", settings));
 								change_streak(user.get_id().get(), state->guild_id, state->streak);
 							} else {
-								ans_message.append(fmt::format(", but has some way to go yet before they beat their personal best of **{}**", s.personalbest));
+								ans_message.append(fmt::format(_("NOT_THERE_YET", settings), s.personalbest));
 							}
 							if (state->streak > s.bigstreak && s.topstreaker != user.get_id().get()) {
-								ans_message.append(fmt::format("\n**{}** just beat <@{}>'s record streak of {} answers!", user.get_username(), s.topstreaker, state->streak));
+								ans_message.append(fmt::format(_("STREAK_BEATDOWN", settings), user.get_username(), s.topstreaker, state->streak));
 							}
 						} else if (state->streak > 1 && state->last_to_answer && state->last_to_answer != user.get_id().get()) {
-							ans_message.append(fmt::format("\n**{}** just ended <@{}>'s streak of {} answers in a row!", user.get_username(), state->last_to_answer, state->streak));
+							ans_message.append(fmt::format(_("STREAK_ENDER", settings), user.get_username(), state->last_to_answer, state->streak));
 							state->streak = 1;
 						} else {
 							state->streak = 1;
@@ -1306,11 +1316,11 @@ public:
 
 						aegis::channel* c = bot->core.find_channel(channel_id);
 						if (c) {
-							SimpleEmbed(":thumbsup:", ans_message, c->get_id().get(), fmt::format("Correct, {}!", user.get_username()));
+							SimpleEmbed(":thumbsup:", ans_message, c->get_id().get(), fmt::format(_("CORRECT", settings), user.get_username()));
 						}
 
 						if (log_question_index(state->guild_id, state->channel_id, state->round, state->streak, state->last_to_answer, state->gamestate)) {
-							StopGame(state);
+							StopGame(state, settings);
 							return false;
 						}
 					}
@@ -1390,19 +1400,19 @@ public:
 								tokens >> cid;
 								auto newc = bot->core.find_channel(cid);
 								if (!newc) {
-									SimpleEmbed(":warning:", fmt::format("**{}**, this channel ID does not exist!", user.get_username()), c->get_id().get());
+									SimpleEmbed(":warning:", fmt::format(_("CHANNEL_WUT", settings), user.get_username()), c->get_id().get());
 									return false;
 								} else {
-									SimpleEmbed(":white_check_mark:", fmt::format("Round of {} questions started on channel id {}", questions, cid), c->get_id().get());
+									SimpleEmbed(":white_check_mark:", fmt::format(_("ROUND_START_ID", settings), questions, cid), c->get_id().get());
 									c = newc;
 									channel_id = cid;
 									resumed = true;
 									guild_id = c->get_guild().get_id().get();
 									settings = GetGuildSettings(guild_id);
-									SimpleEmbed(":white_check_mark:", fmt::format("Because the bot was restarted, your game was stopped. This game has been resumed."), c->get_id().get());
+									SimpleEmbed(":white_check_mark:", _("RESTART_RESUME", settings), c->get_id().get());
 								}
 							} else {
-								SimpleEmbed(":warning:", fmt::format("Only bot moderators can use this command"), c->get_id().get());
+								SimpleEmbed(":warning:", _("STAFF_ONLY", settings), c->get_id().get());
 							}
 						}
 
@@ -1414,7 +1424,7 @@ public:
 						for (auto entry = shitlist.begin(); entry != shitlist.end(); ++entry) {
 							int64_t sl_guild_id = from_string<int64_t>(entry->get<std::string>(), std::dec);
 					                if (c->get_guild().get_id().get() == sl_guild_id) {
-								SimpleEmbed(":warning:", fmt::format("**{}**, you can't start a round of trivia here, as the bot owner has explicitly blocked games from being started on this server.\nIf you want to start a round of trivia, first [invite the bot](https://discord.com/oauth2/authorize?client_id={}&scope=bot+identify&permissions=268848192&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code) to your own server!", user.get_username(), bot->user.id.get()), c->get_id().get());
+								SimpleEmbed(":warning:", fmt::format(_("SHITLISTED", settings), user.get_username(), bot->user.id.get()), c->get_id().get());
 								return false;
 							}
 					        }
@@ -1425,8 +1435,8 @@ public:
 								if (j->second->guild_id == c->get_guild().get_id() && j->second->gamestate != TRIV_END) {
 									aegis::channel* active_channel = bot->core.find_channel(j->second->channel_id);
 									if (active_channel) {
-										EmbedWithFields(":warning: Can't start two rounds at once on one server!", {{"A round of trivia is already active", fmt::format("Please see <#{}> to join the game", active_channel->get_id().get()), false},
-												{"Get TriviaBot Premium!", "If you want to do this, TriviaBot Premium lets you run as many concurrent games on the same server as you want. For more information please see the [TriviaBot Premium Page](https://triviabot.co.uk/premium/).", false}}, c->get_id().get());
+										EmbedWithFields(_("NOWAY", settings), {{_("ALREADYACTIVE", settings), fmt::format(_("CHANNELREF", settings), active_channel->get_id().get()), false},
+												{_("GETPREMIUM", settings), _("PREMDETAIL1", settings), false}}, c->get_id().get());
 										return false;
 									}
 								}
@@ -1438,19 +1448,19 @@ public:
 							if ((!quickfire && (questions < 5 || questions > 200)) || (quickfire && (questions < 5 || questions > max_quickfire))) {
 								if (quickfire) {
 									if (questions > max_quickfire && !settings.premium) {
-										EmbedWithFields(":warning: Can't start a quickfire round of more than 15 questions", {{"Get TriviaBot Premium!", "If you want to do this, TriviaBot Premium lets you run quickfire rounds of up to 200 questions! For more information please see the [TriviaBot Premium Page](https://triviabot.co.uk/premium/).", false}}, c->get_id().get());
+										EmbedWithFields(_("MAX15", settings), {{_("GETPREMIUM", settings), _("PREMDETAIL2", settings), false}}, c->get_id().get());
 									} else {
-										SimpleEmbed(":warning:", fmt::format("**{}**, you can't create a quickfire trivia round of less than 5 or more than {} questions!", user.get_username(), max_quickfire), c->get_id().get());
+										SimpleEmbed(":warning:", fmt::format(_("MAX15DETAIL", settings), user.get_username(), max_quickfire), c->get_id().get());
 									}
 								} else {
-									SimpleEmbed(":warning:", fmt::format("**{}**, you can't create a normal trivia round of less than 5 or more than 200 questions!", user.get_username()), c->get_id().get());
+									SimpleEmbed(":warning:", fmt::format(_("MAX200", settings), user.get_username()), c->get_id().get());
 								}
 								return false;
 							}
 
 							std::vector<std::string> sl = fetch_shuffle_list(c->get_guild().get_id());
 							if (sl.size() < 50) {
-								SimpleEmbed(":warning:", fmt::format("**{}**, something spoopy happened. Please try again in a couple of minutes!", user.get_username()), c->get_id().get(), "That wasn't supposed to happen...");
+								SimpleEmbed(":warning:", fmt::format(_("SPOOPY2", settings), user.get_username()), c->get_id().get(), _("BROKED", settings));
 								return false;
 							} else  {
 								state = new state_t(this);
@@ -1473,7 +1483,7 @@ public:
 								if (c) {
 									state->guild_id = c->get_guild().get_id();
 									bot->core.log->info("Started game on guild {}, channel {}, {} questions [{}]", state->guild_id, channel_id, questions, quickfire ? "quickfire" : "normal");
-									EmbedWithFields(fmt::format(":question: New {}trivia round {} by {}!", (quickfire ? "**QUICKFIRE** " : ""), (resumed ? "resumed" : "started"), (resumed ? "a bot admin" : user.get_username())), {{"Questions", fmt::format("{}", questions), false}, {"Get Ready", "First question coming up!", false}, {"How to play", "Type your answer on channel to answer a question. The first to answer gets the points. To report any incorrect or invalid question, click the link in the title of the question's message."}}, c->get_id().get());
+									EmbedWithFields(fmt::format(_("NEWROUND", settings), (quickfire ? "**QUICKFIRE** " : ""), (resumed ? _("RESUMED", settings) : _("STARTED", settings)), (resumed ? _("ABOTADMIN", settings) : user.get_username())), {{_("QUESTION", settings), fmt::format("{}", questions), false}, {_("GETREADY", settings), _("FIRSTCOMING", settings), false}, {_("HOWPLAY", settings), _("INSTRUCTIONS", settings)}}, c->get_id().get());
 									state->timer = new std::thread(&state_t::tick, state);
 
 									log_game_start(state->guild_id, state->channel_id, questions, quickfire, c->get_name(), user.get_id().get(), state->shuffle_list);
@@ -1484,18 +1494,18 @@ public:
 								return false;
 							}
 						} else {
-							SimpleEmbed(":warning:", fmt::format("Buhhh... a round is already running here, **{}**!", user.get_username()), c->get_id().get());
+							SimpleEmbed(":warning:", fmt::format(_("ALREADYRUN", settings), user.get_username()), c->get_id().get());
 							return false;
 						}
 					} else if (base_command == "stop") {
 						if (game_in_progress) {
 							if (settings.only_mods_stop) {
 								if (!moderator) {
-									SimpleEmbed(":warning:", fmt::format("**{}**, only trivia moderators can stop trivia on this server!", user.get_username()), c->get_id().get());
+									SimpleEmbed(":warning:", fmt::format(_("CANTSTOPMEIMTHEGINGERBREADMAN", settings), user.get_username()), c->get_id().get());
 									return false;
 								}
 							}
-							SimpleEmbed(":octagonal_sign:", fmt::format("**{}** has stopped the round of trivia!", user.get_username()), c->get_id().get());
+							SimpleEmbed(":octagonal_sign:", fmt::format(_("STOPOK", settings), user.get_username()), c->get_id().get());
 							{
 								std::lock_guard<std::mutex> user_cache_lock(states_mutex);
 								auto i = states.find(channel_id);
@@ -1509,17 +1519,17 @@ public:
 							}
 							log_game_end(c->get_guild().get_id().get(), c->get_id().get());
 						} else {
-							SimpleEmbed(":warning:", fmt::format("No trivia round is running here, **{}**!", user.get_username()), c->get_id().get());
+							SimpleEmbed(":warning:", fmt::format(_("NOTRIVIA", settings), user.get_username()), c->get_id().get());
 						}
 						return false;
 					} else if (base_command == "vote") {
-						SimpleEmbed(":white_check_mark:", fmt::format("**Get Private Hints By Voting**\n[Vote for the bot every 12 hours](https://top.gg/bot/{}/vote) to get eight uses of the ``{}votehint`` command, which gives you a personal hint via direct message!", bot->user.id.get(), settings.prefix), c->get_id().get());
+						SimpleEmbed(":white_check_mark:", fmt::format(fmt::format("{}\n{}", _("PRIVHINT", settings), _("VOTEAD", settings)), bot->user.id.get(), settings.prefix), c->get_id().get());
 					} else if (base_command == "votehint" || base_command == "vh") {
 						if (game_in_progress) {
 							if ((state->gamestate == TRIV_FIRST_HINT || state->gamestate == TRIV_SECOND_HINT || state->gamestate == TRIV_TIME_UP) && (state->round % 10) != 0 && state->curr_answer != "") {
 								db::resultset rs = db::query("SELECT *,(unix_timestamp(vote_time) + 43200 - unix_timestamp()) as remaining FROM infobot_votes WHERE snowflake_id = ? AND now() < vote_time + interval 12 hour", {user.get_id().get()});
 								if (rs.size() == 0) {
-									SimpleEmbed("<:wc_rs:667695516737470494>", fmt::format("You haven't voted for the bot today!\n[Vote for the bot every 12 hours](https://top.gg/bot/{}/vote) to get eight uses of the ``{}votehint`` command, which delivers a personal hint for the current question to you via direct message.", bot->user.id.get(), settings.prefix), c->get_id().get());
+									SimpleEmbed("<:wc_rs:667695516737470494>", fmt::format(fmt::format("{}\n{}", _("NOTVOTED", settings), _("VOTEAD", settings)), bot->user.id.get(), settings.prefix), c->get_id().get());
 									return false;
 								} else {
 									int64_t remaining_hints = from_string<int64_t>(rs[0]["dm_hints"], std::dec);
@@ -1527,13 +1537,13 @@ public:
 									int32_t mins = secs / 60 % 60;
 									float hours = floor(secs / 60 / 60);
 									if (remaining_hints < 1) {
-										SimpleEmbed(":warning:", fmt::format("You are out of voter hints, **{}**!\n[Vote again](https://top.gg/bot/{}/vote) in **{} hours and {} minutes** to get eight uses of this command, which delivers a personal hint for the current question to you via direct message.", user.get_username(), bot->user.id.get(), hours, mins), c->get_id().get());
+										SimpleEmbed(":warning:", fmt::format(fmt::format("{}\n{}", fmt::format(_("NOMOREHINTS", settings), user.get_username()), _("VOTEAD", settings)), bot->user.id.get(), hours, mins), c->get_id().get());
 									} else {
 										remaining_hints--;
 										if (remaining_hints > 0) {
-											SimpleEmbed(":white_check_mark:", fmt::format("**{}**, i've sent you a hint via DM!\nYou have **{}** voter hint(s) remaining which expire in **{} hours and {} minutes**.", user.get_username(), remaining_hints, hours, mins), c->get_id().get());
+											SimpleEmbed(":white_check_mark:", fmt::format(_("VH1", settings), user.get_username(), remaining_hints, hours, mins), c->get_id().get());
 										} else {
-											SimpleEmbed(":white_check_mark:", fmt::format("**{}**, i've sent you a hint via DM!\nYou have **NO MORE** voter hints remaining and can vote again in **{} hours and {} minutes**.", user.get_username(), hours, mins), c->get_id().get());
+											SimpleEmbed(":white_check_mark:", fmt::format(_("VH2", settings), user.get_username(), hours, mins), c->get_id().get());
 										}
 										std::string personal_hint = state->curr_answer;
 										personal_hint = lowercase(personal_hint);
@@ -1541,7 +1551,6 @@ public:
 										personal_hint[personal_hint.length() - 1] = '#';
 										personal_hint = ReplaceString(personal_hint, " ", "#");
 										// Get the API to do this, because DMs in aegis are unreliable right now.
-										// WARNING: Bypasses rate limit!
 										send_hint(user.get_id().get(), personal_hint, remaining_hints);
 										db::query("UPDATE infobot_votes SET dm_hints = ? WHERE snowflake_id = ?", {remaining_hints, user.get_id().get()});
 
@@ -1549,11 +1558,11 @@ public:
 									}
 								}
 							} else {
-								SimpleEmbed(":warning:", fmt::format("You should probaly wait until a non-insane round question is being asked, **{}**!", user.get_username()), c->get_id().get());
+								SimpleEmbed(":warning:", fmt::format(_("WAITABIT", settings), user.get_username()), c->get_id().get());
 								return false;
 							}
 						} else {
-							SimpleEmbed(":warning:", fmt::format("No trivia round is running here, **{}**!\n[Vote for the bot every 12 hours](https://top.gg/bot/{}/vote) to get eight uses of this command, which delivers a personal hint for the current question to you via direct message.", user.get_username(), bot->user.id.get()), c->get_id().get());
+							SimpleEmbed(":warning:", fmt::format(fmt::format("{}\n{}", fmt::format(_("NOROUND", settings), user.get_username()), _("VOTEAD", settings)), bot->user.id.get()), c->get_id().get());
 							return false;
 						}
 					} else if (base_command == "stats") {
@@ -1578,32 +1587,32 @@ public:
 						strftime(startstr, 255, "%x, %I:%M%p", &_tm);
 
 						const statusfield statusfields[] = {
-							statusfield("Active Games", Comma(GetActiveGames())),
-							statusfield("Total Servers", Comma(servers)),
-							statusfield("Connected Since", startstr),
-							statusfield("Online Users", Comma(users)),
-							statusfield("Uptime", std::string(uptime)),
-							statusfield("Shards", Comma(bot->core.shard_max_count)),
-							statusfield("Member Intent", bot->HasMemberIntents() ? ":white_check_mark: Yes" : "<:wc_rs:667695516737470494> No"),
-							statusfield("Test Mode", bot->IsTestMode() ? ":white_check_mark: Yes" : "<:wc_rs:667695516737470494> No"),
-							statusfield("Developer Mode", bot->IsDevMode() ? ":white_check_mark: Yes" : "<:wc_rs:667695516737470494> No"),
-							statusfield("Prefix", "``" + escape_json(settings.prefix) + "``"),
-							statusfield("Bot Version", std::string(TRIVIA_VERSION)),
-							statusfield("Library Version", std::string(AEGIS_VERSION_TEXT)),
+							statusfield(_("ACTIVEGAMES", settings), Comma(GetActiveGames())),
+							statusfield(_("TOTALSERVERS", settings), Comma(servers)),
+							statusfield(_("CONNSINCE", settings), startstr),
+							statusfield(_("ONLINEUSERS", settings), Comma(users)),
+							statusfield(_("UPTIME", settings), std::string(uptime)),
+							statusfield(_("SHARDS", settings), Comma(bot->core.shard_max_count)),
+							statusfield(_("MEMBERINTENT", settings), _((bot->HasMemberIntents() ? "TICKYES" : "CROSSNO"), settings)),
+							statusfield(_("TESTMODE", settings), _((bot->IsTestMode() ? "TICKYES" : "CROSSNO"), settings)),
+							statusfield(_("DEVMODE", settings), _((bot->IsDevMode() ? "TICKYES" : "CROSSNO"), settings)),
+							statusfield(_("MYPREFIX", settings), "``" + escape_json(settings.prefix) + "``"),
+							statusfield(_("BOTVER", settings), std::string(GetVersion())),
+							statusfield(_("LIBVER", settings), std::string(AEGIS_VERSION_TEXT)),
 							statusfield("", "")
 						};
 
-						s << "{\"title\":\"" << bot->user.username << " Information";
+						s << "{\"title\":\"" << bot->user.username << " " << _("INFO", settings);
 						s << "\",\"color\":" << settings.embedcolour << ",\"url\":\"https:\\/\\/triviabot.co.uk\\/\\/\",";
-						s << "\"footer\":{\"link\":\"https:\\/\\/triviabot.co.uk\\/\",\"text\":\"Powered by TriviaBot!\",\"icon_url\":\"https:\\/\\/triviabot.co.uk\\/images\\/triviabot_tl_icon.png\"},\"fields\":[";
+						s << "\"footer\":{\"link\":\"https:\\/\\/triviabot.co.uk\\/\",\"text\":\"" << _("POWERED_BY", settings) << "\",\"icon_url\":\"https:\\/\\/triviabot.co.uk\\/images\\/triviabot_tl_icon.png\"},\"fields\":[";
 						for (int i = 0; statusfields[i].name != ""; ++i) {
-							s << "{\"name\":\"" +  statusfields[i].name + "\",\"value\":\"" + statusfields[i].value + "\", \"inline\": true}";
+							s << "{\"name\":\"" <<  statusfields[i].name << "\",\"value\":\"" << statusfields[i].value << "\", \"inline\": true}";
 							if (statusfields[i + 1].name != "") {
 								s << ",";
 							}
 						}
 
-						s << "],\"description\":\"" << (settings.premium ? ":star: This server has TriviaBot Premium! They rock! :star:" : "") << "\"}";
+						s << "],\"description\":\"" << (settings.premium ? _("YAYPREMIUM", settings) : "") << "\"}";
 
 						json embed_json;
 						try {
@@ -1616,63 +1625,14 @@ public:
 							c->create_message_embed("", embed_json);
 							bot->sent_messages++;
 						}
-					} else if (base_command == "active") {
-						db::resultset rs = db::query("SELECT * FROM trivia_access WHERE user_id = ? AND enabled = 1", {user.get_id().get()});
-						if (rs.size() > 0) {
-
-							if (GetActiveGames() == 0) {
-								SimpleEmbed(":warning:", fmt::format("No trivia games are currently active."), c->get_id().get());
-								return false;
-							}
-
-							std::stringstream w;
-							w << "```diff\n";
-							int32_t state_id = 0;
-
-							const std::vector<std::string> state_name = {
-								"<unknown>",
-								"ASK_QUES",
-								"1ST_HINT",
-								"2ND_HINT",
-								"TIME_UP",
-								"ANS_RIGHT",
-								"END"
-							};
-								
-							w << fmt::format("- ╭──────┬──────────┬──────────────────┬──────────────────┬────────────────────┬────────────┬───────┬────────────╮\n");
-							w << fmt::format("- │state#│game state│guild_id          │channel_id        │start time          │# questions │type   │question_id │\n");
-							w << fmt::format("- ├──────┼──────────┼──────────────────┼──────────────────┼────────────────────┼────────────┼───────┼────────────┤\n");
-
-							{
-								std::lock_guard<std::mutex> user_cache_lock(states_mutex);
-								for (auto s = states.begin(); s != states.end(); ++s) {
-									state_t* st = s->second;
-									if (st->gamestate == TRIV_END || st->terminating) {
-										continue;
-									}
-									char timestamp[255];
-									tm _tm;
-									gmtime_r(&st->start_time, &_tm);
-									strftime(timestamp, sizeof(timestamp), "%H:%M:%S %d-%b-%Y", &_tm);
-	
-									w << fmt::format("+ |{:6}|{:10}|{:11}|{:12}|{:>16}|{:12}|{:7}|{:12}|\n", state_id++, state_name[st->gamestate], st->guild_id, st->channel_id, timestamp, fmt::format("{}/{}", st->round, st->numquestions - 1), (st->interval == TRIV_INTERVAL ? "normal" : "quick"), st->curr_qid);
-								}
-							}
-							w << fmt::format("+ ╰──────┴──────────┴──────────────────┴──────────────────┴────────────────────┴────────────┴───────┴────────────╯\n");
-							w << "```";
-							c->create_message(w.str());
-							bot->sent_messages++;
-						} else {
-							SimpleEmbed(":warning:", fmt::format("**{}**, this command is restricted to the bot administration team only", user.get_username()), c->get_id().get());
-						}
 					} else if (base_command == "join") {
 						std::string teamname;
 						std::getline(tokens, teamname);
 						teamname = trim(teamname);
 						if (join_team(user.get_id().get(), teamname, c->get_id().get())) {
-							SimpleEmbed(":busts_in_silhouette:", fmt::format("You have successfully joined the team \"**{}**\", **{}**", teamname, user.get_username()), c->get_id().get(), "Call for backup!");
+							SimpleEmbed(":busts_in_silhouette:", fmt::format(_("JOINED", settings), teamname, user.get_username()), c->get_id().get(), _("CALLFORBACKUP", settings));
 						} else {
-							SimpleEmbed(":warning:", fmt::format("I cannot bring about world peace, make you a sandwich, or join that team, **{}**", user.get_username()), c->get_id().get());
+							SimpleEmbed(":warning:", fmt::format(_("CANTJOIN", settings), user.get_username()), c->get_id().get());
 						}
 					} else if (base_command == "create") {
 						std::string newteamname;
@@ -1683,25 +1643,25 @@ public:
 							newteamname = create_new_team(newteamname);
 							if (newteamname != "__NO__") {
 								join_team(user.get_id().get(), newteamname, c->get_id().get());
-								SimpleEmbed(":busts_in_silhouette:", fmt::format("You have successfully **created** and joined the team \"**{}**\", **{}**", newteamname, user.get_username()), c->get_id().get(), "It's unsafe to go alone...");
+								SimpleEmbed(":busts_in_silhouette:", fmt::format(_("CREATED", settings), newteamname, user.get_username()), c->get_id().get(), _("ZELDAREFERENCE", settings));
 							} else {
-								SimpleEmbed(":warning:", fmt::format("I couldn't create that team, **{}**...", user.get_username()), c->get_id().get());
+								SimpleEmbed(":warning:", fmt::format(_("CANTCREATE", settings), user.get_username()), c->get_id().get());
 							}
 						} else {
-							SimpleEmbed(":warning:", fmt::format("**{}**, you are already a member of team \"**{}**\"!", user.get_username(), teamname), c->get_id().get());
+							SimpleEmbed(":warning:", fmt::format(_("ALREADYMEMBER", settings), user.get_username(), teamname), c->get_id().get());
 						}
 					} else if (base_command == "leave") {
 						std::string teamname = get_current_team(user.get_id().get());
 						if (teamname.empty() || teamname == "!NOTEAM") {
-							SimpleEmbed(":warning:", fmt::format("**{}**, you aren't a member of any team! Use **{}join** to join a team!", user.get_username(), settings.prefix), c->get_id().get());
+							SimpleEmbed(":warning:", fmt::format(_("YOULONER", settings), user.get_username(), settings.prefix), c->get_id().get());
 						} else {
 							leave_team(user.get_id().get());
-							SimpleEmbed(":busts_in_silhouette:", fmt::format("**{}** has left team **{}**", user.get_username(), teamname), c->get_id().get(), "Come back, we'll miss you! :cry:");
+							SimpleEmbed(":busts_in_silhouette:", fmt::format(_("LEFTTEAM", settings), user.get_username(), teamname), c->get_id().get(), _("COMEBACK", settings));
 						}
 					} else if (base_command == "help") {
 						std::string section;
 						tokens >> section;
-						GetHelp(section, channel_id, bot->user.username, bot->user.id.get(), msg.get_user().get_username(), msg.get_user().get_id().get(), settings.embedcolour);
+						GetHelp(section, channel_id, bot->user.username, bot->user.id.get(), msg.get_user().get_username(), msg.get_user().get_id().get(), settings);
 					} else {
 						/* Custom commands handled completely by the API */
 						bool command_exists = false;
@@ -1729,7 +1689,7 @@ public:
 								}
 							} else {
 								/* Display rate limit message */
-								SimpleEmbed(":snail:", fmt::format("Please wait {} seconds before trying the **{}** command again!", PER_CHANNEL_RATE_LIMIT, base_command), c->get_id().get(), "Woah there!");
+								SimpleEmbed(":snail:", fmt::format(_("RATELIMITED", settings), PER_CHANNEL_RATE_LIMIT, base_command), c->get_id().get(), _("WOAHTHERE", settings));
 								bot->core.log->debug("Command '{}' not sent to API, rate limited", trim(lowercase(base_command)));
 							}
 						} else {
@@ -1749,21 +1709,22 @@ public:
 	/**
 	 * Emit help using a json file in the help/ directory. Missing help files emit a generic error message.
 	 */
-	void GetHelp(const std::string &section, int64_t channelID, const std::string &botusername, int64_t botid, const std::string &author, int64_t authorid, uint32_t colour)
+	void GetHelp(const std::string &section, int64_t channelID, const std::string &botusername, int64_t botid, const std::string &author, int64_t authorid, const guild_settings_t &settings)
 	{
 		json embed_json;
 		char timestamp[256];
 		time_t timeval = time(NULL);
 		aegis::channel* channel = bot->core.find_channel(channelID);
+		int32_t colour = settings.embedcolour;
 
 		if (!channel) {
 			bot->core.log->error("Can't find channel {}!", channelID);
 			return;
 		}
 
-		std::ifstream t("../help/" + (section.empty() ? "basic" : section) + ".json");
+		std::ifstream t("../help/" + settings.language + "/" + (section.empty() ? "basic" : section) + ".json");
 		if (!t) {
-			t = std::ifstream("../help/error.json");
+			t = std::ifstream("../help/" + settings.language + "/error.json");
 		}
 		std::string json((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
 
@@ -1783,7 +1744,7 @@ public:
 		}
 		catch (const std::exception &e) {
 			if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == channel->get_guild().get_id()) {
-				channel->create_message("<@" + std::to_string(authorid) + ">, herp derp, theres a malformed help file. Please contact a developer on the official support server: https://discord.gg/brainbox");
+				channel->create_message(fmt::format(_("HERPDERP", settings), authorid));
 				bot->sent_messages++;
 			}
 			bot->core.log->error("Malformed help file {}.json!", section);
