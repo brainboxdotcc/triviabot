@@ -3,1294 +3,1294 @@
 		"en": "<:sporks_error:664735896251269130> I can't make an **embed** from this: ```js\n{0}\n```**Error:** ``{1}`",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "<:sporks_error:664735896251269130> Je ne peux pas faire une **embed** à partir de ceci: ```js\n{0}\n``` **Erreur:** ``{1}``"
 	},
 
 	"MALFORMED_UNICODE": {
 		"en": "Malformed unicode in embed: {0}",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Unicode incorrect dans l'embed: {0}"
 	},
 
 	"POWERED_BY": {
 		"en": "Powered By TriviaBot!",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Propulsé par TriviaBot!"
 	},
 
 	"ROMAN": {
 		"en": "Roman numerals: {0}",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Chiffres romains: {0}"
 	},
 
 	"ONE": {
 		"en": "one",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "un"
 	},
 
 	"TWO": { 
 		"en": "two",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "deux"
 	},
 
 	"THREE": {
 		"en": "three",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "trois"
 	},
 
 	"FOUR": {
 		"en": "four",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "quatre"
 	},
 
 	"FIVE": {
 		"en": "five",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "cinq"
 	},
 
 	"SIX": {
 		"en": "six",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "six"
 	},
 
 	"SEVEN": {
 		"en": "seven",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "sept"
 	},
 
 	"EIGHT": {
 		"en": "eight",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "huit"
 	},
 	
 	"NINE": {
 		"en": "nine",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "neuf"
 	},
 	
 	"TEN": {
 		"en": "ten",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "dix"
 	},
 	
 	"ELEVEN": {
 		"en": "eleven",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "onze"
 	},
 	
 	"TWELVE": {
 		"en": "twelve",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "douze"
 	},
 	
 	"THIRTEEN": {
 		"en": "thirteen",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "treize"
 	},
 	
 	"FOURTEEN": {
 		"en": "fourteen",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "quatorze"
 	},
 	
 	"FIFTEEN": {
 		"en": "fifteen",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "quinze"
 	},
 	
 	"SIXTEEN": {
 		"en": "sixteen",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "seize"
 	},
 	
 	"SEVENTEEN": {
 		"en": "seventeen",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "dix-sept"
 	},
 	
 	"EIGHTEEN": {
 		"en": "eighteen",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "dix-huit"
 	},
 	
 	"NINETEEN": {
 		"en": "nineteen",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "dix-neuf"
 	},
 	
 	"TWENTY": {
 		"en": "twenty",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "vingt"
 	},
 	
 	"THIRTY": {
 		"en": "thirty",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "trente"
 	},
 	
 	"FOURTY": {
 		"en": "fourty",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "quarante"
 	},
 	
 	"FIFTY": {
 		"en": "fifty",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "cinquante"
 	},
 	
 	"SIXTY": {
 		"en": "sixty",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "soixante"
 	},
 	
 	"SEVENTY": {
 		"en": "seventy",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "soixante-dix"
 	},
 	
 	"EIGHTY": {
 		"en": "eighty",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "quatre-vingts"
 	},
 	
 	"NINETY": {
 		"en": "ninety",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "quatre-vingt dix"
 	},
 	
 	"HUNDRED": {
 		"en": "hundred",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "cent"
 	},
 	
 	"THOUSAND": {
 		"en": "thousand",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "mille"
 	},
 	
 	"DOLLARS": {
 		"en": "dollars",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "dollars"
 	},
 	
 	"ZERO": {
 		"en": "zero",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "zéro"
 	},
 	
 	"AND_SPACED": {
 		"en": " and ",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": " et "
 	},
 	
 	"MILLION": {
 		"en": "million",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "million"
 	},
 	
 	"HTM_REGEX": {
 		"en": "hundred|thousand|million",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "cent|mille|million"
 	},
 	
 	"HINT_LETTERLONG": {
 		"en": "{0} letters long. Starts with '{1}' and ends with '{2}'.",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "{0} lettres de long. Commence par '{1}' et se termine par '{2}'."
 	},
 	
 	"HINT_VOWELCOUNT": {
 		"en": "{0} letters long and contains {1} vowels.",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "{0} lettres de long et contient {1} voyelles."
 	},
 	
 	"COMMA_PLUS_SPACE": {
 		"en": ", plus ",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": ", plus"
 	},
 	
 	"LOWEST_NONNEG": {
 		"en": "The lowest non-negative number",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Le plus petit nombre non négatif"
 	},
 	
 	"INDOLLARS": {
 		"en": "{0}, in dollars",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "{0}, en dollars"
 	},
 	
 	"QUESTION_COUNTER": {
 		"en": ":question: Question {0} of {1}",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": ":question: Question {0} sur {1}"
 	},
 	
 	"INSANE_ROUND": {
 		"en": "Insane Round!",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Tour fou!"
 	},
 	
 	"INSANE_ANS_COUNT": {
 		"en": "Total of {0} possible answers",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Total de {0} réponses possibles"
 	},
 	
 	"QUESTION": {
 		"en": "Question",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Question"
 	},
 	
 	"Q_FETCH_ERROR": {
 		"en": ":question: Couldn't fetch question from API",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": ":question: Impossible de récupérer la question depuis l'API"
 	},
 	
 	"Q_SPOOPY": {
 		"en": "This seems spoopy",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Cela semble cassé"
 	},
 	
 	"Q_CONTACT_DEVS": {
 		"en": "[Please contact the developers](https://discord.gg/brainbox)",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "[Veuillez contacter les développeurs](https://discord.gg/brainbox)"
 	},
 	
 	"ROUND_STOPPING": {
 		"en": "Round stopping",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Arrêt rond"
 	},
 	
 	"ERROR_BROKE_IT": {
 		"en": "Error has stopped play!",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Une erreur a arrêté le jeu!"
 	},
 	
 	"SCRAMBLED_ANSWER": {
 		"en": "Scrambled Answer: {0}",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Réponse brouillée: {0}"
 	},
 	
 	"HEX": {
 		"en": "Hexadecimal: {0:x}",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Hexadécimal: {0:x}"
 	},
 	
 	"OCT": {
 		"en": "Octal: {0:o}",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Octal: {0:o}"
 	},
 	
 	"BIN": {
 		"en": "Binary: {0:b}",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Binaire: {0:b}"
 	},
 	
 	"CATEGORY": {
 		"en": "Category",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Catégorie"
 	},
 	
 	"BRAIN_BROKE_IT": {
 		"en": "Something's up, got a question with no text! This shouldn't happen...",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Quelque chose se passe, j'ai une question sans texte! Cela ne devrait pas arriver..."
 	},
 	
 	"FETCH_Q": {
 		"en": "Fetch Question",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Récupérer la question"
 	},
 	
 	"SECS_LEFT": {
 		"en": "You have **{0}** seconds remaining!",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Il vous reste **{0}** secondes!"
 	},
 	
 	"FIRST_HINT": {
 		"en": "First Hint",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Premier indice"
 	},
 	
 	"SECOND_HINT": {
 		"en": "Second Hint",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Deuxième indice"
 	},
 	
 	"INSANE_FOUND": {
 		"en": "**{0}** answers were found!",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "**{0}** réponses ont été trouvées!"
 	},
 	
 	"ANS_WAS": {
 		"en": "The answer was: **{0}**",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "La réponse était: **{0}**"
 	},
 	
 	"STREAK_SMASHED": {
 		"en": "**{0}**'s streak of **{1}** answers in a row comes to a grinding halt!",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "La série de réponses consécutives de **{0}** **{1}** s'interrompt!"
 	},
 	
 	"TIME_UP": {
 		"en": "Time Up!",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Temps Écoulé!"
 	},
 	
 	"OUT_OF_TIME": {
 		"en": "Out of time!",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Hors du temps!"
 	},
 	
 	"COMING_UP": {
 		"en": "Next question coming up in about **{0}** seconds...",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Prochaine question dans environ **{0}** secondes..."
 	},
 	
 	"REST": {
 		"en": "A little time to rest your fingers...",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Un petit peu de temps pour reposer vos doigts..."
 	},
 	
 	"END1": {
 		"en": "End of round of **{0}** questions",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Fin de la série de **{0}** questions"
 	},
 	
 	"END_TITLE": {
 		"en": "End of the round",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Fin du tour"
 	},
 	
 	"LEADERBOARD": {
 		"en": "Trivia Leaderboard",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Classement Trivia"
 	},
 	
 	"TOP_TEN": {
 		"en": "Today's Top Ten",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Le top dix du jour"
 	},
 	
 	"MORE_INFO": {
 		"en": "More Information",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Plus d'informations"
 	},
 	
 	"LEADER_LINK": {
 		"en": "[View server leaderboards](https://triviabot.co.uk/stats/{0})\nDaily scores reset at midnight GMT.",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "[Afficher les classements des serveurs](https://triviabot.co.uk/stats/{0})\nLes scores quotidiens sont réinitialisés à minuit GMT."
 	},
 	
 	"DASH_STOP": {
 		"en": "The round of trivia was stopped from the [dashboard](https://triviabot.co.uk/dashboard/)!",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Le tour de questions a été arrêté depuis le [tableau de bord](https://triviabot.co.uk/dashboard/)!"
 	},
 	
 	"STOPPING": {
 		"en": "Round Stopping!",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Les questions s'arrêtent!"
 	},
 	
 	"PREFIX": {
 		"en": "My prefix on this server is ``{0}``. Type ``{1}help`` for help.",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Mon préfixe sur ce serveur est ``{0}``. Tapez ``{1}help`` pour obtenir de l'aide."
 	},
 	
 	"LAST_ONE": {
 		"en": "**{0}** found the last answer!",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "**{0}** a trouvé la dernière réponse!"
 	},
 	
 	"INSANE_CORRECT": {
 		"en": "**{0}** was correct with **{1}**, gaining one point! **{2}** answers remaining out of **{3}**.",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "**{0}** était correct avec **{1}**, gagnant un point! **{2}** réponses restantes sur **{3}**"
 	},
 	
 	"POINT": {
 		"en": "point",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "point"
 	},
 	
 	"POINTS": {
 		"en": "points",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "points"
 	},
 	
 	"NORM_CORRECT": {
 		"en": "The answer was **{0}**. You gain **{1}** {2} for answering in **{3}** seconds!",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "La réponse était **{0}**. Vous gagnez **{1}** {2} pour avoir répondu en **{3}** secondes!"
 	},
 	
 	"RECORD_TIME": {
 		"en": "\n**{0}** has broken the record time for this question!",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "n**{0}** a battu le record du temps pour cette question!"
 	},
 	
 	"SCORE_UPDATE": {
 		"en": "\n**{0}**'s score is now **{1}**.",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "\nLe score de **{0}** est désormais de **{1}**."
 	},
 	
 	"TEAM_SCORE": {
 		"en": "\nTeam **{0}** also gains **{1}** {2} and is now on **{3}**",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "\nL'équipe **{0}** gagne également **{1}** {2} et compte désormais **{3}**"
 	},
 	
 	"ON_A_STREAK": {
 		"en": "\n**{0}** is on a streak! **{1}** questions and counting",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "\n**{0}** est sur une séquence! **{1}** questions et compte"
 	},
 	
 	"BEATEN_BEST": {
 		"en": ", and has beaten their personal best!",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": ", et a battu son record personnel!"
 	},
 	
 	"NOT_THERE_YET": {
 		"en": ", but has some way to go yet before they beat their personal best of **{0}**",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": ", mais a encore du chemin à parcourir avant de battre son record personnel de **{0}**"
 	},
 	
 	"STREAK_BEATDOWN": {
 		"en": "\n**{0}** just beat <@{1}>'s record streak of {2} answers!",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "\n**{0}** vient de battre la série record de {2} réponses de <@{1}>!"
 	},
 	
 	"STREAK_ENDER": {
 		"en": "\n**{0}** just ended <@{1}>'s streak of {2} answers in a row!",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "\n**{0}** vient de terminer la série de {2} réponses consécutives de <@{1}>!"
 	},
 	
 	"CORRECT": {
 		"en": "Correct, {0}!",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Correct, {0}!"
 	},
 	
 	"CHANNEL_WUT": {
 		"en": "**{0}**, this channel ID does not exist!",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "**{0}**, cet ID de chaîne n'existe pas!"
 	},
 	
 	"ROUND_START_ID": {
 		"en": "Round of {0} questions started on channel id {1}",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Une série de {0} questions a commencé sur l'ID de chaîne {1}"
 	},
 	
 	"RESTART_RESUME": {
 		"en": "Because the bot was restarted, your game was stopped. This game has been resumed.",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Parce que le bot a été redémarré, votre jeu a été arrêté. Ce jeu a été repris."
 	},
 	
 	"STAFF_ONLY": {
 		"en": "Only bot moderators can use this command",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Seuls les modérateurs de bot peuvent utiliser cette commande"
 	},
 	
 	"SHITLISTED": {
 		"en": "**{0}**, you can't start a round of trivia here, as the bot owner has explicitly blocked games from being started on this server.\nIf you want to start a round of trivia, first [invite the bot](https://discord.com/oauth2/authorize?client_id={1}&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code) to your own server!",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "**{0}**, vous ne pouvez pas commencer une série de questions-réponses ici, car le propriétaire du bot a explicitement bloqué le démarrage de jeux sur ce serveur.\nSi vous souhaitez commencer une série de questions-réponses, d'abord [invitez le bot](https://discord.com/oauth2/authorize?client_id={1}&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code) à votre propre serveur!"
 	},
 	
 	"NOWAY": {
 		"en": ":warning: Can't start two rounds at once on one server!",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": ":warning: Impossible de démarrer deux tours à la fois sur un serveur!"
 	},
 	
 	"ALREADYACTIVE": {
 		"en": "A round of trivia is already active",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Un tour de questions est déjà actif"
 	},
 	
 	"CHANNELREF": {
 		"en": "Please see <#{0}> to join the game",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Veuillez consulter <#{0}> pour rejoindre le jeu"
 	},
 	
 	"GETPREMIUM": {
 		"en": "Get TriviaBot Premium!",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Obtenez TriviaBot Premium!"
 	},
 	
 	"PREMDETAIL1": {
 		"en": "If you want to do this, TriviaBot Premium lets you run as many concurrent games on the same server as you want. For more information please see the [TriviaBot Premium Page](https://triviabot.co.uk/premium/).",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Si vous souhaitez faire cela, TriviaBot Premium vous permet d'exécuter autant de jeux simultanés sur le même serveur que vous le souhaitez. Pour plus d'informations, veuillez consulter la [Page TriviaBot Premium](https://triviabot.co.uk/premium/)."
 	},
 	
 	"PREMDETAIL2": {
 		"en": "If you want to do this, TriviaBot Premium lets you run quickfire rounds of up to 200 questions! For more information please see the [TriviaBot Premium Page](https://triviabot.co.uk/premium/).",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Si vous voulez faire cela, TriviaBot Premium vous permet d'exécuter des rounds quickfire jusqu'à 200 questions! Pour plus d'informations, veuillez consulter la [Page TriviaBot Premium](https://triviabot.co.uk/premium/)."
 	},
 	
 	"MAX15": {
 		"en": ":warning: Can't start a quickfire round of more than 15 questions",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": ":warning: impossible de démarrer un cycle de tir rapide de plus de 15 questions"
 	},
 	
 	"MAX15DETAIL": {
 		"en": "**{0}**, you can't create a quickfire trivia round of less than 5 or more than {1} questions!",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "**{0}**, vous ne pouvez pas créer une série de questions-réponses Quickfire de moins de 5 questions ou plus de {1} questions!"
 	},
 	
 	"MAX200": {
 		"en": "**{0}**, you can't create a normal trivia round of less than 5 or more than 200 questions!",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "**{0}**, vous ne pouvez pas créer un jeu-questionnaire normal de moins de 5 ou plus de 200 questions!"
 	},
 	
 	"SPOOPY2": {
 		"en": "**{0}**, something spoopy happened. Please try again in a couple of minutes!",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "**{0}**, quelque chose de spoopy s'est produit. Veuillez réessayer dans quelques minutes!"
 	},
 	
 	"BROKED": {
 		"en": "That wasn't supposed to happen...",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Ce n'était pas censé arriver..."
 	},
 	
 	"RESUMED": {
 		"en": "resumed",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "repris"
 	},
 	
 	"STARTED": {
 		"en": "started",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "commencé"
 	},
 	
 	"ABOTADMIN": {
 		"en": "a bot admin",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "un bot admin"
 	},
 	
 	"NEWROUND": {
 		"en": ":question: New {0}trivia round {1} by {2}!",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": ":question: Nouveau {0}tour de questions-réponses {1} de {2}!"
 	},
 	
 	"GETREADY": {
 		"en": "Get Ready",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Préparez-vous"
 	},
 	
 	"FIRSTCOMING": {
 		"en": "First question coming up!",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Première question à venir!"
 	},
 	
 	"HOWPLAY": {
 		"en": "How to play",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Comment jouer"
 	},
 	
 	"INSTRUCTIONS": {
 		"en": "Type your answer on channel to answer a question. The first to answer gets the points. To report any incorrect or invalid question, click the link in the title of the question's message.",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Tapez votre réponse sur la chaîne pour répondre à une question. Le premier à répondre obtient les points. Pour signaler une question incorrecte ou non valide, cliquez sur le lien dans le titre du message de la question."
 	},
 	
 	"ALREADYRUN": {
 		"en": "Buhhh... a round is already running here, **{0}**!",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Buhhh... une manche est déjà en cours ici, **{0}**!"
 	},
 	
 	"CANTSTOPMEIMTHEGINGERBREADMAN": {
-		"en": "**{0}**, only trivia moderators can stop trivia on this server!",
+		"en": "**{0}**, only moderators can stop trivia on this server!",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "**{0}**, seuls les modérateurs peuvent arrêter les jeux-questionnaires sur ce serveur!"
 	},
 	
 	"STOPOK": {
 		"en": "**{0}** has stopped the round of trivia!",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "**{0}** a arrêté la série de questions-réponses!"
 	},
 	
 	"NOTRIVIA": {
 		"en": "No trivia round is running here, **{0}**!",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Aucun jeu-questionnaire n'est en cours ici, **{0}**!"
 	},
 	
 	"VOTEAD": {
 		"en": "[Vote for the bot every 12 hours](https://top.gg/bot/{0}/vote) to get eight uses of the ``{1}votehint`` command, which gives you a personal hint via direct message!",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "[Votez pour le bot toutes les 12 heures](https://top.gg/bot/{0}/vote) pour obtenir huit utilisations de la commande ``{1} votehint``, qui vous donne un indice personnel par message direct!"
 	},
 	
 	"PRIVHINT": {
 		"en": "**Get Private Hints by Voting!**\n",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "**Obtenez des indices privés en votant!**\n"
 	},
 	
 	"NOTVOTED": {
 		"en": "You haven't voted for the bot today!\n",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Vous n'avez pas voté pour le bot aujourd'hui!\n"
 	},
 	
 	"NOMOREHINTS": {
 		"en": "You are out of voter hints, **{}**!\n",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Vous n'avez plus d'indices aux électeurs, **{}**!\n"
 	},
 	
 	"VH1": {
 		"en": "**{0}**, i've sent you a hint via DM!\nYou have **{1}** voter hint(s) remaining which expire in **{2} hours and {3} minutes**.",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "**{0}**, je vous ai envoyé un indice via DM!\nIl vous reste **{1}** indice (s) d'électeur qui expirent dans **{2} heures et {3} minutes**."
 	},
 	
 	"VH2": {
 		"en": "**{0}**, i've sent you a hint via DM!\nYou have **NO MORE** voter hints remaining and can vote again in **{1} hours and {2} minutes**.",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "**{0}**, je vous ai envoyé un indice via DM!\nIl ne vous reste plus **PLUS** d'indices d'électeur et vous pourrez voter à nouveau dans **{1} heures et {2} minutes**."
 	},
 	
 	"WAITABIT": {
 		"en": "You should probaly wait until a non-insane round question is being asked, **{0}**!",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Vous devriez probablement attendre qu'une question ronde non insensée soit posée, **{0}**!"
 	},
 	
 	"NOROUND": {
 		"en": "No trivia round is running here, **{0}**!",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Aucun jeu-questionnaire n'est en cours ici, **{0}**!"
 	},
 	
 	"ACTIVEGAMES": {
 		"en": "Active Games",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Jeux actifs"
 	},
 	
 	"TOTALSERVERS": {
 		"en": "Total Servers",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Total de serveurs"
 	},
 	
 	"CONNSINCE": {
 		"en": "Connected Since",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Connecté depuis"
 	},
 	
 	"ONLINEUSERS": {
 		"en": "Online Users",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Personnes en ligne"
 	},
 	
 	"UPTIME": {
 		"en": "Uptime",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Disponibilité"
 	},
 	
 	"SHARDS": {
 		"en": "Shards",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Éclats"
 	},
 	
 	"MEMBERINTENT": {
 		"en": "Member Intent",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Intention du membre"
 	},
 	
 	"TESTMODE": {
 		"en": "Test Mode",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Mode test"
 	},
 	
 	"DEVMODE": {
 		"en": "Developer Mode",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Mode développeur"
 	},
 	
 	"MYPREFIX": {
 		"en": "Prefix",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Préfixe"
 	},
 	
 	"BOTVER": {
 		"en": "Bot Version",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Version Bot"
 	},
 	
 	"LIBVER": {
 		"en": "Library Version",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Version librairie"
 	},
 	
 	"INFO": {
 		"en": "Information",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Information"
 	},
 	
 	"TICKYES": {
 		"en": ":white_check_mark: Yes",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": ":white_check_mark: Oui"
 	},
 	
 	"CROSSNO": {
 		"en": "<:wc_rs:667695516737470494> No",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "<:wc_rs: 667695516737470494> Non"
 	},
 	
 	"YAYPREMIUM": {
 		"en": ":star: This server has TriviaBot Premium! They rock! :star:",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": ":star: Ce serveur a TriviaBot Premium! Ils sont géniaux! :star:"
 	},
 	
 	"JOINED": {
 		"en": "You have successfully joined the team \"**{0}**\", **{1}**",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Vous avez rejoint l'équipe avec succès \"**{0}**\", **{1}**"
 	},
 	
 	"CALLFORBACKUP": {
 		"en": "Call for backup!",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Appel à la sauvegarde!"
 	},
 	
 	"CANTJOIN": {
 		"en": "I cannot bring about world peace, make you a sandwich, or join that team, **{0}**",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Je ne peux pas apporter la paix dans le monde, vous préparer un sandwich ou rejoindre cette équipe, **{0}**"
 	},
 	
 	"CREATED": {
 		"en": "You have successfully **created** and joined the team \"**{0}**\", **{1}**",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Vous avez **créé** et rejoint l'équipe avec succès \"**{0}**\", **{1}**"
 	},
 	
 	"CANTCREATE": {
 		"en": "I couldn't create that team, **{0}**...",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Je n'ai pas pu créer cette équipe, **{0}**..."
 	},
 	
 	"ALREADYMEMBER": {
 		"en": "**{0}**, you are already a member of team \"**{1}**\"!",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "**{0}**, vous êtes déjà membre de l'équipe \"**{1}**\"!"
 	},
 	
 	"ZELDAREFERENCE": {
 		"en": "It's unsafe to go alone...",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Il n'est pas sûr de partir seul..."
 	},
 	
 	"YOULONER": {
 		"en": "**{0}**, you aren't a member of any team! Use **{1}join** to join a team!",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "**{0}**, vous n'êtes membre d'aucune équipe! Utilisez **{1}join** pour rejoindre une équipe!"
 	},
 	
 	"LEFTTEAM": {
 		"en": "**{0}** has left team **{1}**",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "**{0}** a quitté l'équipe **{1}**"
 	},
 	
 	"COMEBACK": {
 		"en": "Come back, we'll miss you! :cry:",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Revenez, vous nous manquerez! :cry:"
 	},
 	
 	"HERPDERP": {
 		"en": "<@{0}>, herp derp, theres a malformed help file. Please contact a developer on the official support server: https://discord.gg/brainbox",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "<@{0}>, herp derp, il y a un fichier d'aide mal formé. Veuillez contacter un développeur sur le serveur de support officiel: https://discord.gg/brainbox"
 	},
 	
 	"WOAHTHERE": {
 		"en": "Woah there!",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Woah là-bas!"
 	},
 	
 	"RATELIMITED": {
 		"en": "Please wait {0} seconds before trying the **{1}** command again!",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Veuillez patienter {0} secondes avant de réessayer la commande **{1}**!"
 	},
 	
 	"INVITEME": {
 		"en": "Invite TriviaBot",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Inviter TriviaBot"
 	},
 
 	"INVITEBLURB": {
-		"en": "Does your server need some entertainment?\n\nTo invite TriviaBot to your own server, [click here](https://discord.com/oauth2/authorize?client_id=715906723982082139&scope=bot+identify&permissions=268848192&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code)\n<:blank:667278047006949386>",
+		"en": "Does your server need some entertainment?\n\nTo invite TriviaBot to your own server, [click here](https://discord.com/oauth2/authorize?client_id=715906723982082139&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code)\n<:blank:667278047006949386>",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Votre serveur a-t-il besoin de divertissement?\n\nPour inviter TriviaBot sur votre propre serveur, [cliquez ici](https://discord.com/oauth2/authorize?client_id=715906723982082139&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code)\n<:blank:667278047006949386>"
 	},
 
 	"ONLINE": {
 		"en": "Online",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "En ligne"
 	},
 	
 	"OFFLINE": {
 		"en": "Offline",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Hors ligne"
 	},
 
 	"SHARD": {
 		"en": "Shard",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Éclat"
 	},
 	
 	"PONG": {
 		"en": "Pong!",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Pong!"
 	},
 
 	"DISCPING": {
 		"en": "Discord API",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "API Discord"
 	},
 
 	"APIPING": {
 		"en": "TriviaBot API",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "API TriviaBot"
 	},
 
 	"DBPING": {
 		"en": "Database",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Base de données"
 	},	
 	
 	"OKPING": {
 		"en": "These figures are within expected ranges!",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Ces chiffres sont dans les fourchettes attendues!"
 	},
 	
 	"BADPING": {
 		"en": "Something odd is happening. Please remain calm!",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Il se passe quelque chose d'étrange. Restez calme!"
 	},
 
 	"TIME2": {
 		"en": "%d hours, %d mins",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "%d heures, %d min"
 	},
 
 	"TIME3": {
 		"en": "%d days, %d hours, %d mins",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "%d jours, %d heures, %d min"
 	},
 	
 	"PRIVACY": {
 		"en": "Team Privacy",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Confidentialité de l'équipe"
 	},
 	
 	"PRV_ON": {
 		"en": "Your Team Privacy setting is set to: **ON**.\n\nYou will show as ``[ Private Member ]`` in team member lists.",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Le paramètre de confidentialité de votre équipe est défini sur: **ACTIVÉ**.\n\nVous s'afficherez comme ``[Private Member]`` dans les listes des membres de l'équipe."
 	},
 	
 	"PRV_OFF": {
 		"en": "Your Team Privacy setting is set to: **OFF**.\n\nYou will show as your username in team member lists.",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Votre paramètre de confidentialité de l'équipe est défini sur: **OFF**.\n\nVous s'afficherez comme votre nom d'utilisateur dans les listes des membres de l'équipe."
 	},
 
 	"NOTQUITERIGHT": {
 		"en": "That's not quite right...",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Ce n'est pas tout à fait vrai..."
 	},
 		
 	"NOSUCHTEAM": {
 		"en": "There is no team called ``%s``",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Il n'y a pas d'équipe appelée ``%s``"
 	},
 
 	"TINFO": {
 		"en": "Team Information",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Informations sur l'équipe"
 	},
 			
 	"NAME": {
 		"en": "Name",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Nom"
 	},
 			
 	"FOUNDER": {
 		"en": "Founder",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Fondateur"
 	},
 			
 	"MEMBERCOUNT": {
 		"en": "Member Count",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Nombre de membres"
 	},
 			
 	"POINTSTOTAL": {
 		"en": "Points Total",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Total de points"
 	},
 			
 	"GLOBALRANK": {
 		"en": "Global Rank",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Classement mondial"
 	},
 			
 	"DATEFOUNDED": {
 		"en": "Date Founded",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Date de création"
 	},
 			
 	"TEAMHUB": {
 		"en": "[View Team Hub Page](https://triviabot.co.uk/team/%s)",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "[Afficher la page du hub d'équipe](https://triviabot.co.uk/team/%s)"
 	},
 
 	"TOP10TEAMS": {
 		"en": "Top Ten Teams",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Les dix meilleures équipes"
 	},
 		
 	"MONTHLYNITRO": {
 		"en": "Monthly Nitro Leaderboard",
 		"tr": "",
 		"pt": "",
-		"fr": ""
+		"fr": "Classement mensuel Nitro"
 	}
 }
