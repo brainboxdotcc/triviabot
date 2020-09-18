@@ -92,9 +92,8 @@ void TriviaModule::SimpleEmbed(const std::string &emoji, const std::string &text
 {
 	aegis::channel* c = bot->core.find_channel(channelID);
 	if (c) {
-		uint32_t colour = 3238819;
 		guild_settings_t settings = GetGuildSettings(c->get_guild().get_id().get());
-		colour = settings.embedcolour;
+		uint32_t colour = settings.embedcolour;
 		if (!title.empty()) {
 			ProcessEmbed(fmt::format("{{\"title\":\"{}\",\"color\":{},\"description\":\"{} {}\"}}", escape_json(title), colour, emoji, escape_json(text)), channelID);
 		} else {
@@ -107,10 +106,9 @@ void TriviaModule::SimpleEmbed(const std::string &emoji, const std::string &text
 void TriviaModule::EmbedWithFields(const std::string &title, std::vector<field_t> fields, int64_t channelID, const std::string &url)
 {
 	aegis::channel* c = bot->core.find_channel(channelID);
-	uint32_t colour = 3238819;
 	if (c) {
 		guild_settings_t settings = GetGuildSettings(c->get_guild().get_id().get());
-		colour = settings.embedcolour;
+		uint32_t colour = settings.embedcolour;
 		std::string json = fmt::format("{{" + (!url.empty() ? "\"url\":\"" + escape_json(url) + "\"," : "") + "\"title\":\"{}\",\"color\":{},\"fields\":[", escape_json(title), colour);
 		for (auto v = fields.begin(); v != fields.end(); ++v) {
 			json += fmt::format("{{\"name\":\"{}\",\"value\":\"{}\",\"inline\":{}}}", escape_json(v->name), escape_json(v->value), v->_inline ? "true" : "false");
