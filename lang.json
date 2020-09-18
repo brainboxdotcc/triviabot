@@ -553,7 +553,7 @@
 	},
 	
 	"INSANE_CORRECT": {
-		"en": "**{0}** was correct with **{1}**! **{2}** answers remaining out of **{3}**.",
+		"en": "**{0}** was correct with **{1}**, gaining one point! **{2}** answers remaining out of **{3}**.",
 		"tr": "",
 		"pt": "",
 		"fr": ""
