@@ -445,7 +445,7 @@
     },
     "LEADER_LINK": {
         "en": "[View server leaderboards](https:\/\/triviabot.co.uk\/stats\/{0})\nDaily scores reset at midnight GMT.",
-        "tr": "[Sunucu lider tablolarını görüntüleyin] (https:\/\/triviabot.co.uk\/stats\/{0})\nGünlük puanlar gece yarısı GMT'de sıfırlanır.",
+        "tr": "[Sunucu lider tablolarını görüntüleyin](https:\/\/triviabot.co.uk\/stats\/{0})\nGünlük puanlar gece yarısı GMT'de sıfırlanır.",
         "pt": "[Ver placares do servidor](https:\/\/triviabot.co.uk\/stats\/{0})\nPontuações diárias zeradas à meia-noite GMT.",
         "fr": "[Afficher les classements des serveurs](https:\/\/triviabot.co.uk\/stats\/{0})\nLes scores quotidiens sont réinitialisés à minuit GMT."
     },
