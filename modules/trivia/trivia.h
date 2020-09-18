@@ -22,6 +22,8 @@
 
 #pragma once
 
+#include <sporks/modules.h>
+#include <sporks/regex.h>
 #include <string>
 #include <map>
 #include <vector>
@@ -40,17 +42,6 @@
 
 typedef std::map<int64_t, int64_t> teamlist_t;
 typedef std::map<int64_t, std::string> numstrs_t;
-
-enum trivia_state_t
-{
-	TRIV_ASK_QUESTION = 1,
-	TRIV_FIRST_HINT = 2,
-	TRIV_SECOND_HINT = 3,
-	TRIV_TIME_UP = 4,
-	TRIV_ANSWER_CORRECT = 5,
-	TRIV_END = 6
-};
-
 
 struct field_t
 {
@@ -75,44 +66,75 @@ class guild_settings_t
 	guild_settings_t(int64_t _guild_id, const std::string &_prefix, const std::vector<int64_t> &_moderator_roles, uint32_t _embedcolour, bool _premium, bool _only_mods_stop, bool _role_reward_enabled, int64_t _role_reward_id, const std::string &_custom_url, const std::string &_language);
 };
 
-class state_t
-{
-	class TriviaModule* creator;
- public:
-	bool terminating;
-	uint64_t channel_id;
-	uint64_t guild_id;
-	uint32_t numquestions;
-	uint32_t round;
-	uint32_t score;
-	time_t start_time;
-	std::vector<std::string> shuffle_list;
-	trivia_state_t gamestate;
-	int64_t curr_qid;
-	time_t recordtime;
-	std::string curr_question;
-	std::string curr_answer;
-	std::string curr_customhint1;
-	std::string curr_customhint2;
-	std::string curr_category;
-	std::string shuffle1;
-	std::string shuffle2;
-	time_t curr_lastasked;
-	time_t curr_recordtime;
-	std::string curr_lastcorrect;
-	int64_t last_to_answer;
-	uint32_t streak;
-	time_t asktime;
-	bool found;
-	time_t interval;
-	uint32_t insane_num;
-	uint32_t insane_left;
-	uint32_t curr_timesasked;
-	time_t next_quickfire;
-	std::map<std::string, bool> insane;
-	std::thread* timer;
+/**
+ * Module class for trivia system
+ */
 
-	state_t(class TriviaModule* _creator);
-	~state_t();
-	void tick();
+class TriviaModule : public Module
+{
+	PCRE* notvowel;
+	PCRE* number_tidy_dollars;
+	PCRE* number_tidy_nodollars;
+	PCRE* number_tidy_positive;
+	PCRE* number_tidy_negative;
+	PCRE* prefix_match;
+	std::map<int64_t, state_t*> states;
+	std::unordered_map<int64_t, time_t> limits;
+	std::vector<std::string> api_commands;
+	std::thread* presence_update;
+	bool terminating;
+	std::mutex states_mutex;
+	std::mutex cmds_mutex;
+	time_t startup;
+	json numstrs;
+	json lang;
+public:
+	TriviaModule(Bot* instigator, ModuleLoader* ml);
+	Bot* GetBot();
+	virtual ~TriviaModule();
+	virtual bool OnPresenceUpdate();
+	std::string _(const std::string &k, const guild_settings_t& settings);
+	virtual bool OnAllShardsReady();
+	virtual bool OnChannelDelete(const modevent::channel_delete &cd);
+	virtual bool OnGuildDelete(const modevent::guild_delete &gd);
+	int64_t GetActiveGames();
+	guild_settings_t GetGuildSettings(int64_t guild_id);
+	std::string escape_json(const std::string &s);
+	void ProcessEmbed(const std::string &embed_json, int64_t channelID);
+	void SimpleEmbed(const std::string &emoji, const std::string &text, int64_t channelID, const std::string &title = "");
+	void EmbedWithFields(const std::string &title, std::vector<field_t> fields, int64_t channelID, const std::string &url = "");
+	virtual std::string GetVersion();
+	virtual std::string GetDescription();
+	int random(int min, int max);
+	std::string dec_to_roman(unsigned int decimal, const guild_settings_t &settings);
+	std::string tidy_num(std::string num);
+	void UpdatePresenceLine();
+	std::string conv_num(std::string datain, const guild_settings_t &settings);
+	bool isVowel(char c);
+	std::string piglatinword(std::string s);
+	std::string piglatin(const std::string &s);
+	std::string letterlong(std::string text, const guild_settings_t &settings);
+	std::string vowelcount(std::string text, const guild_settings_t &settings);
+	std::string numbertoname(int64_t number, const guild_settings_t& settings);
+	std::string GetNearestNumber(int64_t number, const guild_settings_t& settings);
+	int64_t GetNearestNumberVal(int64_t number, const guild_settings_t& settings);
+	int min3(int x, int y, int z);
+	int levenstein(std::string str1, std::string str2);
+	bool is_number(const std::string &s);
+	std::string MakeFirstHint(const std::string &s, const guild_settings_t &settings,  bool indollars = false);
+	void do_insane_round(state_t* state, bool silent);
+	void do_normal_round(state_t* state, bool silent);
+	void do_first_hint(state_t* state);
+	void do_second_hint(state_t* state);
+	void do_time_up(state_t* state);
+	void do_answer_correct(state_t* state);
+	void do_end_game(state_t* state);
+	void show_stats(int64_t guild_id, int64_t channel_id);
+	void Tick(state_t* state);
+	void DisposeThread(std::thread* t);
+	void StopGame(state_t* state, const guild_settings_t &settings);
+	void CheckForQueuedStarts();
+	virtual bool OnMessage(const modevent::message_create &message, const std::string& clean_message, bool mentioned, const std::vector<std::string> &stringmentions);
+	void GetHelp(const std::string &section, int64_t channelID, const std::string &botusername, int64_t botid, const std::string &author, int64_t authorid, const guild_settings_t &settings);
 };
+
