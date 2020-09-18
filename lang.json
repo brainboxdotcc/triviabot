@@ -1096,5 +1096,201 @@
 		"tr": "",
 		"pt": "",
 		"fr": ""
+	},
+	
+	"INVITEME": {
+		"en": "Invite TriviaBot",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+
+	"INVITEBLURB": {
+		"en": "Does your server need some entertainment?\n\nTo invite TriviaBot to your own server, [click here](https://discord.com/oauth2/authorize?client_id=715906723982082139&scope=bot+identify&permissions=268848192&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code)\n<:blank:667278047006949386>",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+
+	"ONLINE": {
+		"en": "Online",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"OFFLINE": {
+		"en": "Offline",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+
+	"SHARD": {
+		"en": "Shard",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"PONG": {
+		"en": "Pong!",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+
+	"DISCPING": {
+		"en": "Discord API",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+
+	"APIPING": {
+		"en": "TriviaBot API",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+
+	"DBPING": {
+		"en": "Database",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},	
+	
+	"OKPING": {
+		"en": "These figures are within expected ranges!",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"BADPING": {
+		"en": "Something odd is happening. Please remain calm!",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+
+	"TIME2": {
+		"en": "%d hours, %d mins",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+
+	"TIME3": {
+		"en": "%d days, %d hours, %d mins",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"PRIVACY": {
+		"en": "Team Privacy",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"PRV_ON": {
+		"en": "Your Team Privacy setting is set to: **ON**.\n\nYou will show as ``[ Private Member ]`` in team member lists.",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+	
+	"PRV_OFF": {
+		"en": "Your Team Privacy setting is set to: **OFF**.\n\nYou will show as your username in team member lists.",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+
+	"NOTQUITERIGHT": {
+		"en": "That's not quite right...",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+		
+	"NOSUCHTEAM": {
+		"en": "There is no team called ``%s``",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+
+	"TINFO": {
+		"en": "Team Information",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+			
+	"NAME": {
+		"en": "Name",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+			
+	"FOUNDER": {
+		"en": "Founder",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+			
+	"MEMBERCOUNT": {
+		"en": "Member Count",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+			
+	"POINTSTOTAL": {
+		"en": "Points Total",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+			
+	"GLOBALRANK": {
+		"en": "Global Rank",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+			
+	"DATEFOUNDED": {
+		"en": "Date Founded",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+			
+	"TEAMHUB": {
+		"en": "[View Team Hub Page](https://triviabot.co.uk/team/%s)",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+
+	"TOP10TEAMS": {
+		"en": "Top Ten Teams",
+		"tr": "",
+		"pt": "",
+		"fr": ""
+	},
+		
+	"MONTHLYNITRO": {
+		"en": "Monthly Nitro Leaderboard",
+		"tr": "",
+		"pt": "",
+		"fr": ""
 	}
 }
