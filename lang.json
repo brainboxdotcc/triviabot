@@ -319,20 +319,20 @@
     },
     "HEX": {
         "en": "Hexadecimal: {0:x}",
-        "tr": "Onaltılık: {0: x}",
-        "pt": "Hexadecimal: {0: x}",
+        "tr": "Onaltılık: {0:x}",
+        "pt": "Hexadecimal: {0:x}",
         "fr": "Hexadécimal: {0:x}"
     },
     "OCT": {
         "en": "Octal: {0:o}",
-        "tr": "Sekizli: {0: o}",
-        "pt": "Octal: {0: o}",
+        "tr": "Sekizli: {0:o}",
+        "pt": "Octal: {0:o}",
         "fr": "Octal: {0:o}"
     },
     "BIN": {
         "en": "Binary: {0:b}",
-        "tr": "İkili: {0: b}",
-        "pt": "Binário: {0: b}",
+        "tr": "İkili: {0:b}",
+        "pt": "Binário: {0:b}",
         "fr": "Binaire: {0:b}"
     },
     "CATEGORY": {
