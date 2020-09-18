@@ -28,8 +28,6 @@
 #include <map>
 #include <vector>
 
-#define TRIVIA_VERSION "1.0.0"
-
 // Number of seconds after which a game is considered hung and its thread exits.
 // This can happen if a game gets lost in a discord gateway outage (!)
 #define GAME_REAP_SECS 20000
@@ -78,7 +76,7 @@ class TriviaModule : public Module
 	PCRE* number_tidy_positive;
 	PCRE* number_tidy_negative;
 	PCRE* prefix_match;
-	std::map<int64_t, state_t*> states;
+	std::map<int64_t, class state_t*> states;
 	std::unordered_map<int64_t, time_t> limits;
 	std::vector<std::string> api_commands;
 	std::thread* presence_update;
@@ -122,17 +120,17 @@ public:
 	int levenstein(std::string str1, std::string str2);
 	bool is_number(const std::string &s);
 	std::string MakeFirstHint(const std::string &s, const guild_settings_t &settings,  bool indollars = false);
-	void do_insane_round(state_t* state, bool silent);
-	void do_normal_round(state_t* state, bool silent);
-	void do_first_hint(state_t* state);
-	void do_second_hint(state_t* state);
-	void do_time_up(state_t* state);
-	void do_answer_correct(state_t* state);
-	void do_end_game(state_t* state);
+	void do_insane_round(class state_t* state, bool silent);
+	void do_normal_round(class state_t* state, bool silent);
+	void do_first_hint(class state_t* state);
+	void do_second_hint(class state_t* state);
+	void do_time_up(class state_t* state);
+	void do_answer_correct(class state_t* state);
+	void do_end_game(class state_t* state);
 	void show_stats(int64_t guild_id, int64_t channel_id);
-	void Tick(state_t* state);
+	void Tick(class state_t* state);
 	void DisposeThread(std::thread* t);
-	void StopGame(state_t* state, const guild_settings_t &settings);
+	void StopGame(class state_t* state, const guild_settings_t &settings);
 	void CheckForQueuedStarts();
 	virtual bool OnMessage(const modevent::message_create &message, const std::string& clean_message, bool mentioned, const std::vector<std::string> &stringmentions);
 	void GetHelp(const std::string &section, int64_t channelID, const std::string &botusername, int64_t botid, const std::string &author, int64_t authorid, const guild_settings_t &settings);

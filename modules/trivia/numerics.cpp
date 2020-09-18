@@ -26,7 +26,6 @@
 #include <streambuf>
 #include <sporks/stringops.h>
 #include "trivia.h"
-#include "webrequest.h"
 
 int TriviaModule::random(int min, int max)
 {
