@@ -1132,5 +1132,11 @@
 	"tr": "Botun öneki artık: ``%s``",
 	"pt": "O prefixo do bot agora é: ``%s``",
 	"fr": "Le préfixe du bot est maintenant: ``%s``"
+    },
+    "MODONLY": {
+	"en": "Only roles specified in the dashboard, or the server owner, can execute this command.",
+	"tr": "Yalnızca kontrol panelinde belirtilen roller veya sunucu sahibi bu komutu çalıştırabilir.",
+	"pt": "Somente funções especificadas no painel, ou o proprietário do servidor, podem executar este comando.",
+	"fr": "Seuls les rôles spécifiés dans le tableau de bord, ou le propriétaire du serveur, peuvent exécuter cette commande."
     }
 }
