@@ -1133,6 +1133,12 @@
 	"pt": "O prefixo do bot agora é: ``%s``",
 	"fr": "Le préfixe du bot est maintenant: ``%s``"
     },
+    "BADLANG": {
+	"en": "No such language. Use ``!language`` without a parameter to see the valid language list.",
+	"tr": "Böyle bir dil yok. Geçerli dil listesini görmek için parametresiz ``!language`` kullanın.",
+	"pt": "Não existe tal linguagem. Use ``!language`` sem um parâmetro para ver a lista de idiomas válidos.",
+	"fr": "Pas de tel langage. Utilisez ``!language`` sans paramètre pour voir la liste des langues valides."
+    },
     "MODONLY": {
 	"en": "Only roles specified in the dashboard, or the server owner, can execute this command.",
 	"tr": "Yalnızca kontrol panelinde belirtilen roller veya sunucu sahibi bu komutu çalıştırabilir.",
