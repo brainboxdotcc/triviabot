@@ -1,5 +1,5 @@
 {
-        "title": ":user: help",
+        "title": ":user: Yardım",
         "color": :color:,
         "url": "https://triviabot.co.uk",
         "timestamp": ":ts:",
@@ -7,44 +7,44 @@
                 "url": "https://triviabot.co.uk/images/triviabot_tl_icon.png"
         },
         "footer": {
-                "text": "Powered by TriviaBot - help requested by :author:",
+                "text": "TriviaBot tarafından desteklenmektedir - yardım isteyen :author:",
                 "icon_url": "https://triviabot.co.uk/images/triviabot_icon.png"
         },
         "fields": [
                 {
-                        "name": "Find help and configure :user: via the dashboard",
-                        "value": "All settings and configuration for this bot can be managed via the [TriviaBot Dashboard](https://triviabot.co.uk/dashboard). For further assistance, please join the [official brainbox.cc discord server](https://discord.gg/brainbox).\n<:blank:667278047006949386>",
+                        "name": "Yardım bulun ve :user:'u kontrol panelinden yapılandırın",
+                        "value": "Bu bot için tüm ayarlar ve yapılandırmalar [TriviaBot Dashboard](https://triviabot.co.uk/dashboard) aracılığıyla yönetilebilir. Daha fazla yardım için lütfen [resmi brainbox.cc discord sunucusuna](https://discord.gg/brainbox) katılın.\n<:blank:667278047006949386>",
                         "inline": false
                 },
                 {
-                        "name": "<:dice:722798416765255800> Starting Trivia",
-                        "value": "[How to start and stop games of trivia, via discord or via the dashboard](https://triviabot.co.uk/help/#start)\n<:blank:667278047006949386>",
+                        "name": "<:dice:722798416765255800> Bilgi Yarışması Başlamak",
+                        "value": "[Discord veya kontrol paneli aracılığıyla önemsiz oyunlar nasıl başlatılır ve durdurulur](https://triviabot.co.uk/help/#start)\n<:blank:667278047006949386>",
                         "inline": false
                 },
                 {
-                        "name": ":gear: Configuration",
-                        "value": "[Configuring TriviaBot for your server (including changing the bot's prefix)](https://triviabot.co.uk/help/#config)\n<:blank:667278047006949386>",
+                        "name": ":gear: Konfigürasyon",
+                        "value": "[TriviaBot'u sunucunuz için yapılandırma (botun önekini değiştirmek dahil)](https://triviabot.co.uk/help/#config)\n<:blank:667278047006949386>",
                         "inline": false
                 },
                 {
-                        "name": "<:gift:722798417197268992> Community Rewards",
-                        "value": "[Setting up role rewards for your server, to give users roles for winning or taking part](https://triviabot.co.uk/help/#rolerewards)\n<:blank:667278047006949386>",
+                        "name": "<:gift:722798417197268992> Topluluk Ödülleri",
+                        "value": "[Kullanıcılara kazanma veya katılma rolleri vermek için sunucunuz için rol ödülleri ayarlama](https://triviabot.co.uk/help/#rolerewards)\n<:blank:667278047006949386>",
                         "inline": false
                 },
 		{
-                        "name": "<:nitro:750660974029176833> Play to win Nitro",
-                        "value": "[If you are the number one player at the start of each month, you can win Discord Nitro Classic. Click here to view the nitro leaderboard!](https://triviabot.co.uk/monthly-nitro/)\n<:blank:667278047006949386>",
+                        "name": "<:nitro:750660974029176833> Nitro kazanmak için oynayın",
+                        "value": "[Her ayın başında bir numaralı oyuncuysanız, Discord Nitro Classic'i kazanabilirsiniz. Nitro skor tablosunu görüntülemek için burayı tıklayın!](https://triviabot.co.uk/monthly-nitro/)\n<:blank:667278047006949386>",
                         "inline": false
 
 		},
 		{
-			"name": "<:crystalball:722798415045460008> Vote For TriviaBot",
-			"value": "[Vote for TriviaBot on top.gg for personal hints via direct message](https://top.gg/bot/715906723982082139/vote)\n<:blank:667278047006949386>",
+			"name": "<:crystalball:722798415045460008> TriviaBot'a oy verin!",
+			"value": "[Doğrudan mesaj yoluyla kişisel ipuçları için top.gg'de TriviaBot'a oy verin](https://top.gg/bot/715906723982082139/vote)\n<:blank:667278047006949386>",
 			"inline": false
 		},
                 {
-                        "name": ":money_with_wings: Premium",
-                        "value": "[Find out how to get more with TriviaBot Premium, including scheduled games, longer quickfire rounds and customized leaderboard pages](https://triviabot.co.uk/premium/)\n<:blank:667278047006949386>",
+                        "name": ":money_with_wings: Premium Abonelik",
+                        "value": "[TriviaBot Premium ile planlanmış oyunlar, daha uzun hızlı atış turları ve özelleştirilmiş liderlik sayfaları dahil daha fazlasını nasıl elde edeceğinizi öğrenin](https://triviabot.co.uk/premium/)\n<:blank:667278047006949386>",
                         "inline": false
                 }
         ],
