@@ -1108,5 +1108,29 @@
         "tr": "Aylık Nitro Liderlik Tablosu",
         "pt": "Tabela de classificação mensal do Nitro",
         "fr": "Classement mensuel Nitro"
+    },
+    "LANGCHANGE": {
+	"en": "TriviaBot's language has been set to English (UK)",
+	"tr": "TriviaBot'un dili Türkçe olarak ayarlandı",
+	"pt": "O idioma do TriviaBot foi definido como português",
+	"fr": "La langue de TriviaBot a été définie sur le français"
+    },
+    "SUPPORTEDLANGS": {
+	"en": "The supported languages for TriviaBot are:",
+	"tr": "TriviaBot için desteklenen diller şunlardır:",
+	"pt": "Os idiomas suportados para TriviaBot são:",
+	"fr": "Les langues prises en charge pour TriviaBot sont:"
+    },
+    "HOWTOCHANGE": {
+	"en": "Use ``!language <code>`` (e.g. ``!language en``) to change the bot's language",
+	"tr": "Botun dilini değiştirmek için ``!language <kodu>`` (örneğin ``!language en``) kullanın",
+	"pt": "Use ``!language <código>`` (por exemplo, ``!language en``) para alterar o idioma do bot",
+	"fr": "Utilisez ``!language <code>`` (par exemple ``!language en``) pour changer la langue du bot"
+    },
+    "PREFIXSET": {
+	"en": "The bot's prefix is now: ``%s``",
+	"tr": "Botun öneki artık: ``%s``",
+	"pt": "O prefixo do bot agora é: ``%s``",
+	"fr": "Le préfixe du bot est maintenant: ``%s``"
     }
 }
