@@ -24,6 +24,7 @@
 #include <cstdint>
 #include <fstream>
 #include <streambuf>
+#include <sporks/modules.h>
 #include <sporks/stringops.h>
 #include <sporks/statusfield.h>
 #include <sporks/database.h>
@@ -77,7 +78,7 @@ void TriviaModule::ProcessEmbed(const std::string &embed_json, int64_t channelID
 				channel->create_message(fmt::format(_("EMBED_ERROR_1", settings), cleaned_json, e.what()));
 			}
 			catch (const std::exception &e) {
-				bot->core.log->error(_("MALFORMED_UNICODE", settings), e.what());
+				bot->core.log->error("MALFORMED UNICODE: {}", e.what());
 			}
 			bot->sent_messages++;
 		}
