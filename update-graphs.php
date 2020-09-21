@@ -69,14 +69,16 @@ while (!feof($fh)) {
 
 $last = mysqli_fetch_object(mysqli_query($conn, "SELECT * FROM trivia_graphs ORDER BY id DESC LIMIT 1"));
 $check = mysqli_fetch_object(mysqli_query($conn, "SELECT COUNT(online) AS online, COUNT(connected) AS connected FROM infobot_shard_status"));
+$questions = mysqli_fetch_object(mysqli_query($conn, "SELECT asked_15_min FROM counters"))->asked_15_min;
+mysqli_query($conn, "UPDATE counters SET asked_15_min = 0");
 
 mysqli_query($conn, "DELETE FROM infobot_cpu_graph WHERE logdate < now() - INTERVAL 1 DAY");
 $cpu_percent =  trim(`ps aux | grep "./bot " | grep -v grep | awk -F ' ' '{ print $3 }'`);
 
 if ($check->online < $total_shards || $check->connected < $total_shards) {
-	mysqli_query($conn, "INSERT INTO trivia_graphs (entry_date, cpu, user_count, server_count, channel_count, memory_usage, games, discord_ping, trivia_ping, db_ping, kicks, commands) VALUES(now(), $cpu_percent, $last->user_count, $last->server_count, $last->channel_count, $last->memory_usage, $last->games, $discord_api_ping, $tb_api_ping, $db_ping, $kicks, $cmds)");
+	mysqli_query($conn, "INSERT INTO trivia_graphs (entry_date, cpu, user_count, server_count, channel_count, memory_usage, games, discord_ping, trivia_ping, db_ping, kicks, commands, questions) VALUES(now(), $cpu_percent, $last->user_count, $last->server_count, $last->channel_count, $last->memory_usage, $last->games, $discord_api_ping, $tb_api_ping, $db_ping, $kicks, $cmds, $questions)");
 } else {
 	$current = mysqli_fetch_object(mysqli_query($conn, "SELECT * FROM infobot_discord_counts WHERE dev = 0"));
-	mysqli_query($conn, "INSERT INTO trivia_graphs (entry_date, cpu, user_count, server_count, channel_count, memory_usage, games, discord_ping, trivia_ping, db_ping, kicks, commands) VALUES(now(), $cpu_percent, $current->user_count, $current->server_count, $current->channel_count, $current->memory_usage, $current->games, $discord_api_ping, $tb_api_ping, $db_ping, $kicks, $cmds)");
+	mysqli_query($conn, "INSERT INTO trivia_graphs (entry_date, cpu, user_count, server_count, channel_count, memory_usage, games, discord_ping, trivia_ping, db_ping, kicks, commands, questions) VALUES(now(), $cpu_percent, $current->user_count, $current->server_count, $current->channel_count, $current->memory_usage, $current->games, $discord_api_ping, $tb_api_ping, $db_ping, $kicks, $cmds, $questions)");
 }
 
