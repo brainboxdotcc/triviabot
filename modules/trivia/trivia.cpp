@@ -118,7 +118,12 @@ std::string TriviaModule::_(const std::string &k, const guild_settings_t& settin
 {
 	auto o = lang.find(k);
 	if (o != lang.end()) {
-		return o->find(settings.language)->get<std::string>();
+		auto v = o->find(settings.language);
+		if (v != o->end()) {
+			return v->get<std::string>();
+		} else {
+			bot->core.log->debug("Missing language '{}' in string '{}'!", settings.language, k);
+		}
 	} else {
 		bot->core.log->debug("Missing language string '{}'", k);
 	}

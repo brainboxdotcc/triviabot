@@ -1449,7 +1449,8 @@
         "pt": "Fragmento",
         "fr": "Éclat",
         "es": "Casco",
-        "de": "Scherbe"
+        "de": "Scherbe",
+	"hi": "Shard"
     },
     "PONG": {
         "en": "Pong!",
