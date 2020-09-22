@@ -4,1334 +4,1712 @@
         "tr": "<:sporks_error:664735896251269130> Bundan **yerleştirme** yapamıyorum: ```js\n{0}\n``` **Hata:** ``{1}``",
         "pt": "<:sporks_error:664735896251269130> Não consigo fazer um **embed** a partir deste: ```js\n{0}\n``` ** Erro:** ``{1}``",
         "fr": "<:sporks_error:664735896251269130> Je ne peux pas faire une **embed** à partir de ceci: ```js\n{0}\n``` **Erreur:** ``{1}``",
-        "es": "<:sporks_error:664735896251269130> No puedo hacer una ** incrustación ** de esto: ```js\n{0}\n```**Error:** ``{1}``"
+        "es": "<:sporks_error:664735896251269130> No puedo hacer una ** incrustación ** de esto: ```js\n{0}\n```**Error:** ``{1}``",
+        "de": "<:sporks_error:664735896251269130> Ich kann daraus keine ** Einbettung ** machen: ```js\n{0}\n``` ** Fehler:** ``{1}``",
+        "hi": "<:sporks_error:664735896251269130> मैं इससे **एम्बेड नहीं ** कर सकता: `` js\n{0}\n`` `**त्रुटि: *`  {1}` "
     },
     "MALFORMED_UNICODE": {
         "en": "Malformed unicode in embed: {0}",
         "tr": "Yerleştirmede hatalı biçimlendirilmiş unicode: {0}",
         "pt": "Unicode malformado na incorporação: {0}",
         "fr": "Unicode incorrect dans l'embed: {0}",
-        "es": "Unicode con formato incorrecto en la inserción: {0}"
+        "es": "Unicode con formato incorrecto en la inserción: {0}",
+        "de": "Fehlerhafter Unicode in der Einbettung: {0}",
+        "hi": "एम्बेड में यूनिकोड विकृत: {0}"
     },
     "POWERED_BY": {
         "en": "Powered By TriviaBot!",
         "tr": "TriviaBot tarafından desteklenmektedir!",
         "pt": "Desenvolvido por TriviaBot!",
         "fr": "Propulsé par TriviaBot!",
-        "es": "Desarrollado por TriviaBot!"
+        "es": "Desarrollado por TriviaBot!",
+        "de": "Powered By TriviaBot!",
+        "hi": "सामान्य ज्ञान द्वारा संचालित!"
     },
     "ROMAN": {
         "en": "Roman numerals: {0}",
         "tr": "Roma rakamları: {0}",
         "pt": "Algarismos romanos: {0}",
         "fr": "Chiffres romains: {0}",
-        "es": "Números romanos: {0}"
+        "es": "Números romanos: {0}",
+        "de": "Römische Ziffern: {0}",
+        "hi": "रोमन अंक: {0}"
     },
     "ONE": {
         "en": "one",
         "tr": "bir",
         "pt": "uno",
         "fr": "un",
-        "es": "uno"
+        "es": "uno",
+        "de": "einer",
+        "hi": "एक"
     },
     "TWO": {
         "en": "two",
         "tr": "iki",
         "pt": "dois",
         "fr": "deux",
-        "es": "dos"
+        "es": "dos",
+        "de": "zwei",
+        "hi": "दो"
     },
     "THREE": {
         "en": "three",
         "tr": "üç",
         "pt": "três",
         "fr": "trois",
-        "es": "Tres"
+        "es": "Tres",
+        "de": "drei",
+        "hi": "तीन"
     },
     "FOUR": {
         "en": "four",
         "tr": "dört",
         "pt": "quatro",
         "fr": "quatre",
-        "es": "cuatro"
+        "es": "cuatro",
+        "de": "vier",
+        "hi": "चार"
     },
     "FIVE": {
         "en": "five",
         "tr": "beş",
         "pt": "cinco",
         "fr": "cinq",
-        "es": "cinco"
+        "es": "cinco",
+        "de": "fünf",
+        "hi": "पांच"
     },
     "SIX": {
         "en": "six",
         "tr": "altı",
         "pt": "seis",
         "fr": "six",
-        "es": "seis"
+        "es": "seis",
+        "de": "sechs",
+        "hi": "छह"
     },
     "SEVEN": {
         "en": "seven",
         "tr": "Yedi",
         "pt": "Sete",
         "fr": "sept",
-        "es": "Siete"
+        "es": "Siete",
+        "de": "Sieben",
+        "hi": "सात"
     },
     "EIGHT": {
         "en": "eight",
         "tr": "sekiz",
         "pt": "oito",
         "fr": "huit",
-        "es": "ocho"
+        "es": "ocho",
+        "de": "acht",
+	"hi": "आठ"
     },
     "NINE": {
         "en": "nine",
         "tr": "dokuz",
         "pt": "nove",
         "fr": "neuf",
-        "es": "nueve"
+        "es": "nueve",
+        "de": "neun",
+        "hi": "नौ"
     },
     "TEN": {
         "en": "ten",
         "tr": "on",
         "pt": "dez",
         "fr": "dix",
-        "es": "diez"
+        "es": "diez",
+        "de": "zehn",
+        "hi": "दस"
     },
     "ELEVEN": {
         "en": "eleven",
         "tr": "on bir",
         "pt": "onze",
         "fr": "onze",
-        "es": "once"
+        "es": "once",
+        "de": "elf",
+        "hi": "ग्यारह"
     },
     "TWELVE": {
         "en": "twelve",
         "tr": "on iki",
         "pt": "doze",
         "fr": "douze",
-        "es": "doce"
+        "es": "doce",
+        "hi": "बारह"
     },
     "THIRTEEN": {
         "en": "thirteen",
         "tr": "onüç",
         "pt": "treze",
-        "fr": "treize"
+        "fr": "treize",
+        "de": "dreizehn",
+        "hi": "तेरह"
     },
     "FOURTEEN": {
         "en": "fourteen",
         "tr": "on dört",
         "pt": "quatorze",
         "fr": "quatorze",
-        "es": "catorce"
+        "es": "catorce",
+        "de": "vierzehn",
+        "hi": "चौदह"
     },
     "FIFTEEN": {
         "en": "fifteen",
         "tr": "on beş",
         "pt": "quinze",
         "fr": "quinze",
-        "es": "quince"
+        "es": "quince",
+        "de": "fünfzehn",
+        "hi": "पंद्रह"
     },
     "SIXTEEN": {
         "en": "sixteen",
         "tr": "on altı",
         "pt": "dezesseis",
         "fr": "seize",
-        "es": "dieciséis"
+        "es": "dieciséis",
+        "de": "Sechszehn",
+        "hi": "सोलह"
     },
     "SEVENTEEN": {
         "en": "seventeen",
         "tr": "on yedi",
         "pt": "dezessete",
         "fr": "dix-sept",
-        "es": "de diecisiete"
+        "es": "de diecisiete",
+        "de": "siebzehn",
+        "hi": "सत्रह"
     },
     "EIGHTEEN": {
         "en": "eighteen",
         "tr": "onsekiz",
         "pt": "dezoito",
         "fr": "dix-huit",
-        "es": "Dieciocho"
+        "es": "Dieciocho",
+        "de": "achtzehn",
+        "hi": "अठारह"
     },
     "NINETEEN": {
         "en": "nineteen",
         "tr": "on dokuz",
         "pt": "dezenove",
         "fr": "dix-neuf",
-        "es": "diecinueve"
+        "es": "diecinueve",
+        "de": "neunzehn",
+        "hi": "उन्नीस"
     },
     "TWENTY": {
         "en": "twenty",
         "tr": "yirmi",
         "pt": "vinte",
         "fr": "vingt",
-        "es": "veinte"
+        "es": "veinte",
+        "de": "zwanzig",
+        "hi": "बीस"
     },
     "THIRTY": {
         "en": "thirty",
         "tr": "otuz",
         "pt": "trinta",
         "fr": "trente",
-        "es": "treinta"
+        "es": "treinta",
+        "de": "dreißig",
+        "hi": "तीस"
     },
     "FOURTY": {
         "en": "fourty",
         "tr": "kırk",
         "pt": "quarenta",
         "fr": "quarante",
-        "es": "cuarenta"
+        "es": "cuarenta",
+        "de": "vierzig",
+        "hi": "चालीस"
     },
     "FIFTY": {
         "en": "fifty",
         "tr": "elli",
         "pt": "cinquenta",
         "fr": "cinquante",
-        "es": "cincuenta"
+        "es": "cincuenta",
+        "de": "fünfzig",
+        "hi": "पचास"
     },
     "SIXTY": {
         "en": "sixty",
         "tr": "altmış",
         "pt": "sessenta",
         "fr": "soixante",
-        "es": "sesenta"
+        "es": "sesenta",
+        "de": "sechzig",
+        "hi": "साठ"
     },
     "SEVENTY": {
         "en": "seventy",
         "tr": "yetmiş",
         "pt": "setenta",
         "fr": "soixante-dix",
-        "es": "setenta"
+        "es": "setenta",
+        "de": "siebzig",
+        "hi": "सत्तर"
     },
     "EIGHTY": {
         "en": "eighty",
         "tr": "seksen",
         "pt": "oitenta",
         "fr": "quatre-vingts",
-        "es": "ochenta"
+        "es": "ochenta",
+        "de": "achtzig",
+        "hi": "अस्सी"
     },
     "NINETY": {
         "en": "ninety",
         "tr": "doksan",
         "pt": "noventa",
         "fr": "quatre-vingt dix",
-        "es": "noventa"
+        "es": "noventa",
+        "de": "neunzig",
+        "hi": "नव्वे"
     },
     "HUNDRED": {
         "en": "hundred",
         "tr": "yüz",
         "pt": "cem",
         "fr": "cent",
-        "es": "cien"
+        "es": "cien",
+        "de": "hundert",
+        "hi": "सौ"
     },
     "THOUSAND": {
         "en": "thousand",
         "tr": "bin",
         "pt": "mil",
         "fr": "mille",
-        "es": "mil"
+        "es": "mil",
+        "de": "tausend",
+        "hi": "हज़ार"
     },
     "DOLLARS": {
         "en": "dollars",
         "tr": "dolar",
         "pt": "dólares",
         "fr": "dollars",
-        "es": "dolares"
+        "es": "dolares",
+        "de": "Dollar",
+        "hi": "डॉलर"
     },
     "ZERO": {
         "en": "zero",
         "tr": "sıfır",
         "pt": "zero",
         "fr": "zéro",
-        "es": "cero"
+        "es": "cero",
+        "de": "Null",
+        "hi": "शून्य"
     },
     "AND_SPACED": {
         "en": " and ",
         "tr": " ve",
         "pt": " e ",
         "fr": " et ",
-        "es": " y"
+        "es": " y ",
+        "de": " und ",
+        "hi": " तथा" 
     },
     "MILLION": {
         "en": "million",
         "tr": "milyon",
         "pt": "milhão",
         "fr": "million",
-        "es": "millón"
+        "es": "millón",
+        "de": "Million",
+        "hi": "दस लाख"
     },
     "HTM_REGEX": {
         "en": "hundred|thousand|million",
         "tr": "yüz|bin|milyon",
         "pt": "cem|mil|milhões",
         "fr": "cent|mille|million",
-        "es": "cien|mil|millones"
+        "es": "cien|mil|millones",
+        "de": "Hunderttausend Millionen",
+        "hi": "सौ  हजार  मिलियन"
     },
     "HINT_LETTERLONG": {
         "en": "{0} letters long. Starts with '{1}' and ends with '{2}'.",
         "tr": "{0} harf uzunluğunda. \"{1}\" ile başlar ve \"{2}\" ile biter.",
         "pt": "{0} letras. Começa com '{1}' e termina com '{2}'.",
         "fr": "{0} lettres de long. Commence par '{1}' et se termine par '{2}'.",
-        "es": "{0} letras de largo. Comienza con '{1}' y termina con '{2}'."
+        "es": "{0} letras de largo. Comienza con '{1}' y termina con '{2}'.",
+        "de": "{0} Buchstaben lang. Beginnt mit '{1}' und endet mit '{2}'.",
+        "hi": "{0} अक्षर लंबे। '{1}' से शुरू होता है और '{2}' के साथ समाप्त होता है।"
     },
     "HINT_VOWELCOUNT": {
         "en": "{0} letters long and contains {1} vowels.",
         "tr": "{0} harf uzunluğunda ve {1} ünlüler içeriyor.",
         "pt": "{0} letras e contém {1} vogais.",
         "fr": "{0} lettres de long et contient {1} voyelles.",
-        "es": "{0} letras de largo y contiene {1} vocales."
+        "es": "{0} letras de largo y contiene {1} vocales.",
+        "de": "{0} Buchstaben lang und enthält {1} Vokale.",
+        "hi": "{0} अक्षर लंबे और इसमें {1} स्वर होते हैं।"
     },
     "COMMA_PLUS_SPACE": {
         "en": ", plus ",
         "tr": " artı ",
         "pt": ", mais ",
         "fr": ", plus ",
-        "es": ", más "
+        "es": ", más ",
+        "de": ", Plus ",
+        "hi": " प्लस "
     },
     "LOWEST_NONNEG": {
         "en": "The lowest non-negative number",
         "tr": "Negatif olmayan en düşük sayı",
         "pt": "O menor número não negativo",
         "fr": "Le plus petit nombre non négatif",
-        "es": "El número no negativo más bajo"
+        "es": "El número no negativo más bajo",
+        "de": "Die niedrigste nicht negative Zahl",
+        "hi": "सबसे कम गैर-नकारात्मक संख्या"
     },
     "INDOLLARS": {
         "en": "{0}, in dollars",
         "tr": "{0}, dolar olarak",
         "pt": "{0}, em dólares",
         "fr": "{0}, en dollars",
-        "es": "{0}, en dólares"
+        "es": "{0}, en dólares",
+        "de": "{0} in Dollar",
+        "hi": "{0}, डॉलर में"
     },
     "QUESTION_COUNTER": {
         "en": ":question: Question {0} of {1}",
         "tr": ":question: Soru: {0} \/ {1}",
         "pt": ":question: Question {0} de {1}",
         "fr": ":question: Question {0} sur {1}",
-        "es": ": question: Pregunta {0} de {1}"
+        "es": ": question: Pregunta {0} de {1}",
+        "de": ": Frage: Frage {0} von {1}",
+        "hi": ": प्रश्न: प्रश्न {0} का {1}"
     },
     "INSANE_ROUND": {
         "en": "Insane Round!",
         "tr": "Deli Yuvarlak!",
         "pt": "Rodada Insana!",
         "fr": "Tour fou!",
-        "es": "¡Insane Round!"
+        "es": "¡Insane Round!",
+        "de": "Wahnsinnige Runde!",
+        "hi": "पागल दौर!"
     },
     "INSANE_ANS_COUNT": {
         "en": "Total of {0} possible answers",
         "tr": "Toplam {0} olası cevap",
         "pt": "Total de {0} respostas possíveis",
         "fr": "Total de {0} réponses possibles",
-        "es": "Total de {0} posibles respuestas"
+        "es": "Total de {0} posibles respuestas",
+        "de": "Insgesamt {0} mögliche Antworten",
+        "hi": "कुल {0} संभव उत्तर"
     },
     "QUESTION": {
         "en": "Question",
         "tr": "Soru",
         "pt": "Questão",
         "fr": "Question",
-        "es": "Pregunta"
+        "es": "Pregunta",
+        "de": "Frage",
+        "hi": "सवाल"
     },
     "Q_FETCH_ERROR": {
         "en": ":question: Couldn't fetch question from API",
         "tr": ":question: API'den soru getirilemedi",
         "pt": ":question: Não foi possível buscar a pergunta da API",
         "fr": ":question: Impossible de récupérer la question depuis l'API",
-        "es": ":question: No se pudo recuperar la pregunta de la API"
+        "es": ":question: No se pudo recuperar la pregunta de la API",
+        "de": ":question: Frage konnte nicht von API abgerufen werden",
+        "hi": ":question: एपीआई से सवाल नहीं उठा सकता"
     },
     "Q_SPOOPY": {
         "en": "This seems spoopy",
         "tr": "Bu kötü görünüyor",
         "pt": "Isso parece spoopy",
         "fr": "Cela semble cassé",
-        "es": "Esto parece espeluznante"
+        "es": "Esto parece espeluznante",
+        "de": "Das scheint verdorben",
+        "hi": "यह खराब लगता है"
     },
     "Q_CONTACT_DEVS": {
         "en": "[Please contact the developers](https:\/\/discord.gg\/brainbox)",
         "tr": "[Lütfen geliştiricilerle iletişime geçin](https:\/\/discord.gg\/brainbox)",
         "pt": "[Entre em contato com os desenvolvedores](https:\/\/discord.gg\/brainbox)",
         "fr": "[Veuillez contacter les développeurs](https:\/\/discord.gg\/brainbox)",
-        "es": "[Comuníquese con los desarrolladores](https:\/\/discord.gg\/brainbox)"
+        "es": "[Comuníquese con los desarrolladores](https:\/\/discord.gg\/brainbox)",
+        "de": "[Bitte kontaktieren Sie die Entwickler](https:\/\/discord.gg\/brainbox)",
+        "hi": "[कृपया डेवलपर्स से संपर्क करें](https:\/\/discord.gg\/brainbox)"
     },
     "ROUND_STOPPING": {
         "en": "Round stopping",
         "tr": "Yuvarlak durma",
         "pt": "Parada circular",
         "fr": "Arrêt rond",
-        "es": "Parada redonda"
+        "es": "Parada redonda",
+        "de": "Rundes Anhalten",
+        "hi": "राउंड स्टॉपिंग"
     },
     "ERROR_BROKE_IT": {
         "en": "Error has stopped play!",
         "tr": "Hata oyunu durdurdu!",
         "pt": "Erro interrompeu a reprodução!",
         "fr": "Une erreur a arrêté le jeu!",
-        "es": "¡El error ha detenido la reproducción!"
+        "es": "¡El error ha detenido la reproducción!",
+        "de": "Fehler hat die Wiedergabe gestoppt!",
+        "hi": "त्रुटि ने खेलना बंद कर दिया है!"
     },
     "SCRAMBLED_ANSWER": {
         "en": "Scrambled Answer: {0}",
         "tr": "Şifreli Cevap: {0}",
         "pt": "Resposta embaralhada: {0}",
         "fr": "Réponse brouillée: {0}",
-        "es": "Respuesta codificada: {0}"
+        "es": "Respuesta codificada: {0}",
+        "de": "Verschlüsselte Antwort: {0}",
+        "hi": "तले हुए उत्तर: {0}"
     },
     "HEX": {
         "en": "Hexadecimal: {0:x}",
         "tr": "Onaltılık: {0:x}",
         "pt": "Hexadecimal: {0:x}",
         "fr": "Hexadécimal: {0:x}",
-        "es": "Hexadecimal: {0:x}"
+        "es": "Hexadecimal: {0:x}",
+        "de": "Hexadezimal: {0:x}",
+        "hi": "हेक्साडेसिमल:  {0:x}"
     },
     "OCT": {
         "en": "Octal: {0:o}",
         "tr": "Sekizli: {0:o}",
         "pt": "Octal: {0:o}",
         "fr": "Octal: {0:o}",
-        "es": "Octal: {0:o}"
+        "es": "Octal: {0:o}",
+        "de": "Oktal: {0:o}",
+        "hi": "अष्टदल:  {0:o}"
     },
     "BIN": {
         "en": "Binary: {0:b}",
         "tr": "İkili: {0:b}",
         "pt": "Binário: {0:b}",
         "fr": "Binaire: {0:b}",
-        "es": "Binario: {0:b}"
+        "es": "Binario: {0:b}",
+        "de": "Binär: {0:b}",
+        "hi": "बाइनरी:  {0:b}"
     },
     "CATEGORY": {
         "en": "Category",
         "tr": "Kategori",
         "pt": "Categoria",
         "fr": "Catégorie",
-        "es": "Categoría"
+        "es": "Categoría",
+        "de": "Kategorie",
+        "hi": "वर्ग"
     },
     "BRAIN_BROKE_IT": {
         "en": "Something's up, got a question with no text! This shouldn't happen...",
         "tr": "Bir şeyler oluyor, metinsiz bir soru var! Bu olmamalı ...",
         "pt": "Algo está acontecendo, tenho uma pergunta sem texto! Isso não deveria acontecer ...",
         "fr": "Quelque chose se passe, j'ai une question sans texte! Cela ne devrait pas arriver...",
-        "es": "¡Algo pasa, tengo una pregunta sin texto! Esto no debería suceder ..."
+        "es": "¡Algo pasa, tengo una pregunta sin texto! Esto no debería suceder ...",
+        "de": "Etwas ist los, habe eine Frage ohne Text! Das sollte nicht passieren ...",
+        "hi": "कुछ है, कोई पाठ नहीं के साथ एक सवाल है! ऐसा नहीं होना चाहिए ..."
     },
     "FETCH_Q": {
         "en": "Fetch Question",
         "tr": "Soru Getir",
         "pt": "Buscar pergunta",
         "fr": "Récupérer la question",
-        "es": "Obtener pregunta"
+        "es": "Obtener pregunta",
+        "de": "Frage holen",
+        "hi": "लाने का प्रश्न"
     },
     "SECS_LEFT": {
         "en": "You have **{0}** seconds remaining!",
         "tr": "**{0}** saniyeniz kaldı!",
         "pt": "Você tem **{0}** segundos restantes!",
         "fr": "Il vous reste **{0}** secondes!",
-        "es": "¡Te quedan **{0}** segundos!"
+        "es": "¡Te quedan **{0}** segundos!",
+        "de": "Sie haben noch **{0}** Sekunden!",
+        "hi": "आपके पास ***{0}** सेकंड शेष है!"
     },
     "FIRST_HINT": {
         "en": "First Hint",
         "tr": "İlk İpucu",
         "pt": "Primeira dica",
         "fr": "Premier indice",
-        "es": "Primera pista"
+        "es": "Primera pista",
+        "de": "Erster Hinweis",
+        "hi": "पहला संकेत"
     },
     "SECOND_HINT": {
         "en": "Second Hint",
         "tr": "İkinci İpucu",
         "pt": "Segunda dica",
         "fr": "Deuxième indice",
-        "es": "Segunda pista"
+        "es": "Segunda pista",
+        "de": "Zweiter Hinweis"
     },
     "INSANE_FOUND": {
         "en": "**{0}** answers were found!",
         "tr": "**{0}** yanıt bulundu!",
         "pt": "**{0}** respostas foram encontradas!",
         "fr": "**{0}** réponses ont été trouvées!",
-        "es": "**{0}** ¡Se encontraron respuestas!"
+        "es": "**{0}** ¡Se encontraron respuestas!",
+        "de": "**{0}** Antworten wurden gefunden!",
+        "hi": "**{0}**  जवाब मिला!"
     },
     "ANS_WAS": {
         "en": "The answer was: **{0}**",
         "tr": "Cevap şuydu: **{0}**",
         "pt": "A resposta foi: **{0}**",
         "fr": "La réponse était: **{0}**",
-        "es": "La respuesta fue: **{0}**"
+        "es": "La respuesta fue: **{0}**",
+        "de": "Die Antwort war: **{0}**",
+        "hi": "जवाब था: ****{0}**"
     },
     "STREAK_SMASHED": {
         "en": "**{0}**'s streak of **{1}** answers in a row comes to a grinding halt!",
         "tr": "**{0}** 'nin arka arkaya gelen **{1}** yanıt serisi, ezici bir durma noktasına geliyor!",
         "pt": "A sequência de **{0}** de **{1}** respostas seguidas chega ao fim!",
         "fr": "La série de réponses consécutives de **{0}** **{1}** s'interrompt!",
-        "es": "**{0}** ¡La racha de **{1}** respuestas seguidas se detiene!"
+        "es": "**{0}** ¡La racha de **{1}** respuestas seguidas se detiene!",
+        "de": "**{0}** 's Streifen von **{1}** Antworten in einer Reihe kommt zum Erliegen!",
+        "hi": "**{0}**  की लकीर **{1}** एक पंक्ति में जवाब एक पीस पड़ाव के लिए आता है!"
     },
     "TIME_UP": {
         "en": "Time Up!",
         "tr": "Zaman doldu!",
         "pt": "Tempo esgotado!",
         "fr": "Temps Écoulé!",
-        "es": "¡Se acabó el tiempo!"
+        "es": "¡Se acabó el tiempo!",
+        "hi": "समय समाप्त!"
     },
     "OUT_OF_TIME": {
         "en": "Out of time!",
         "tr": "Zaman doldu!",
         "pt": "Fora do tempo!",
-        "fr": "Hors du temps!"
+        "fr": "Hors du temps!",
+        "de": "Keine Zeit mehr!",
+        "hi": "समय से बाहर!"
     },
     "COMING_UP": {
         "en": "Next question coming up in about **{0}** seconds...",
         "tr": "Sonraki soru yaklaşık **{0}** saniye sonra gelecek ...",
         "pt": "Próxima pergunta chegando em cerca de **{0}** segundos ...",
         "fr": "Prochaine question dans environ **{0}** secondes...",
-        "es": "La próxima pregunta aparecerá en unos **{0}** segundos ..."
+        "es": "La próxima pregunta aparecerá en unos **{0}** segundos ...",
+        "de": "Die nächste Frage kommt in ungefähr **{0}** Sekunden ...",
+        "hi": "अगला सवाल **{0}** सेकंड के बारे में आ रहा है ..."
     },
     "REST": {
         "en": "A little time to rest your fingers...",
         "tr": "Parmaklarınızı dinlendirmek için biraz zaman ...",
         "pt": "Um tempinho para descansar os dedos ...",
         "fr": "Un petit peu de temps pour reposer vos doigts...",
-        "es": "Un poco de tiempo para descansar los dedos ..."
+        "es": "Un poco de tiempo para descansar los dedos ...",
+        "de": "Ein wenig Zeit, um Ihre Finger auszuruhen ...",
+        "hi": "थोड़ा समय अपनी उंगलियों को आराम देने के लिए ..."
     },
     "END1": {
         "en": "End of round of **{0}** questions",
         "tr": "**{0}** soru turunun sonu",
         "pt": "Fim da rodada de **{0}** perguntas",
         "fr": "Fin de la série de **{0}** questions",
-        "es": "Fin de la ronda de **{0}** preguntas"
+        "es": "Fin de la ronda de **{0}** preguntas",
+        "de": "Ende der Runde der **{0}** Fragen",
+        "hi": "**{0}** सवालों के दौर का अंत"
     },
     "END_TITLE": {
         "en": "End of the round",
         "tr": "Turun sonu",
         "pt": "Fim da rodada",
         "fr": "Fin du tour",
-        "es": "Fin de la ronda"
+        "es": "Fin de la ronda",
+        "de": "Ende der Runde",
+        "hi": "दौर का अंत"
     },
     "LEADERBOARD": {
         "en": "Trivia Leaderboard",
         "tr": "Trivia Liderlik Tablosu",
         "pt": "Tabela de classificação de curiosidades",
         "fr": "Classement Trivia",
-        "es": "Tabla de clasificación de trivia"
+        "es": "Tabla de clasificación de trivia",
+        "de": "Wissenswertes Leaderboard",
+        "hi": "ट्रिविया लीडरबोर्ड"
     },
     "TOP_TEN": {
         "en": "Today's Top Ten",
         "tr": "Bugünün İlk On",
         "pt": "Os dez melhores de hoje",
         "fr": "Le top dix du jour",
-        "es": "Los diez mejores de hoy"
+        "es": "Los diez mejores de hoy",
+        "de": "Die heutigen Top Ten",
+        "hi": "आज का टॉप टेन"
     },
     "MORE_INFO": {
         "en": "More Information",
         "tr": "Daha fazla bilgi",
         "pt": "Mais Informações",
         "fr": "Plus d'informations",
-        "es": "Más información"
+        "es": "Más información",
+        "de": "Mehr Informationen",
+        "hi": "अधिक जानकारी"
     },
     "LEADER_LINK": {
         "en": "[View server leaderboards](https:\/\/triviabot.co.uk\/stats\/{0})\nDaily scores reset at midnight GMT.",
         "tr": "[Sunucu lider tablolarını görüntüleyin](https:\/\/triviabot.co.uk\/stats\/{0})\nGünlük puanlar gece yarısı GMT'de sıfırlanır.",
         "pt": "[Ver placares do servidor](https:\/\/triviabot.co.uk\/stats\/{0})\nPontuações diárias zeradas à meia-noite GMT.",
         "fr": "[Afficher les classements des serveurs](https:\/\/triviabot.co.uk\/stats\/{0})\nLes scores quotidiens sont réinitialisés à minuit GMT.",
-        "es": "[Ver tablas de clasificación del servidor](https:\/\/triviabot.co.uk\/stats\/{0})\nLas puntuaciones diarias se restablecen a la medianoche GMT."
+        "es": "[Ver tablas de clasificación del servidor](https:\/\/triviabot.co.uk\/stats\/{0})\nLas puntuaciones diarias se restablecen a la medianoche GMT.",
+        "de": "[Server-Bestenlisten anzeigen](https:\/\/triviabot.co.uk\/stats\/ {0})\nDie täglichen Ergebnisse werden um Mitternacht GMT zurückgesetzt.",
+        "hi": "[सर्वर लीडरबोर्ड देखें](https:\/\/triviabot.co.uk\/stats\/{0})\nआधी रात के जीएमटी पर दैनिक स्कोर रीसेट।"
     },
     "DASH_STOP": {
         "en": "The round of trivia was stopped from the [dashboard](https:\/\/triviabot.co.uk\/dashboard\/)!",
         "tr": "Bilgi yarışması turu [kontrol panelinden](https:\/\/triviabot.co.uk\/dashboard\/) durduruldu!",
         "pt": "A rodada de curiosidades foi interrompida no [painel](https:\/\/triviabot.co.uk\/dashboard\/)!",
         "fr": "Le tour de questions a été arrêté depuis le [tableau de bord](https:\/\/triviabot.co.uk\/dashboard\/)!",
-        "es": "¡La ronda de trivia se detuvo desde el [tablero](https:\/\/triviabot.co.uk\/dashboard\/)!"
+        "es": "¡La ronda de trivia se detuvo desde el [tablero](https:\/\/triviabot.co.uk\/dashboard\/)!",
+        "de": "Die Trivia-Runde wurde vom [Dashboard](https:\/\/triviabot.co.uk\/dashboard\/) gestoppt!",
+        "hi": "[डैशबोर्ड](https:\/\/triviabot.co.uk\/dashboard\/) से सामान्य ज्ञान का दौर रोक दिया गया था!"
     },
     "STOPPING": {
         "en": "Round Stopping!",
         "tr": "Round Durduruluyor!",
         "pt": "Parando redondo!",
         "fr": "Les questions s'arrêtent!",
-        "es": "¡Parada redonda!"
+        "es": "¡Parada redonda!",
+        "de": "Runder Stopp!",
+        "hi": "राउंड स्टॉपिंग!"
     },
     "PREFIX": {
         "en": "My prefix on this server is ``{0}``. Type ``{1}help`` for help.",
         "tr": "Bu sunucudaki ön ekim ``{0}``. Yardım için ``{1}help`` yazın.",
         "pt": "Meu prefixo neste servidor é ``{0}``. Digite ``{1}help`` para obter ajuda.",
         "fr": "Mon préfixe sur ce serveur est ``{0}``. Tapez ``{1}help`` pour obtenir de l'aide.",
-        "es": "Mi prefijo en este servidor es ``{0}``. Escriba ``{1} ayuda`` para obtener ayuda."
+        "es": "Mi prefijo en este servidor es ``{0}``. Escriba ``{1} ayuda`` para obtener ayuda.",
+        "de": "Mein Präfix auf diesem Server ist `` {0} ``. Geben Sie `` {1} help`` ein, um Hilfe zu erhalten.",
+        "hi": "इस सर्वर पर मेरा उपसर्ग ``{0} `` है। मदद के लिए `` {1} मदद `टाइप करें।"
     },
     "LAST_ONE": {
         "en": "**{0}** found the last answer!",
         "tr": "**{0}** son cevabı buldum!",
         "pt": "**{0}** encontrou a última resposta!",
         "fr": "**{0}** a trouvé la dernière réponse!",
-        "es": "**{0}** ¡encontró la última respuesta!"
+        "es": "**{0}** ¡encontró la última respuesta!",
+        "de": "**{0}** hat die letzte Antwort gefunden!",
+        "hi": "**{0}** अंतिम उत्तर मिला!"
     },
     "INSANE_CORRECT": {
         "en": "**{0}** was correct with **{1}**, gaining one point! **{2}** answers remaining out of **{3}**.",
         "tr": "**{0}** **{1}** ile doğruydu, bir puan kazanıyordu! **{2}** yanıt **{3}** dışında kaldı.",
         "pt": "**{0}** estava correto com **{1}**, ganhando um ponto! **{2}** respostas restantes de **{3}**.",
         "fr": "**{0}** était correct avec **{1}**, gagnant un point! **{2}** réponses restantes sur **{3}**",
-        "es": "**{0}** acertó con **{1}**, ¡ganando un punto! **{2}** respuestas restantes de **{3}**."
+        "es": "**{0}** acertó con **{1}**, ¡ganando un punto! **{2}** respuestas restantes de **{3}**.",
+        "de": "**{0}** stimmte mit **{1}** überein und gewann einen Punkt! **{2}** Antworten bleiben von **{3}** übrig.",
+        "hi": "**{0}** एक बिंदु प्राप्त करने के साथ **{1}** के साथ सही था! **{2}** शेष उत्तर **{3}** से बाहर है।"
     },
     "POINT": {
         "en": "point",
         "tr": "nokta",
         "pt": "ponto",
         "fr": "point",
-        "es": "punto"
+        "es": "punto",
+        "de": "Punkt",
+        "hi": "बिंदु"
     },
     "POINTS": {
         "en": "points",
         "tr": "puan",
         "pt": "pontos",
         "fr": "points",
-        "es": "puntos"
+        "es": "puntos",
+        "de": "Punkte",
+        "hi": "अंक"
     },
     "NORM_CORRECT": {
         "en": "The answer was **{0}**. You gain **{1}** {2} for answering in **{3}** seconds!",
         "tr": "Cevap **{0}** idi. **{3}** saniye içinde yanıtladığınızda **{1}** {2} kazanırsınız!",
         "pt": "A resposta foi **{0}**. Você ganha **{1}** {2} por responder em **{3}** segundos!",
         "fr": "La réponse était **{0}**. Vous gagnez **{1}** {2} pour avoir répondu en **{3}** secondes!",
-        "es": "La respuesta fue **{0}**. ¡Ganas **{1}** {2} por responder en **{3}** segundos!"
+        "es": "La respuesta fue **{0}**. ¡Ganas **{1}** {2} por responder en **{3}** segundos!",
+        "de": "Die Antwort war **{0}**. Sie erhalten **{1}** {2} für die Beantwortung in **{3}** Sekunden!",
+        "hi": "जवाब था **{0}**। आप **{3}** सेकंड में जवाब देने के लिए **{1}** {2} प्राप्त करते हैं!"
     },
     "RECORD_TIME": {
         "en": "\n**{0}** has broken the record time for this question!",
         "tr": "\n**{0}** bu soru için rekor zamanı kırdı!",
         "pt": "\n**{0}** quebrou o tempo recorde para esta pergunta!",
         "fr": "\n**{0}** a battu le record du temps pour cette question!",
-        "es": "\n**{0}** ha batido el tiempo récord para esta pregunta."
+        "es": "\n**{0}** ha batido el tiempo récord para esta pregunta.",
+        "de": "\n**{0}** hat die Rekordzeit für diese Frage gebrochen!",
+        "hi": "\n**{0}** ने इस प्रश्न का रिकॉर्ड समय तोड़ा है!"
     },
     "SCORE_UPDATE": {
         "en": "\n**{0}**'s score is now **{1}**.",
         "tr": "\n**{0}** puan şimdi **{1}**.",
         "pt": "\nA pontuação de **{0}** agora é **{1}**.",
         "fr": "\nLe score de **{0}** est désormais de **{1}**.",
-        "es": "\nLa puntuación de **{0}** ahora es **{1}**."
+        "es": "\nLa puntuación de **{0}** ahora es **{1}**.",
+        "de": "\n**{0}** Die Punktzahl ist jetzt **{1}**.",
+        "hi": "\n**{0}** का स्कोर अब **{1}** है।"
     },
     "TEAM_SCORE": {
         "en": "\nTeam **{0}** also gains **{1}** {2} and is now on **{3}**",
         "tr": "\nTakım **{0}** da **{1}** {2} kazanır ve şu anda **{3}**",
         "pt": "\nA equipe **{0}** também ganha **{1}** {2} e agora está em **{3}**",
         "fr": "\nL'équipe **{0}** gagne également **{1}** {2} et compte désormais **{3}**",
-        "es": "\nEl equipo **{0}** también gana **{1}** {2} y ahora está en **{3}**"
+        "es": "\nEl equipo **{0}** también gana **{1}** {2} y ahora está en **{3}**",
+        "de": "\nTeam **{0}** erhält ebenfalls **{1}** {2} und ist jetzt auf **{3}**",
+        "hi": "\nटीम **{0}** को भी **{1}** {2} का लाभ मिलता है और अब **{3}** पर है"
     },
     "ON_A_STREAK": {
         "en": "\n**{0}** is on a streak! **{1}** questions and counting",
         "tr": "\n**{0}** galibiyet serisinde! **{1}** sorular ve sayma",
         "pt": "\n**{0}** está em alta! **{1}** perguntas e contando",
         "fr": "\n**{0}** est sur une séquence! **{1}** questions et compte",
-        "es": "\n**{0}** está en racha. **{1}** preguntas y contando"
+        "es": "\n**{0}** está en racha. **{1}** preguntas y contando",
+        "de": "\n**{0}** ist in einer Serie! **{1}** Fragen und Zählen",
+        "hi": "\n**{0}** एक लकीर पर है! **{1}** प्रश्न और गिनती"
     },
     "BEATEN_BEST": {
         "en": ", and has beaten their personal best!",
         "tr": ", ve kişisel ellerinden gelenin en iyisini yaptı!",
         "pt": ", e bateu seu recorde pessoal!",
         "fr": ", et a battu son record personnel!",
-        "es": "¡y ha batido su mejor marca personal!"
+        "es": "¡y ha batido su mejor marca personal!",
+        "de": "und hat ihr persönliches Bestes gegeben!",
+        "hi": ", और उनके व्यक्तिगत सर्वश्रेष्ठ को पीटा है!"
     },
     "NOT_THERE_YET": {
         "en": ", but has some way to go yet before they beat their personal best of **{0}**",
         "tr": ", ancak kişisel en iyilerini geçmeden önce daha gidilecek bir yolu var **{0}**",
         "pt": ", mas ainda tem um longo caminho a percorrer antes de bater seu melhor pessoal de **{0}**",
         "fr": ", mais a encore du chemin à parcourir avant de battre son record personnel de **{0}**",
-        "es": ", pero aún le queda mucho camino por recorrer antes de que superen su mejor marca personal de **{0}**"
+        "es": ", pero aún le queda mucho camino por recorrer antes de que superen su mejor marca personal de **{0}**",
+        "de": ", hat aber noch einen weiten Weg vor sich, bevor sie ihr persönliches Bestes von **{0}** geben",
+        "hi": ", लेकिन अभी तक जाने का कोई रास्ता नहीं है इससे पहले कि वे अपने व्यक्तिगत सर्वश्रेष्ठ **{0}** को हरा दें"
     },
     "STREAK_BEATDOWN": {
         "en": "\n**{0}** just beat <@{1}>'s record streak of {2} answers!",
         "tr": "\n**{0}** <@{1}> 'nin rekor {2} yanıt serisini geç!",
         "pt": "\n**{0}** acabou de bater o recorde de <@{1}> série de {2} respostas!",
         "fr": "\n**{0}** vient de battre la série record de {2} réponses de <@{1}>!",
-        "es": "\n**{0}** ¡acaba de batir la racha récord de <@ {1}> de {2} respuestas!"
+        "es": "\n**{0}** ¡acaba de batir la racha récord de <@ {1}> de {2} respuestas!",
+        "de": "\n**{0}** Schlage einfach <@ {1}> 's Rekordstreifen von {2} Antworten!",
+        "hi": "\n**{0}** बस हरा दो <@ {1}> रिकॉर्ड 2 {उत्तर} की लकीर!"
     },
     "STREAK_ENDER": {
         "en": "\n**{0}** just ended <@{1}>'s streak of {2} answers in a row!",
         "tr": "\n**{0}** az önce <@ {1}> 'nin arka arkaya gelen {2} yanıt serisini bitirdi!",
         "pt": "\n**{0}** acabou de terminar a série de {2} respostas de <@{1}> consecutivas!",
         "fr": "\n**{0}** vient de terminer la série de {2} réponses consécutives de <@{1}>!",
-        "es": "\n**{0}** acaba de terminar la racha de <@{1}> de {2} respuestas seguidas."
+        "es": "\n**{0}** acaba de terminar la racha de <@{1}> de {2} respuestas seguidas.",
+        "de": "\n**{0}** hat gerade die Reihe von {2} Antworten in Folge hinter <@ {1}> beendet!",
+        "hi": "\n**{0}** बस समाप्त हुआ <@ {1}> पंक्ति में {2} की लकीर!"
     },
     "CORRECT": {
         "en": "Correct, {0}!",
         "tr": "Doğru, {0}!",
         "pt": "Correto, {0}!",
         "fr": "Correct, {0}!",
-        "es": "¡Correcto, {0}!"
+        "es": "¡Correcto, {0}!",
+        "de": "Richtig, {0}!",
+        "hi": "सही है, {0}!"
     },
     "CHANNEL_WUT": {
         "en": "**{0}**, this channel ID does not exist!",
         "tr": "**{0}**, bu kanal kimliği mevcut değil!",
         "pt": "**{0}**, este ID de canal não existe!",
         "fr": "**{0}**, cet ID de chaîne n'existe pas!",
-        "es": "**{0}**, este ID de canal no existe."
+        "es": "**{0}**, este ID de canal no existe.",
+        "de": "**{0}**, diese Kanal-ID existiert nicht!",
+        "hi": "**{0}**, यह चैनल आईडी मौजूद नहीं है!"
     },
     "ROUND_START_ID": {
         "en": "Round of {0} questions started on channel id {1}",
         "tr": "{1} kanal kimliğiyle ilgili {0} soru turu başladı",
         "pt": "Rodada de {0} perguntas começou no canal id {1}",
         "fr": "Une série de {0} questions a commencé sur l'ID de chaîne {1}",
-        "es": "La ronda de {0} preguntas comenzó con la identificación del canal {1}"
+        "es": "La ronda de {0} preguntas comenzó con la identificación del canal {1}",
+        "de": "Die Runde der {0} Fragen wurde mit der Kanal-ID {1} gestartet.",
+        "hi": "{0} सवालों का दौर चैनल आईडी {1} पर शुरू हुआ"
     },
     "RESTART_RESUME": {
         "en": "Because the bot was restarted, your game was stopped. This game has been resumed.",
         "tr": "Bot yeniden başlatıldığı için oyununuz durduruldu. Bu oyun devam etti.",
         "pt": "Como o bot foi reiniciado, seu jogo foi interrompido. Este jogo foi reiniciado.",
         "fr": "Parce que le bot a été redémarré, votre jeu a été arrêté. Ce jeu a été repris.",
-        "es": "Debido a que se reinició el bot, su juego se detuvo. Este juego se ha reanudado."
+        "es": "Debido a que se reinició el bot, su juego se detuvo. Este juego se ha reanudado.",
+        "de": "Da der Bot neu gestartet wurde, wurde Ihr Spiel gestoppt. Dieses Spiel wurde fortgesetzt.",
+        "hi": "चूँकि बॉट को पुनः आरंभ किया गया था, इसलिए आपका खेल रोक दिया गया था। इस खेल को फिर से शुरू किया गया है।"
     },
     "STAFF_ONLY": {
         "en": "Only bot moderators can use this command",
         "tr": "Bu komutu yalnızca bot moderatörleri kullanabilir",
         "pt": "Apenas moderadores de bots podem usar este comando",
         "fr": "Seuls les modérateurs de bot peuvent utiliser cette commande",
-        "es": "Solo los moderadores de bot pueden usar este comando"
+        "es": "Solo los moderadores de bot pueden usar este comando",
+        "de": "Nur Bot-Moderatoren können diesen Befehl verwenden",
+        "hi": "केवल बॉट मॉडरेटर्स ही इस कमांड का उपयोग कर सकते हैं"
     },
     "SHITLISTED": {
         "en": "**{0}**, you can't start a round of trivia here, as the bot owner has explicitly blocked games from being started on this server.\nIf you want to start a round of trivia, first [invite the bot](https:\/\/discord.com\/oauth2\/authorize?client_id={1}&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code) to your own server!",
         "tr": "**{0}**, bot sahibi oyunların bu sunucuda başlatılmasını açıkça engellediği için burada bir bilgi yarışması başlatamazsınız.\nBir bilgi yarışması turu başlatmak istiyorsanız, önce [botu davet edin](https:\/\/discord.com\/oauth2\/authorize?client_id={1}&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code) kendi sunucunuza!",
         "pt": "**{0}**, você não pode começar uma rodada de curiosidades aqui, pois o proprietário do bot bloqueou explicitamente o início de jogos neste servidor.\nSe você quiser começar uma rodada de curiosidades, primeiro [convide o bot](https:\/\/discord.com\/oauth2\/authorize?client_id={1}&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code) para o seu próprio servidor!",
         "fr": "**{0}**, vous ne pouvez pas commencer une série de questions-réponses ici, car le propriétaire du bot a explicitement bloqué le démarrage de jeux sur ce serveur.\nSi vous souhaitez commencer une série de questions-réponses, d'abord [invitez le bot](https:\/\/discord.com\/oauth2\/authorize?client_id={1}&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code) à votre propre serveur!",
-        "es": "**{0}**, no puedes comenzar una ronda de trivia aquí, ya que el propietario del bot ha bloqueado explícitamente el inicio de juegos en este servidor.\nSi desea iniciar una ronda de trivia, primero [invite al bot](https:\/\/discord.com\/oauth2\/authorize?client_id={1}&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code) a su propio servidor."
+        "es": "**{0}**, no puedes comenzar una ronda de trivia aquí, ya que el propietario del bot ha bloqueado explícitamente el inicio de juegos en este servidor.\nSi desea iniciar una ronda de trivia, primero [invite al bot](https:\/\/discord.com\/oauth2\/authorize?client_id={1}&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code) a su propio servidor.",
+        "de": "**{0}**, Sie können hier keine Trivia-Runde starten, da der Bot-Besitzer das Starten von Spielen auf diesem Server explizit blockiert hat.\nWenn Sie eine Runde Trivia starten möchten, [laden Sie den Bot ein](https:\/\/discord.com\/oauth2\/authorize?client_id={1}&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code) auf Ihren eigenen Server!",
+        "hi": "**{0}**, आप यहां सामान्य ज्ञान का दौर शुरू नहीं कर सकते, क्योंकि बॉट के मालिक ने इस सर्वर पर गेम शुरू करने से स्पष्ट रूप से रोक दिया है।\nयदि आप ट्रिविया का एक दौर शुरू करना चाहते हैं, तो पहले [बॉट को आमंत्रित करें](https:\/\/discord.com\/oauth2\/authorize?client_id={1}&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code)!"
     },
     "NOWAY": {
         "en": ":warning: Can't start two rounds at once on one server!",
         "tr": ":warning: Bir sunucuda aynı anda iki tur başlatılamaz!",
         "pt": ":warning: Não é possível iniciar duas rodadas ao mesmo tempo em um servidor!",
         "fr": ":warning: Impossible de démarrer deux tours à la fois sur un serveur!",
-        "es": ":warning: ¡No se pueden iniciar dos rondas a la vez en un servidor!"
+        "es": ":warning: ¡No se pueden iniciar dos rondas a la vez en un servidor!",
+        "de": ":warning: Es können nicht zwei Runden gleichzeitig auf einem Server gestartet werden!",
+        "hi": ":warning: एक सर्वर पर एक साथ दो राउंड शुरू नहीं कर सकते हैं!"
     },
     "ALREADYACTIVE": {
         "en": "A round of trivia is already active",
         "tr": "Bir tur bilgi yarışması zaten aktif",
         "pt": "Uma rodada de curiosidades já está ativa",
         "fr": "Un tour de questions est déjà actif",
-        "es": "Una ronda de trivia ya está activa"
+        "es": "Una ronda de trivia ya está activa",
+        "de": "Eine Runde Trivia ist bereits aktiv",
+        "hi": "ट्रिविया का एक दौर पहले से ही सक्रिय है"
     },
     "CHANNELREF": {
         "en": "Please see <#{0}> to join the game",
         "tr": "Oyuna katılmak için lütfen <#{0}> sayfasına bakın",
         "pt": "Veja <#{0}> para entrar no jogo",
         "fr": "Veuillez consulter <#{0}> pour rejoindre le jeu",
-        "es": "Consulta <# {0}> para unirte al juego."
+        "es": "Consulta <#{0}> para unirte al juego.",
+        "de": "Bitte sehen Sie <#{0}>, um am Spiel teilzunehmen\n******",
+        "hi": "कृपया खेल में शामिल होने के लिए <#{0}> देखें\n******"
     },
     "GETPREMIUM": {
         "en": "Get TriviaBot Premium!",
         "tr": "TriviaBot Premium'u edinin!",
         "pt": "Obtenha o TriviaBot Premium!",
         "fr": "Obtenez TriviaBot Premium!",
-        "es": "¡Obtén TriviaBot Premium!"
+        "es": "¡Obtén TriviaBot Premium!",
+        "de": "Holen Sie sich TriviaBot Premium!",
+        "hi": "सामान्य ज्ञान प्रीमियम प्राप्त करें!"
     },
     "PREMDETAIL1": {
         "en": "If you want to do this, TriviaBot Premium lets you run as many concurrent games on the same server as you want. For more information please see the [TriviaBot Premium Page](https:\/\/triviabot.co.uk\/premium\/).",
         "tr": "Bunu yapmak istiyorsanız, TriviaBot Premium istediğiniz kadar aynı sunucuda eşzamanlı oyun çalıştırmanıza izin verir. Daha fazla bilgi için lütfen [TriviaBot Premium Sayfasına](https:\/\/triviabot.co.uk\/premium\/) bakın.",
         "pt": "Se você quiser fazer isso, o TriviaBot Premium permite que você execute tantos jogos simultâneos no mesmo servidor quanto você quiser. Para obter mais informações, consulte a [Página TriviaBot Premium](https:\/\/triviabot.co.uk\/premium\/).",
         "fr": "Si vous souhaitez faire cela, TriviaBot Premium vous permet d'exécuter autant de jeux simultanés sur le même serveur que vous le souhaitez. Pour plus d'informations, veuillez consulter la [Page TriviaBot Premium](https:\/\/triviabot.co.uk\/premium\/).",
-        "es": "Si desea hacer esto, TriviaBot Premium le permite ejecutar tantos juegos concurrentes en el mismo servidor como desee. Para obtener más información, consulte la [Página Premium de TriviaBot](https:\/\/triviabot.co.uk\/premium\/)."
+        "es": "Si desea hacer esto, TriviaBot Premium le permite ejecutar tantos juegos concurrentes en el mismo servidor como desee. Para obtener más información, consulte la [Página Premium de TriviaBot](https:\/\/triviabot.co.uk\/premium\/).",
+        "de": "Wenn Sie dies tun möchten, können Sie mit TriviaBot Premium so viele Spiele gleichzeitig auf demselben Server ausführen, wie Sie möchten. Weitere Informationen finden Sie auf der [TriviaBot Premium-Seite](https:\/\/triviabot.co.uk\/premium\/).",
+        "hi": "यदि आप ऐसा करना चाहते हैं, तो ट्रिवियाबॉट प्रीमियम आपको उसी सर्वर पर कई समवर्ती गेम चलाने देता है, जैसा आप चाहते हैं। अधिक जानकारी के लिए कृपया [सामान्य ज्ञान प्रीमियम पेज](https:\/\/triviabot.co.uk\/premium\/) देखें।"
     },
     "PREMDETAIL2": {
         "en": "If you want to do this, TriviaBot Premium lets you run quickfire rounds of up to 200 questions! For more information please see the [TriviaBot Premium Page](https:\/\/triviabot.co.uk\/premium\/).",
         "tr": "Bunu yapmak istiyorsanız, TriviaBot Premium, 200 sorudan oluşan hızlı ateşleme turları yapmanızı sağlar! Daha fazla bilgi için lütfen [TriviaBot Premium Sayfasına](https:\/\/triviabot.co.uk\/premium\/) bakın.",
         "pt": "Se você quiser fazer isso, o TriviaBot Premium permite que você execute rodadas rápidas de até 200 perguntas! Para obter mais informações, consulte a [Página TriviaBot Premium](https:\/\/triviabot.co.uk\/premium\/).",
         "fr": "Si vous voulez faire cela, TriviaBot Premium vous permet d'exécuter des rounds quickfire jusqu'à 200 questions! Pour plus d'informations, veuillez consulter la [Page TriviaBot Premium](https:\/\/triviabot.co.uk\/premium\/).",
-        "es": "Si desea hacer esto, TriviaBot Premium le permite ejecutar rondas rápidas de hasta 200 preguntas. Para obtener más información, consulte la [Página Premium de TriviaBot](https:\/\/triviabot.co.uk\/premium\/)."
+        "es": "Si desea hacer esto, TriviaBot Premium le permite ejecutar rondas rápidas de hasta 200 preguntas. Para obtener más información, consulte la [Página Premium de TriviaBot](https:\/\/triviabot.co.uk\/premium\/).",
+        "de": "Wenn Sie dies tun möchten, können Sie mit TriviaBot Premium Schnellfeuer-Runden mit bis zu 200 Fragen durchführen! Weitere Informationen finden Sie auf der [TriviaBot Premium-Seite](https:\/\/triviabot.co.uk\/premium\/).",
+        "hi": "यदि आप ऐसा करना चाहते हैं, तो TriviaBot Premium आपको 200 प्रश्नों तक क्विकफ़ायर राउंड चलाने देता है! अधिक जानकारी के लिए कृपया [सामान्य ज्ञान प्रीमियम पेज](https:\/\/triviabot.co.uk\/premium\/) देखें।"
     },
     "MAX15": {
         "en": ":warning: Can't start a quickfire round of more than 15 questions",
         "tr": ":warning: 15 sorudan fazla hızlı ateş turu başlatılamaz",
         "pt": ":warning: Não é possível iniciar uma rodada de tiro rápido com mais de 15 perguntas",
         "fr": ":warning: impossible de démarrer un cycle de tir rapide de plus de 15 questions",
-        "es": ":warning: no se puede iniciar una ronda de respuesta rápida de más de 15 preguntas"
+        "es": ":warning: no se puede iniciar una ronda de respuesta rápida de más de 15 preguntas",
+        "de": ":warning: Es kann keine Schnellfeuer-Runde mit mehr als 15 Fragen gestartet werden",
+        "hi": ":warning: 15 से अधिक प्रश्नों का एक त्वरित दौर शुरू नहीं कर सकते"
     },
     "MAX15DETAIL": {
         "en": "**{0}**, you can't create a quickfire trivia round of less than 5 or more than {1} questions!",
         "tr": "**{0}**, 5'ten az veya {1} sorudan fazla bir hızlı ateş bilgi yarışması turu oluşturamazsınız!",
         "pt": "**{0}**, você não pode criar uma rodada rápida de perguntas e respostas com menos de 5 ou mais de {1} perguntas!",
         "fr": "**{0}**, vous ne pouvez pas créer une série de questions-réponses Quickfire de moins de 5 questions ou plus de {1} questions!",
-        "es": "**{0}**, no puedes crear una ronda de preguntas rápidas de menos de 5 o más de {1} preguntas."
+        "es": "**{0}**, no puedes crear una ronda de preguntas rápidas de menos de 5 o más de {1} preguntas.",
+        "de": "**{0}**, Sie können keine Schnellfeuer-Trivia-Runde mit weniger als 5 oder mehr als {1} Fragen erstellen!",
+        "hi": "**{0}**, आप {1} प्रश्नों से कम या 5 से अधिक का क्विकफ़ायर ट्रिविया राउंड नहीं बना सकते हैं!"
     },
     "MAX200": {
         "en": "**{0}**, you can't create a normal trivia round of less than 5 or more than 200 questions!",
         "tr": "**{0}**, 5'ten az veya 200'den fazla sorudan oluşan normal bir bilgi yarışması turu oluşturamazsınız!",
         "pt": "**{0}**, você não pode criar uma rodada normal de perguntas e respostas com menos de 5 ou mais de 200 perguntas!",
         "fr": "**{0}**, vous ne pouvez pas créer un jeu-questionnaire normal de moins de 5 ou plus de 200 questions!",
-        "es": "**{0}**, no puedes crear una ronda de trivia normal de menos de 5 o más de 200 preguntas."
+        "es": "**{0}**, no puedes crear una ronda de trivia normal de menos de 5 o más de 200 preguntas.",
+        "de": "**{0}**, Sie können keine normale Quizrunde mit weniger als 5 oder mehr als 200 Fragen erstellen!",
+        "hi": "**{0}**, आप 5 से कम या 200 से अधिक प्रश्नों का सामान्य सामान्य ज्ञान का दौर नहीं बना सकते हैं!"
     },
     "SPOOPY2": {
         "en": "**{0}**, something spoopy happened. Please try again in a couple of minutes!",
         "tr": "**{0}**, bozulma oldu. Lütfen birkaç dakika sonra tekrar deneyin!",
         "pt": "**{0}**, algo spoopy aconteceu. Por favor, tente novamente em alguns minutos!",
         "fr": "**{0}**, quelque chose de spoopy s'est produit. Veuillez réessayer dans quelques minutes!",
-        "es": "**{0}**, sucedió algo espeluznante. Vuelva a intentarlo en un par de minutos."
+        "es": "**{0}**, sucedió algo espeluznante. Vuelva a intentarlo en un par de minutos.",
+        "de": "**{0}**, etwas Spoopy ist passiert. Bitte versuchen Sie es in ein paar Minuten erneut!",
+        "hi": "**{0}**, कुछ खराब हुआ। कृपया कुछ मिनटों में पुनः प्रयास करें!"
     },
     "BROKED": {
         "en": "That wasn't supposed to happen...",
         "tr": "Bunun olmaması gerekiyordu ...",
         "pt": "Isso não deveria acontecer ...",
         "fr": "Ce n'était pas censé arriver...",
-        "es": "Se suponía que eso no iba a pasar ..."
+        "es": "Se suponía que eso no iba a pasar ...",
+        "de": "Das sollte nicht passieren ...",
+        "hi": "ऐसा नहीं होना चाहिए था ..."
     },
     "RESUMED": {
         "en": "resumed",
         "tr": "devam etti",
         "pt": "retomado",
         "fr": "repris",
-        "es": "reanudado"
+        "es": "reanudado",
+        "de": "wieder aufgenommen",
+        "hi": "फिर से शुरू"
     },
     "STARTED": {
         "en": "started",
         "tr": "başladı",
         "pt": "começado",
         "fr": "commencé",
-        "es": "empezado"
+        "es": "empezado",
+        "de": "gestartet",
+        "hi": "शुरू कर दिया है"
     },
     "ABOTADMIN": {
         "en": "a bot admin",
         "tr": "bir bot yöneticisi",
         "pt": "um administrador de bot",
         "fr": "un bot admin",
-        "es": "un administrador de bot"
+        "es": "un administrador de bot",
+        "de": "ein Bot Admin",
+        "hi": "एक बॉट एडमिन"
     },
     "NEWROUND": {
         "en": ":question: New {0}trivia round {1} by {2}!",
         "tr": ":question: {2} ile yeni {0} bilgi yarışması {1}!",
         "pt": ":question: Nova {0}rodada de perguntas e respostas {1} de {2}!",
         "fr": ":question: Nouveau {0}tour de questions-réponses {1} de {2}!",
-        "es": ": pregunta: ¡Nueva {0}ronda de preguntas y respuestas {1} de {2}!"
+        "es": ":question: ¡Nueva {0}ronda de preguntas y respuestas {1} de {2}!",
+        "de": ":question: Neue {0} Trivia-Runde {1} von {2}!",
+		"hi": "न्यू {0} ट्रिविया राउंड {1} बाय {2}!"
     },
     "GETREADY": {
         "en": "Get Ready",
         "tr": "Hazırlanmak",
         "pt": "Prepare-se",
         "fr": "Préparez-vous",
-        "es": "Prepararse"
+        "es": "Prepararse",
+        "de": "Sich fertig machen",
+        "hi": "तैयार हो जाओ"
     },
     "FIRSTCOMING": {
         "en": "First question coming up!",
         "tr": "İlk soru geliyor!",
         "pt": "Primeira pergunta chegando!",
         "fr": "Première question à venir!",
-        "es": "¡Se acerca la primera pregunta!"
+        "es": "¡Se acerca la primera pregunta!",
+        "de": "Erste Frage kommt auf!",
+        "hi": "पहला सवाल आ रहा है!"
     },
     "HOWPLAY": {
         "en": "How to play",
         "tr": "Nasıl oynanır",
         "pt": "Como jogar",
         "fr": "Comment jouer",
-        "es": "Cómo jugar"
+        "es": "Cómo jugar",
+        "de": "Spielanleitung",
+        "hi": "कैसे खेलें"
     },
     "INSTRUCTIONS": {
         "en": "Type your answer on channel to answer a question. The first to answer gets the points. To report any incorrect or invalid question, click the link in the title of the question's message.",
         "tr": "Bir soruyu cevaplamak için cevabınızı kanala yazın. İlk cevaplayan puanları alır. Herhangi bir yanlış veya geçersiz soruyu bildirmek için, soru mesajının başlığındaki bağlantıya tıklayın.",
         "pt": "Digite sua resposta no canal para responder a uma pergunta. O primeiro a responder ganha os pontos. Para relatar qualquer pergunta incorreta ou inválida, clique no link no título da mensagem da pergunta.",
         "fr": "Tapez votre réponse sur la chaîne pour répondre à une question. Le premier à répondre obtient les points. Pour signaler une question incorrecte ou non valide, cliquez sur le lien dans le titre du message de la question.",
-        "es": "Escriba su respuesta en el canal para responder una pregunta. El primero en responder obtiene los puntos. Para informar cualquier pregunta incorrecta o no válida, haga clic en el enlace en el título del mensaje de la pregunta."
+        "es": "Escriba su respuesta en el canal para responder una pregunta. El primero en responder obtiene los puntos. Para informar cualquier pregunta incorrecta o no válida, haga clic en el enlace en el título del mensaje de la pregunta.",
+		"de": "Geben Sie Ihre Antwort auf dem Kanal ein, um eine Frage zu beantworten. Der erste, der antwortet, bekommt die Punkte. Um eine falsche oder ungültige Frage zu melden, klicken Sie auf den Link im Titel der Nachricht der Frage.",
+        "hi": "प्रश्न का उत्तर देने के लिए चैनल पर अपना उत्तर लिखें। उत्तर देने वाला पहला अंक प्राप्त करता है। किसी भी गलत या अमान्य प्रश्न की रिपोर्ट करने के लिए, प्रश्न के संदेश के शीर्षक में लिंक पर क्लिक करें।"
     },
     "ALREADYRUN": {
         "en": "Buhhh... a round is already running here, **{0}**!",
         "tr": "Buhhh... burada zaten bir tur var, **{0}**!",
         "pt": "Buhhh... uma rodada já está acontecendo aqui, **{0}**!",
         "fr": "Buhhh... une manche est déjà en cours ici, **{0}**!",
-	"es": "¡Ya se está ejecutando una ronda aquí, **{0}**!"
+        "es": "¡Ya se está ejecutando una ronda aquí, **{0}**!",
+        "de": "Hier läuft bereits eine Runde, **{0}**!",
+        "hi": "एक दौर पहले से ही यहाँ चल रहा है, **{0}**!"
     },
     "CANTSTOPMEIMTHEGINGERBREADMAN": {
         "en": "**{0}**, only moderators can stop trivia on this server!",
         "tr": "**{0}**, bu sunucuda bilgi yarışmasını yalnızca moderatörler durdurabilir!",
         "pt": "**{0}**, apenas moderadores podem impedir curiosidades neste servidor!",
         "fr": "**{0}**, seuls les modérateurs peuvent arrêter les jeux-questionnaires sur ce serveur!",
-        "es": "**{0}**, ¡solo los moderadores pueden detener las trivia en este servidor!"
+        "es": "**{0}**, ¡solo los moderadores pueden detener las trivia en este servidor!",
+        "de": "**{0}**, nur Moderatoren können Trivia auf diesem Server stoppen!",
+        "hi": "**{0}**, केवल मध्यस्थ इस सर्वर पर सामान्य ज्ञान को रोक सकते हैं!"
     },
     "STOPOK": {
         "en": "**{0}** has stopped the round of trivia!",
         "tr": "**{0}** genel kültür yarışmasını durdurdu!",
         "pt": "**{0}** interrompeu a rodada de curiosidades!",
         "fr": "**{0}** a arrêté la série de questions-réponses!",
-        "es": "**{0}** ha detenido la ronda de trivia."
+        "es": "**{0}** ha detenido la ronda de trivia.",
+        "de": "**{0}** hat die Runde der Trivia gestoppt!",
+        "hi": "**{0}** ने सामान्य ज्ञान का दौर रोक दिया है!"
     },
     "NOTRIVIA": {
         "en": "No trivia round is running here, **{0}**!",
         "tr": "Burada trivia turu koşmuyor **{0}**!",
         "pt": "Nenhuma rodada de curiosidades está acontecendo aqui, **{0}**!",
         "fr": "Aucun jeu-questionnaire n'est en cours ici, **{0}**!",
-        "es": "¡Aquí no se está ejecutando ninguna ronda de preguntas, **{0}**!"
+        "es": "¡Aquí no se está ejecutando ninguna ronda de preguntas, **{0}**!",
+        "de": "Hier läuft keine Trivia-Runde, **{0}**!",
+        "hi": "कोई ट्रिविया दौर यहाँ नहीं चल रहा है, **{0}**!"
     },
     "VOTEAD": {
         "en": "[Vote for the bot every 12 hours](https:\/\/top.gg\/bot\/{0}\/vote) to get eight uses of the ``{1}votehint`` command, which gives you a personal hint via direct message!",
         "tr": "[Bot için her 12 saatte bir oy verin](https:\/\/top.gg\/bot\/{0}\/vote) ``{1}votehint`` komutunu sekiz kez kullanın, bu da size doğrudan aracılığıyla kişisel bir ipucu verir İleti!",
         "pt": "[Vote no bot a cada 12 horas](https:\/\/top.gg\/bot\/{0}\/vote) para obter oito usos do comando ``{1}votehint``, que fornece uma dica pessoal via direta mensagem!",
         "fr": "[Votez pour le bot toutes les 12 heures](https:\/\/top.gg\/bot\/{0}\/vote) pour obtenir huit utilisations de la commande ``{1}votehint``, qui vous donne un indice personnel par message direct!",
-        "es": "[Vote por el bot cada 12 horas](https:\/\/top.gg\/bot\/{0}\/vote) para obtener ocho usos del comando `` {1}votehint``, que le brinda una pista personal a través de ¡mensaje!"
+        "es": "[Vote por el bot cada 12 horas](https:\/\/top.gg\/bot\/{0}\/vote) para obtener ocho usos del comando ``{1}votehint``, que le brinda una pista personal a través de ¡mensaje!",
+        "de": "[Stimmen Sie alle 12 Stunden für den Bot ab](https:\/\/top.gg\/bot\/{0}\/vote), um acht Verwendungen des Befehls ``{1}votehint`` zu erhalten, der Ihnen direkt einen persönlichen Hinweis gibt Botschaft!",
+        "hi": "[प्रत्येक 12 घंटे में बॉट के लिए वोट दें](https:\/\/top.gg\/bot\/{0}\/vote) ``{1}votehint`` कमांड के आठ उपयोग प्राप्त करने के लिए, जो आपको प्रत्यक्ष के माध्यम से एक व्यक्तिगत संकेत देता है संदेश!"
     },
     "PRIVHINT": {
         "en": "**Get Private Hints by Voting!**\n",
         "tr": "**Oylayarak Özel İpuçları Alın!**\n",
         "pt": "**Obtenha dicas privadas por votação!**\n",
         "fr": "**Obtenez des indices privés en votant!**\n",
-        "es": "** ¡Obtenga sugerencias privadas votando! **\n"
+        "es": "** ¡Obtenga sugerencias privadas votando! **\n",
+        "de": "** Erhalten Sie private Tipps durch Abstimmung! **\n",
+        "hi": "** वोटिंग द्वारा निजी संकेत प्राप्त करें! **\n"
     },
     "NOTVOTED": {
         "en": "You haven't voted for the bot today!\n",
         "tr": "Bugün bota oy vermediniz!\n",
         "pt": "Você não votou no bot hoje!\n",
         "fr": "Vous n'avez pas voté pour le bot aujourd'hui!\n",
-        "es": "¡No has votado por el bot hoy!\n"
+        "es": "¡No has votado por el bot hoy!\n",
+        "de": "Sie haben heute nicht für den Bot gestimmt!\n",
+        "hi": "आपने आज बॉट के लिए मतदान नहीं किया है!\n"
     },
     "NOMOREHINTS": {
         "en": "You are out of voter hints, **{0}**!\n",
         "tr": "Seçmen ipuçlarının yok, **{0}**!\n",
         "pt": "Você está sem dicas de eleitor, ** {0} **!\n",
         "fr": "Vous n'avez plus d'indices aux électeurs, **{0}**!\n",
-        "es": "¡Te has quedado sin pistas para los votantes, **{0}**!\n"
+        "es": "¡Te has quedado sin pistas para los votantes, **{0}**!\n",
+        "de": "Sie haben keine Wählertipps mehr, **{0}**!\n",
+        "hi": "आप मतदाता संकेत से बाहर हैं, **{0}**!\n"
     },
     "VH1": {
         "en": "**{0}**, i've sent you a hint via DM!\nYou have **{1}** voter hint(s) remaining which expire in **{2} hours and {3} minutes**.",
         "tr": "**{0}**, size DM yoluyla bir ipucu gönderdim!\n**{2} saat ve {3} dakika** içinde süresi dolacak **{1}** seçmen ipucunuz kaldı.",
         "pt": "**{0}**, enviei a você uma dica via DM!\nVocê tem **{1}** dica (s) de eleitor restantes que expiram em **{2} horas e {3} minutos**.",
         "fr": "**{0}**, je vous ai envoyé un indice via DM!\nIl vous reste **{1}** indice (s) d'électeur qui expirent dans **{2} heures et {3} minutes**.",
-        "es": "**{0}**, ¡te envié una pista por DM!\nLe quedan **{1}** pistas para votantes que vencen en **{2} horas y {3} minutos**."
+        "es": "**{0}**, ¡te envié una pista por DM!\nLe quedan **{1}** pistas para votantes que vencen en **{2} horas y {3} minutos**.",
+        "de": "**{0}**, ich habe dir einen Hinweis per DM geschickt!\nSie haben noch **{1}** Wählerhinweise, die in ** {2} Stunden und {3} Minuten ** ablaufen.",
+        "hi": "**{0}**, मैंने आपको DM के माध्यम से संकेत भेजा है!\nआपके पास **{1}** मतदाता संकेत हैं, जो ** {2} घंटे और {3} मिनट ** में समाप्त होते हैं।"
     },
     "VH2": {
         "en": "**{0}**, i've sent you a hint via DM!\nYou have **NO MORE** voter hints remaining and can vote again in **{1} hours and {2} minutes**.",
         "tr": "**{0}**, size DM yoluyla bir ipucu gönderdim!\n**DAHA FAZLA** HAYIR seçmen ipucunuz kaldı ve **{1} saat {2} dakika** içinde tekrar oy verebilirsiniz.",
         "pt": "**{0}**, enviei a você uma dica via DM!\nVocê tem **NÃO MAIS** dicas de eleitor restantes e pode votar novamente em **{1} horas e {2} minutos**.",
         "fr": "**{0}**, je vous ai envoyé un indice via DM!\nIl ne vous reste plus **PLUS** d'indices d'électeur et vous pourrez voter à nouveau dans **{1} heures et {2} minutes**.",
-        "es": "**{0}**, ¡te envié una pista por DM!\nNo le quedan **NO MÁS** sugerencias de votantes y puede votar de nuevo en **{1} horas y {2} minutos **."
+        "es": "**{0}**, ¡te envié una pista por DM!\nNo le quedan **NO MÁS** sugerencias de votantes y puede votar de nuevo en **{1} horas y {2} minutos **.",
+        "de": "**{0}**, ich habe dir einen Hinweis per DM geschickt!\nSie haben noch **KEINE** Wählertipps übrig und können in **{1} Stunden und {2} Minuten** erneut abstimmen.",
+        "hi": "**{0}**, मैंने आपको DM के माध्यम से संकेत भेजा है!\nआपके पास **और अधिक** मतदाता शेष हैं और **{1} घंटे और {2} मिनट** में फिर से मतदान कर सकते हैं।"
     },
     "WAITABIT": {
         "en": "You should probaly wait until a non-insane round question is being asked, **{0}**!",
         "tr": "Muhtemelen çılgınca olmayan yuvarlak bir soru sorulana kadar beklemelisiniz **{0}**!",
         "pt": "Você provavelmente deve esperar até que uma pergunta redonda não insana seja feita, **{0}**!",
         "fr": "Vous devriez probablement attendre qu'une question ronde non insensée soit posée, **{0}**!",
-        "es": "Probablemente deberías esperar hasta que se te haga una pregunta redonda que no sea una locura, **{0}**!"
+        "es": "Probablemente deberías esperar hasta que se te haga una pregunta redonda que no sea una locura, **{0}**!",
+        "de": "Sie sollten wahrscheinlich warten, bis eine nicht verrückte runde Frage gestellt wird: **{0}**!",
+        "hi": "जब तक एक गैर-पागल दौर सवाल पूछा जा रहा है, तब तक आपको इंतजार करना चाहिए, **{0}**!"
     },
     "NOROUND": {
         "en": "No trivia round is running here, **{0}**!",
         "tr": "Burada trivia turu koşmuyor **{0}**!",
         "pt": "Nenhuma rodada de curiosidades está acontecendo aqui, **{0}**!",
         "fr": "Aucun jeu-questionnaire n'est en cours ici, **{0}**!",
-        "es": "¡Aquí no se está ejecutando ninguna ronda de preguntas, **{0}**!"
+        "es": "¡Aquí no se está ejecutando ninguna ronda de preguntas, **{0}**!",
+        "de": "Hier läuft keine Trivia-Runde, **{0}**!",
+        "hi": "कोई ट्रिविया दौर यहाँ नहीं चल रहा है, **{0}**!"
     },
     "ACTIVEGAMES": {
         "en": "Active Games",
         "tr": "Aktif Oyunlar",
         "pt": "Jogos ativos",
         "fr": "Jeux actifs",
-        "es": "Juegos activos"
+        "es": "Juegos activos",
+        "de": "Aktive Spiele",
+        "hi": "सक्रिय खेल"
     },
     "TOTALSERVERS": {
         "en": "Total Servers",
         "tr": "Toplam Sunucu",
         "pt": "Total de Servidores",
         "fr": "Total de serveurs",
-        "es": "Total de servidores"
+        "es": "Total de servidores",
+        "de": "Gesamtserver",
+        "hi": "कुल नौकर"
     },
     "CONNSINCE": {
         "en": "Connected Since",
         "tr": "O zamandan beri bağlı",
         "pt": "Conectado desde",
         "fr": "Connecté depuis",
-        "es": "Conectado desde"
+        "es": "Conectado desde",
+        "de": "Verbunden seit",
+        "hi": "कब से जुड़ा हुआ है"
     },
     "ONLINEUSERS": {
         "en": "Online Users",
         "tr": "Çevrimiçi Kullanıcılar",
         "pt": "Usuários online",
         "fr": "Personnes en ligne",
-        "es": "Usuarios en línea"
+        "es": "Usuarios en línea",
+        "de": "Online Benutzer",
+        "hi": "ऑनलाइन उपयोगकर्ता"
     },
     "UPTIME": {
         "en": "Uptime",
         "tr": "Çalışma süresi",
         "pt": "Tempo de atividade",
         "fr": "Disponibilité",
-        "es": "Tiempo de actividad"
+        "es": "Tiempo de actividad",
+        "de": "Betriebszeit",
+        "hi": "अपटाइम"
     },
     "SHARDS": {
         "en": "Shards",
         "tr": "Kırıklar",
         "pt": "Fragmentos",
         "fr": "Éclats",
-        "es": "Fragmentos"
+        "es": "Fragmentos",
+        "de": "Scherben",
+        "hi": "शार्ड्स"
     },
     "MEMBERINTENT": {
         "en": "Member Intent",
         "tr": "Üye Niyeti",
         "pt": "Intenção do membro",
         "fr": "Intention du membre",
-        "es": "Intención del miembro"
+        "es": "Intención del miembro",
+        "de": "Absicht des Mitglieds",
+        "hi": "सदस्य आशय"
     },
     "TESTMODE": {
         "en": "Test Mode",
         "tr": "Test modu",
         "pt": "Modo de teste",
         "fr": "Mode test",
-        "es": "Modo de prueba"
+        "es": "Modo de prueba",
+        "de": "Testmodus",
+        "hi": "परीक्षण विधि"
     },
     "DEVMODE": {
         "en": "Developer Mode",
         "tr": "Geliştirici modu",
         "pt": "Modo de desenvolvedor",
         "fr": "Mode développeur",
-        "es": "Modo desarrollador"
+        "es": "Modo desarrollador",
+        "de": "Entwicklermodus",
+        "hi": "डेवलपर मोड"
     },
     "MYPREFIX": {
         "en": "Prefix",
         "tr": "Önek",
         "pt": "Prefixo",
         "fr": "Préfixe",
-        "es": "Prefijo"
+        "es": "Prefijo",
+        "de": "Präfix",
+        "hi": "उपसर्ग"
     },
     "BOTVER": {
         "en": "Bot Version",
         "tr": "Bot Sürümü",
         "pt": "Versão do bot",
         "fr": "Version Bot",
-        "es": "Versión del bot"
+        "es": "Versión del bot",
+        "de": "Bot-Version",
+        "hi": "बॉट संस्करण"
     },
     "LIBVER": {
         "en": "Library Version",
         "tr": "Kitaplık Sürümü",
         "pt": "Versão da Biblioteca",
         "fr": "Version librairie",
-        "es": "Versión de la biblioteca"
+        "es": "Versión de la biblioteca",
+        "de": "Bibliotheksversion",
+        "hi": "लाइब्रेरी संस्करण"
     },
     "INFO": {
         "en": "Information",
         "tr": "Bilgi",
         "pt": "Em formação",
         "fr": "Information",
-        "es": "Información"
+        "es": "Información",
+        "de": "Information",
+        "hi": "जानकारी"
     },
     "TICKYES": {
         "en": ":white_check_mark: Yes",
         "tr": ":white_check_mark: Evet",
         "pt": ":white_check_mark: Sim",
         "fr": ":white_check_mark: Oui",
-        "es": ":white_check_mark: Sí"
+        "es": ":white_check_mark: Sí",
+        "de": ":white_check_mark: Ja",
+        "hi": ":white_check_mark: हाँ"
     },
     "CROSSNO": {
         "en": "<:wc_rs:667695516737470494> No",
         "tr": "<:wc_rs:667695516737470494> Hayır",
         "pt": "<:wc_rs:667695516737470494> Não",
         "fr": "<:wc_rs:667695516737470494> Non",
-        "es": "<:wc_rs:667695516737470494> No"
+        "es": "<:wc_rs:667695516737470494> No",
+        "de": "<:wc_rs:667695516737470494> Nr",
+        "hi": "<:wc_rs:667695516737470494> नहीं"
     },
     "YAYPREMIUM": {
         "en": ":star: This server has TriviaBot Premium! They rock! :star:",
         "tr": ":star: Bu sunucuda TriviaBot Premium var! Harikalar! :star:",
         "pt": ":star: Este servidor tem TriviaBot Premium! Eles são demais! :star:",
         "fr": ":star: Ce serveur a TriviaBot Premium! Ils sont géniaux! :star:",
-        "es": ":star: ¡Este servidor tiene TriviaBot Premium! ¡Rockean! :star:"
+        "es": ":star: ¡Este servidor tiene TriviaBot Premium! ¡Rockean! :star:",
+        "de": ":star: Dieser Server hat TriviaBot Premium! Sie rocken! :star:",
+        "hi": ":star: इस सर्वर में सामान्य ज्ञान प्रीमियम है! वे रॉक! :star:"
     },
     "JOINED": {
         "en": "You have successfully joined the team \"**{0}**\", **{1}**",
         "tr": "\"**{0}**\", **{1}** ekibine başarıyla katıldınız",
         "pt": "Você entrou com sucesso na equipe \"**{0}**\", **{1}**",
         "fr": "Vous avez rejoint l'équipe avec succès \"**{0}**\", **{1}**",
-        "es": "Te has unido con éxito al equipo \"**{0}**\", **{1}**"
+        "es": "Te has unido con éxito al equipo \"**{0}**\", **{1}**",
+        "de": "Sie sind dem Team \"**{0}**\", **{1}** erfolgreich beigetreten",
+        "hi": "आप सफलतापूर्वक \"**{0}**\", **{1}** टीम में शामिल हो गए हैं"
     },
     "CALLFORBACKUP": {
         "en": "Call for backup!",
         "tr": "Destek çağırın!",
         "pt": "Peça reforços!",
         "fr": "Appel à la sauvegarde!",
-        "es": "¡Pedir refuerzos!"
+        "es": "¡Pedir refuerzos!",
+        "de": "Fordern Sie ein Backup an!",
+        "hi": "बैकअप के लिए कॉल करें!"
     },
     "CANTJOIN": {
         "en": "I cannot bring about world peace, make you a sandwich, or join that team, **{0}**",
         "tr": "Dünya barışını sağlayamam, sana sandviç yapamam ya da o takıma katılamam **{0}**",
         "pt": "Não posso trazer a paz mundial, fazer um sanduíche para você ou me juntar a essa equipe, **{0}**",
         "fr": "Je ne peux pas apporter la paix dans le monde, vous préparer un sandwich ou rejoindre cette équipe, **{0}**",
-        "es": "No puedo lograr la paz mundial, hacerte un sándwich o unirme a ese equipo, **{0}**"
+        "es": "No puedo lograr la paz mundial, hacerte un sándwich o unirme a ese equipo, **{0}**",
+        "de": "Ich kann keinen Weltfrieden herbeiführen, dir kein Sandwich machen oder mich diesem Team anschließen, **{0}**",
+        "hi": "मैं विश्व शांति नहीं ला सकता, आप एक सैंडविच बना सकते हैं, या उस टीम में शामिल हो सकते हैं, **{0}**"
     },
     "CREATED": {
         "en": "You have successfully **created** and joined the team \"**{0}**\", **{1}**",
         "tr": "Başarıyla **oluşturdunuz** ve \"**{0}**\", **{1}** ekibine katıldınız",
         "pt": "Você **criou** com sucesso e se juntou à equipe \"**{0}**\", **{1}**",
         "fr": "Vous avez **créé** et rejoint l'équipe avec succès \"**{0}**\", **{1}**",
-        "es": "Has **creado** y te has unido al equipo \"**{0}**\", **{1}**"
+        "es": "Has **creado** y te has unido al equipo \"**{0}**\", **{1}**",
+        "de": "Sie haben erfolgreich ** erstellt ** und sind dem Team \"**{0}**\", **{1}** beigetreten",
+        "hi": "आपने सफलतापूर्वक ** बनाया ** और टीम में शामिल हो गए \"**{0}**\", **{1}**"
     },
     "CANTCREATE": {
         "en": "I couldn't create that team, **{0}**...",
         "tr": "O takımı oluşturamadım, **{0}**...",
         "pt": "Não consegui criar esse time, **{0}**...",
         "fr": "Je n'ai pas pu créer cette équipe, **{0}**...",
-        "es": "No pude crear ese equipo, **{0}** ..."
+        "es": "No pude crear ese equipo, **{0}** ...",
+        "de": "Ich konnte dieses Team nicht erstellen, **{0}** ...",
+        "hi": "मैं वह टीम नहीं बना सका, **{0}** ..."
     },
     "ALREADYMEMBER": {
         "en": "**{0}**, you are already a member of team \"**{1}**\"!",
         "tr": "**{0}**, zaten \"**{1}**\" ekibinin üyesisiniz!",
         "pt": "**{0}**, você já é membro da equipe \"**{1}**\"!",
         "fr": "**{0}**, vous êtes déjà membre de l'équipe \"**{1}**\"!",
-        "es": "**{0}**, ya eres miembro del equipo \"**{1}**\"."
+        "es": "**{0}**, ya eres miembro del equipo \"**{1}**\".",
+        "de": "**{0}**, du bist bereits Mitglied im Team \"**{1}**\"!\n******",
+        "hi": "**{0}**, आप पहले से ही \"**{1}**\" टीम के सदस्य हैं!\n******"
     },
     "ZELDAREFERENCE": {
         "en": "It's unsafe to go alone...",
         "tr": "Yalnız gitmek güvensiz...",
         "pt": "Não é seguro ir sozinho...",
         "fr": "Il n'est pas sûr de partir seul...",
-        "es": "No es seguro ir solo ..."
+        "es": "No es seguro ir solo ...",
+        "de": "Es ist unsicher, alleine zu gehen ...",
+        "hi": "अकेले जाना असुरक्षित है ..."
     },
     "YOULONER": {
         "en": "**{0}**, you aren't a member of any team! Use **{1}join** to join a team!",
         "tr": "**{0}**, herhangi bir takımın üyesi değilsiniz! Bir takıma katılmak için **{1}join** seçeneğini kullanın!",
         "pt": "**{0}**, você não é membro de nenhuma equipe! Use **{1}join** para entrar em uma equipe!",
         "fr": "**{0}**, vous n'êtes membre d'aucune équipe! Utilisez **{1}join** pour rejoindre une équipe!",
-        "es": "**{0}**, ¡no eres miembro de ningún equipo! Utilice ** {1}unirse** para unirse a un equipo."
+        "es": "**{0}**, ¡no eres miembro de ningún equipo! Utilice ** {1}join** para unirse a un equipo.",
+        "de": "**{0}**, du bist kein Mitglied eines Teams! Verwenden Sie **{1}join**, um einem Team beizutreten!",
+        "hi": "**{0}**, आप किसी भी टीम के सदस्य नहीं हैं! एक टीम में शामिल होने के लिए ** {1}join** का उपयोग करें!"
     },
     "LEFTTEAM": {
         "en": "**{0}** has left team **{1}**",
         "tr": "**{0}** takımdan ayrıldı **{1}**",
         "pt": "**{0}** deixou a equipe **{1}**",
         "fr": "**{0}** a quitté l'équipe **{1}**",
-        "es": "**{0}** ha dejado el equipo **{1}**"
+        "es": "**{0}** ha dejado el equipo **{1}**",
+        "de": "**{0}** hat das Team verlassen **{1}**",
+        "hi": "**{0}** ने टीम छोड़ दी है **{1}**"
     },
     "COMEBACK": {
         "en": "Come back, we'll miss you! :cry:",
         "tr": "Geri dön, seni özleyeceğiz! :cry:",
         "pt": "Volte, vamos sentir sua falta! :cry:",
         "fr": "Revenez, vous nous manquerez! :cry:",
-        "es": "¡Vuelve, te extrañaremos! :cry:"
+        "es": "¡Vuelve, te extrañaremos! :cry:",
+        "de": "Komm zurück, wir werden dich vermissen! :cry:",
+        "hi": "वापस आओ, हम तुम्हें याद करेंगे! :cry:"
     },
     "HERPDERP": {
         "en": "<@{0}>, herp derp, theres a malformed help file. Please contact a developer on the official support server: https:\/\/discord.gg\/brainbox",
         "tr": "<@{0}>, herp derp, bozuk bir yardım dosyası var. Lütfen resmi destek sunucusundaki bir geliştiriciyle iletişime geçin: https:\/\/discord.gg\/brainbox",
         "pt": "<@{0}>, herp derp, há um arquivo de ajuda malformado. Entre em contato com um desenvolvedor no servidor de suporte oficial: https:\/\/discord.gg\/brainbox",
         "fr": "<@{0}>, herp derp, il y a un fichier d'aide mal formé. Veuillez contacter un développeur sur le serveur de support officiel: https:\/\/discord.gg\/brainbox",
-        "es": "<@ {0}>, herp derp, hay un archivo de ayuda con formato incorrecto. Póngase en contacto con un desarrollador en el servidor de soporte oficial: https:\/\/discord.gg\/brainbox"
+        "es": "<@{0}>, herp derp, hay un archivo de ayuda con formato incorrecto. Póngase en contacto con un desarrollador en el servidor de soporte oficial: https:\/\/discord.gg\/brainbox",
+        "de": "<@{0}>, herp derp, es gibt eine fehlerhafte Hilfedatei. Bitte wenden Sie sich an einen Entwickler auf dem offiziellen Support-Server: https:\/\/discord.gg\/brainbox",
+        "hi": "<@{0}>, हर्प डीआरपी, एक विकृत मदद फ़ाइल का उपयोग करता है। कृपया आधिकारिक सहायता सर्वर पर एक डेवलपर से संपर्क करें: https:\/\/discord.gg\/brainbox"
     },
     "WOAHTHERE": {
         "en": "Woah there!",
         "tr": "Woah orada!",
         "pt": "Uau!",
         "fr": "Woah là-bas!",
-        "es": "¡Woah ahí!"
+        "es": "¡Woah ahí!",
+        "de": "Woah da!",
+        "hi": "वहाँ वाह!"
     },
     "RATELIMITED": {
         "en": "Please wait {0} seconds before trying the **{1}** command again!",
         "tr": "**{1}** komutunu tekrar denemeden önce lütfen {0} saniye bekleyin!",
         "pt": "Aguarde {0} segundos antes de tentar o comando ** {1} ** novamente!",
         "fr": "Veuillez patienter {0} secondes avant de réessayer la commande **{1}**!",
-        "es": "Espere {0} segundos antes de volver a intentar el comando **{1}**."
+        "es": "Espere {0} segundos antes de volver a intentar el comando **{1}**.",
+        "de": "Bitte warten Sie {0} Sekunden, bevor Sie den Befehl **{1}** erneut versuchen!",
+        "hi": "**{1}** फिर से आदेश देने से पहले कृपया {0} सेकंड प्रतीक्षा करें!"
     },
     "INVITEME": {
         "en": "Invite TriviaBot",
         "tr": "TriviaBot'u Davet Et",
         "pt": "Convide TriviaBot",
         "fr": "Inviter TriviaBot",
-        "es": "Invitar a TriviaBot"
+        "es": "Invitar a TriviaBot",
+        "de": "TriviaBot einladen",
+        "hi": "सामान्य ज्ञान आमंत्रित करें"
     },
     "INVITEBLURB": {
         "en": "Does your server need some entertainment?\n\nTo invite TriviaBot to your own server, [click here](https:\/\/discord.com\/oauth2\/authorize?client_id=715906723982082139&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code)\n<:blank:667278047006949386>",
         "tr": "Sunucunuzun biraz eğlenceye ihtiyacı var mı?\n\nTriviaBot'u kendi sunucunuza davet etmek için, [burayı tıklayın](https:\/\/discord.com\/oauth2\/authorize?client_id=715906723982082139&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2Ftriviabot.co.uk%2F)\n<:blank:667278047006949386>",
         "pt": "Seu servidor precisa de algum entretenimento?\n\nPara convidar o TriviaBot para seu próprio servidor, [clique aqui] (https:\/\/discord.com\/oauth2\/authorize?client_id=715906723982082139&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type_type_type_type )\n<:blank:667278047006949386>",
         "fr": "Votre serveur a-t-il besoin de divertissement?\n\nPour inviter TriviaBot sur votre propre serveur, [cliquez ici](https:\/\/discord.com\/oauth2\/authorize?client_id=715906723982082139&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code)\n<:blank:667278047006949386>",
-        "es": "¿Su servidor necesita algo de entretenimiento?\n\nPara invitar a TriviaBot a su propio servidor, [haga clic aquí](https:\/\/discord.com\/oauth2\/authorize?client_id=715906723982082139&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code)\n<:blank:667278047006949386>"
+        "es": "¿Su servidor necesita algo de entretenimiento?\n\nPara invitar a TriviaBot a su propio servidor, [haga clic aquí](https:\/\/discord.com\/oauth2\/authorize?client_id=715906723982082139&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code)\n<:blank:667278047006949386>",
+        "de": "Benötigt Ihr Server Unterhaltung?\n\nUm TriviaBot auf Ihren eigenen Server einzuladen, [klicken Sie hier](https:\/\/discord.com\/oauth2\/authorize?client_id=715906723982082139&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code)\n<:blank:667278047006949386>",
+        "hi": "क्या आपके सर्वर को कुछ मनोरंजन की आवश्यकता है?\n\nअपने स्वयं के सर्वर पर ट्रिवियाबोट को आमंत्रित करने के लिए, [यहां क्लिक करें](https:\/\/discord.com\/oauth2\/authorize?client_id=715906723982082139&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code)\n<:blank:667278047006949386>"
     },
     "ONLINE": {
         "en": "Online",
         "tr": "İnternet üzerinden",
         "pt": "Conectados",
         "fr": "En ligne",
-        "es": "En línea"
+        "es": "En línea",
+        "de": "Online",
+        "hi": "ऑनलाइन"
     },
     "OFFLINE": {
         "en": "Offline",
         "tr": "Çevrimdışı",
         "pt": "Desligada",
         "fr": "Hors ligne",
-        "es": "Desconectado"
+        "es": "Desconectado",
+        "de": "Offline",
+        "hi": "ऑफलाइन"
     },
     "SHARD": {
         "en": "Shard",
         "tr": "Kırık",
         "pt": "Fragmento",
         "fr": "Éclat",
-        "es": "Casco"
+        "es": "Casco",
+        "de": "Scherbe"
     },
     "PONG": {
         "en": "Pong!",
         "tr": "Pong!",
         "pt": "Pong!",
         "fr": "Pong!",
-        "es": "¡Apestar!"
+        "es": "¡Apestar!",
+        "de": "Pong!",
+        "hi": "पोंग!"
     },
     "DISCPING": {
         "en": "Discord API",
         "tr": "Discord API",
         "pt": "API Discord",
         "fr": "API Discord",
-        "es": "API de Discord"
+        "es": "API de Discord",
+        "de": "Discord API",
+        "hi": "एपीआई त्यागें"
     },
     "APIPING": {
         "en": "TriviaBot API",
         "tr": "TriviaBot API",
         "pt": "API TriviaBot",
         "fr": "API TriviaBot",
-        "es": "API de TriviaBot"
+        "es": "API de TriviaBot",
+        "de": "TriviaBot API",
+        "hi": "सामान्य ज्ञान एपीआई"
     },
     "DBPING": {
         "en": "Database",
         "tr": "Veri tabanı",
         "pt": "Base de dados",
         "fr": "Base de données",
-        "es": "Base de datos"
+        "es": "Base de datos",
+        "de": "Datenbank",
+        "hi": "डेटाबेस"
     },
     "OKPING": {
         "en": "These figures are within expected ranges!",
         "tr": "Bu rakamlar beklenen aralıklar dahilinde!",
         "pt": "Esses números estão dentro dos intervalos esperados!",
         "fr": "Ces chiffres sont dans les fourchettes attendues!",
-	"es": "¡Estas cifras están dentro de los rangos esperados!"
+        "es": "¡Estas cifras están dentro de los rangos esperados!",
+        "de": "Diese Zahlen liegen innerhalb der erwarteten Bereiche!",
+        "hi": "ये आंकड़े अपेक्षित सीमाओं के भीतर हैं!"
     },
     "BADPING": {
         "en": "Something odd is happening. Please remain calm!",
         "tr": "Garip bir şeyler oluyor. Lütfen sakin olun!",
         "pt": "Algo estranho está acontecendo. Por favor, fique calmo!",
         "fr": "Il se passe quelque chose d'étrange. Restez calme!",
-        "es": "Algo extraño está sucediendo. ¡Por favor, mantén la calma!"
+        "es": "Algo extraño está sucediendo. ¡Por favor, mantén la calma!",
+        "de": "Es passiert etwas Seltsames. Bitte bleiben Sie ruhig!",
+        "hi": "कुछ अजीब हो रहा है। कृपया शांत रहें!"
     },
     "TIME2": {
         "en": "%d hours, %d mins",
         "tr": "%d saat,%d dakika",
         "pt": "%d horas, %d minutos",
         "fr": "%d heures, %d min",
-        "es": "% d horas,% d minutos"
+        "es": "%d horas,%d minutos",
+        "de": "%d Stunden,%d Minuten",
+        "hi": "%d घंटे, %d मिनट"
     },
     "TIME3": {
         "en": "%d days, %d hours, %d mins",
         "tr": "%d gün, %d saat, %d dakika",
         "pt": "%d dias, %d horas, %d minutos",
         "fr": "%d jours, %d heures, %d min",
-        "es": "% d días,% d horas,% d minutos"
+        "es": "%d días,%d horas,%d minutos",
+        "de": "%d Tage,%d Stunden,%d Minuten",
+        "hi": "%d दिन,% d घंटे, %d मिनट"
     },
     "PRIVACY": {
         "en": "Team Privacy",
         "tr": "Takım Gizliliği",
         "pt": "Privacidade da equipe",
         "fr": "Confidentialité de l'équipe",
-        "es": "Privacidad del equipo"
+        "es": "Privacidad del equipo",
+        "de": "Team Datenschutz",
+        "hi": "टीम की गोपनीयता"
     },
     "PRV_ON": {
         "en": "Your Team Privacy setting is set to: **ON**.\n\nYou will show as ``[ Private Member ]`` in team member lists.",
         "tr": "Takım Gizliliği ayarınız: **AÇIK**.\n\nTakım üye listelerinde ``[Private Member]`` olarak görüneceksiniz.",
         "pt": "A configuração de privacidade da equipe está definida como: **ON**.\n\nVocê aparecerá como ``[Private Member]`` nas listas de membros da equipe.",
         "fr": "Le paramètre de confidentialité de votre équipe est défini sur: **ACTIVÉ**.\n\nVous s'afficherez comme ``[Private Member]`` dans les listes des membres de l'équipe.",
-        "es": "La configuración de privacidad de su equipo está establecida en: **ACTIVADO**.\n\nAparecerá como `` [Miembro privado] '' en las listas de miembros del equipo."
+        "es": "La configuración de privacidad de su equipo está establecida en: **ACTIVADO**.\n\nAparecerá como ``[Private Member]`` en las listas de miembros del equipo.",
+        "de": "Ihre Team-Datenschutzeinstellung ist auf **EIN** eingestellt.\n\nSie werden in den Teammitgliedslisten als ``[Private Member]`` angezeigt.",
+        "hi": "आपकी टीम गोपनीयता सेटिंग पर सेट है: **ऑन​​** ।\n\nआप टीम के सदस्य सूचियों में  ``[Private Member]`` के रूप में दिखाएंगे।"
     },
     "PRV_OFF": {
         "en": "Your Team Privacy setting is set to: **OFF**.\n\nYou will show as your username in team member lists.",
         "tr": "Takım Gizliliği ayarınız: **KAPALI**.\n\nTakım üye listelerinde kullanıcı adınız olarak gösterileceksiniz.",
         "pt": "A configuração de privacidade da sua equipe está definida como: **OFF**.\n\nVocê será mostrado como seu nome de usuário nas listas de membros da equipe.",
         "fr": "Votre paramètre de confidentialité de l'équipe est défini sur: **OFF**.\n\nVous s'afficherez comme votre nom d'utilisateur dans les listes des membres de l'équipe.",
-        "es": "La configuración de privacidad de su equipo está establecida en: **APAGADO**.\n\nAparecerá como su nombre de usuario en las listas de miembros del equipo."
+        "es": "La configuración de privacidad de su equipo está establecida en: **APAGADO**.\n\nAparecerá como su nombre de usuario en las listas de miembros del equipo.",
+        "de": "Ihre Team-Datenschutzeinstellung ist auf **AUS** eingestellt.\n\nSie werden als Benutzername in den Teammitgliedslisten angezeigt.",
+        "hi": "आपकी टीम गोपनीयता सेटिंग पर सेट है: **।**\n\nआप टीम सदस्य सूची में अपने उपयोगकर्ता नाम के रूप में दिखाएंगे।"
     },
     "NOTQUITERIGHT": {
         "en": "That's not quite right...",
         "tr": "Bu pek doğru değil...",
         "pt": "Isto não está completamente correto...",
         "fr": "Ce n'est pas tout à fait vrai...",
-        "es": "Eso no es del todo bien..."
+        "es": "Eso no es del todo bien...",
+        "de": "Das ist nicht ganz richtig...",
+        "hi": "वह बात तो ठीक नहीं है..."
     },
     "NOSUCHTEAM": {
         "en": "There is no team called ``%s``",
         "tr": "``%s`` adında bir takım yok",
         "pt": "Não há equipe chamada ``%s``",
         "fr": "Il n'y a pas d'équipe appelée ``%s``",
-        "es": "No hay un equipo llamado ``%s``"
+        "es": "No hay un equipo llamado ``%s``",
+        "de": "Es gibt kein Team namens ``%s``",
+        "hi": "कोई टीम नहीं है जिसे ``% s`` कहा जाता है"
     },
     "TINFO": {
         "en": "Team Information",
         "tr": "Takım Bilgileri",
         "pt": "Informação da Equipe",
         "fr": "Informations sur l'équipe",
-        "es": "Información del equipo"
+        "es": "Información del equipo",
+        "de": "Teaminformationen",
+        "hi": "टीम की जानकारी"
     },
     "NAME": {
         "en": "Name",
         "tr": "İsim",
         "pt": "Nome",
         "fr": "Nom",
-        "es": "Nombre"
+        "es": "Nombre",
+        "de": "Name",
+        "hi": "नाम"
     },
     "FOUNDER": {
         "en": "Founder",
         "tr": "Kurucu",
         "pt": "Fundador",
         "fr": "Fondateur",
-        "es": "Fundador"
+        "es": "Fundador",
+        "de": "Gründer",
+        "hi": "संस्थापक"
     },
     "MEMBERCOUNT": {
         "en": "Member Count",
         "tr": "Üye Sayısı",
         "pt": "Contagem de membro",
         "fr": "Nombre de membres",
-        "es": "cuenta de miembro"
+        "es": "cuenta de miembro",
+        "de": "Mitgliederzahl",
+        "hi": "सदस्य गणना"
     },
     "POINTSTOTAL": {
         "en": "Points Total",
         "tr": "Toplam Puan",
         "pt": "Total de pontos",
         "fr": "Total de points",
-        "es": "Total de puntos"
+        "es": "Total de puntos",
+        "de": "Gesamtpunktzahl",
+        "hi": "अंक कुल"
     },
     "GLOBALRANK": {
         "en": "Global Rank",
         "tr": "Küresel Sıralama",
         "pt": "Rank global",
         "fr": "Classement mondial",
-        "es": "Posición Mundial"
+        "es": "Posición Mundial",
+        "de": "Globaler Rang",
+        "hi": "वैश्विक रैंक"
     },
     "DATEFOUNDED": {
         "en": "Date Founded",
         "tr": "Tarih bulundu",
         "pt": "Data de fundação",
         "fr": "Date de création",
-        "es": "Fecha de fundación"
+        "es": "Fecha de fundación",
+        "de": "Datum gefunden",
+        "hi": "दिनांक स्थापित"
     },
     "TEAMHUB": {
         "en": "[View Team Hub Page](https:\/\/triviabot.co.uk\/team\/%s)",
         "tr": "[Ekip Merkezi Sayfasını Görüntüle](https:\/\/triviabot.co.uk\/team\/%s)",
         "pt": "[View Team Hub Page](https:\/\/triviabot.co.uk\/team\/%s)",
         "fr": "[Afficher la page du hub d'équipe](https:\/\/triviabot.co.uk\/team\/%s)",
-        "es": "[Ver página de Team Hub](https:\/\/triviabot.co.uk\/team\/%s)"
+        "es": "[Ver página de Team Hub](https:\/\/triviabot.co.uk\/team\/%s)",
+        "de": "[Team Hub-Seite anzeigen](https:\/\/triviabot.co.uk\/team\/%s)",
+        "hi": "[टीम हब पेज देखें](https:\/\/triviabot.co.uk\/team\/%s)"
     },
     "TOP10TEAMS": {
         "en": "Top Ten Teams",
         "tr": "En İyi On Takım",
         "pt": "Dez melhores equipes",
         "fr": "Les dix meilleures équipes",
-        "es": "Diez mejores equipos"
+        "es": "Diez mejores equipos",
+        "de": "Top Ten Teams",
+        "hi": "शीर्ष दस टीमें"
     },
     "MONTHLYNITRO": {
         "en": "Monthly Nitro Leaderboard",
         "tr": "Aylık Nitro Liderlik Tablosu",
         "pt": "Tabela de classificação mensal do Nitro",
         "fr": "Classement mensuel Nitro",
-        "es": "Tabla de clasificación mensual de Nitro"
+        "es": "Tabla de clasificación mensual de Nitro",
+        "de": "Monatliche Nitro-Rangliste",
+        "hi": "मासिक नाइट्रो लीडरबोर्ड"
     },
     "LANGCHANGE": {
         "en": "TriviaBot's language has been set to English (UK)",
         "tr": "TriviaBot'un dili Türkçe olarak ayarlandı",
         "pt": "O idioma do TriviaBot foi definido como português",
         "fr": "La langue de TriviaBot a été définie sur le français",
-        "es": "El idioma de TriviaBot se ha establecido en Español"
+        "es": "El idioma de TriviaBot se ha establecido en Español",
+        "de": "Die Sprache von TriviaBot wurde auf Deutsch eingestellt.",
+        "hi": "ट्रिवियाबोट की भाषा हिंदी के लिए निर्धारित की गई है"
     },
     "SUPPORTEDLANGS": {
         "en": "The supported languages for TriviaBot are:",
         "tr": "TriviaBot için desteklenen diller şunlardır:",
         "pt": "Os idiomas suportados para TriviaBot são:",
         "fr": "Les langues prises en charge pour TriviaBot sont:",
-        "es": "Los idiomas admitidos para TriviaBot son:"
+        "es": "Los idiomas admitidos para TriviaBot son:",
+        "de": "Die unterstützten Sprachen für TriviaBot sind:",
+        "hi": "सामान्य ज्ञान के लिए समर्थित भाषाएँ हैं:"
     },
     "HOWTOCHANGE": {
         "en": "Use ``!language <code>`` (e.g. ``!language en``) to change the bot's language",
         "tr": "Botun dilini değiştirmek için ``!language <kodu>`` (örneğin ``!language en``) kullanın",
         "pt": "Use ``!language <código>`` (por exemplo, ``!language en``) para alterar o idioma do bot",
         "fr": "Utilisez ``!language <code>`` (par exemple ``!language en``) pour changer la langue du bot",
-        "es": "Utilice ``!language <code>`` (por ejemplo, ``! Language en``) para cambiar el idioma del bot"
+        "es": "Utilice ``!language <code>`` (por ejemplo, ``!language en``) para cambiar el idioma del bot",
+        "de": "Verwenden Sie ``!language <code> `` (z. B. ``!language en``), um die Sprache des Bots zu ändern",
+        "hi": "बॉट की भाषा बदलने के लिए ``!language <कोड> `` (जैसे ``!language en``) का उपयोग करें"
     },
     "PREFIXSET": {
         "en": "The bot's prefix is now: ``%s``",
         "tr": "Botun öneki artık: ``%s``",
         "pt": "O prefixo do bot agora é: ``%s``",
         "fr": "Le préfixe du bot est maintenant: ``%s``",
-        "es": "El prefijo del bot es ahora: ``%s``"
+        "es": "El prefijo del bot es ahora: ``%s``",
+        "de": "Das Präfix des Bots lautet jetzt: ``%s``",
+        "hi": "बॉट का उपसर्ग अब: ``%s`` है"
     },
     "BADLANG": {
         "en": "No such language. Use ``!language`` without a parameter to see the valid language list.",
         "tr": "Böyle bir dil yok. Geçerli dil listesini görmek için parametresiz ``!language`` kullanın.",
         "pt": "Não existe tal linguagem. Use ``!language`` sem um parâmetro para ver a lista de idiomas válidos.",
         "fr": "Pas de tel langage. Utilisez ``!language`` sans paramètre pour voir la liste des langues valides.",
-        "es": "No existe ese lenguaje. Utilice ``!language`` sin un parámetro para ver la lista de idiomas válida."
+        "es": "No existe ese lenguaje. Utilice ``!language`` sin un parámetro para ver la lista de idiomas válida.",
+        "de": "Keine solche Sprache. Verwenden Sie ``!language`` ohne Parameter, um die gültige Sprachliste anzuzeigen.",
+        "hi": "ऐसी कोई भाषा नहीं। मान्य भाषा सूची देखने के लिए पैरामीटर के बिना ``!language`` का उपयोग करें।"
     },
     "MODONLY": {
         "en": "Only roles specified in the dashboard, or the server owner, can execute this command.",
         "tr": "Yalnızca kontrol panelinde belirtilen roller veya sunucu sahibi bu komutu çalıştırabilir.",
         "pt": "Somente funções especificadas no painel, ou o proprietário do servidor, podem executar este comando.",
         "fr": "Seuls les rôles spécifiés dans le tableau de bord, ou le propriétaire du serveur, peuvent exécuter cette commande.",
-        "es": "Solo los roles especificados en el panel, o el propietario del servidor, pueden ejecutar este comando."
+        "es": "Solo los roles especificados en el panel, o el propietario del servidor, pueden ejecutar este comando.",
+        "de": "Nur im Dashboard angegebene Rollen oder der Serverbesitzer können diesen Befehl ausführen.",
+        "hi": "केवल डैशबोर्ड या सर्वर के मालिक में निर्दिष्ट भूमिकाएँ इस आदेश को निष्पादित कर सकती हैं।"
     }
 }
