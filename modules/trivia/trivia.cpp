@@ -769,6 +769,18 @@ void TriviaModule::CheckForQueuedStarts()
 	}
 }
 
+void TriviaModule::CacheUser(int64_t user, int64_t channel_id)
+{
+	aegis::channel* c = bot->core.find_channel(channel_id);
+	aegis::user* _user = bot->core.find_user(user);
+	if (_user && c) {
+		aegis::user::guild_info& gi = _user->get_guild_info(c->get_guild().get_id());
+		cache_user(_user, &c->get_guild(), &gi);
+	} else {
+		bot->core.log->debug("Command with no user!");
+	}
+}
+
 bool TriviaModule::OnMessage(const modevent::message_create &message, const std::string& clean_message, bool mentioned, const std::vector<std::string> &stringmentions)
 {
 	std::vector<std::string> param;
@@ -959,14 +971,6 @@ bool TriviaModule::OnMessage(const modevent::message_create &message, const std:
 
 			bot->core.log->info("CMD (USER={}, GUILD={}): <{}> {}", user.get_id().get(), c->get_guild().get_id().get(), user.get_username(), clean_message);
 
-			aegis::user* _user = bot->core.find_user(user.get_id().get());
-			if (_user) {
-				aegis::user::guild_info& gi = _user->get_guild_info(c->get_guild().get_id());
-				cache_user(_user, &c->get_guild(), &gi);
-			} else {
-				bot->core.log->debug("Command with no user!");
-			}
-
 			if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == c->get_guild().get_id()) {
 
 				std::stringstream tokens(command);
@@ -1107,6 +1111,7 @@ bool TriviaModule::OnMessage(const modevent::message_create &message, const std:
 								EmbedWithFields(fmt::format(_("NEWROUND", settings), (quickfire ? "**QUICKFIRE** " : ""), (resumed ? _("RESUMED", settings) : _("STARTED", settings)), (resumed ? _("ABOTADMIN", settings) : user.get_username())), {{_("QUESTION", settings), fmt::format("{}", questions), false}, {_("GETREADY", settings), _("FIRSTCOMING", settings), false}, {_("HOWPLAY", settings), _("INSTRUCTIONS", settings)}}, c->get_id().get());
 								state->timer = new std::thread(&state_t::tick, state);
 
+								CacheUser(user.get_id().get(), channel_id);
 								log_game_start(state->guild_id, state->channel_id, questions, quickfire, c->get_name(), user.get_id().get(), state->shuffle_list);
 							} else {
 								state->terminating = true;
@@ -1138,6 +1143,7 @@ bool TriviaModule::OnMessage(const modevent::message_create &message, const std:
 							}
 							state = nullptr;
 						}
+						CacheUser(user.get_id().get(), channel_id);
 						log_game_end(c->get_guild().get_id().get(), c->get_id().get());
 					} else {
 						SimpleEmbed(":warning:", fmt::format(_("NOTRIVIA", settings), user.get_username()), c->get_id().get());
@@ -1145,6 +1151,7 @@ bool TriviaModule::OnMessage(const modevent::message_create &message, const std:
 					return false;
 				} else if (base_command == "vote") {
 					SimpleEmbed(":white_check_mark:", fmt::format(fmt::format("{}\n{}", _("PRIVHINT", settings), _("VOTEAD", settings)), bot->user.id.get(), settings.prefix), c->get_id().get());
+					CacheUser(user.get_id().get(), channel_id);
 				} else if (base_command == "votehint" || base_command == "vh") {
 					if (game_in_progress) {
 						if ((state->gamestate == TRIV_FIRST_HINT || state->gamestate == TRIV_SECOND_HINT || state->gamestate == TRIV_TIME_UP) && (state->round % 10) != 0 && state->curr_answer != "") {
@@ -1174,6 +1181,7 @@ bool TriviaModule::OnMessage(const modevent::message_create &message, const std:
 									// Get the API to do this, because DMs in aegis are unreliable right now.
 									send_hint(user.get_id().get(), personal_hint, remaining_hints);
 									db::query("UPDATE infobot_votes SET dm_hints = ? WHERE snowflake_id = ?", {remaining_hints, user.get_id().get()});
+									CacheUser(user.get_id().get(), channel_id);
 
 									return false;
 								}
@@ -1188,6 +1196,7 @@ bool TriviaModule::OnMessage(const modevent::message_create &message, const std:
 					}
 				} else if (base_command == "stats") {
 					show_stats(c->get_guild().get_id(), channel_id);
+					CacheUser(user.get_id().get(), channel_id);
 				} else if (base_command == "info") {
 					std::stringstream s;
 					time_t diff = bot->core.uptime() / 1000;
@@ -1246,6 +1255,7 @@ bool TriviaModule::OnMessage(const modevent::message_create &message, const std:
 						c->create_message_embed("", embed_json);
 						bot->sent_messages++;
 					}
+					CacheUser(user.get_id().get(), channel_id);
 				} else if (base_command == "join") {
 					std::string teamname;
 					std::getline(tokens, teamname);
@@ -1255,6 +1265,7 @@ bool TriviaModule::OnMessage(const modevent::message_create &message, const std:
 					} else {
 						SimpleEmbed(":warning:", fmt::format(_("CANTJOIN", settings), user.get_username()), c->get_id().get());
 					}
+					CacheUser(user.get_id().get(), channel_id);
 				} else if (base_command == "create") {
 					std::string newteamname;
 					std::getline(tokens, newteamname);
@@ -1271,6 +1282,7 @@ bool TriviaModule::OnMessage(const modevent::message_create &message, const std:
 					} else {
 						SimpleEmbed(":warning:", fmt::format(_("ALREADYMEMBER", settings), user.get_username(), teamname), c->get_id().get());
 					}
+					CacheUser(user.get_id().get(), channel_id);
 				} else if (base_command == "leave") {
 					std::string teamname = get_current_team(user.get_id().get());
 					if (teamname.empty() || teamname == "!NOTEAM") {
@@ -1279,10 +1291,12 @@ bool TriviaModule::OnMessage(const modevent::message_create &message, const std:
 						leave_team(user.get_id().get());
 						SimpleEmbed(":busts_in_silhouette:", fmt::format(_("LEFTTEAM", settings), user.get_username(), teamname), c->get_id().get(), _("COMEBACK", settings));
 					}
+					CacheUser(user.get_id().get(), channel_id);
 				} else if (base_command == "help") {
 					std::string section;
 					tokens >> section;
 					GetHelp(section, channel_id, bot->user.username, bot->user.id.get(), msg.get_user().get_username(), msg.get_user().get_id().get(), settings);
+					CacheUser(user.get_id().get(), channel_id);
 				} else {
 					/* Custom commands handled completely by the API */
 					bool command_exists = false;
@@ -1304,6 +1318,7 @@ bool TriviaModule::OnMessage(const modevent::message_create &message, const std:
 							std::string rest;
 							std::getline(tokens, rest);
 							rest = trim(rest);
+							CacheUser(user.get_id().get(), channel_id);
 							std::string reply = trim(custom_command(base_command, trim(rest), msg.get_user().get_id(), channel_id, c->get_guild().get_id().get()));
 							if (!reply.empty()) {
 								ProcessEmbed(reply, channel_id);
