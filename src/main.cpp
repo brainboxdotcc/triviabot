@@ -315,7 +315,6 @@ int main(int argc, char** argv) {
 		aegis_bot.set_on_guild_create(std::bind(&Bot::onServer, &client, std::placeholders::_1));
 		aegis_bot.set_on_guild_delete(std::bind(&Bot::onServerDelete, &client, std::placeholders::_1));
 		aegis_bot.set_on_channel_delete(std::bind(&Bot::onChannelDelete, &client, std::placeholders::_1));
-		aegis_bot.set_on_rest_end(std::bind(&Bot::onRestEnd, &client, std::placeholders::_1, std::placeholders::_2));
 		aegis_bot.set_on_typing_start(std::bind(&Bot::onTypingStart, &client, std::placeholders::_1));
 		aegis_bot.set_on_message_update(std::bind(&Bot::onMessageUpdate, &client, std::placeholders::_1));
 		aegis_bot.set_on_message_delete(std::bind(&Bot::onMessageDelete, &client, std::placeholders::_1));
