@@ -23,17 +23,50 @@
 #include <aegis.hpp>
 #include <string>
 #include <sstream>
+#include <queue>
 #include "webrequest.h"
 #include <sporks/stringops.h>
 
 std::unordered_map<std::string, asio::ip::basic_resolver<asio::ip::tcp>::results_type> _resolver_cache;
 asio::io_context * _io_context = nullptr;
 std::string apikey;
+std::mutex faflock;
+std::thread* ft = nullptr;
+
+struct fire_and_forget_t {
+	std::string host;
+	std::string path;
+	std::string body;
+};
+
+std::queue<fire_and_forget_t> faf;
+
+void fireandforget()
+{
+	while (1) {
+		bool something = false;
+		fire_and_forget_t f;
+		{
+			std::lock_guard<std::mutex> fafguard(faflock);
+			if (!faf.empty()) {
+				f = faf.front();
+				faf.pop();
+				something = true;
+			}
+		}
+		if (something) {
+			web_request(f.host, f.path, f.body);
+		} else {
+			sleep(1);
+		}
+	}
+}
 
 void set_io_context(asio::io_context* ioc, const std::string &_apikey)
 {
 	_io_context = ioc;
 	apikey = _apikey;
+	ft = new std::thread(&fireandforget);
 }
 
 std::string url_encode(const std::string &value) {
@@ -116,6 +149,12 @@ std::string web_request(const std::string &_host, const std::string &_path, cons
 	return hresponse.get_body();
 }
 
+void later(const std::string &_path, const std::string &_body)
+{
+	std::lock_guard<std::mutex> fafguard(faflock);
+	faf.push({BACKEND_HOST, fmt::format("/api/{}", _path), _body});
+}
+
 std::string fetch_page(const std::string &_endpoint, const std::string &body)
 {
 	return web_request(BACKEND_HOST, fmt::format("/api/{}", _endpoint), body);
@@ -147,8 +186,9 @@ void cache_user(const aegis::user *_user, const aegis::guild *_guild, const aegi
 		member_roles.append(std::to_string(r->get())).append(" ");
 	}
 	member_roles = trim(member_roles);
-	fetch_page(fmt::format("?opt=cache&user_id={}&username={}&discrim={}&icon={}&guild_id={}&guild_name={}&guild_icon={}&owner_id={}&roles={}", _user->get_id().get(), url_encode(_user->get_username()), _user->get_discriminator(), url_encode(_user->get_avatar()),
+	later(fmt::format("?opt=cache&user_id={}&username={}&discrim={}&icon={}&guild_id={}&guild_name={}&guild_icon={}&owner_id={}&roles={}", _user->get_id().get(), url_encode(_user->get_username()), _user->get_discriminator(), url_encode(_user->get_avatar()),
 _guild->get_id().get(), url_encode(_guild->get_name()), url_encode(_guild->get_icon()), _guild->get_owner().get(), url_encode(member_roles)), body.str());
+
 }
 
 std::vector<std::string> fetch_question(int64_t id, int64_t guild_id)
@@ -214,9 +254,9 @@ void disable_category(const std::string &cat)
 	fetch_page(fmt::format("?opt=disable&catname={}", cat));
 }
 
-int32_t update_score_only(int64_t snowflake_id, int64_t guild_id, int score)
+void update_score_only(int64_t snowflake_id, int64_t guild_id, int score)
 {
-	return from_string<int32_t>(fetch_page(fmt::format("?opt=scoreonly&nick={}&score={}&guild_id={}", snowflake_id, score, guild_id)), std::dec);
+	later(fmt::format("?opt=scoreonly&nick={}&score={}&guild_id={}", snowflake_id, score, guild_id), "");
 }
 
 void log_game_start(int64_t guild_id, int64_t channel_id, int64_t number_questions, bool quickfire, const std::string &channel_name, int64_t user_id, const std::vector<std::string> &questions)

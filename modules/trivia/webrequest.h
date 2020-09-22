@@ -44,7 +44,7 @@ std::vector<std::string> fetch_insane_round(int64_t &question_id, int64_t guild_
 void enable_all_categories();
 void enable_category(const std::string &cat);
 void disable_category(const std::string &cat);
-int32_t update_score_only(int64_t snowflake_id, int64_t guild_id, int score);
+void update_score_only(int64_t snowflake_id, int64_t guild_id, int score);
 int32_t update_score(int64_t snowflake_id, int64_t guild_id, time_t recordtime, int64_t id, int score);
 int32_t get_total_questions();
 std::vector<std::string> get_top_ten(int64_t guild_id);
