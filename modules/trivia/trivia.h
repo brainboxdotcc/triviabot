@@ -27,6 +27,7 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <atomic>
 #include "settings.h"
 
 // Number of seconds after which a game is considered hung and its thread exits.
@@ -70,7 +71,7 @@ class TriviaModule : public Module
 	std::mutex cmds_mutex;
 	time_t startup;
 	json numstrs;
-	json lang;
+	json* lang;
 public:
 	TriviaModule(Bot* instigator, ModuleLoader* ml);
 	Bot* GetBot();

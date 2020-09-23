@@ -59,12 +59,26 @@ void state_t::tick()
 				break;
 			}
 		}
+
+		if (!terminating && !creator->GetBot()->core.find_guild(guild_id)) {
+			creator->GetBot()->core.log->error("Guild {} deleted (bot kicked?), removing active game states", guild_id);
+			log_game_end(guild_id, channel_id);
+			terminating = true;
+			gamestate = TRIV_END;
+		}
+		if (!terminating && !creator->GetBot()->core.find_channel(channel_id)) {
+			log_game_end(guild_id, channel_id);
+			terminating = true;
+			gamestate = TRIV_END;
+		}
+
 		creator->Tick(this);
 		int64_t game_length = time(NULL) - start_time;
 		if (game_length >= GAME_REAP_SECS) {
 			terminating = true;
 			gamestate = TRIV_END;
 			creator->GetBot()->core.log->debug("state_t::tick(): G:{} C:{} reaped game of length {} seconds", guild_id, channel_id, game_length);
+			log_game_end(guild_id, channel_id);
 		}
 	}
 }

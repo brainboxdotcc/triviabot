@@ -60,8 +60,9 @@ TriviaModule::TriviaModule(Bot* instigator, ModuleLoader* ml) : Module(instigato
 	bot->core.log->info("Numstrs count: {}", numstrs.size());
 
 	std::ifstream langfile("../lang.json");
-	langfile >> lang;
-	bot->core.log->info("Language strings count: {}", lang.size());
+	lang = new json();
+	langfile >> *lang;
+	bot->core.log->info("Language strings count: {}", lang->size());
 }
 
 Bot* TriviaModule::GetBot()
@@ -83,6 +84,7 @@ TriviaModule::~TriviaModule()
 	delete number_tidy_positive;
 	delete number_tidy_negative;
 	delete prefix_match;
+	delete lang;
 }
 
 
@@ -117,8 +119,8 @@ bool TriviaModule::OnPresenceUpdate()
 
 std::string TriviaModule::_(const std::string &k, const guild_settings_t& settings)
 {
-	auto o = lang.find(k);
-	if (o != lang.end()) {
+	auto o = lang->find(k);
+	if (o != lang->end()) {
 		auto v = o->find(settings.language);
 		if (v != o->end()) {
 			return v->get<std::string>();
@@ -191,49 +193,11 @@ bool TriviaModule::OnAllShardsReady()
 
 bool TriviaModule::OnChannelDelete(const modevent::channel_delete &cd)
 {
-	bot->core.log->error("Channel {} deleted, removing active game states", cd.channel.id.get());
-	bool one_deleted = false;
-	uint32_t removed = 0;
-	do {
-		one_deleted = false;
-		std::lock_guard<std::mutex> user_cache_lock(states_mutex);
-		for (auto state = states.begin(); state != states.end(); ++state) {
-			if (state->second->channel_id == cd.channel.id.get()) {
-				auto s = state->second;
-				log_game_end(s->guild_id, s->channel_id);
-				states.erase(state);
-				delete s;
-				one_deleted = true;
-				removed++;
-				break;
-			}
-		}
-	} while (one_deleted);
-	bot->core.log->error("Removed {} active game states", removed);
 	return true;
 }
 
 bool TriviaModule::OnGuildDelete(const modevent::guild_delete &gd)
 {
-	bot->core.log->error("Guild {} deleted (bot kicked?), removing active game states", gd.guild_id.get());
-	std::lock_guard<std::mutex> user_cache_lock(states_mutex);
-	bool one_deleted = false;
-	uint32_t removed = 0;
-	do {
-		one_deleted = false;
-		for (auto state = states.begin(); state != states.end(); ++state) {
-			if (state->second->guild_id == gd.guild_id.get()) {
-				auto s = state->second;
-				log_game_end(s->guild_id, s->channel_id);
-				states.erase(state);
-				delete s;
-				one_deleted = true;
-				removed++;
-				break;
-			}
-		}
-	} while (one_deleted);
-	bot->core.log->error("Removed {} active game states", removed);
 	return true;
 }
 
@@ -835,21 +799,24 @@ bool TriviaModule::OnMessage(const modevent::message_create &message, const std:
 	trivia_message = tidy_num(trivia_message);
 	{
 		std::lock_guard<std::mutex> user_cache_lock(states_mutex);
+
+		std::vector<int64_t> removals;
+		for (auto s : states) {
+			if (s.second && s.second->terminating) {
+				delete s.second;
+				removals.push_back(s.first);
+			} else if (!s.second) {
+				removals.push_back(s.first);
+			}
+		}
+		for (auto r : removals) {
+			states.erase(r);
+		}
+
 		auto state_iter = states.find(channel_id);
 		if (state_iter != states.end()) {
 			state = state_iter->second;
-			/* Tombstoned session */
-			if (!state) {
-				states.erase(state_iter);
-			} else if (state->terminating) {
-				bot->core.log->warn("Removed terminated thread from C:{}", channel_id);
-				log_game_end(state->guild_id, state->channel_id);
-				delete state;
-				states.erase(state_iter);
-				state = nullptr;
-			} else {
-				game_in_progress = true;
-			}
+			game_in_progress = true;
 		}
 	}
 
@@ -1135,8 +1102,7 @@ bool TriviaModule::OnMessage(const modevent::message_create &message, const std:
 							std::lock_guard<std::mutex> user_cache_lock(states_mutex);
 							auto i = states.find(channel_id);
 							if (i != states.end()) {
-								delete i->second;
-								states.erase(i);
+								i->second->terminating = true;
 							} else {
 								bot->core.log->error("Channel deleted while game stopping on this channel, cid={}", channel_id);
 							}
@@ -1329,6 +1295,25 @@ bool TriviaModule::OnMessage(const modevent::message_create &message, const std:
 						}
 					} else {
 						bot->core.log->debug("Command '{}' not known to API", trim(lowercase(base_command)));
+					}
+				}
+				if (base_command == "reloadlang") {
+					db::resultset rs = db::query("SELECT * FROM trivia_access WHERE user_id = ? AND enabled = 1", {msg.get_author_id()});
+					if (rs.size() > 0) {
+						std::ifstream langfile("../lang.json");
+						json* newlang = new json();
+						json* oldlang = this->lang;
+
+						langfile >> *newlang;
+
+						this->lang = newlang;
+						sleep(1);
+						delete oldlang;
+
+						bot->core.log->info("Language strings count: {}", lang->size());
+						SimpleEmbed(":flags:", fmt::format("Reloaded lang.json, **{}** containing language strings.", lang->size()), c->get_id().get());
+					} else {
+						SimpleEmbed(":warning:", _("STAFF_ONLY", settings), c->get_id().get());
 					}
 				}
 			}
