@@ -206,7 +206,7 @@ int64_t TriviaModule::GetActiveGames()
 	int64_t a = 0;
 	std::lock_guard<std::mutex> user_cache_lock(states_mutex);
 	for (auto state = states.begin(); state != states.end(); ++state) {
-		if (state->second->gamestate != TRIV_END && !state->second->terminating) {
+		if (state->second && state->second->gamestate != TRIV_END && !state->second->terminating) {
 			++a;
 		}
 	}
