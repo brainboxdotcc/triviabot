@@ -1,5 +1,5 @@
 /************************************************************************************
- * 
+ *
  * TriviaBot, The trivia bot for discord based on Fruitloopy Trivia for ChatSpike IRC
  *
  * Copyright 2004 Craig Edwards <support@brainbox.cc>
@@ -20,41 +20,23 @@
  *
  ************************************************************************************/
 
+#pragma once
+
 #include <string>
-#include <cstdint>
-#include <sporks/stringops.h>
-#include "piglatin.h"
+#include <vector>
 
-bool isVowel(char c) 
-{ 
-	return (c == 'A' || c == 'E' || c == 'I' || c == 'O' || c == 'U' || c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u'); 
-}
-
-std::string piglatinword(std::string s) 
-{ 
-	int len = s.length();
-	int index = -1; 
-	for (int i = 0; i < len; i++) { 
-		if (isVowel(s[i])) { 
-			index = i; 
-			break; 
-		} 
-	} 
-	if (index == -1) 
-		return s;
-
-	return s.substr(index) + s.substr(0, index) + "ay"; 
-}
-
-std::string piglatin(const std::string &s)
+class guild_settings_t
 {
-	std::stringstream str(s);
-	std::string word;
-	std::string ret;
-	while ((str >> word)) {
-		ret.append(piglatinword(word)).append(" ");
-	}
-	/* No translation needed, Pig Latin is English only */
-	return std::string("Pig Latin: ") + lowercase(ret);
-}
-
+ public:
+        int64_t guild_id;
+        std::string prefix;
+        uint32_t embedcolour;
+        std::vector<int64_t> moderator_roles;
+        bool premium;
+        bool only_mods_stop;
+        bool role_reward_enabled;
+        int64_t role_reward_id;
+        std::string custom_url;
+        std::string language;
+        guild_settings_t(int64_t _guild_id, const std::string &_prefix, const std::vector<int64_t> &_moderator_roles, uint32_t _embedcolour, bool _premium, bool _only_mods_stop, bool _role_reward_enabled, int64_t _role_reward_id, const std::string &_custom_url, const std::string &_language);
+};

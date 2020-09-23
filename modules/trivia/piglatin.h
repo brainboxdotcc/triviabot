@@ -1,5 +1,5 @@
 /************************************************************************************
- * 
+ *
  * TriviaBot, The trivia bot for discord based on Fruitloopy Trivia for ChatSpike IRC
  *
  * Copyright 2004 Craig Edwards <support@brainbox.cc>
@@ -20,41 +20,11 @@
  *
  ************************************************************************************/
 
+#pragma once
+
 #include <string>
-#include <cstdint>
-#include <sporks/stringops.h>
-#include "piglatin.h"
 
-bool isVowel(char c) 
-{ 
-	return (c == 'A' || c == 'E' || c == 'I' || c == 'O' || c == 'U' || c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u'); 
-}
-
-std::string piglatinword(std::string s) 
-{ 
-	int len = s.length();
-	int index = -1; 
-	for (int i = 0; i < len; i++) { 
-		if (isVowel(s[i])) { 
-			index = i; 
-			break; 
-		} 
-	} 
-	if (index == -1) 
-		return s;
-
-	return s.substr(index) + s.substr(0, index) + "ay"; 
-}
-
-std::string piglatin(const std::string &s)
-{
-	std::stringstream str(s);
-	std::string word;
-	std::string ret;
-	while ((str >> word)) {
-		ret.append(piglatinword(word)).append(" ");
-	}
-	/* No translation needed, Pig Latin is English only */
-	return std::string("Pig Latin: ") + lowercase(ret);
-}
+bool isVowel(char c);
+std::string piglatinword(std::string s);
+std::string piglatin(const std::string &s);
 

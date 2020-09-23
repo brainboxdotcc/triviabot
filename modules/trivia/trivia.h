@@ -27,6 +27,7 @@
 #include <string>
 #include <map>
 #include <vector>
+#include "settings.h"
 
 // Number of seconds after which a game is considered hung and its thread exits.
 // This can happen if a game gets lost in a discord gateway outage (!)
@@ -46,22 +47,6 @@ struct field_t
 	std::string name;
 	std::string value;
 	bool _inline;
-};
-
-class guild_settings_t
-{
- public:
-	int64_t guild_id;
-	std::string prefix;
-	uint32_t embedcolour;
-	std::vector<int64_t> moderator_roles;
-	bool premium;
-	bool only_mods_stop;
-	bool role_reward_enabled;
-	int64_t role_reward_id;
-	std::string custom_url;
-	std::string language;
-	guild_settings_t(int64_t _guild_id, const std::string &_prefix, const std::vector<int64_t> &_moderator_roles, uint32_t _embedcolour, bool _premium, bool _only_mods_stop, bool _role_reward_enabled, int64_t _role_reward_id, const std::string &_custom_url, const std::string &_language);
 };
 
 /**
@@ -108,9 +93,6 @@ public:
 	std::string tidy_num(std::string num);
 	void UpdatePresenceLine();
 	std::string conv_num(std::string datain, const guild_settings_t &settings);
-	bool isVowel(char c);
-	std::string piglatinword(std::string s);
-	std::string piglatin(const std::string &s);
 	std::string letterlong(std::string text, const guild_settings_t &settings);
 	std::string vowelcount(std::string text, const guild_settings_t &settings);
 	std::string numbertoname(int64_t number, const guild_settings_t& settings);

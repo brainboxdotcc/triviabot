@@ -32,6 +32,7 @@
 #include "state.h"
 #include "trivia.h"
 #include "webrequest.h"
+#include "piglatin.h"
 
 /**
  * Module class for trivia system
@@ -785,13 +786,18 @@ bool TriviaModule::OnMessage(const modevent::message_create &message, const std:
 {
 	std::vector<std::string> param;
 	std::string botusername = bot->user.username;
+	std::string username;
 	aegis::gateway::objects::message msg = message.msg;
 
 	if (!message.has_user()) {
 		return true;
 	}
 
-	const aegis::user& user = message.get_user();
+	aegis::user* user = bot->core.find_user(msg.get_author_id());
+	if (user) {
+		username = user->get_username();
+	}
+	
 	bool game_in_progress = false;
 
 	/* Retrieve current state for channel, if there is no state object, no game is in progress */
@@ -821,13 +827,12 @@ bool TriviaModule::OnMessage(const modevent::message_create &message, const std:
 
 	guild_settings_t settings = GetGuildSettings(guild_id);
 
-			std::string trivia_message = clean_message;
-			int x = from_string<int>(conv_num(clean_message, settings), std::dec);
-			if (x > 0) {
-					trivia_message = conv_num(clean_message, settings);
-			}
-			trivia_message = tidy_num(trivia_message);
-
+	std::string trivia_message = clean_message;
+	int x = from_string<int>(conv_num(clean_message, settings), std::dec);
+	if (x > 0) {
+		trivia_message = conv_num(clean_message, settings);
+	}
+	trivia_message = tidy_num(trivia_message);
 	{
 		std::lock_guard<std::mutex> user_cache_lock(states_mutex);
 		auto state_iter = states.find(channel_id);
@@ -857,12 +862,6 @@ bool TriviaModule::OnMessage(const modevent::message_create &message, const std:
 		if (state->gamestate == TRIV_ASK_QUESTION || state->gamestate == TRIV_FIRST_HINT || state->gamestate == TRIV_SECOND_HINT || state->gamestate == TRIV_TIME_UP) {
 
 			aegis::channel* c = bot->core.find_channel(channel_id);
-			if (&user != nullptr) {
-				aegis::user::guild_info& gi = bot->core.find_user(user.get_id())->get_guild_info(c->get_guild().get_id());
-				cache_user(&user, &c->get_guild(), &gi);
-			} else {
-				return true;
-			}
 			
 			if (state->round % 10 == 0) {
 				/* Insane round */
@@ -872,7 +871,7 @@ bool TriviaModule::OnMessage(const modevent::message_create &message, const std:
 
 					if (--state->insane_left < 1) {
 						if (c) {
-							SimpleEmbed(":thumbsup:", fmt::format(_("LAST_ONE", settings), user.get_username()), c->get_id().get());
+							SimpleEmbed(":thumbsup:", fmt::format(_("LAST_ONE", settings), username), c->get_id().get());
 						}
 						if (state->round <= state->numquestions - 1) {
 							state->round++;
@@ -882,10 +881,10 @@ bool TriviaModule::OnMessage(const modevent::message_create &message, const std:
 						}
 					} else {
 						if (c) {
-							SimpleEmbed(":thumbsup:", fmt::format(_("INSANE_CORRECT", settings), user.get_username(), trivia_message, state->insane_left, state->insane_num), c->get_id().get());
+							SimpleEmbed(":thumbsup:", fmt::format(_("INSANE_CORRECT", settings), username, trivia_message, state->insane_left, state->insane_num), c->get_id().get());
 						}
 					}
-					update_score_only(user.get_id().get(), state->guild_id, 1);
+					update_score_only(msg.get_author_id(), state->guild_id, 1);
 					if (log_question_index(state->guild_id, state->channel_id, state->round, state->streak, state->last_to_answer, state->gamestate)) {
 						StopGame(state, settings);
 						return false;
@@ -910,46 +909,46 @@ bool TriviaModule::OnMessage(const modevent::message_create &message, const std:
 					std::string ans_message;
 					ans_message.append(fmt::format(_("NORM_CORRECT", settings), saved_answer, score, pts, time_to_answer));
 					if (time_to_answer < state->recordtime) {
-						ans_message.append(fmt::format(_("RECORD_TIME", settings), user.get_username()));
+						ans_message.append(fmt::format(_("RECORD_TIME", settings), username));
 						submit_time = time_to_answer;
 					}
-					int32_t newscore = update_score(user.get_id().get(), state->guild_id, submit_time, state->curr_qid, score);
-					ans_message.append(fmt::format(_("SCORE_UPDATE", settings), user.get_username(), newscore ? newscore : score));
+					int32_t newscore = update_score(msg.get_author_id(), state->guild_id, submit_time, state->curr_qid, score);
+					ans_message.append(fmt::format(_("SCORE_UPDATE", settings), username, newscore ? newscore : score));
 
-					std::string teamname = get_current_team(user.get_id().get());
+					std::string teamname = get_current_team(msg.get_author_id());
 					if (!empty(teamname) && teamname != "!NOTEAM") {
-						add_team_points(teamname, score, user.get_id().get());
+						add_team_points(teamname, score, msg.get_author_id());
 						int32_t newteamscore = get_team_points(teamname);
 						ans_message.append(fmt::format(_("TEAM_SCORE", settings), teamname, score, pts, newteamscore));
 					}
 
-					if (state->last_to_answer == user.get_id().get()) {
+					if (state->last_to_answer == msg.get_author_id()) {
 						/* Amend current streak */
 						state->streak++;
-						ans_message.append(fmt::format(_("ON_A_STREAK", settings), user.get_username(), state->streak));
-						streak_t s = get_streak(user.get_id().get(), state->guild_id);
+						ans_message.append(fmt::format(_("ON_A_STREAK", settings), username, state->streak));
+						streak_t s = get_streak(msg.get_author_id(), state->guild_id);
 						if (state->streak > s.personalbest) {
 							ans_message.append(_("BEATEN_BEST", settings));
-							change_streak(user.get_id().get(), state->guild_id, state->streak);
+							change_streak(msg.get_author_id(), state->guild_id, state->streak);
 						} else {
 							ans_message.append(fmt::format(_("NOT_THERE_YET", settings), s.personalbest));
 						}
-						if (state->streak > s.bigstreak && s.topstreaker != user.get_id().get()) {
-							ans_message.append(fmt::format(_("STREAK_BEATDOWN", settings), user.get_username(), s.topstreaker, state->streak));
+						if (state->streak > s.bigstreak && s.topstreaker != msg.get_author_id()) {
+							ans_message.append(fmt::format(_("STREAK_BEATDOWN", settings), username, s.topstreaker, state->streak));
 						}
-					} else if (state->streak > 1 && state->last_to_answer && state->last_to_answer != user.get_id().get()) {
-						ans_message.append(fmt::format(_("STREAK_ENDER", settings), user.get_username(), state->last_to_answer, state->streak));
+					} else if (state->streak > 1 && state->last_to_answer && state->last_to_answer != msg.get_author_id()) {
+						ans_message.append(fmt::format(_("STREAK_ENDER", settings), username, state->last_to_answer, state->streak));
 						state->streak = 1;
 					} else {
 						state->streak = 1;
 					}
 
 					/* Update last person to answer */
-					state->last_to_answer = user.get_id().get();
+					state->last_to_answer = msg.get_author_id();
 
 					aegis::channel* c = bot->core.find_channel(channel_id);
 					if (c) {
-						SimpleEmbed(":thumbsup:", ans_message, c->get_id().get(), fmt::format(_("CORRECT", settings), user.get_username()));
+						SimpleEmbed(":thumbsup:", ans_message, c->get_id().get(), fmt::format(_("CORRECT", settings), username));
 					}
 
 					if (log_question_index(state->guild_id, state->channel_id, state->round, state->streak, state->last_to_answer, state->gamestate)) {
@@ -967,9 +966,9 @@ bool TriviaModule::OnMessage(const modevent::message_create &message, const std:
 
 		std::string command = clean_message.substr(settings.prefix.length(), clean_message.length() - settings.prefix.length());
 		aegis::channel* c = bot->core.find_channel(channel_id);
-		if (c && &user != nullptr) {
+		if (c && user != nullptr) {
 
-			bot->core.log->info("CMD (USER={}, GUILD={}): <{}> {}", user.get_id().get(), c->get_guild().get_id().get(), user.get_username(), clean_message);
+			bot->core.log->info("CMD (USER={}, GUILD={}): <{}> {}", msg.get_author_id(), c->get_guild().get_id().get(), username, clean_message);
 
 			if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == c->get_guild().get_id()) {
 
@@ -981,11 +980,11 @@ bool TriviaModule::OnMessage(const modevent::message_create &message, const std:
 
 				/* Check for moderator status - first check if owner */
 				aegis::guild* g = bot->core.find_guild(guild_id);
-				bool moderator = (g && g->get_owner() == user.get_id());
+				bool moderator = (g && g->get_owner() == msg.get_author_id());
 				/* Now iterate the list of moderator roles from settings */
 				if (!moderator) {
 					for (auto x = settings.moderator_roles.begin(); x != settings.moderator_roles.end(); ++x) {
-						if (c->get_guild().member_has_role(user.get_id(), *x)) {
+						if (c->get_guild().member_has_role(msg.get_author_id(), *x)) {
 							moderator = true;
 							break;
 						}
@@ -1019,13 +1018,13 @@ bool TriviaModule::OnMessage(const modevent::message_create &message, const std:
 					bool resumed = false;
 
 					if (base_command == "fstart") {
-						db::resultset rs = db::query("SELECT * FROM trivia_access WHERE user_id = ? AND enabled = 1", {user.get_id().get()});
+						db::resultset rs = db::query("SELECT * FROM trivia_access WHERE user_id = ? AND enabled = 1", {msg.get_author_id()});
 						if (rs.size() > 0) {
 							int64_t cid;
 							tokens >> cid;
 							auto newc = bot->core.find_channel(cid);
 							if (!newc) {
-								SimpleEmbed(":warning:", fmt::format(_("CHANNEL_WUT", settings), user.get_username()), c->get_id().get());
+								SimpleEmbed(":warning:", fmt::format(_("CHANNEL_WUT", settings), username), c->get_id().get());
 								return false;
 							} else {
 								SimpleEmbed(":white_check_mark:", fmt::format(_("ROUND_START_ID", settings), questions, cid), c->get_id().get());
@@ -1049,7 +1048,7 @@ bool TriviaModule::OnMessage(const modevent::message_create &message, const std:
 					for (auto entry = shitlist.begin(); entry != shitlist.end(); ++entry) {
 						int64_t sl_guild_id = from_string<int64_t>(entry->get<std::string>(), std::dec);
 								if (c->get_guild().get_id().get() == sl_guild_id) {
-							SimpleEmbed(":warning:", fmt::format(_("SHITLISTED", settings), user.get_username(), bot->user.id.get()), c->get_id().get());
+							SimpleEmbed(":warning:", fmt::format(_("SHITLISTED", settings), username, bot->user.id.get()), c->get_id().get());
 							return false;
 						}
 						}
@@ -1075,17 +1074,17 @@ bool TriviaModule::OnMessage(const modevent::message_create &message, const std:
 								if (questions > max_quickfire && !settings.premium) {
 									EmbedWithFields(_("MAX15", settings), {{_("GETPREMIUM", settings), _("PREMDETAIL2", settings), false}}, c->get_id().get());
 								} else {
-									SimpleEmbed(":warning:", fmt::format(_("MAX15DETAIL", settings), user.get_username(), max_quickfire), c->get_id().get());
+									SimpleEmbed(":warning:", fmt::format(_("MAX15DETAIL", settings), username, max_quickfire), c->get_id().get());
 								}
 							} else {
-								SimpleEmbed(":warning:", fmt::format(_("MAX200", settings), user.get_username()), c->get_id().get());
+								SimpleEmbed(":warning:", fmt::format(_("MAX200", settings), username), c->get_id().get());
 							}
 							return false;
 						}
 
 						std::vector<std::string> sl = fetch_shuffle_list(c->get_guild().get_id());
 						if (sl.size() < 50) {
-							SimpleEmbed(":warning:", fmt::format(_("SPOOPY2", settings), user.get_username()), c->get_id().get(), _("BROKED", settings));
+							SimpleEmbed(":warning:", fmt::format(_("SPOOPY2", settings), username), c->get_id().get(), _("BROKED", settings));
 							return false;
 						} else  {
 							state = new state_t(this);
@@ -1108,11 +1107,11 @@ bool TriviaModule::OnMessage(const modevent::message_create &message, const std:
 							if (c) {
 								state->guild_id = c->get_guild().get_id();
 								bot->core.log->info("Started game on guild {}, channel {}, {} questions [{}]", state->guild_id, channel_id, questions, quickfire ? "quickfire" : "normal");
-								EmbedWithFields(fmt::format(_("NEWROUND", settings), (quickfire ? "**QUICKFIRE** " : ""), (resumed ? _("RESUMED", settings) : _("STARTED", settings)), (resumed ? _("ABOTADMIN", settings) : user.get_username())), {{_("QUESTION", settings), fmt::format("{}", questions), false}, {_("GETREADY", settings), _("FIRSTCOMING", settings), false}, {_("HOWPLAY", settings), _("INSTRUCTIONS", settings)}}, c->get_id().get());
+								EmbedWithFields(fmt::format(_("NEWROUND", settings), (quickfire ? "**QUICKFIRE** " : ""), (resumed ? _("RESUMED", settings) : _("STARTED", settings)), (resumed ? _("ABOTADMIN", settings) : username)), {{_("QUESTION", settings), fmt::format("{}", questions), false}, {_("GETREADY", settings), _("FIRSTCOMING", settings), false}, {_("HOWPLAY", settings), _("INSTRUCTIONS", settings)}}, c->get_id().get());
 								state->timer = new std::thread(&state_t::tick, state);
 
-								CacheUser(user.get_id().get(), channel_id);
-								log_game_start(state->guild_id, state->channel_id, questions, quickfire, c->get_name(), user.get_id().get(), state->shuffle_list);
+								CacheUser(msg.get_author_id(), channel_id);
+								log_game_start(state->guild_id, state->channel_id, questions, quickfire, c->get_name(), msg.get_author_id(), state->shuffle_list);
 							} else {
 								state->terminating = true;
 							}
@@ -1120,18 +1119,18 @@ bool TriviaModule::OnMessage(const modevent::message_create &message, const std:
 							return false;
 						}
 					} else {
-						SimpleEmbed(":warning:", fmt::format(_("ALREADYRUN", settings), user.get_username()), c->get_id().get());
+						SimpleEmbed(":warning:", fmt::format(_("ALREADYRUN", settings), username), c->get_id().get());
 						return false;
 					}
 				} else if (base_command == "stop") {
 					if (game_in_progress) {
 						if (settings.only_mods_stop) {
 							if (!moderator) {
-								SimpleEmbed(":warning:", fmt::format(_("CANTSTOPMEIMTHEGINGERBREADMAN", settings), user.get_username()), c->get_id().get());
+								SimpleEmbed(":warning:", fmt::format(_("CANTSTOPMEIMTHEGINGERBREADMAN", settings), username), c->get_id().get());
 								return false;
 							}
 						}
-						SimpleEmbed(":octagonal_sign:", fmt::format(_("STOPOK", settings), user.get_username()), c->get_id().get());
+						SimpleEmbed(":octagonal_sign:", fmt::format(_("STOPOK", settings), username), c->get_id().get());
 						{
 							std::lock_guard<std::mutex> user_cache_lock(states_mutex);
 							auto i = states.find(channel_id);
@@ -1143,19 +1142,19 @@ bool TriviaModule::OnMessage(const modevent::message_create &message, const std:
 							}
 							state = nullptr;
 						}
-						CacheUser(user.get_id().get(), channel_id);
+						CacheUser(msg.get_author_id(), channel_id);
 						log_game_end(c->get_guild().get_id().get(), c->get_id().get());
 					} else {
-						SimpleEmbed(":warning:", fmt::format(_("NOTRIVIA", settings), user.get_username()), c->get_id().get());
+						SimpleEmbed(":warning:", fmt::format(_("NOTRIVIA", settings), username), c->get_id().get());
 					}
 					return false;
 				} else if (base_command == "vote") {
 					SimpleEmbed(":white_check_mark:", fmt::format(fmt::format("{}\n{}", _("PRIVHINT", settings), _("VOTEAD", settings)), bot->user.id.get(), settings.prefix), c->get_id().get());
-					CacheUser(user.get_id().get(), channel_id);
+					CacheUser(msg.get_author_id(), channel_id);
 				} else if (base_command == "votehint" || base_command == "vh") {
 					if (game_in_progress) {
 						if ((state->gamestate == TRIV_FIRST_HINT || state->gamestate == TRIV_SECOND_HINT || state->gamestate == TRIV_TIME_UP) && (state->round % 10) != 0 && state->curr_answer != "") {
-							db::resultset rs = db::query("SELECT *,(unix_timestamp(vote_time) + 43200 - unix_timestamp()) as remaining FROM infobot_votes WHERE snowflake_id = ? AND now() < vote_time + interval 12 hour", {user.get_id().get()});
+							db::resultset rs = db::query("SELECT *,(unix_timestamp(vote_time) + 43200 - unix_timestamp()) as remaining FROM infobot_votes WHERE snowflake_id = ? AND now() < vote_time + interval 12 hour", {msg.get_author_id()});
 							if (rs.size() == 0) {
 								SimpleEmbed("<:wc_rs:667695516737470494>", fmt::format(fmt::format("{}\n{}", _("NOTVOTED", settings), _("VOTEAD", settings)), bot->user.id.get(), settings.prefix), c->get_id().get());
 								return false;
@@ -1165,13 +1164,13 @@ bool TriviaModule::OnMessage(const modevent::message_create &message, const std:
 								int32_t mins = secs / 60 % 60;
 								float hours = floor(secs / 60 / 60);
 								if (remaining_hints < 1) {
-									SimpleEmbed(":warning:", fmt::format(fmt::format("{}\n{}", fmt::format(_("NOMOREHINTS", settings), user.get_username()), _("VOTEAD", settings)), bot->user.id.get(), hours, mins), c->get_id().get());
+									SimpleEmbed(":warning:", fmt::format(fmt::format("{}\n{}", fmt::format(_("NOMOREHINTS", settings), username), _("VOTEAD", settings)), bot->user.id.get(), hours, mins), c->get_id().get());
 								} else {
 									remaining_hints--;
 									if (remaining_hints > 0) {
-										SimpleEmbed(":white_check_mark:", fmt::format(_("VH1", settings), user.get_username(), remaining_hints, hours, mins), c->get_id().get());
+										SimpleEmbed(":white_check_mark:", fmt::format(_("VH1", settings), username, remaining_hints, hours, mins), c->get_id().get());
 									} else {
-										SimpleEmbed(":white_check_mark:", fmt::format(_("VH2", settings), user.get_username(), hours, mins), c->get_id().get());
+										SimpleEmbed(":white_check_mark:", fmt::format(_("VH2", settings), username, hours, mins), c->get_id().get());
 									}
 									std::string personal_hint = state->curr_answer;
 									personal_hint = lowercase(personal_hint);
@@ -1179,24 +1178,24 @@ bool TriviaModule::OnMessage(const modevent::message_create &message, const std:
 									personal_hint[personal_hint.length() - 1] = '#';
 									personal_hint = ReplaceString(personal_hint, " ", "#");
 									// Get the API to do this, because DMs in aegis are unreliable right now.
-									send_hint(user.get_id().get(), personal_hint, remaining_hints);
-									db::query("UPDATE infobot_votes SET dm_hints = ? WHERE snowflake_id = ?", {remaining_hints, user.get_id().get()});
-									CacheUser(user.get_id().get(), channel_id);
+									send_hint(msg.get_author_id(), personal_hint, remaining_hints);
+									db::query("UPDATE infobot_votes SET dm_hints = ? WHERE snowflake_id = ?", {remaining_hints, msg.get_author_id()});
+									CacheUser(msg.get_author_id(), channel_id);
 
 									return false;
 								}
 							}
 						} else {
-							SimpleEmbed(":warning:", fmt::format(_("WAITABIT", settings), user.get_username()), c->get_id().get());
+							SimpleEmbed(":warning:", fmt::format(_("WAITABIT", settings), username), c->get_id().get());
 							return false;
 						}
 					} else {
-						SimpleEmbed(":warning:", fmt::format(fmt::format("{}\n{}", fmt::format(_("NOROUND", settings), user.get_username()), _("VOTEAD", settings)), bot->user.id.get()), c->get_id().get());
+						SimpleEmbed(":warning:", fmt::format(fmt::format("{}\n{}", fmt::format(_("NOROUND", settings), username), _("VOTEAD", settings)), bot->user.id.get()), c->get_id().get());
 						return false;
 					}
 				} else if (base_command == "stats") {
 					show_stats(c->get_guild().get_id(), channel_id);
-					CacheUser(user.get_id().get(), channel_id);
+					CacheUser(msg.get_author_id(), channel_id);
 				} else if (base_command == "info") {
 					std::stringstream s;
 					time_t diff = bot->core.uptime() / 1000;
@@ -1255,48 +1254,48 @@ bool TriviaModule::OnMessage(const modevent::message_create &message, const std:
 						c->create_message_embed("", embed_json);
 						bot->sent_messages++;
 					}
-					CacheUser(user.get_id().get(), channel_id);
+					CacheUser(msg.get_author_id(), channel_id);
 				} else if (base_command == "join") {
 					std::string teamname;
 					std::getline(tokens, teamname);
 					teamname = trim(teamname);
-					if (join_team(user.get_id().get(), teamname, c->get_id().get())) {
-						SimpleEmbed(":busts_in_silhouette:", fmt::format(_("JOINED", settings), teamname, user.get_username()), c->get_id().get(), _("CALLFORBACKUP", settings));
+					if (join_team(msg.get_author_id(), teamname, c->get_id().get())) {
+						SimpleEmbed(":busts_in_silhouette:", fmt::format(_("JOINED", settings), teamname, username), c->get_id().get(), _("CALLFORBACKUP", settings));
 					} else {
-						SimpleEmbed(":warning:", fmt::format(_("CANTJOIN", settings), user.get_username()), c->get_id().get());
+						SimpleEmbed(":warning:", fmt::format(_("CANTJOIN", settings), username), c->get_id().get());
 					}
-					CacheUser(user.get_id().get(), channel_id);
+					CacheUser(msg.get_author_id(), channel_id);
 				} else if (base_command == "create") {
 					std::string newteamname;
 					std::getline(tokens, newteamname);
 					newteamname = trim(newteamname);
-					std::string teamname = get_current_team(user.get_id().get());
+					std::string teamname = get_current_team(msg.get_author_id());
 					if (teamname.empty() || teamname == "!NOTEAM") {
 						newteamname = create_new_team(newteamname);
 						if (newteamname != "__NO__") {
-							join_team(user.get_id().get(), newteamname, c->get_id().get());
-							SimpleEmbed(":busts_in_silhouette:", fmt::format(_("CREATED", settings), newteamname, user.get_username()), c->get_id().get(), _("ZELDAREFERENCE", settings));
+							join_team(msg.get_author_id(), newteamname, c->get_id().get());
+							SimpleEmbed(":busts_in_silhouette:", fmt::format(_("CREATED", settings), newteamname, username), c->get_id().get(), _("ZELDAREFERENCE", settings));
 						} else {
-							SimpleEmbed(":warning:", fmt::format(_("CANTCREATE", settings), user.get_username()), c->get_id().get());
+							SimpleEmbed(":warning:", fmt::format(_("CANTCREATE", settings), username), c->get_id().get());
 						}
 					} else {
-						SimpleEmbed(":warning:", fmt::format(_("ALREADYMEMBER", settings), user.get_username(), teamname), c->get_id().get());
+						SimpleEmbed(":warning:", fmt::format(_("ALREADYMEMBER", settings), username, teamname), c->get_id().get());
 					}
-					CacheUser(user.get_id().get(), channel_id);
+					CacheUser(msg.get_author_id(), channel_id);
 				} else if (base_command == "leave") {
-					std::string teamname = get_current_team(user.get_id().get());
+					std::string teamname = get_current_team(msg.get_author_id());
 					if (teamname.empty() || teamname == "!NOTEAM") {
-						SimpleEmbed(":warning:", fmt::format(_("YOULONER", settings), user.get_username(), settings.prefix), c->get_id().get());
+						SimpleEmbed(":warning:", fmt::format(_("YOULONER", settings), username, settings.prefix), c->get_id().get());
 					} else {
-						leave_team(user.get_id().get());
-						SimpleEmbed(":busts_in_silhouette:", fmt::format(_("LEFTTEAM", settings), user.get_username(), teamname), c->get_id().get(), _("COMEBACK", settings));
+						leave_team(msg.get_author_id());
+						SimpleEmbed(":busts_in_silhouette:", fmt::format(_("LEFTTEAM", settings), username, teamname), c->get_id().get(), _("COMEBACK", settings));
 					}
-					CacheUser(user.get_id().get(), channel_id);
+					CacheUser(msg.get_author_id(), channel_id);
 				} else if (base_command == "help") {
 					std::string section;
 					tokens >> section;
 					GetHelp(section, channel_id, bot->user.username, bot->user.id.get(), msg.get_user().get_username(), msg.get_user().get_id().get(), settings);
-					CacheUser(user.get_id().get(), channel_id);
+					CacheUser(msg.get_author_id(), channel_id);
 				} else {
 					/* Custom commands handled completely by the API */
 					bool command_exists = false;
@@ -1318,8 +1317,8 @@ bool TriviaModule::OnMessage(const modevent::message_create &message, const std:
 							std::string rest;
 							std::getline(tokens, rest);
 							rest = trim(rest);
-							CacheUser(user.get_id().get(), channel_id);
-							std::string reply = trim(custom_command(base_command, trim(rest), msg.get_user().get_id(), channel_id, c->get_guild().get_id().get()));
+							CacheUser(msg.get_author_id(), channel_id);
+							std::string reply = trim(custom_command(base_command, trim(rest), msg.get_author_id(), channel_id, c->get_guild().get_id().get()));
 							if (!reply.empty()) {
 								ProcessEmbed(reply, channel_id);
 							}
@@ -1393,11 +1392,6 @@ void TriviaModule::GetHelp(const std::string &section, int64_t channelID, const 
 	}
 }
 
-
-guild_settings_t::guild_settings_t(int64_t _guild_id, const std::string &_prefix, const std::vector<int64_t> &_moderator_roles, uint32_t _embedcolour, bool _premium, bool _only_mods_stop, bool _role_reward_enabled, int64_t _role_reward_id, const std::string &_custom_url, const std::string &_language)
-	: guild_id(_guild_id), prefix(_prefix), moderator_roles(_moderator_roles), embedcolour(_embedcolour), premium(_premium), only_mods_stop(_only_mods_stop), role_reward_enabled(_role_reward_enabled), role_reward_id(_role_reward_id), custom_url(_custom_url), language(_language)
-{
-}
 
 ENTRYPOINT(TriviaModule);
 

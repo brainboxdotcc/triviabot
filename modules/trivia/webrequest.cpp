@@ -231,12 +231,12 @@ json get_num_strs()
 
 void enable_all_categories()
 {
-	fetch_page("?opt=enableall");
+	later("?opt=enableall", "");
 }
 
 void send_hint(int64_t snowflake_id, const std::string &hint, uint32_t remaining)
 {
-	fetch_page(fmt::format("?opt=customhint&user_id={}&hint={}&remaining={}", snowflake_id, url_encode(hint), remaining));
+	later(fmt::format("?opt=customhint&user_id={}&hint={}&remaining={}", snowflake_id, url_encode(hint), remaining), "");
 }
 
 std::string custom_command(const std::string &command, const std::string &parameters, int64_t user_id, int64_t channel_id, int64_t guild_id)
@@ -246,12 +246,12 @@ std::string custom_command(const std::string &command, const std::string &parame
 
 void enable_category(const std::string &cat)
 {
-	fetch_page(fmt::format("?opt=enable&catname={}", cat));
+	later(fmt::format("?opt=enable&catname={}", cat), "");
 }
 
 void disable_category(const std::string &cat)
 {
-	fetch_page(fmt::format("?opt=disable&catname={}", cat));
+	later(fmt::format("?opt=disable&catname={}", cat), "");
 }
 
 void update_score_only(int64_t snowflake_id, int64_t guild_id, int score)
@@ -272,7 +272,7 @@ void log_game_end(int64_t guild_id, int64_t channel_id)
 	char hostname[1024];
 	hostname[1023] = '\0';
 	gethostname(hostname, 1023);
-	fetch_page(fmt::format("?opt=gameend&guild_id={}&channel_id={}&hostname={}", guild_id, channel_id, url_encode(hostname)));
+	later(fmt::format("?opt=gameend&guild_id={}&channel_id={}&hostname={}", guild_id, channel_id, url_encode(hostname)), "");
 }
 
 bool log_question_index(int64_t guild_id, int64_t channel_id, int32_t index, uint32_t streak, int64_t lastanswered, int32_t state)
@@ -321,7 +321,7 @@ std::string get_current_team(int64_t snowflake_id)
 
 void leave_team(int64_t snowflake_id)
 {
-	fetch_page(fmt::format("?opt=leaveteam&nick={}", snowflake_id));
+	later(fmt::format("?opt=leaveteam&nick={}", snowflake_id), "");
 }
 
 bool join_team(int64_t snowflake_id, const std::string &team, int64_t channel_id)
@@ -346,7 +346,7 @@ std::string get_rank(int64_t snowflake_id, int64_t guild_id)
 
 void change_streak(int64_t snowflake_id, int64_t guild_id, int score)
 {
-	fetch_page(fmt::format("?opt=changestreak&nick={}&score={}&guild_id={}", snowflake_id, score, guild_id));
+	later(fmt::format("?opt=changestreak&nick={}&score={}&guild_id={}", snowflake_id, score, guild_id), "");
 }
 
 streak_t get_streak(int64_t snowflake_id, int64_t guild_id)
