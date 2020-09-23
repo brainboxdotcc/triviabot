@@ -6,7 +6,9 @@
         "fr": "<:sporks_error:664735896251269130> Je ne peux pas faire une **embed** à partir de ceci: ```js\n{0}\n``` **Erreur:** ``{1}``",
         "es": "<:sporks_error:664735896251269130> No puedo hacer una ** incrustación ** de esto: ```js\n{0}\n```**Error:** ``{1}``",
         "de": "<:sporks_error:664735896251269130> Ich kann daraus keine ** Einbettung ** machen: ```js\n{0}\n``` ** Fehler:** ``{1}``",
-        "hi": "<:sporks_error:664735896251269130> मैं इससे **एम्बेड नहीं ** कर सकता: `` js\n{0}\n`` `**त्रुटि: *`  {1}` "
+        "hi": "<:sporks_error:664735896251269130> मैं इससे **एम्बेड नहीं ** कर सकता: ```js\n{0}\n``` **त्रुटि:** `` {1}``",
+        "sv": "<:sporks_error:664735896251269130> Jag kan inte skapa en **bädda in** från detta: ```js\n{0}\n``` **Fel:** ``{1}``",
+        "ru": "<:sporks_error:664735896251269130> Я не могу **встроить** из этого: ```js\n{0}\n``` **Ошибка:** ``{1}``"
     },
     "MALFORMED_UNICODE": {
         "en": "Malformed unicode in embed: {0}",
@@ -15,7 +17,9 @@
         "fr": "Unicode incorrect dans l'embed: {0}",
         "es": "Unicode con formato incorrecto en la inserción: {0}",
         "de": "Fehlerhafter Unicode in der Einbettung: {0}",
-        "hi": "एम्बेड में यूनिकोड विकृत: {0}"
+        "hi": "एम्बेड में यूनिकोड विकृत: {0}",
+        "sv": "Felaktig unicode i bädden: {0}",
+        "ru": "Неправильный формат юникода при встраивании: {0}"
     },
     "POWERED_BY": {
         "en": "Powered By TriviaBot!",
@@ -24,7 +28,9 @@
         "fr": "Propulsé par TriviaBot!",
         "es": "Desarrollado por TriviaBot!",
         "de": "Powered By TriviaBot!",
-        "hi": "सामान्य ज्ञान द्वारा संचालित!"
+        "hi": "सामान्य ज्ञान द्वारा संचालित!",
+        "sv": "Drivs av TriviaBot!",
+        "ru": "Работает на TriviaBot!"
     },
     "ROMAN": {
         "en": "Roman numerals: {0}",
@@ -33,7 +39,9 @@
         "fr": "Chiffres romains: {0}",
         "es": "Números romanos: {0}",
         "de": "Römische Ziffern: {0}",
-        "hi": "रोमन अंक: {0}"
+        "hi": "रोमन अंक: {0}",
+        "sv": "Romerska siffror: {0}",
+        "ru": "Римские цифры: {0}"
     },
     "ONE": {
         "en": "one",
@@ -42,7 +50,9 @@
         "fr": "un",
         "es": "uno",
         "de": "einer",
-        "hi": "एक"
+        "hi": "एक",
+        "sv": "ett",
+        "ru": "один"
     },
     "TWO": {
         "en": "two",
@@ -51,7 +61,9 @@
         "fr": "deux",
         "es": "dos",
         "de": "zwei",
-        "hi": "दो"
+        "hi": "दो",
+        "sv": "två",
+        "ru": "два"
     },
     "THREE": {
         "en": "three",
@@ -60,7 +72,9 @@
         "fr": "trois",
         "es": "Tres",
         "de": "drei",
-        "hi": "तीन"
+        "hi": "तीन",
+        "sv": "tre",
+        "ru": "три"
     },
     "FOUR": {
         "en": "four",
@@ -69,7 +83,9 @@
         "fr": "quatre",
         "es": "cuatro",
         "de": "vier",
-        "hi": "चार"
+        "hi": "चार",
+        "sv": "fyra",
+        "ru": "четыре"
     },
     "FIVE": {
         "en": "five",
@@ -78,7 +94,9 @@
         "fr": "cinq",
         "es": "cinco",
         "de": "fünf",
-        "hi": "पांच"
+        "hi": "पांच",
+        "sv": "fem",
+        "ru": "пять"
     },
     "SIX": {
         "en": "six",
@@ -87,7 +105,9 @@
         "fr": "six",
         "es": "seis",
         "de": "sechs",
-        "hi": "छह"
+        "hi": "छह",
+        "sv": "sex",
+        "ru": "шесть"
     },
     "SEVEN": {
         "en": "seven",
@@ -96,7 +116,9 @@
         "fr": "sept",
         "es": "Siete",
         "de": "Sieben",
-        "hi": "सात"
+        "hi": "सात",
+        "sv": "sju",
+        "ru": "Семь"
     },
     "EIGHT": {
         "en": "eight",
@@ -105,7 +127,9 @@
         "fr": "huit",
         "es": "ocho",
         "de": "acht",
-	"hi": "आठ"
+        "hi": "आठ",
+        "sv": "åtta",
+        "ru": "восемь"
     },
     "NINE": {
         "en": "nine",
@@ -114,7 +138,9 @@
         "fr": "neuf",
         "es": "nueve",
         "de": "neun",
-        "hi": "नौ"
+        "hi": "नौ",
+        "sv": "nio",
+        "ru": "девять"
     },
     "TEN": {
         "en": "ten",
@@ -123,7 +149,9 @@
         "fr": "dix",
         "es": "diez",
         "de": "zehn",
-        "hi": "दस"
+        "hi": "दस",
+        "sv": "tio",
+        "ru": "десять"
     },
     "ELEVEN": {
         "en": "eleven",
@@ -132,7 +160,9 @@
         "fr": "onze",
         "es": "once",
         "de": "elf",
-        "hi": "ग्यारह"
+        "hi": "ग्यारह",
+        "sv": "elva",
+        "ru": "одиннадцать"
     },
     "TWELVE": {
         "en": "twelve",
@@ -140,7 +170,9 @@
         "pt": "doze",
         "fr": "douze",
         "es": "doce",
-        "hi": "बारह"
+        "hi": "बारह",
+        "sv": "tolv",
+        "ru": "двенадцать"
     },
     "THIRTEEN": {
         "en": "thirteen",
@@ -148,8 +180,10 @@
         "pt": "treze",
         "fr": "treize",
         "de": "dreizehn",
-	"es": "trece",
-        "hi": "तेरह"
+        "es": "trece",
+        "hi": "तेरह",
+        "sv": "tretton",
+        "ru": "тринадцать"
     },
     "FOURTEEN": {
         "en": "fourteen",
@@ -158,7 +192,9 @@
         "fr": "quatorze",
         "es": "catorce",
         "de": "vierzehn",
-        "hi": "चौदह"
+        "hi": "चौदह",
+        "sv": "fjorton",
+        "ru": "четырнадцать"
     },
     "FIFTEEN": {
         "en": "fifteen",
@@ -167,7 +203,9 @@
         "fr": "quinze",
         "es": "quince",
         "de": "fünfzehn",
-        "hi": "पंद्रह"
+        "hi": "पंद्रह",
+        "sv": "femton",
+        "ru": "пятнадцать"
     },
     "SIXTEEN": {
         "en": "sixteen",
@@ -176,7 +214,9 @@
         "fr": "seize",
         "es": "dieciséis",
         "de": "Sechszehn",
-        "hi": "सोलह"
+        "hi": "सोलह",
+        "sv": "sexton",
+        "ru": "шестнадцать"
     },
     "SEVENTEEN": {
         "en": "seventeen",
@@ -185,7 +225,9 @@
         "fr": "dix-sept",
         "es": "de diecisiete",
         "de": "siebzehn",
-        "hi": "सत्रह"
+        "hi": "सत्रह",
+        "sv": "sjutton",
+        "ru": "семнадцать"
     },
     "EIGHTEEN": {
         "en": "eighteen",
@@ -194,7 +236,9 @@
         "fr": "dix-huit",
         "es": "Dieciocho",
         "de": "achtzehn",
-        "hi": "अठारह"
+        "hi": "अठारह",
+        "sv": "arton",
+        "ru": "восемнадцать"
     },
     "NINETEEN": {
         "en": "nineteen",
@@ -203,7 +247,9 @@
         "fr": "dix-neuf",
         "es": "diecinueve",
         "de": "neunzehn",
-        "hi": "उन्नीस"
+        "hi": "उन्नीस",
+        "sv": "nitton",
+        "ru": "девятнадцать"
     },
     "TWENTY": {
         "en": "twenty",
@@ -212,7 +258,9 @@
         "fr": "vingt",
         "es": "veinte",
         "de": "zwanzig",
-        "hi": "बीस"
+        "hi": "बीस",
+        "sv": "tjugo",
+        "ru": "двадцать"
     },
     "THIRTY": {
         "en": "thirty",
@@ -221,7 +269,9 @@
         "fr": "trente",
         "es": "treinta",
         "de": "dreißig",
-        "hi": "तीस"
+        "hi": "तीस",
+        "sv": "trettio",
+        "ru": "тридцать"
     },
     "FOURTY": {
         "en": "fourty",
@@ -230,7 +280,9 @@
         "fr": "quarante",
         "es": "cuarenta",
         "de": "vierzig",
-        "hi": "चालीस"
+        "hi": "चालीस",
+        "sv": "fyrtio",
+        "ru": "сорок"
     },
     "FIFTY": {
         "en": "fifty",
@@ -239,7 +291,9 @@
         "fr": "cinquante",
         "es": "cincuenta",
         "de": "fünfzig",
-        "hi": "पचास"
+        "hi": "पचास",
+        "sv": "femtio",
+        "ru": "пятьдесят"
     },
     "SIXTY": {
         "en": "sixty",
@@ -248,7 +302,9 @@
         "fr": "soixante",
         "es": "sesenta",
         "de": "sechzig",
-        "hi": "साठ"
+        "hi": "साठ",
+        "sv": "sextio",
+        "ru": "шестьдесят"
     },
     "SEVENTY": {
         "en": "seventy",
@@ -257,7 +313,9 @@
         "fr": "soixante-dix",
         "es": "setenta",
         "de": "siebzig",
-        "hi": "सत्तर"
+        "hi": "सत्तर",
+        "sv": "sjuttio",
+        "ru": "семьдесят"
     },
     "EIGHTY": {
         "en": "eighty",
@@ -266,7 +324,9 @@
         "fr": "quatre-vingts",
         "es": "ochenta",
         "de": "achtzig",
-        "hi": "अस्सी"
+        "hi": "अस्सी",
+        "sv": "åttio",
+        "ru": "восемьдесят"
     },
     "NINETY": {
         "en": "ninety",
@@ -275,7 +335,9 @@
         "fr": "quatre-vingt dix",
         "es": "noventa",
         "de": "neunzig",
-        "hi": "नव्वे"
+        "hi": "नव्वे",
+        "sv": "nittio",
+        "ru": "девяносто"
     },
     "HUNDRED": {
         "en": "hundred",
@@ -284,7 +346,9 @@
         "fr": "cent",
         "es": "cien",
         "de": "hundert",
-        "hi": "सौ"
+        "hi": "सौ",
+        "sv": "hundra",
+        "ru": "сотня"
     },
     "THOUSAND": {
         "en": "thousand",
@@ -293,7 +357,9 @@
         "fr": "mille",
         "es": "mil",
         "de": "tausend",
-        "hi": "हज़ार"
+        "hi": "हज़ार",
+        "sv": "tusen",
+        "ru": "тысяча"
     },
     "DOLLARS": {
         "en": "dollars",
@@ -302,7 +368,9 @@
         "fr": "dollars",
         "es": "dolares",
         "de": "Dollar",
-        "hi": "डॉलर"
+        "hi": "डॉलर",
+        "sv": "dollar",
+        "ru": "доллары"
     },
     "ZERO": {
         "en": "zero",
@@ -311,7 +379,9 @@
         "fr": "zéro",
         "es": "cero",
         "de": "Null",
-        "hi": "शून्य"
+        "hi": "शून्य",
+        "sv": "noll",
+        "ru": "нуль"
     },
     "AND_SPACED": {
         "en": " and ",
@@ -320,7 +390,9 @@
         "fr": " et ",
         "es": " y ",
         "de": " und ",
-        "hi": " तथा" 
+        "hi": " तथा",
+        "sv": " och ",
+        "ru": " и "
     },
     "MILLION": {
         "en": "million",
@@ -329,7 +401,9 @@
         "fr": "million",
         "es": "millón",
         "de": "Million",
-        "hi": "दस लाख"
+        "hi": "दस लाख",
+        "sv": "miljon",
+        "ru": "миллион"
     },
     "HTM_REGEX": {
         "en": "hundred|thousand|million",
@@ -338,7 +412,9 @@
         "fr": "cent|mille|million",
         "es": "cien|mil|millones",
         "de": "Hunderttausend Millionen",
-        "hi": "सौ  हजार  मिलियन"
+        "hi": "सौ|हजार|मिलियन",
+        "sv": "hundra|tusen|miljoner",
+        "ru": "сто|тысяч|миллионов"
     },
     "HINT_LETTERLONG": {
         "en": "{0} letters long. Starts with '{1}' and ends with '{2}'.",
@@ -347,7 +423,9 @@
         "fr": "{0} lettres de long. Commence par '{1}' et se termine par '{2}'.",
         "es": "{0} letras de largo. Comienza con '{1}' y termina con '{2}'.",
         "de": "{0} Buchstaben lang. Beginnt mit '{1}' und endet mit '{2}'.",
-        "hi": "{0} अक्षर लंबे। '{1}' से शुरू होता है और '{2}' के साथ समाप्त होता है।"
+        "hi": "{0} अक्षर लंबे। '{1}' से शुरू होता है और '{2}' के साथ समाप्त होता है।",
+        "sv": "{0} bokstäver långa. Börjar med \"{1}\" och slutar med \"{2}\".",
+        "ru": "Длина букв: {0}. Начинается с \"{1}\" и заканчивается \"{2}\"."
     },
     "HINT_VOWELCOUNT": {
         "en": "{0} letters long and contains {1} vowels.",
@@ -356,7 +434,9 @@
         "fr": "{0} lettres de long et contient {1} voyelles.",
         "es": "{0} letras de largo y contiene {1} vocales.",
         "de": "{0} Buchstaben lang und enthält {1} Vokale.",
-        "hi": "{0} अक्षर लंबे और इसमें {1} स्वर होते हैं।"
+        "hi": "{0} अक्षर लंबे और इसमें {1} स्वर होते हैं।",
+        "sv": "{0} bokstäver långa och innehåller {1} vokaler.",
+        "ru": "Букв: {0} и содержит {1} гласных."
     },
     "COMMA_PLUS_SPACE": {
         "en": ", plus ",
@@ -365,7 +445,9 @@
         "fr": ", plus ",
         "es": ", más ",
         "de": ", Plus ",
-        "hi": " प्लस "
+        "hi": " प्लस ",
+        "sv": ", plus ",
+        "ru": ", плюс "
     },
     "LOWEST_NONNEG": {
         "en": "The lowest non-negative number",
@@ -374,7 +456,9 @@
         "fr": "Le plus petit nombre non négatif",
         "es": "El número no negativo más bajo",
         "de": "Die niedrigste nicht negative Zahl",
-        "hi": "सबसे कम गैर-नकारात्मक संख्या"
+        "hi": "सबसे कम गैर-नकारात्मक संख्या",
+        "sv": "Det lägsta icke-negativa talet",
+        "ru": "Наименьшее неотрицательное число"
     },
     "INDOLLARS": {
         "en": "{0}, in dollars",
@@ -383,16 +467,20 @@
         "fr": "{0}, en dollars",
         "es": "{0}, en dólares",
         "de": "{0} in Dollar",
-        "hi": "{0}, डॉलर में"
+        "hi": "{0}, डॉलर में",
+        "sv": "{0}, i dollar",
+        "ru": "{0}, в долларах"
     },
     "QUESTION_COUNTER": {
         "en": ":question: Question {0} of {1}",
         "tr": ":question: Soru: {0} \/ {1}",
         "pt": ":question: Question {0} de {1}",
         "fr": ":question: Question {0} sur {1}",
-        "es": ": question: Pregunta {0} de {1}",
-        "de": ": Frage: Frage {0} von {1}",
-        "hi": ": प्रश्न: प्रश्न {0} का {1}"
+        "es": ":question: Pregunta {0} de {1}",
+        "de": ":question: Frage {0} von {1}",
+        "hi": ":question: प्रश्न {0} का {1}",
+        "sv": ":question: Fråga {0} av {1}",
+        "ru": ":question: Вопрос {0} из {1}"
     },
     "INSANE_ROUND": {
         "en": "Insane Round!",
@@ -401,7 +489,9 @@
         "fr": "Tour fou!",
         "es": "¡Insane Round!",
         "de": "Wahnsinnige Runde!",
-        "hi": "पागल दौर!"
+        "hi": "पागल दौर!",
+        "sv": "Galen runda!",
+        "ru": "Безумный раунд!"
     },
     "INSANE_ANS_COUNT": {
         "en": "Total of {0} possible answers",
@@ -410,7 +500,9 @@
         "fr": "Total de {0} réponses possibles",
         "es": "Total de {0} posibles respuestas",
         "de": "Insgesamt {0} mögliche Antworten",
-        "hi": "कुल {0} संभव उत्तर"
+        "hi": "कुल {0} संभव उत्तर",
+        "sv": "Totalt {0} möjliga svar",
+        "ru": "Всего возможных ответов: {0}"
     },
     "QUESTION": {
         "en": "Question",
@@ -419,7 +511,9 @@
         "fr": "Question",
         "es": "Pregunta",
         "de": "Frage",
-        "hi": "सवाल"
+        "hi": "सवाल",
+        "sv": "Fråga",
+        "ru": "Вопрос"
     },
     "Q_FETCH_ERROR": {
         "en": ":question: Couldn't fetch question from API",
@@ -428,7 +522,9 @@
         "fr": ":question: Impossible de récupérer la question depuis l'API",
         "es": ":question: No se pudo recuperar la pregunta de la API",
         "de": ":question: Frage konnte nicht von API abgerufen werden",
-        "hi": ":question: एपीआई से सवाल नहीं उठा सकता"
+        "hi": ":question: एपीआई से सवाल नहीं उठा सकता",
+        "sv": ":question: Det gick inte att hämta frågan från API",
+        "ru": ":question: Не удалось получить вопрос из API"
     },
     "Q_SPOOPY": {
         "en": "This seems spoopy",
@@ -437,7 +533,9 @@
         "fr": "Cela semble cassé",
         "es": "Esto parece espeluznante",
         "de": "Das scheint verdorben",
-        "hi": "यह खराब लगता है"
+        "hi": "यह खराब लगता है",
+        "sv": "Detta verkar otrevligt",
+        "ru": "Это кажется глупым"
     },
     "Q_CONTACT_DEVS": {
         "en": "[Please contact the developers](https:\/\/discord.gg\/brainbox)",
@@ -446,7 +544,9 @@
         "fr": "[Veuillez contacter les développeurs](https:\/\/discord.gg\/brainbox)",
         "es": "[Comuníquese con los desarrolladores](https:\/\/discord.gg\/brainbox)",
         "de": "[Bitte kontaktieren Sie die Entwickler](https:\/\/discord.gg\/brainbox)",
-        "hi": "[कृपया डेवलपर्स से संपर्क करें](https:\/\/discord.gg\/brainbox)"
+        "hi": "[कृपया डेवलपर्स से संपर्क करें](https:\/\/discord.gg\/brainbox)",
+        "sv": "[Vänligen kontakta utvecklarna](https:\/\/discord.gg\/brainbox)",
+        "ru": "[Свяжитесь с разработчиками](https:\/\/discord.gg\/brainbox)"
     },
     "ROUND_STOPPING": {
         "en": "Round stopping",
@@ -455,7 +555,9 @@
         "fr": "Arrêt rond",
         "es": "Parada redonda",
         "de": "Rundes Anhalten",
-        "hi": "राउंड स्टॉपिंग"
+        "hi": "राउंड स्टॉपिंग",
+        "sv": "Runda stopp",
+        "ru": "Круглая остановка"
     },
     "ERROR_BROKE_IT": {
         "en": "Error has stopped play!",
@@ -464,7 +566,9 @@
         "fr": "Une erreur a arrêté le jeu!",
         "es": "¡El error ha detenido la reproducción!",
         "de": "Fehler hat die Wiedergabe gestoppt!",
-        "hi": "त्रुटि ने खेलना बंद कर दिया है!"
+        "hi": "त्रुटि ने खेलना बंद कर दिया है!",
+        "sv": "Fel har slutat spela!",
+        "ru": "Ошибка остановила воспроизведение!"
     },
     "SCRAMBLED_ANSWER": {
         "en": "Scrambled Answer: {0}",
@@ -473,7 +577,9 @@
         "fr": "Réponse brouillée: {0}",
         "es": "Respuesta codificada: {0}",
         "de": "Verschlüsselte Antwort: {0}",
-        "hi": "तले हुए उत्तर: {0}"
+        "hi": "तले हुए उत्तर: {0}",
+        "sv": "Förvrängd svar: {0}",
+        "ru": "Зашифрованный ответ: {0}"
     },
     "HEX": {
         "en": "Hexadecimal: {0:x}",
@@ -482,7 +588,9 @@
         "fr": "Hexadécimal: {0:x}",
         "es": "Hexadecimal: {0:x}",
         "de": "Hexadezimal: {0:x}",
-        "hi": "हेक्साडेसिमल:  {0:x}"
+        "hi": "हेक्साडेसिमल:  {0:x}",
+        "sv": "Hexadecimal: {0:x}",
+        "ru": "Шестнадцатеричный: {0:x}"
     },
     "OCT": {
         "en": "Octal: {0:o}",
@@ -491,7 +599,9 @@
         "fr": "Octal: {0:o}",
         "es": "Octal: {0:o}",
         "de": "Oktal: {0:o}",
-        "hi": "अष्टदल:  {0:o}"
+        "hi": "अष्टदल:  {0:o}",
+        "sv": "Oktal: {0:o}",
+        "ru": "Восьмеричный: {0:o}"
     },
     "BIN": {
         "en": "Binary: {0:b}",
@@ -500,7 +610,9 @@
         "fr": "Binaire: {0:b}",
         "es": "Binario: {0:b}",
         "de": "Binär: {0:b}",
-        "hi": "बाइनरी:  {0:b}"
+        "hi": "बाइनरी:  {0:b}",
+        "sv": "Binär: {0:b}",
+        "ru": "Двоичный: {0:b}"
     },
     "CATEGORY": {
         "en": "Category",
@@ -509,7 +621,9 @@
         "fr": "Catégorie",
         "es": "Categoría",
         "de": "Kategorie",
-        "hi": "वर्ग"
+        "hi": "वर्ग",
+        "sv": "Kategori",
+        "ru": "Категория"
     },
     "BRAIN_BROKE_IT": {
         "en": "Something's up, got a question with no text! This shouldn't happen...",
@@ -518,7 +632,9 @@
         "fr": "Quelque chose se passe, j'ai une question sans texte! Cela ne devrait pas arriver...",
         "es": "¡Algo pasa, tengo una pregunta sin texto! Esto no debería suceder ...",
         "de": "Etwas ist los, habe eine Frage ohne Text! Das sollte nicht passieren ...",
-        "hi": "कुछ है, कोई पाठ नहीं के साथ एक सवाल है! ऐसा नहीं होना चाहिए ..."
+        "hi": "कुछ है, कोई पाठ नहीं के साथ एक सवाल है! ऐसा नहीं होना चाहिए ...",
+        "sv": "Något är uppe, har en fråga utan text! Detta borde inte hända ...",
+        "ru": "Что-то случилось, есть вопрос без текста! Этого не должно происходить ..."
     },
     "FETCH_Q": {
         "en": "Fetch Question",
@@ -527,7 +643,9 @@
         "fr": "Récupérer la question",
         "es": "Obtener pregunta",
         "de": "Frage holen",
-        "hi": "लाने का प्रश्न"
+        "hi": "लाने का प्रश्न",
+        "sv": "Hämta fråga",
+        "ru": "Получить вопрос"
     },
     "SECS_LEFT": {
         "en": "You have **{0}** seconds remaining!",
@@ -536,7 +654,9 @@
         "fr": "Il vous reste **{0}** secondes!",
         "es": "¡Te quedan **{0}** segundos!",
         "de": "Sie haben noch **{0}** Sekunden!",
-        "hi": "आपके पास ***{0}** सेकंड शेष है!"
+        "hi": "आपके पास **{0}** सेकंड शेष है!",
+        "sv": "Du har **{0}** sekunder kvar!",
+        "ru": "У вас осталось **{0}** секунд!"
     },
     "FIRST_HINT": {
         "en": "First Hint",
@@ -545,7 +665,9 @@
         "fr": "Premier indice",
         "es": "Primera pista",
         "de": "Erster Hinweis",
-        "hi": "पहला संकेत"
+        "hi": "पहला संकेत",
+        "sv": "Första ledtråden",
+        "ru": "Первый совет"
     },
     "SECOND_HINT": {
         "en": "Second Hint",
@@ -553,7 +675,9 @@
         "pt": "Segunda dica",
         "fr": "Deuxième indice",
         "es": "Segunda pista",
-        "de": "Zweiter Hinweis"
+        "de": "Zweiter Hinweis",
+        "sv": "Andra ledtråden",
+        "ru": "Второй намек"
     },
     "INSANE_FOUND": {
         "en": "**{0}** answers were found!",
@@ -562,7 +686,9 @@
         "fr": "**{0}** réponses ont été trouvées!",
         "es": "**{0}** ¡Se encontraron respuestas!",
         "de": "**{0}** Antworten wurden gefunden!",
-        "hi": "**{0}**  जवाब मिला!"
+        "hi": "**{0}**  जवाब मिला!",
+        "sv": "**{0}** svar hittades!",
+        "ru": "Найдено **{0}** ответов!"
     },
     "ANS_WAS": {
         "en": "The answer was: **{0}**",
@@ -571,7 +697,9 @@
         "fr": "La réponse était: **{0}**",
         "es": "La respuesta fue: **{0}**",
         "de": "Die Antwort war: **{0}**",
-        "hi": "जवाब था: ****{0}**"
+        "hi": "जवाब था: **{0}**",
+        "sv": "Svaret var: **{0}**",
+        "ru": "Ответ был: **{0}**"
     },
     "STREAK_SMASHED": {
         "en": "**{0}**'s streak of **{1}** answers in a row comes to a grinding halt!",
@@ -580,7 +708,9 @@
         "fr": "La série de réponses consécutives de **{0}** **{1}** s'interrompt!",
         "es": "**{0}** ¡La racha de **{1}** respuestas seguidas se detiene!",
         "de": "**{0}** 's Streifen von **{1}** Antworten in einer Reihe kommt zum Erliegen!",
-        "hi": "**{0}**  की लकीर **{1}** एक पंक्ति में जवाब एक पीस पड़ाव के लिए आता है!"
+        "hi": "**{0}**  की लकीर **{1}** एक पंक्ति में जवाब एक पीस पड़ाव के लिए आता है!",
+        "sv": "**{0}** s sträcka av **{1}** svar i rad slutar slipa!",
+        "ru": "Серия **{0}** ответов подряд **{1}** подошла к концу!"
     },
     "TIME_UP": {
         "en": "Time Up!",
@@ -588,7 +718,10 @@
         "pt": "Tempo esgotado!",
         "fr": "Temps Écoulé!",
         "es": "¡Se acabó el tiempo!",
-        "hi": "समय समाप्त!"
+        "de": "Zeit vorbei!",
+        "hi": "समय समाप्त!",
+        "sv": "Tiden är ute!",
+        "ru": "Время вышло!"
     },
     "OUT_OF_TIME": {
         "en": "Out of time!",
@@ -596,7 +729,9 @@
         "pt": "Fora do tempo!",
         "fr": "Hors du temps!",
         "de": "Keine Zeit mehr!",
-        "hi": "समय से बाहर!"
+        "hi": "समय से बाहर!",
+        "sv": "För sent!",
+        "ru": "Вне времени!"
     },
     "COMING_UP": {
         "en": "Next question coming up in about **{0}** seconds...",
@@ -605,7 +740,9 @@
         "fr": "Prochaine question dans environ **{0}** secondes...",
         "es": "La próxima pregunta aparecerá en unos **{0}** segundos ...",
         "de": "Die nächste Frage kommt in ungefähr **{0}** Sekunden ...",
-        "hi": "अगला सवाल **{0}** सेकंड के बारे में आ रहा है ..."
+        "hi": "अगला सवाल **{0}** सेकंड के बारे में आ रहा है ...",
+        "sv": "Nästa fråga kommer om cirka **{0}** sekunder ...",
+        "ru": "Следующий вопрос появится примерно через **{0}** секунд ..."
     },
     "REST": {
         "en": "A little time to rest your fingers...",
@@ -614,7 +751,9 @@
         "fr": "Un petit peu de temps pour reposer vos doigts...",
         "es": "Un poco de tiempo para descansar los dedos ...",
         "de": "Ein wenig Zeit, um Ihre Finger auszuruhen ...",
-        "hi": "थोड़ा समय अपनी उंगलियों को आराम देने के लिए ..."
+        "hi": "थोड़ा समय अपनी उंगलियों को आराम देने के लिए ...",
+        "sv": "Lite tid att vila fingrarna ...",
+        "ru": "Пора дать пальцам отдохнуть ..."
     },
     "END1": {
         "en": "End of round of **{0}** questions",
@@ -623,7 +762,9 @@
         "fr": "Fin de la série de **{0}** questions",
         "es": "Fin de la ronda de **{0}** preguntas",
         "de": "Ende der Runde der **{0}** Fragen",
-        "hi": "**{0}** सवालों के दौर का अंत"
+        "hi": "**{0}** सवालों के दौर का अंत",
+        "sv": "Slutet på omgången av **{0}** frågor",
+        "ru": "Конец раунда **{0}** вопросов"
     },
     "END_TITLE": {
         "en": "End of the round",
@@ -632,7 +773,9 @@
         "fr": "Fin du tour",
         "es": "Fin de la ronda",
         "de": "Ende der Runde",
-        "hi": "दौर का अंत"
+        "hi": "दौर का अंत",
+        "sv": "Slutet på omgången",
+        "ru": "Конец раунда"
     },
     "LEADERBOARD": {
         "en": "Trivia Leaderboard",
@@ -641,7 +784,9 @@
         "fr": "Classement Trivia",
         "es": "Tabla de clasificación de trivia",
         "de": "Wissenswertes Leaderboard",
-        "hi": "ट्रिविया लीडरबोर्ड"
+        "hi": "ट्रिविया लीडरबोर्ड",
+        "sv": "Trivia Ledartavla",
+        "ru": "Таблица лидеров"
     },
     "TOP_TEN": {
         "en": "Today's Top Ten",
@@ -650,7 +795,9 @@
         "fr": "Le top dix du jour",
         "es": "Los diez mejores de hoy",
         "de": "Die heutigen Top Ten",
-        "hi": "आज का टॉप टेन"
+        "hi": "आज का टॉप टेन",
+        "sv": "Dagens topp tio",
+        "ru": "Сегодняшняя десятка"
     },
     "MORE_INFO": {
         "en": "More Information",
@@ -659,7 +806,9 @@
         "fr": "Plus d'informations",
         "es": "Más información",
         "de": "Mehr Informationen",
-        "hi": "अधिक जानकारी"
+        "hi": "अधिक जानकारी",
+        "sv": "Mer information",
+        "ru": "Больше информации"
     },
     "LEADER_LINK": {
         "en": "[View server leaderboards](https:\/\/triviabot.co.uk\/stats\/{0})\nDaily scores reset at midnight GMT.",
@@ -668,7 +817,9 @@
         "fr": "[Afficher les classements des serveurs](https:\/\/triviabot.co.uk\/stats\/{0})\nLes scores quotidiens sont réinitialisés à minuit GMT.",
         "es": "[Ver tablas de clasificación del servidor](https:\/\/triviabot.co.uk\/stats\/{0})\nLas puntuaciones diarias se restablecen a la medianoche GMT.",
         "de": "[Server-Bestenlisten anzeigen](https:\/\/triviabot.co.uk\/stats\/ {0})\nDie täglichen Ergebnisse werden um Mitternacht GMT zurückgesetzt.",
-        "hi": "[सर्वर लीडरबोर्ड देखें](https:\/\/triviabot.co.uk\/stats\/{0})\nआधी रात के जीएमटी पर दैनिक स्कोर रीसेट।"
+        "hi": "[सर्वर लीडरबोर्ड देखें](https:\/\/triviabot.co.uk\/stats\/{0}0)\nआधी रात के जीएमटी पर दैनिक स्कोर रीसेट।",
+        "sv": "[Visa serverlistor](https:\/\/triviabot.co.uk\/stats\/{0})\nDagliga poäng återställs vid midnatt GMT.",
+        "ru": "[Просмотреть таблицы лидеров серверов](https:\/\/triviabot.co.uk\/stats\/ {0})\nЕжедневные результаты обнуляются в полночь по Гринвичу."
     },
     "DASH_STOP": {
         "en": "The round of trivia was stopped from the [dashboard](https:\/\/triviabot.co.uk\/dashboard\/)!",
@@ -677,7 +828,9 @@
         "fr": "Le tour de questions a été arrêté depuis le [tableau de bord](https:\/\/triviabot.co.uk\/dashboard\/)!",
         "es": "¡La ronda de trivia se detuvo desde el [tablero](https:\/\/triviabot.co.uk\/dashboard\/)!",
         "de": "Die Trivia-Runde wurde vom [Dashboard](https:\/\/triviabot.co.uk\/dashboard\/) gestoppt!",
-        "hi": "[डैशबोर्ड](https:\/\/triviabot.co.uk\/dashboard\/) से सामान्य ज्ञान का दौर रोक दिया गया था!"
+        "hi": "[डैशबोर्ड](https:\/\/triviabot.co.uk\/dashboard\/) से सामान्य ज्ञान का दौर रोक दिया गया था!",
+        "sv": "Rundan av trivia stoppades från [instrumentpanelen](https:\/\/triviabot.co.uk\/dashboard\/)!",
+        "ru": "Раунд мелочей был остановлен из [панели управления](https:\/\/triviabot.co.uk\/dashboard\/)!"
     },
     "STOPPING": {
         "en": "Round Stopping!",
@@ -686,7 +839,9 @@
         "fr": "Les questions s'arrêtent!",
         "es": "¡Parada redonda!",
         "de": "Runder Stopp!",
-        "hi": "राउंड स्टॉपिंग!"
+        "hi": "राउंड स्टॉपिंग!",
+        "sv": "Rundstopp!",
+        "ru": "Остановка раунда!"
     },
     "PREFIX": {
         "en": "My prefix on this server is ``{0}``. Type ``{1}help`` for help.",
@@ -695,7 +850,9 @@
         "fr": "Mon préfixe sur ce serveur est ``{0}``. Tapez ``{1}help`` pour obtenir de l'aide.",
         "es": "Mi prefijo en este servidor es ``{0}``. Escriba ``{1} ayuda`` para obtener ayuda.",
         "de": "Mein Präfix auf diesem Server ist `` {0} ``. Geben Sie `` {1} help`` ein, um Hilfe zu erhalten.",
-        "hi": "इस सर्वर पर मेरा उपसर्ग ``{0} `` है। मदद के लिए `` {1} मदद `टाइप करें।"
+        "hi": "इस सर्वर पर मेरा उपसर्ग ``{0}`` है। मदद के लिए `` `{1}help`` मदद `टाइप करें।",
+        "sv": "Mitt prefix på den här servern är ``{0}``. Skriv ``{1}help`` för hjälp.",
+        "ru": "Мой префикс на этом сервере - ``{0}``. Для получения справки введите ``{1}help``."
     },
     "LAST_ONE": {
         "en": "**{0}** found the last answer!",
@@ -704,7 +861,9 @@
         "fr": "**{0}** a trouvé la dernière réponse!",
         "es": "**{0}** ¡encontró la última respuesta!",
         "de": "**{0}** hat die letzte Antwort gefunden!",
-        "hi": "**{0}** अंतिम उत्तर मिला!"
+        "hi": "**{0}** अंतिम उत्तर मिला!",
+        "sv": "**{0}** hittade det sista svaret!",
+        "ru": "**{0}** нашел последний ответ!"
     },
     "INSANE_CORRECT": {
         "en": "**{0}** was correct with **{1}**, gaining one point! **{2}** answers remaining out of **{3}**.",
@@ -713,7 +872,9 @@
         "fr": "**{0}** était correct avec **{1}**, gagnant un point! **{2}** réponses restantes sur **{3}**",
         "es": "**{0}** acertó con **{1}**, ¡ganando un punto! **{2}** respuestas restantes de **{3}**.",
         "de": "**{0}** stimmte mit **{1}** überein und gewann einen Punkt! **{2}** Antworten bleiben von **{3}** übrig.",
-        "hi": "**{0}** एक बिंदु प्राप्त करने के साथ **{1}** के साथ सही था! **{2}** शेष उत्तर **{3}** से बाहर है।"
+        "hi": "**{0}** एक बिंदु प्राप्त करने के साथ **{1}** के साथ सही था! **{2}** शेष उत्तर **{3}** से बाहर है।",
+        "sv": "**{0}** var korrekt med **{1}**, fick en poäng! **{2}** svar kvar av **{3}**.",
+        "ru": "**{0}** правильно с **{1}**, получил одно очко! **{2}** ответов осталось из **{3}**."
     },
     "POINT": {
         "en": "point",
@@ -722,7 +883,9 @@
         "fr": "point",
         "es": "punto",
         "de": "Punkt",
-        "hi": "बिंदु"
+        "hi": "बिंदु",
+        "sv": "punkt",
+        "ru": "точка"
     },
     "POINTS": {
         "en": "points",
@@ -731,7 +894,9 @@
         "fr": "points",
         "es": "puntos",
         "de": "Punkte",
-        "hi": "अंक"
+        "hi": "अंक",
+        "sv": "poäng",
+        "ru": "точки"
     },
     "NORM_CORRECT": {
         "en": "The answer was **{0}**. You gain **{1}** {2} for answering in **{3}** seconds!",
@@ -740,7 +905,9 @@
         "fr": "La réponse était **{0}**. Vous gagnez **{1}** {2} pour avoir répondu en **{3}** secondes!",
         "es": "La respuesta fue **{0}**. ¡Ganas **{1}** {2} por responder en **{3}** segundos!",
         "de": "Die Antwort war **{0}**. Sie erhalten **{1}** {2} für die Beantwortung in **{3}** Sekunden!",
-        "hi": "जवाब था **{0}**। आप **{3}** सेकंड में जवाब देने के लिए **{1}** {2} प्राप्त करते हैं!"
+        "hi": "जवाब था **{0}**। आप **{3}** सेकंड में जवाब देने के लिए **{1}** {2} प्राप्त करते हैं!",
+        "sv": "Svaret var **{0}**. Du får **{1}** {2} för att svara på **{3}** sekunder!",
+        "ru": "Ответ был **{0}**. Вы получаете **{1}** {2} за ответ в течение **{3}** секунд!"
     },
     "RECORD_TIME": {
         "en": "\n**{0}** has broken the record time for this question!",
@@ -749,7 +916,9 @@
         "fr": "\n**{0}** a battu le record du temps pour cette question!",
         "es": "\n**{0}** ha batido el tiempo récord para esta pregunta.",
         "de": "\n**{0}** hat die Rekordzeit für diese Frage gebrochen!",
-        "hi": "\n**{0}** ने इस प्रश्न का रिकॉर्ड समय तोड़ा है!"
+        "hi": "\n**{0}** ने इस प्रश्न का रिकॉर्ड समय तोड़ा है!",
+        "sv": "\n**{0}** har brutit rekordtiden för denna fråga!",
+        "ru": "\n**{0}** побил рекорд по времени ответа на этот вопрос!"
     },
     "SCORE_UPDATE": {
         "en": "\n**{0}**'s score is now **{1}**.",
@@ -758,7 +927,9 @@
         "fr": "\nLe score de **{0}** est désormais de **{1}**.",
         "es": "\nLa puntuación de **{0}** ahora es **{1}**.",
         "de": "\n**{0}** Die Punktzahl ist jetzt **{1}**.",
-        "hi": "\n**{0}** का स्कोर अब **{1}** है।"
+        "hi": "\n**{0}** का स्कोर अब **{1}** है।",
+        "sv": "\n**{0}** poäng är nu **{1}**.",
+        "ru": "\n**{0}** теперь набрал **{1}**."
     },
     "TEAM_SCORE": {
         "en": "\nTeam **{0}** also gains **{1}** {2} and is now on **{3}**",
@@ -767,7 +938,9 @@
         "fr": "\nL'équipe **{0}** gagne également **{1}** {2} et compte désormais **{3}**",
         "es": "\nEl equipo **{0}** también gana **{1}** {2} y ahora está en **{3}**",
         "de": "\nTeam **{0}** erhält ebenfalls **{1}** {2} und ist jetzt auf **{3}**",
-        "hi": "\nटीम **{0}** को भी **{1}** {2} का लाभ मिलता है और अब **{3}** पर है"
+        "hi": "\nटीम **{0}** को भी **{1}** {2} का लाभ मिलता है और अब **{3}** पर है",
+        "sv": "\nTeam **{0}** vinner också **{1}** {2} och är nu på **{3}**",
+        "ru": "\nКоманда **{0}** также набирает **{1}** {2} и теперь на **{3}**"
     },
     "ON_A_STREAK": {
         "en": "\n**{0}** is on a streak! **{1}** questions and counting",
@@ -776,7 +949,9 @@
         "fr": "\n**{0}** est sur une séquence! **{1}** questions et compte",
         "es": "\n**{0}** está en racha. **{1}** preguntas y contando",
         "de": "\n**{0}** ist in einer Serie! **{1}** Fragen und Zählen",
-        "hi": "\n**{0}** एक लकीर पर है! **{1}** प्रश्न और गिनती"
+        "hi": "\n**{0}** एक लकीर पर है! **{1}** प्रश्न और गिनती",
+        "sv": "\n**{0}** är på rad! **{1}** frågor och räkningar",
+        "ru": "\n**{0}** на ударе! **{1}** вопросы и подсчет"
     },
     "BEATEN_BEST": {
         "en": ", and has beaten their personal best!",
@@ -784,8 +959,10 @@
         "pt": ", e bateu seu recorde pessoal!",
         "fr": ", et a battu son record personnel!",
         "es": "¡y ha batido su mejor marca personal!",
-        "de": "und hat ihr persönliches Bestes gegeben!",
-        "hi": ", और उनके व्यक्तिगत सर्वश्रेष्ठ को पीटा है!"
+        "de": ", und hat ihr persönliches Bestes gegeben!",
+        "hi": ", और उनके व्यक्तिगत सर्वश्रेष्ठ को पीटा है!",
+        "sv": ", och har slagit sitt personliga bästa!",
+        "ru": ", и побил свой личный рекорд!"
     },
     "NOT_THERE_YET": {
         "en": ", but has some way to go yet before they beat their personal best of **{0}**",
@@ -794,7 +971,9 @@
         "fr": ", mais a encore du chemin à parcourir avant de battre son record personnel de **{0}**",
         "es": ", pero aún le queda mucho camino por recorrer antes de que superen su mejor marca personal de **{0}**",
         "de": ", hat aber noch einen weiten Weg vor sich, bevor sie ihr persönliches Bestes von **{0}** geben",
-        "hi": ", लेकिन अभी तक जाने का कोई रास्ता नहीं है इससे पहले कि वे अपने व्यक्तिगत सर्वश्रेष्ठ **{0}** को हरा दें"
+        "hi": ", लेकिन अभी तक जाने का कोई रास्ता नहीं है इससे पहले कि वे अपने व्यक्तिगत सर्वश्रेष्ठ **{0}** को हरा दें",
+        "sv": ", men har ett tag kvar innan de slog sitt personliga bästa av **{0}**",
+        "ru": ", но им еще предстоит кое-что сделать, прежде чем они побьют свой личный рекорд **{0}**"
     },
     "STREAK_BEATDOWN": {
         "en": "\n**{0}** just beat <@{1}>'s record streak of {2} answers!",
@@ -802,17 +981,21 @@
         "pt": "\n**{0}** acabou de bater o recorde de <@{1}> série de {2} respostas!",
         "fr": "\n**{0}** vient de battre la série record de {2} réponses de <@{1}>!",
         "es": "\n**{0}** ¡acaba de batir la racha récord de <@ {1}> de {2} respuestas!",
-        "de": "\n**{0}** Schlage einfach <@ {1}> 's Rekordstreifen von {2} Antworten!",
-        "hi": "\n**{0}** बस हरा दो <@ {1}> रिकॉर्ड 2 {उत्तर} की लकीर!"
+        "de": "\n**{0}** Schlage einfach <@{1}> 's Rekordstreifen von {2} Antworten!",
+        "hi": "\n**{0}** बस हरा दो <@ {1}> रिकॉर्ड 2 {उत्तर} की लकीर!",
+        "sv": "\n**{0}** slog bara <@{1}> s rekordsträcka med {2} svar!",
+        "ru": "\n**{0}** просто побейте рекордную серию ответов <@{1}> в {2}!"
     },
     "STREAK_ENDER": {
         "en": "\n**{0}** just ended <@{1}>'s streak of {2} answers in a row!",
-        "tr": "\n**{0}** az önce <@ {1}> 'nin arka arkaya gelen {2} yanıt serisini bitirdi!",
+        "tr": "\n**{0}** az önce <@{1}> 'nin arka arkaya gelen {2} yanıt serisini bitirdi!",
         "pt": "\n**{0}** acabou de terminar a série de {2} respostas de <@{1}> consecutivas!",
         "fr": "\n**{0}** vient de terminer la série de {2} réponses consécutives de <@{1}>!",
         "es": "\n**{0}** acaba de terminar la racha de <@{1}> de {2} respuestas seguidas.",
-        "de": "\n**{0}** hat gerade die Reihe von {2} Antworten in Folge hinter <@ {1}> beendet!",
-        "hi": "\n**{0}** बस समाप्त हुआ <@ {1}> पंक्ति में {2} की लकीर!"
+        "de": "\n**{0}** hat gerade die Reihe von {2} Antworten in Folge hinter <@{1}> beendet!",
+        "hi": "\n**{0}** बस समाप्त हुआ <@{1}> पंक्ति में {2} की लकीर!",
+        "sv": "\n**{0}** avslutade precis <@{1}> s rad med {2} svar i rad!",
+        "ru": "\n**{0}** только что завершил серию ответов <@{1}> подряд ({2})!"
     },
     "CORRECT": {
         "en": "Correct, {0}!",
@@ -821,7 +1004,9 @@
         "fr": "Correct, {0}!",
         "es": "¡Correcto, {0}!",
         "de": "Richtig, {0}!",
-        "hi": "सही है, {0}!"
+        "hi": "सही है, {0}!",
+        "sv": "Korrekt, {0}!",
+        "ru": "Верно, {0}!"
     },
     "CHANNEL_WUT": {
         "en": "**{0}**, this channel ID does not exist!",
@@ -830,7 +1015,9 @@
         "fr": "**{0}**, cet ID de chaîne n'existe pas!",
         "es": "**{0}**, este ID de canal no existe.",
         "de": "**{0}**, diese Kanal-ID existiert nicht!",
-        "hi": "**{0}**, यह चैनल आईडी मौजूद नहीं है!"
+        "hi": "**{0}**, यह चैनल आईडी मौजूद नहीं है!",
+        "sv": "**{0}**, detta kanal-ID finns inte!",
+        "ru": "**{0}**, этого идентификатора канала не существует!"
     },
     "ROUND_START_ID": {
         "en": "Round of {0} questions started on channel id {1}",
@@ -839,7 +1026,9 @@
         "fr": "Une série de {0} questions a commencé sur l'ID de chaîne {1}",
         "es": "La ronda de {0} preguntas comenzó con la identificación del canal {1}",
         "de": "Die Runde der {0} Fragen wurde mit der Kanal-ID {1} gestartet.",
-        "hi": "{0} सवालों का दौर चैनल आईडी {1} पर शुरू हुआ"
+        "hi": "{0} सवालों का दौर चैनल आईडी {1} पर शुरू हुआ",
+        "sv": "Omgången av {0} frågor startade på kanal-id {1}",
+        "ru": "По идентификатору канала {1} начат раунд вопросов ({0})"
     },
     "RESTART_RESUME": {
         "en": "Because the bot was restarted, your game was stopped. This game has been resumed.",
@@ -848,7 +1037,9 @@
         "fr": "Parce que le bot a été redémarré, votre jeu a été arrêté. Ce jeu a été repris.",
         "es": "Debido a que se reinició el bot, su juego se detuvo. Este juego se ha reanudado.",
         "de": "Da der Bot neu gestartet wurde, wurde Ihr Spiel gestoppt. Dieses Spiel wurde fortgesetzt.",
-        "hi": "चूँकि बॉट को पुनः आरंभ किया गया था, इसलिए आपका खेल रोक दिया गया था। इस खेल को फिर से शुरू किया गया है।"
+        "hi": "चूँकि बॉट को पुनः आरंभ किया गया था, इसलिए आपका खेल रोक दिया गया था। इस खेल को फिर से शुरू किया गया है।",
+        "sv": "Eftersom bot startades om stoppades ditt spel. Detta spel har återupptagits.",
+        "ru": "Поскольку бот был перезапущен, ваша игра была остановлена. Эта игра была возобновлена."
     },
     "STAFF_ONLY": {
         "en": "Only bot moderators can use this command",
@@ -857,7 +1048,9 @@
         "fr": "Seuls les modérateurs de bot peuvent utiliser cette commande",
         "es": "Solo los moderadores de bot pueden usar este comando",
         "de": "Nur Bot-Moderatoren können diesen Befehl verwenden",
-        "hi": "केवल बॉट मॉडरेटर्स ही इस कमांड का उपयोग कर सकते हैं"
+        "hi": "केवल बॉट मॉडरेटर्स ही इस कमांड का उपयोग कर सकते हैं",
+        "sv": "Endast botmoderatorer kan använda detta kommando",
+        "ru": "Только модераторы ботов могут использовать эту команду"
     },
     "SHITLISTED": {
         "en": "**{0}**, you can't start a round of trivia here, as the bot owner has explicitly blocked games from being started on this server.\nIf you want to start a round of trivia, first [invite the bot](https:\/\/discord.com\/oauth2\/authorize?client_id={1}&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code) to your own server!",
@@ -866,7 +1059,9 @@
         "fr": "**{0}**, vous ne pouvez pas commencer une série de questions-réponses ici, car le propriétaire du bot a explicitement bloqué le démarrage de jeux sur ce serveur.\nSi vous souhaitez commencer une série de questions-réponses, d'abord [invitez le bot](https:\/\/discord.com\/oauth2\/authorize?client_id={1}&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code) à votre propre serveur!",
         "es": "**{0}**, no puedes comenzar una ronda de trivia aquí, ya que el propietario del bot ha bloqueado explícitamente el inicio de juegos en este servidor.\nSi desea iniciar una ronda de trivia, primero [invite al bot](https:\/\/discord.com\/oauth2\/authorize?client_id={1}&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code) a su propio servidor.",
         "de": "**{0}**, Sie können hier keine Trivia-Runde starten, da der Bot-Besitzer das Starten von Spielen auf diesem Server explizit blockiert hat.\nWenn Sie eine Runde Trivia starten möchten, [laden Sie den Bot ein](https:\/\/discord.com\/oauth2\/authorize?client_id={1}&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code) auf Ihren eigenen Server!",
-        "hi": "**{0}**, आप यहां सामान्य ज्ञान का दौर शुरू नहीं कर सकते, क्योंकि बॉट के मालिक ने इस सर्वर पर गेम शुरू करने से स्पष्ट रूप से रोक दिया है।\nयदि आप ट्रिविया का एक दौर शुरू करना चाहते हैं, तो पहले [बॉट को आमंत्रित करें](https:\/\/discord.com\/oauth2\/authorize?client_id={1}&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code)!"
+        "hi": "**{0}**, आप यहां सामान्य ज्ञान का दौर शुरू नहीं कर सकते, क्योंकि बॉट के मालिक ने इस सर्वर पर गेम शुरू करने से स्पष्ट रूप से रोक दिया है।\nयदि आप ट्रिविया का एक दौर शुरू करना चाहते हैं, तो पहले [बॉट को आमंत्रित करें](https:\/\/discord.com\/oauth2\/authorize?client_id={1}&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code)!",
+        "sv": "**{0}**, du kan inte starta en omgång trivia här, eftersom botägaren uttryckligen har blockerat spel från att startas på den här servern.\nOm du vill starta en omgång trivia, först [bjuda in botten](https:\/\/discord.com\/oauth2\/authorize?client_id={1}&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code) till din egen server!",
+        "ru": "**{0}**, здесь нельзя начинать серию мелочей, так как владелец бота явно заблокировал запуск игр на этом сервере.\nЕсли вы хотите начать серию мелочей, сначала [пригласите бота](https:\/\/discord.com\/oauth2\/authorize?client_id= {1} & scope = bot + identify & permissions = 268880960 & redirect_uri = https% 3A% 2F% 2Ftriviabot. co.uk% 2F & response_type = code) на свой сервер!"
     },
     "NOWAY": {
         "en": ":warning: Can't start two rounds at once on one server!",
@@ -875,7 +1070,9 @@
         "fr": ":warning: Impossible de démarrer deux tours à la fois sur un serveur!",
         "es": ":warning: ¡No se pueden iniciar dos rondas a la vez en un servidor!",
         "de": ":warning: Es können nicht zwei Runden gleichzeitig auf einem Server gestartet werden!",
-        "hi": ":warning: एक सर्वर पर एक साथ दो राउंड शुरू नहीं कर सकते हैं!"
+        "hi": ":warning: एक सर्वर पर एक साथ दो राउंड शुरू नहीं कर सकते हैं!",
+        "sv": ":warning: inte starta två omgångar samtidigt på en server!",
+        "ru": ":warning: Невозможно запустить сразу два раунда на одном сервере!"
     },
     "ALREADYACTIVE": {
         "en": "A round of trivia is already active",
@@ -884,7 +1081,9 @@
         "fr": "Un tour de questions est déjà actif",
         "es": "Una ronda de trivia ya está activa",
         "de": "Eine Runde Trivia ist bereits aktiv",
-        "hi": "ट्रिविया का एक दौर पहले से ही सक्रिय है"
+        "hi": "ट्रिविया का एक दौर पहले से ही सक्रिय है",
+        "sv": "En omgång trivia är redan aktiv",
+        "ru": "Раунд мелочей уже активен"
     },
     "CHANNELREF": {
         "en": "Please see <#{0}> to join the game",
@@ -892,8 +1091,10 @@
         "pt": "Veja <#{0}> para entrar no jogo",
         "fr": "Veuillez consulter <#{0}> pour rejoindre le jeu",
         "es": "Consulta <#{0}> para unirte al juego.",
-        "de": "Bitte sehen Sie <#{0}>, um am Spiel teilzunehmen\n******",
-        "hi": "कृपया खेल में शामिल होने के लिए <#{0}> देखें\n******"
+        "de": "Bitte sehen Sie <#{0}>, um am Spiel teilzunehmen",
+        "hi": "कृपया खेल में शामिल होने के लिए <#{0}> देखें",
+        "sv": "Se <#{0}> för att gå med i spelet",
+        "ru": "См. <#{0}>, чтобы присоединиться к игре\n******"
     },
     "GETPREMIUM": {
         "en": "Get TriviaBot Premium!",
@@ -902,7 +1103,9 @@
         "fr": "Obtenez TriviaBot Premium!",
         "es": "¡Obtén TriviaBot Premium!",
         "de": "Holen Sie sich TriviaBot Premium!",
-        "hi": "सामान्य ज्ञान प्रीमियम प्राप्त करें!"
+        "hi": "सामान्य ज्ञान प्रीमियम प्राप्त करें!",
+        "sv": "Skaffa TriviaBot Premium!",
+        "ru": "Получите TriviaBot Premium!"
     },
     "PREMDETAIL1": {
         "en": "If you want to do this, TriviaBot Premium lets you run as many concurrent games on the same server as you want. For more information please see the [TriviaBot Premium Page](https:\/\/triviabot.co.uk\/premium\/).",
@@ -911,7 +1114,9 @@
         "fr": "Si vous souhaitez faire cela, TriviaBot Premium vous permet d'exécuter autant de jeux simultanés sur le même serveur que vous le souhaitez. Pour plus d'informations, veuillez consulter la [Page TriviaBot Premium](https:\/\/triviabot.co.uk\/premium\/).",
         "es": "Si desea hacer esto, TriviaBot Premium le permite ejecutar tantos juegos concurrentes en el mismo servidor como desee. Para obtener más información, consulte la [Página Premium de TriviaBot](https:\/\/triviabot.co.uk\/premium\/).",
         "de": "Wenn Sie dies tun möchten, können Sie mit TriviaBot Premium so viele Spiele gleichzeitig auf demselben Server ausführen, wie Sie möchten. Weitere Informationen finden Sie auf der [TriviaBot Premium-Seite](https:\/\/triviabot.co.uk\/premium\/).",
-        "hi": "यदि आप ऐसा करना चाहते हैं, तो ट्रिवियाबॉट प्रीमियम आपको उसी सर्वर पर कई समवर्ती गेम चलाने देता है, जैसा आप चाहते हैं। अधिक जानकारी के लिए कृपया [सामान्य ज्ञान प्रीमियम पेज](https:\/\/triviabot.co.uk\/premium\/) देखें।"
+        "hi": "यदि आप ऐसा करना चाहते हैं, तो ट्रिवियाबॉट प्रीमियम आपको उसी सर्वर पर कई समवर्ती गेम चलाने देता है, जैसा आप चाहते हैं। अधिक जानकारी के लिए कृपया [सामान्य ज्ञान प्रीमियम पेज](https:\/\/triviabot.co.uk\/premium\/) देखें।",
+        "sv": "Om du vill göra detta låter TriviaBot Premium dig köra så många samtidiga spel på samma server som du vill. För mer information se [TriviaBot Premium-sidan](https:\/\/triviabot.co.uk\/premium\/).",
+        "ru": "Если вы хотите это сделать, TriviaBot Premium позволяет запускать столько одновременных игр на одном сервере, сколько вы хотите. Для получения дополнительной информации посетите [Премиум-страницу TriviaBot](https:\/\/triviabot.co.uk\/premium\/)."
     },
     "PREMDETAIL2": {
         "en": "If you want to do this, TriviaBot Premium lets you run quickfire rounds of up to 200 questions! For more information please see the [TriviaBot Premium Page](https:\/\/triviabot.co.uk\/premium\/).",
@@ -920,7 +1125,9 @@
         "fr": "Si vous voulez faire cela, TriviaBot Premium vous permet d'exécuter des rounds quickfire jusqu'à 200 questions! Pour plus d'informations, veuillez consulter la [Page TriviaBot Premium](https:\/\/triviabot.co.uk\/premium\/).",
         "es": "Si desea hacer esto, TriviaBot Premium le permite ejecutar rondas rápidas de hasta 200 preguntas. Para obtener más información, consulte la [Página Premium de TriviaBot](https:\/\/triviabot.co.uk\/premium\/).",
         "de": "Wenn Sie dies tun möchten, können Sie mit TriviaBot Premium Schnellfeuer-Runden mit bis zu 200 Fragen durchführen! Weitere Informationen finden Sie auf der [TriviaBot Premium-Seite](https:\/\/triviabot.co.uk\/premium\/).",
-        "hi": "यदि आप ऐसा करना चाहते हैं, तो TriviaBot Premium आपको 200 प्रश्नों तक क्विकफ़ायर राउंड चलाने देता है! अधिक जानकारी के लिए कृपया [सामान्य ज्ञान प्रीमियम पेज](https:\/\/triviabot.co.uk\/premium\/) देखें।"
+        "hi": "यदि आप ऐसा करना चाहते हैं, तो TriviaBot Premium आपको 200 प्रश्नों तक क्विकफ़ायर राउंड चलाने देता है! अधिक जानकारी के लिए कृपया [सामान्य ज्ञान प्रीमियम पेज](https:\/\/triviabot.co.uk\/premium\/) देखें।",
+        "sv": "Om du vill göra detta låter TriviaBot Premium dig köra quickfire-rundor med upp till 200 frågor! För mer information se [TriviaBot Premium-sidan](https:\/\/triviabot.co.uk\/premium\/).",
+        "ru": "Если вы хотите сделать это, TriviaBot Premium позволяет запускать быстрые раунды, задавая до 200 вопросов! Для получения дополнительной информации посетите [Премиум-страницу TriviaBot](https:\/\/triviabot.co.uk\/premium\/)."
     },
     "MAX15": {
         "en": ":warning: Can't start a quickfire round of more than 15 questions",
@@ -929,7 +1136,9 @@
         "fr": ":warning: impossible de démarrer un cycle de tir rapide de plus de 15 questions",
         "es": ":warning: no se puede iniciar una ronda de respuesta rápida de más de 15 preguntas",
         "de": ":warning: Es kann keine Schnellfeuer-Runde mit mehr als 15 Fragen gestartet werden",
-        "hi": ":warning: 15 से अधिक प्रश्नों का एक त्वरित दौर शुरू नहीं कर सकते"
+        "hi": ":warning: 15 से अधिक प्रश्नों का एक त्वरित दौर शुरू नहीं कर सकते",
+        "sv": ":warning: Kan inte starta en snabbeldrunda med mer än 15 frågor",
+        "ru": ":warning: Не могу начать быстрый раунд из более чем 15 вопросов"
     },
     "MAX15DETAIL": {
         "en": "**{0}**, you can't create a quickfire trivia round of less than 5 or more than {1} questions!",
@@ -938,7 +1147,9 @@
         "fr": "**{0}**, vous ne pouvez pas créer une série de questions-réponses Quickfire de moins de 5 questions ou plus de {1} questions!",
         "es": "**{0}**, no puedes crear una ronda de preguntas rápidas de menos de 5 o más de {1} preguntas.",
         "de": "**{0}**, Sie können keine Schnellfeuer-Trivia-Runde mit weniger als 5 oder mehr als {1} Fragen erstellen!",
-        "hi": "**{0}**, आप {1} प्रश्नों से कम या 5 से अधिक का क्विकफ़ायर ट्रिविया राउंड नहीं बना सकते हैं!"
+        "hi": "**{0}**, आप {1} प्रश्नों से कम या 5 से अधिक का क्विकफ़ायर ट्रिविया राउंड नहीं बना सकते हैं!",
+        "sv": "**{0}**, du kan inte skapa en trivia-runda med mindre än fem eller fler än {1} frågor!",
+        "ru": "**{0}**, вы не можете создать викторину из менее 5 или более {1} вопросов!"
     },
     "MAX200": {
         "en": "**{0}**, you can't create a normal trivia round of less than 5 or more than 200 questions!",
@@ -947,7 +1158,9 @@
         "fr": "**{0}**, vous ne pouvez pas créer un jeu-questionnaire normal de moins de 5 ou plus de 200 questions!",
         "es": "**{0}**, no puedes crear una ronda de trivia normal de menos de 5 o más de 200 preguntas.",
         "de": "**{0}**, Sie können keine normale Quizrunde mit weniger als 5 oder mehr als 200 Fragen erstellen!",
-        "hi": "**{0}**, आप 5 से कम या 200 से अधिक प्रश्नों का सामान्य सामान्य ज्ञान का दौर नहीं बना सकते हैं!"
+        "hi": "**{0}**, आप 5 से कम या 200 से अधिक प्रश्नों का सामान्य सामान्य ज्ञान का दौर नहीं बना सकते हैं!",
+        "sv": "**{0}**, du kan inte skapa en vanlig trivia-runda på mindre än fem eller mer än 200 frågor!",
+        "ru": "**{0}**, вы не можете создать обычный раунд викторины, состоящий из менее 5 или более 200 вопросов!"
     },
     "SPOOPY2": {
         "en": "**{0}**, something spoopy happened. Please try again in a couple of minutes!",
@@ -956,7 +1169,9 @@
         "fr": "**{0}**, quelque chose de spoopy s'est produit. Veuillez réessayer dans quelques minutes!",
         "es": "**{0}**, sucedió algo espeluznante. Vuelva a intentarlo en un par de minutos.",
         "de": "**{0}**, etwas Spoopy ist passiert. Bitte versuchen Sie es in ein paar Minuten erneut!",
-        "hi": "**{0}**, कुछ खराब हुआ। कृपया कुछ मिनटों में पुनः प्रयास करें!"
+        "hi": "**{0}**, कुछ खराब हुआ। कृपया कुछ मिनटों में पुनः प्रयास करें!",
+        "sv": "**{0}**, något spökigt hände. Försök igen om några minuter!",
+        "ru": "**{0}**, произошло нечто странное. Пожалуйста, попробуйте еще раз через пару минут!"
     },
     "BROKED": {
         "en": "That wasn't supposed to happen...",
@@ -965,7 +1180,9 @@
         "fr": "Ce n'était pas censé arriver...",
         "es": "Se suponía que eso no iba a pasar ...",
         "de": "Das sollte nicht passieren ...",
-        "hi": "ऐसा नहीं होना चाहिए था ..."
+        "hi": "ऐसा नहीं होना चाहिए था ...",
+        "sv": "Det skulle inte hända ...",
+        "ru": "Этого не должно было случиться ..."
     },
     "RESUMED": {
         "en": "resumed",
@@ -974,7 +1191,9 @@
         "fr": "repris",
         "es": "reanudado",
         "de": "wieder aufgenommen",
-        "hi": "फिर से शुरू"
+        "hi": "फिर से शुरू",
+        "sv": "återupptogs",
+        "ru": "возобновлен"
     },
     "STARTED": {
         "en": "started",
@@ -983,7 +1202,9 @@
         "fr": "commencé",
         "es": "empezado",
         "de": "gestartet",
-        "hi": "शुरू कर दिया है"
+        "hi": "शुरू कर दिया है",
+        "sv": "satte igång",
+        "ru": "началось"
     },
     "ABOTADMIN": {
         "en": "a bot admin",
@@ -992,7 +1213,9 @@
         "fr": "un bot admin",
         "es": "un administrador de bot",
         "de": "ein Bot Admin",
-        "hi": "एक बॉट एडमिन"
+        "hi": "एक बॉट एडमिन",
+        "sv": "en botadministratör",
+        "ru": "администратор бота"
     },
     "NEWROUND": {
         "en": ":question: New {0}trivia round {1} by {2}!",
@@ -1001,7 +1224,9 @@
         "fr": ":question: Nouveau {0}tour de questions-réponses {1} de {2}!",
         "es": ":question: ¡Nueva {0}ronda de preguntas y respuestas {1} de {2}!",
         "de": ":question: Neue {0} Trivia-Runde {1} von {2}!",
-		"hi": "न्यू {0} ट्रिविया राउंड {1} बाय {2}!"
+        "hi": ":question: न्यू {0} ट्रिविया राउंड {1} बाय {2}!",
+        "sv": ":question: Ny {0} triviaomgång {1} av {2}!",
+        "ru": ":question: Новый {0} раунд викторин {1} от {2}!"
     },
     "GETREADY": {
         "en": "Get Ready",
@@ -1010,7 +1235,9 @@
         "fr": "Préparez-vous",
         "es": "Prepararse",
         "de": "Sich fertig machen",
-        "hi": "तैयार हो जाओ"
+        "hi": "तैयार हो जाओ",
+        "sv": "Gör dig redo",
+        "ru": "Приготовься"
     },
     "FIRSTCOMING": {
         "en": "First question coming up!",
@@ -1019,7 +1246,9 @@
         "fr": "Première question à venir!",
         "es": "¡Se acerca la primera pregunta!",
         "de": "Erste Frage kommt auf!",
-        "hi": "पहला सवाल आ रहा है!"
+        "hi": "पहला सवाल आ रहा है!",
+        "sv": "Första frågan kommer upp!",
+        "ru": "Возникает первый вопрос!"
     },
     "HOWPLAY": {
         "en": "How to play",
@@ -1028,7 +1257,9 @@
         "fr": "Comment jouer",
         "es": "Cómo jugar",
         "de": "Spielanleitung",
-        "hi": "कैसे खेलें"
+        "hi": "कैसे खेलें",
+        "sv": "Hur man spelar",
+        "ru": "Как играть"
     },
     "INSTRUCTIONS": {
         "en": "Type your answer on channel to answer a question. The first to answer gets the points. To report any incorrect or invalid question, click the link in the title of the question's message.",
@@ -1036,8 +1267,10 @@
         "pt": "Digite sua resposta no canal para responder a uma pergunta. O primeiro a responder ganha os pontos. Para relatar qualquer pergunta incorreta ou inválida, clique no link no título da mensagem da pergunta.",
         "fr": "Tapez votre réponse sur la chaîne pour répondre à une question. Le premier à répondre obtient les points. Pour signaler une question incorrecte ou non valide, cliquez sur le lien dans le titre du message de la question.",
         "es": "Escriba su respuesta en el canal para responder una pregunta. El primero en responder obtiene los puntos. Para informar cualquier pregunta incorrecta o no válida, haga clic en el enlace en el título del mensaje de la pregunta.",
-		"de": "Geben Sie Ihre Antwort auf dem Kanal ein, um eine Frage zu beantworten. Der erste, der antwortet, bekommt die Punkte. Um eine falsche oder ungültige Frage zu melden, klicken Sie auf den Link im Titel der Nachricht der Frage.",
-        "hi": "प्रश्न का उत्तर देने के लिए चैनल पर अपना उत्तर लिखें। उत्तर देने वाला पहला अंक प्राप्त करता है। किसी भी गलत या अमान्य प्रश्न की रिपोर्ट करने के लिए, प्रश्न के संदेश के शीर्षक में लिंक पर क्लिक करें।"
+        "de": "Geben Sie Ihre Antwort auf dem Kanal ein, um eine Frage zu beantworten. Der erste, der antwortet, bekommt die Punkte. Um eine falsche oder ungültige Frage zu melden, klicken Sie auf den Link im Titel der Nachricht der Frage.",
+        "hi": "प्रश्न का उत्तर देने के लिए चैनल पर अपना उत्तर लिखें। उत्तर देने वाला पहला अंक प्राप्त करता है। किसी भी गलत या अमान्य प्रश्न की रिपोर्ट करने के लिए, प्रश्न के संदेश के शीर्षक में लिंक पर क्लिक करें।",
+        "sv": "Skriv ditt svar på kanalen för att svara på en fråga. Den första som svarar får poängen. För att rapportera eventuella felaktiga eller ogiltiga frågor, klicka på länken i rubriken på frågan.",
+        "ru": "Введите свой ответ на канале, чтобы ответить на вопрос. Очки начисляются первым, кто ответит. Чтобы сообщить о любом неправильном или недопустимом вопросе, щелкните ссылку в заголовке сообщения с вопросом."
     },
     "ALREADYRUN": {
         "en": "Buhhh... a round is already running here, **{0}**!",
@@ -1046,7 +1279,9 @@
         "fr": "Buhhh... une manche est déjà en cours ici, **{0}**!",
         "es": "¡Ya se está ejecutando una ronda aquí, **{0}**!",
         "de": "Hier läuft bereits eine Runde, **{0}**!",
-        "hi": "एक दौर पहले से ही यहाँ चल रहा है, **{0}**!"
+        "hi": "एक दौर पहले से ही यहाँ चल रहा है, **{0}**!",
+        "sv": "Buhhh ... en runda pågår redan här, **{0}**!",
+        "ru": "Ба ... раунд уже идет, **{0}**!"
     },
     "CANTSTOPMEIMTHEGINGERBREADMAN": {
         "en": "**{0}**, only moderators can stop trivia on this server!",
@@ -1055,7 +1290,9 @@
         "fr": "**{0}**, seuls les modérateurs peuvent arrêter les jeux-questionnaires sur ce serveur!",
         "es": "**{0}**, ¡solo los moderadores pueden detener las trivia en este servidor!",
         "de": "**{0}**, nur Moderatoren können Trivia auf diesem Server stoppen!",
-        "hi": "**{0}**, केवल मध्यस्थ इस सर्वर पर सामान्य ज्ञान को रोक सकते हैं!"
+        "hi": "**{0}**, केवल मध्यस्थ इस सर्वर पर सामान्य ज्ञान को रोक सकते हैं!",
+        "sv": "**{0}**, endast moderatorer kan stoppa trivia på den här servern!",
+        "ru": "**{0}**, только модераторы могут останавливать мелочи на этом сервере!"
     },
     "STOPOK": {
         "en": "**{0}** has stopped the round of trivia!",
@@ -1064,7 +1301,9 @@
         "fr": "**{0}** a arrêté la série de questions-réponses!",
         "es": "**{0}** ha detenido la ronda de trivia.",
         "de": "**{0}** hat die Runde der Trivia gestoppt!",
-        "hi": "**{0}** ने सामान्य ज्ञान का दौर रोक दिया है!"
+        "hi": "**{0}** ने सामान्य ज्ञान का दौर रोक दिया है!",
+        "sv": "**{0}** har stoppat rundan av trivia!",
+        "ru": "**{0}** остановил раунд пустяков!"
     },
     "NOTRIVIA": {
         "en": "No trivia round is running here, **{0}**!",
@@ -1073,7 +1312,9 @@
         "fr": "Aucun jeu-questionnaire n'est en cours ici, **{0}**!",
         "es": "¡Aquí no se está ejecutando ninguna ronda de preguntas, **{0}**!",
         "de": "Hier läuft keine Trivia-Runde, **{0}**!",
-        "hi": "कोई ट्रिविया दौर यहाँ नहीं चल रहा है, **{0}**!"
+        "hi": "कोई ट्रिविया दौर यहाँ नहीं चल रहा है, **{0}**!",
+        "sv": "Ingen trivia-runda körs här, **{0}**!",
+        "ru": "Здесь нет викторин, **{0}**!"
     },
     "VOTEAD": {
         "en": "[Vote for the bot every 12 hours](https:\/\/top.gg\/bot\/{0}\/vote) to get eight uses of the ``{1}votehint`` command, which gives you a personal hint via direct message!",
@@ -1082,16 +1323,20 @@
         "fr": "[Votez pour le bot toutes les 12 heures](https:\/\/top.gg\/bot\/{0}\/vote) pour obtenir huit utilisations de la commande ``{1}votehint``, qui vous donne un indice personnel par message direct!",
         "es": "[Vote por el bot cada 12 horas](https:\/\/top.gg\/bot\/{0}\/vote) para obtener ocho usos del comando ``{1}votehint``, que le brinda una pista personal a través de ¡mensaje!",
         "de": "[Stimmen Sie alle 12 Stunden für den Bot ab](https:\/\/top.gg\/bot\/{0}\/vote), um acht Verwendungen des Befehls ``{1}votehint`` zu erhalten, der Ihnen direkt einen persönlichen Hinweis gibt Botschaft!",
-        "hi": "[प्रत्येक 12 घंटे में बॉट के लिए वोट दें](https:\/\/top.gg\/bot\/{0}\/vote) ``{1}votehint`` कमांड के आठ उपयोग प्राप्त करने के लिए, जो आपको प्रत्यक्ष के माध्यम से एक व्यक्तिगत संकेत देता है संदेश!"
+        "hi": "[प्रत्येक 12 घंटे में बॉट के लिए वोट दें](https:\/\/top.gg\/bot\/{0}\/vote) ``{1}votehint`` कमांड के आठ उपयोग प्राप्त करने के लिए, जो आपको प्रत्यक्ष के माध्यम से एक व्यक्तिगत संकेत देता है संदेश!",
+        "sv": "[Rösta på botten var 12: e timme](https:\/\/top.gg\/bot\/{0}\/vote) för att få åtta användningar av kommandot ``{1}votehint``, vilket ger dig en personlig ledtråd via direkt meddelande!",
+        "ru": "[Голосуйте за бота каждые 12 часов](https:\/\/top.gg\/bot\/{0}\/vote), чтобы получить восемь использований команды ``{1}votehint``, которая дает вам личную подсказку через прямую сообщение!"
     },
     "PRIVHINT": {
         "en": "**Get Private Hints by Voting!**\n",
         "tr": "**Oylayarak Özel İpuçları Alın!**\n",
         "pt": "**Obtenha dicas privadas por votação!**\n",
         "fr": "**Obtenez des indices privés en votant!**\n",
-        "es": "** ¡Obtenga sugerencias privadas votando! **\n",
-        "de": "** Erhalten Sie private Tipps durch Abstimmung! **\n",
-        "hi": "** वोटिंग द्वारा निजी संकेत प्राप्त करें! **\n"
+        "es": "**¡Obtenga sugerencias privadas votando! **\n",
+        "de": "**Erhalten Sie private Tipps durch Abstimmung! **\n",
+        "hi": "**वोटिंग द्वारा निजी संकेत प्राप्त करें! **\n",
+        "sv": "**Få privata tips genom att rösta!**\n",
+        "ru": "**Получайте частные подсказки, голосуя!**\n"
     },
     "NOTVOTED": {
         "en": "You haven't voted for the bot today!\n",
@@ -1100,7 +1345,9 @@
         "fr": "Vous n'avez pas voté pour le bot aujourd'hui!\n",
         "es": "¡No has votado por el bot hoy!\n",
         "de": "Sie haben heute nicht für den Bot gestimmt!\n",
-        "hi": "आपने आज बॉट के लिए मतदान नहीं किया है!\n"
+        "hi": "आपने आज बॉट के लिए मतदान नहीं किया है!\n",
+        "sv": "Du har inte röstat för bot idag!\n",
+        "ru": "Вы сегодня не голосовали за бота!\n"
     },
     "NOMOREHINTS": {
         "en": "You are out of voter hints, **{0}**!\n",
@@ -1109,7 +1356,9 @@
         "fr": "Vous n'avez plus d'indices aux électeurs, **{0}**!\n",
         "es": "¡Te has quedado sin pistas para los votantes, **{0}**!\n",
         "de": "Sie haben keine Wählertipps mehr, **{0}**!\n",
-        "hi": "आप मतदाता संकेत से बाहर हैं, **{0}**!\n"
+        "hi": "आप मतदाता संकेत से बाहर हैं, **{0}**!\n",
+        "sv": "Du har slut på rösttips, **{0}**!\n",
+        "ru": "Подсказки для избирателей закончились, **{0}**!\n"
     },
     "VH1": {
         "en": "**{0}**, i've sent you a hint via DM!\nYou have **{1}** voter hint(s) remaining which expire in **{2} hours and {3} minutes**.",
@@ -1118,7 +1367,9 @@
         "fr": "**{0}**, je vous ai envoyé un indice via DM!\nIl vous reste **{1}** indice (s) d'électeur qui expirent dans **{2} heures et {3} minutes**.",
         "es": "**{0}**, ¡te envié una pista por DM!\nLe quedan **{1}** pistas para votantes que vencen en **{2} horas y {3} minutos**.",
         "de": "**{0}**, ich habe dir einen Hinweis per DM geschickt!\nSie haben noch **{1}** Wählerhinweise, die in ** {2} Stunden und {3} Minuten ** ablaufen.",
-        "hi": "**{0}**, मैंने आपको DM के माध्यम से संकेत भेजा है!\nआपके पास **{1}** मतदाता संकेत हैं, जो ** {2} घंटे और {3} मिनट ** में समाप्त होते हैं।"
+        "hi": "**{0}**, मैंने आपको DM के माध्यम से संकेत भेजा है!\nआपके पास **{1}** मतदाता संकेत हैं, जो **{2} घंटे और {3} मिनट** में समाप्त होते हैं।",
+        "sv": "**{0}**, jag har skickat en ledtråd via DM!\nDu har **{1}** rösttips kvar som löper ut om **{2} timmar och {3} minuter**.",
+        "ru": "**{0}**, я отправил вам подсказку через DM!\nУ вас осталось **{1}** подсказок для избирателя, срок действия которых истекает через **{2} часов {3} минут**."
     },
     "VH2": {
         "en": "**{0}**, i've sent you a hint via DM!\nYou have **NO MORE** voter hints remaining and can vote again in **{1} hours and {2} minutes**.",
@@ -1127,7 +1378,9 @@
         "fr": "**{0}**, je vous ai envoyé un indice via DM!\nIl ne vous reste plus **PLUS** d'indices d'électeur et vous pourrez voter à nouveau dans **{1} heures et {2} minutes**.",
         "es": "**{0}**, ¡te envié una pista por DM!\nNo le quedan **NO MÁS** sugerencias de votantes y puede votar de nuevo en **{1} horas y {2} minutos **.",
         "de": "**{0}**, ich habe dir einen Hinweis per DM geschickt!\nSie haben noch **KEINE** Wählertipps übrig und können in **{1} Stunden und {2} Minuten** erneut abstimmen.",
-        "hi": "**{0}**, मैंने आपको DM के माध्यम से संकेत भेजा है!\nआपके पास **और अधिक** मतदाता शेष हैं और **{1} घंटे और {2} मिनट** में फिर से मतदान कर सकते हैं।"
+        "hi": "**{0}**, मैंने आपको DM के माध्यम से संकेत भेजा है!\nआपके पास **और अधिक** मतदाता शेष हैं और **{1} घंटे और {2} मिनट** में फिर से मतदान कर सकते हैं।",
+        "sv": "**{0}**, jag har skickat en ledtråd via DM!\nDu har **INTE MER** rösttips kvar och kan rösta igen om **{1} timmar och {2} minuter**.",
+        "ru": "**{0}**, я отправил вам подсказку через DM!\nУ вас **БОЛЬШЕ НЕТ** подсказок для избирателей, и вы можете проголосовать снова через **{1} часов {2} минут**."
     },
     "WAITABIT": {
         "en": "You should probaly wait until a non-insane round question is being asked, **{0}**!",
@@ -1136,7 +1389,9 @@
         "fr": "Vous devriez probablement attendre qu'une question ronde non insensée soit posée, **{0}**!",
         "es": "Probablemente deberías esperar hasta que se te haga una pregunta redonda que no sea una locura, **{0}**!",
         "de": "Sie sollten wahrscheinlich warten, bis eine nicht verrückte runde Frage gestellt wird: **{0}**!",
-        "hi": "जब तक एक गैर-पागल दौर सवाल पूछा जा रहा है, तब तक आपको इंतजार करना चाहिए, **{0}**!"
+        "hi": "जब तक एक गैर-पागल दौर सवाल पूछा जा रहा है, तब तक आपको इंतजार करना चाहिए, **{0}**!",
+        "sv": "Du bör troligen vänta tills en icke-galen runda fråga ställs, **{0}**!",
+        "ru": "Вам, вероятно, следует подождать, пока вам не зададут безумный круглый вопрос, **{0}**!"
     },
     "NOROUND": {
         "en": "No trivia round is running here, **{0}**!",
@@ -1145,7 +1400,9 @@
         "fr": "Aucun jeu-questionnaire n'est en cours ici, **{0}**!",
         "es": "¡Aquí no se está ejecutando ninguna ronda de preguntas, **{0}**!",
         "de": "Hier läuft keine Trivia-Runde, **{0}**!",
-        "hi": "कोई ट्रिविया दौर यहाँ नहीं चल रहा है, **{0}**!"
+        "hi": "कोई ट्रिविया दौर यहाँ नहीं चल रहा है, **{0}**!",
+        "sv": "Ingen trivia-runda körs här, **{0}**!",
+        "ru": "Здесь нет викторин, **{0}**!"
     },
     "ACTIVEGAMES": {
         "en": "Active Games",
@@ -1154,7 +1411,9 @@
         "fr": "Jeux actifs",
         "es": "Juegos activos",
         "de": "Aktive Spiele",
-        "hi": "सक्रिय खेल"
+        "hi": "सक्रिय खेल",
+        "sv": "Aktiva spel",
+        "ru": "Активные игры"
     },
     "TOTALSERVERS": {
         "en": "Total Servers",
@@ -1163,7 +1422,9 @@
         "fr": "Total de serveurs",
         "es": "Total de servidores",
         "de": "Gesamtserver",
-        "hi": "कुल नौकर"
+        "hi": "कुल नौकर",
+        "sv": "Totalt antal servrar",
+        "ru": "Всего серверов"
     },
     "CONNSINCE": {
         "en": "Connected Since",
@@ -1172,7 +1433,9 @@
         "fr": "Connecté depuis",
         "es": "Conectado desde",
         "de": "Verbunden seit",
-        "hi": "कब से जुड़ा हुआ है"
+        "hi": "कब से जुड़ा हुआ है",
+        "sv": "Ansluten sedan",
+        "ru": "Подключено с"
     },
     "ONLINEUSERS": {
         "en": "Online Users",
@@ -1181,7 +1444,9 @@
         "fr": "Personnes en ligne",
         "es": "Usuarios en línea",
         "de": "Online Benutzer",
-        "hi": "ऑनलाइन उपयोगकर्ता"
+        "hi": "ऑनलाइन उपयोगकर्ता",
+        "sv": "Online-användare",
+        "ru": "Интернет-пользователи"
     },
     "UPTIME": {
         "en": "Uptime",
@@ -1190,7 +1455,9 @@
         "fr": "Disponibilité",
         "es": "Tiempo de actividad",
         "de": "Betriebszeit",
-        "hi": "अपटाइम"
+        "hi": "अपटाइम",
+        "sv": "Upptid",
+        "ru": "Время безотказной работы"
     },
     "SHARDS": {
         "en": "Shards",
@@ -1199,7 +1466,9 @@
         "fr": "Éclats",
         "es": "Fragmentos",
         "de": "Scherben",
-        "hi": "शार्ड्स"
+        "hi": "शार्ड्स",
+        "sv": "Skärvor",
+        "ru": "Осколки"
     },
     "MEMBERINTENT": {
         "en": "Member Intent",
@@ -1208,7 +1477,9 @@
         "fr": "Intention du membre",
         "es": "Intención del miembro",
         "de": "Absicht des Mitglieds",
-        "hi": "सदस्य आशय"
+        "hi": "सदस्य आशय",
+        "sv": "Medlemsåtgärd",
+        "ru": "Намерение участника"
     },
     "TESTMODE": {
         "en": "Test Mode",
@@ -1217,7 +1488,9 @@
         "fr": "Mode test",
         "es": "Modo de prueba",
         "de": "Testmodus",
-        "hi": "परीक्षण विधि"
+        "hi": "परीक्षण विधि",
+        "sv": "Övningsläge",
+        "ru": "Тестовый режим"
     },
     "DEVMODE": {
         "en": "Developer Mode",
@@ -1226,7 +1499,9 @@
         "fr": "Mode développeur",
         "es": "Modo desarrollador",
         "de": "Entwicklermodus",
-        "hi": "डेवलपर मोड"
+        "hi": "डेवलपर मोड",
+        "sv": "Utvecklarläge",
+        "ru": "Режим разработчика"
     },
     "MYPREFIX": {
         "en": "Prefix",
@@ -1235,7 +1510,9 @@
         "fr": "Préfixe",
         "es": "Prefijo",
         "de": "Präfix",
-        "hi": "उपसर्ग"
+        "hi": "उपसर्ग",
+        "sv": "Prefix",
+        "ru": "Префикс"
     },
     "BOTVER": {
         "en": "Bot Version",
@@ -1244,7 +1521,9 @@
         "fr": "Version Bot",
         "es": "Versión del bot",
         "de": "Bot-Version",
-        "hi": "बॉट संस्करण"
+        "hi": "बॉट संस्करण",
+        "sv": "Botversion",
+        "ru": "Версия бота"
     },
     "LIBVER": {
         "en": "Library Version",
@@ -1253,7 +1532,9 @@
         "fr": "Version librairie",
         "es": "Versión de la biblioteca",
         "de": "Bibliotheksversion",
-        "hi": "लाइब्रेरी संस्करण"
+        "hi": "लाइब्रेरी संस्करण",
+        "sv": "Biblioteksversion",
+        "ru": "Версия библиотеки"
     },
     "INFO": {
         "en": "Information",
@@ -1262,7 +1543,9 @@
         "fr": "Information",
         "es": "Información",
         "de": "Information",
-        "hi": "जानकारी"
+        "hi": "जानकारी",
+        "sv": "Information",
+        "ru": "Информация"
     },
     "TICKYES": {
         "en": ":white_check_mark: Yes",
@@ -1271,7 +1554,9 @@
         "fr": ":white_check_mark: Oui",
         "es": ":white_check_mark: Sí",
         "de": ":white_check_mark: Ja",
-        "hi": ":white_check_mark: हाँ"
+        "hi": ":white_check_mark: हाँ",
+        "sv": ":white_check_mark: Ja",
+        "ru": ":white_check_mark: Да"
     },
     "CROSSNO": {
         "en": "<:wc_rs:667695516737470494> No",
@@ -1280,7 +1565,9 @@
         "fr": "<:wc_rs:667695516737470494> Non",
         "es": "<:wc_rs:667695516737470494> No",
         "de": "<:wc_rs:667695516737470494> Nr",
-        "hi": "<:wc_rs:667695516737470494> नहीं"
+        "hi": "<:wc_rs:667695516737470494> नहीं",
+        "sv": "<:wc_rs:667695516737470494> Nej",
+        "ru": "<:wc_rs:667695516737470494> Нет"
     },
     "YAYPREMIUM": {
         "en": ":star: This server has TriviaBot Premium! They rock! :star:",
@@ -1289,7 +1576,9 @@
         "fr": ":star: Ce serveur a TriviaBot Premium! Ils sont géniaux! :star:",
         "es": ":star: ¡Este servidor tiene TriviaBot Premium! ¡Rockean! :star:",
         "de": ":star: Dieser Server hat TriviaBot Premium! Sie rocken! :star:",
-        "hi": ":star: इस सर्वर में सामान्य ज्ञान प्रीमियम है! वे रॉक! :star:"
+        "hi": ":star: इस सर्वर में सामान्य ज्ञान प्रीमियम है! वे रॉक! :star:",
+        "sv": ":star: Denna server har TriviaBot Premium! De rockar! :star:",
+        "ru": ":star: На этом сервере есть TriviaBot Premium! Они молодцы! :star:"
     },
     "JOINED": {
         "en": "You have successfully joined the team \"**{0}**\", **{1}**",
@@ -1298,7 +1587,9 @@
         "fr": "Vous avez rejoint l'équipe avec succès \"**{0}**\", **{1}**",
         "es": "Te has unido con éxito al equipo \"**{0}**\", **{1}**",
         "de": "Sie sind dem Team \"**{0}**\", **{1}** erfolgreich beigetreten",
-        "hi": "आप सफलतापूर्वक \"**{0}**\", **{1}** टीम में शामिल हो गए हैं"
+        "hi": "आप सफलतापूर्वक \"**{0}**\", **{1}** टीम में शामिल हो गए हैं",
+        "sv": "Du har gått med i teamet \"**{0}**\", **{1}**",
+        "ru": "Вы успешно присоединились к команде \"**{0}**\", **{1}**"
     },
     "CALLFORBACKUP": {
         "en": "Call for backup!",
@@ -1307,7 +1598,9 @@
         "fr": "Appel à la sauvegarde!",
         "es": "¡Pedir refuerzos!",
         "de": "Fordern Sie ein Backup an!",
-        "hi": "बैकअप के लिए कॉल करें!"
+        "hi": "बैकअप के लिए कॉल करें!",
+        "sv": "Ring för säkerhetskopiering!",
+        "ru": "Вызовите подмогу!"
     },
     "CANTJOIN": {
         "en": "I cannot bring about world peace, make you a sandwich, or join that team, **{0}**",
@@ -1316,7 +1609,9 @@
         "fr": "Je ne peux pas apporter la paix dans le monde, vous préparer un sandwich ou rejoindre cette équipe, **{0}**",
         "es": "No puedo lograr la paz mundial, hacerte un sándwich o unirme a ese equipo, **{0}**",
         "de": "Ich kann keinen Weltfrieden herbeiführen, dir kein Sandwich machen oder mich diesem Team anschließen, **{0}**",
-        "hi": "मैं विश्व शांति नहीं ला सकता, आप एक सैंडविच बना सकते हैं, या उस टीम में शामिल हो सकते हैं, **{0}**"
+        "hi": "मैं विश्व शांति नहीं ला सकता, आप एक सैंडविच बना सकते हैं, या उस टीम में शामिल हो सकते हैं, **{0}**",
+        "sv": "Jag kan inte åstadkomma världsfred, skapa dig en smörgås eller gå med i teamet, **{0}**",
+        "ru": "Я не могу добиться мира во всем мире, приготовить вам бутерброд или присоединиться к этой команде **{0}**"
     },
     "CREATED": {
         "en": "You have successfully **created** and joined the team \"**{0}**\", **{1}**",
@@ -1324,8 +1619,10 @@
         "pt": "Você **criou** com sucesso e se juntou à equipe \"**{0}**\", **{1}**",
         "fr": "Vous avez **créé** et rejoint l'équipe avec succès \"**{0}**\", **{1}**",
         "es": "Has **creado** y te has unido al equipo \"**{0}**\", **{1}**",
-        "de": "Sie haben erfolgreich ** erstellt ** und sind dem Team \"**{0}**\", **{1}** beigetreten",
-        "hi": "आपने सफलतापूर्वक ** बनाया ** और टीम में शामिल हो गए \"**{0}**\", **{1}**"
+        "de": "Sie haben erfolgreich **erstellt** und sind dem Team \"**{0}**\", **{1}** beigetreten",
+        "hi": "आपने सफलतापूर्वक **बनाया** और टीम में शामिल हो गए \"**{0}**\", **{1}**",
+        "sv": "Du har framgångsrikt **skapat** och gått med i teamet \"**{0}**\", **{1}**",
+        "ru": "Вы успешно **создали** и присоединились к команде \"**{0}**\", **{1}**"
     },
     "CANTCREATE": {
         "en": "I couldn't create that team, **{0}**...",
@@ -1334,7 +1631,9 @@
         "fr": "Je n'ai pas pu créer cette équipe, **{0}**...",
         "es": "No pude crear ese equipo, **{0}** ...",
         "de": "Ich konnte dieses Team nicht erstellen, **{0}** ...",
-        "hi": "मैं वह टीम नहीं बना सका, **{0}** ..."
+        "hi": "मैं वह टीम नहीं बना सका, **{0}** ...",
+        "sv": "Jag kunde inte skapa det teamet, **{0}** ...",
+        "ru": "Мне не удалось создать эту команду, **{0}** ..."
     },
     "ALREADYMEMBER": {
         "en": "**{0}**, you are already a member of team \"**{1}**\"!",
@@ -1342,8 +1641,10 @@
         "pt": "**{0}**, você já é membro da equipe \"**{1}**\"!",
         "fr": "**{0}**, vous êtes déjà membre de l'équipe \"**{1}**\"!",
         "es": "**{0}**, ya eres miembro del equipo \"**{1}**\".",
-        "de": "**{0}**, du bist bereits Mitglied im Team \"**{1}**\"!\n******",
-        "hi": "**{0}**, आप पहले से ही \"**{1}**\" टीम के सदस्य हैं!\n******"
+        "de": "**{0}**, du bist bereits Mitglied im Team \"**{1}**\"!",
+        "hi": "**{0}**, आप पहले से ही \"**{1}**\" टीम के सदस्य हैं!",
+        "sv": "**{0}**, du är redan medlem i teamet \"**{1}**\"!",
+        "ru": "**{0}**, вы уже являетесь участником команды \"**{1}**\"!"
     },
     "ZELDAREFERENCE": {
         "en": "It's unsafe to go alone...",
@@ -1352,7 +1653,9 @@
         "fr": "Il n'est pas sûr de partir seul...",
         "es": "No es seguro ir solo ...",
         "de": "Es ist unsicher, alleine zu gehen ...",
-        "hi": "अकेले जाना असुरक्षित है ..."
+        "hi": "अकेले जाना असुरक्षित है ...",
+        "sv": "Det är osäkert att gå ensam ...",
+        "ru": "Идти одному небезопасно ..."
     },
     "YOULONER": {
         "en": "**{0}**, you aren't a member of any team! Use **{1}join** to join a team!",
@@ -1361,7 +1664,9 @@
         "fr": "**{0}**, vous n'êtes membre d'aucune équipe! Utilisez **{1}join** pour rejoindre une équipe!",
         "es": "**{0}**, ¡no eres miembro de ningún equipo! Utilice ** {1}join** para unirse a un equipo.",
         "de": "**{0}**, du bist kein Mitglied eines Teams! Verwenden Sie **{1}join**, um einem Team beizutreten!",
-        "hi": "**{0}**, आप किसी भी टीम के सदस्य नहीं हैं! एक टीम में शामिल होने के लिए ** {1}join** का उपयोग करें!"
+        "hi": "**{0}**, आप किसी भी टीम के सदस्य नहीं हैं! एक टीम में शामिल होने के लिए ** {1}join** का उपयोग करें!",
+        "sv": "**{0}**, du är inte medlem i något lag! Använd **{1}join** för att gå med i ett team!",
+        "ru": "**{0}**, вы не состоите ни в одной команде! Используйте ** {1} присоединиться **, чтобы присоединиться к команде!"
     },
     "LEFTTEAM": {
         "en": "**{0}** has left team **{1}**",
@@ -1370,7 +1675,9 @@
         "fr": "**{0}** a quitté l'équipe **{1}**",
         "es": "**{0}** ha dejado el equipo **{1}**",
         "de": "**{0}** hat das Team verlassen **{1}**",
-        "hi": "**{0}** ने टीम छोड़ दी है **{1}**"
+        "hi": "**{0}** ने टीम छोड़ दी है **{1}**",
+        "sv": "**{0}** har lämnat laget **{1}**",
+        "ru": "**{0}** покинул команду **{1}**"
     },
     "COMEBACK": {
         "en": "Come back, we'll miss you! :cry:",
@@ -1379,7 +1686,9 @@
         "fr": "Revenez, vous nous manquerez! :cry:",
         "es": "¡Vuelve, te extrañaremos! :cry:",
         "de": "Komm zurück, wir werden dich vermissen! :cry:",
-        "hi": "वापस आओ, हम तुम्हें याद करेंगे! :cry:"
+        "hi": "वापस आओ, हम तुम्हें याद करेंगे! :cry:",
+        "sv": "Kom tillbaka, vi kommer att sakna dig! :cry:",
+        "ru": "Вернись, мы будем по тебе скучать! :плач:"
     },
     "HERPDERP": {
         "en": "<@{0}>, herp derp, theres a malformed help file. Please contact a developer on the official support server: https:\/\/discord.gg\/brainbox",
@@ -1388,7 +1697,9 @@
         "fr": "<@{0}>, herp derp, il y a un fichier d'aide mal formé. Veuillez contacter un développeur sur le serveur de support officiel: https:\/\/discord.gg\/brainbox",
         "es": "<@{0}>, herp derp, hay un archivo de ayuda con formato incorrecto. Póngase en contacto con un desarrollador en el servidor de soporte oficial: https:\/\/discord.gg\/brainbox",
         "de": "<@{0}>, herp derp, es gibt eine fehlerhafte Hilfedatei. Bitte wenden Sie sich an einen Entwickler auf dem offiziellen Support-Server: https:\/\/discord.gg\/brainbox",
-        "hi": "<@{0}>, हर्प डीआरपी, एक विकृत मदद फ़ाइल का उपयोग करता है। कृपया आधिकारिक सहायता सर्वर पर एक डेवलपर से संपर्क करें: https:\/\/discord.gg\/brainbox"
+        "hi": "<@{0}>, हर्प डीआरपी, एक विकृत मदद फ़ाइल का उपयोग करता है। कृपया आधिकारिक सहायता सर्वर पर एक डेवलपर से संपर्क करें: https:\/\/discord.gg\/brainbox",
+        "sv": "<@{0}>, herp derp, det finns en felaktig hjälpfil. Kontakta en utvecklare på den officiella supportservern: https:\/\/discord.gg\/brainbox",
+        "ru": "<@{0}>, herp derp, это искаженный файл справки. Обратитесь к разработчику на официальном сервере поддержки: https:\/\/discord.gg\/brainbox"
     },
     "WOAHTHERE": {
         "en": "Woah there!",
@@ -1397,7 +1708,9 @@
         "fr": "Woah là-bas!",
         "es": "¡Woah ahí!",
         "de": "Woah da!",
-        "hi": "वहाँ वाह!"
+        "hi": "वहाँ वाह!",
+        "sv": "Woah där!",
+        "ru": "Ух ты!"
     },
     "RATELIMITED": {
         "en": "Please wait {0} seconds before trying the **{1}** command again!",
@@ -1406,7 +1719,9 @@
         "fr": "Veuillez patienter {0} secondes avant de réessayer la commande **{1}**!",
         "es": "Espere {0} segundos antes de volver a intentar el comando **{1}**.",
         "de": "Bitte warten Sie {0} Sekunden, bevor Sie den Befehl **{1}** erneut versuchen!",
-        "hi": "**{1}** फिर से आदेश देने से पहले कृपया {0} सेकंड प्रतीक्षा करें!"
+        "hi": "**{1}** फिर से आदेश देने से पहले कृपया {0} सेकंड प्रतीक्षा करें!",
+        "sv": "Vänta {0} sekunder innan du försöker kommandot **{1}** igen!",
+        "ru": "Подождите {0} секунд перед повторной попыткой выполнения команды **{1}**!"
     },
     "INVITEME": {
         "en": "Invite TriviaBot",
@@ -1415,7 +1730,9 @@
         "fr": "Inviter TriviaBot",
         "es": "Invitar a TriviaBot",
         "de": "TriviaBot einladen",
-        "hi": "सामान्य ज्ञान आमंत्रित करें"
+        "hi": "सामान्य ज्ञान आमंत्रित करें",
+        "sv": "Bjud in TriviaBot",
+        "ru": "Пригласить TriviaBot"
     },
     "INVITEBLURB": {
         "en": "Does your server need some entertainment?\n\nTo invite TriviaBot to your own server, [click here](https:\/\/discord.com\/oauth2\/authorize?client_id=715906723982082139&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code)\n<:blank:667278047006949386>",
@@ -1424,7 +1741,9 @@
         "fr": "Votre serveur a-t-il besoin de divertissement?\n\nPour inviter TriviaBot sur votre propre serveur, [cliquez ici](https:\/\/discord.com\/oauth2\/authorize?client_id=715906723982082139&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code)\n<:blank:667278047006949386>",
         "es": "¿Su servidor necesita algo de entretenimiento?\n\nPara invitar a TriviaBot a su propio servidor, [haga clic aquí](https:\/\/discord.com\/oauth2\/authorize?client_id=715906723982082139&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code)\n<:blank:667278047006949386>",
         "de": "Benötigt Ihr Server Unterhaltung?\n\nUm TriviaBot auf Ihren eigenen Server einzuladen, [klicken Sie hier](https:\/\/discord.com\/oauth2\/authorize?client_id=715906723982082139&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code)\n<:blank:667278047006949386>",
-        "hi": "क्या आपके सर्वर को कुछ मनोरंजन की आवश्यकता है?\n\nअपने स्वयं के सर्वर पर ट्रिवियाबोट को आमंत्रित करने के लिए, [यहां क्लिक करें](https:\/\/discord.com\/oauth2\/authorize?client_id=715906723982082139&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code)\n<:blank:667278047006949386>"
+        "hi": "क्या आपके सर्वर को कुछ मनोरंजन की आवश्यकता है?\n\nअपने स्वयं के सर्वर पर ट्रिवियाबोट को आमंत्रित करने के लिए, [यहां क्लिक करें](https:\/\/discord.com\/oauth2\/authorize?client_id=715906723982082139&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code)\n<:blank:667278047006949386>",
+        "sv": "Behöver din server underhållning?\n\nFör att bjuda in TriviaBot till din egen server, [klicka här](https:\/\/discord.com\/oauth2\/authorize?client_id=715906723982082139&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code)\n<:blank:667278047006949386>",
+        "ru": "Вашему серверу нужны развлечения?\n\nЧтобы пригласить TriviaBot на свой собственный сервер, [нажмите здесь](https:\/\/discord.com\/oauth2\/authorize?client_id=715906723982082139&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code)\n<:blank:667278047006949386>"
     },
     "ONLINE": {
         "en": "Online",
@@ -1433,7 +1752,9 @@
         "fr": "En ligne",
         "es": "En línea",
         "de": "Online",
-        "hi": "ऑनलाइन"
+        "hi": "ऑनलाइन",
+        "sv": "Uppkopplad",
+        "ru": "В сети"
     },
     "OFFLINE": {
         "en": "Offline",
@@ -1442,7 +1763,9 @@
         "fr": "Hors ligne",
         "es": "Desconectado",
         "de": "Offline",
-        "hi": "ऑफलाइन"
+        "hi": "ऑफलाइन",
+        "sv": "Off-line",
+        "ru": "Не в сети"
     },
     "SHARD": {
         "en": "Shard",
@@ -1451,7 +1774,9 @@
         "fr": "Éclat",
         "es": "Casco",
         "de": "Scherbe",
-	"hi": "Shard"
+        "hi": "Shard",
+        "sv": "Skärva",
+        "ru": "Осколок"
     },
     "PONG": {
         "en": "Pong!",
@@ -1460,7 +1785,9 @@
         "fr": "Pong!",
         "es": "¡Apestar!",
         "de": "Pong!",
-        "hi": "पोंग!"
+        "hi": "पोंग!",
+        "sv": "Pong!",
+        "ru": "Понг!"
     },
     "DISCPING": {
         "en": "Discord API",
@@ -1469,7 +1796,9 @@
         "fr": "API Discord",
         "es": "API de Discord",
         "de": "Discord API",
-        "hi": "एपीआई त्यागें"
+        "hi": "एपीआई त्यागें",
+        "sv": "Discord API",
+        "ru": "Discord API"
     },
     "APIPING": {
         "en": "TriviaBot API",
@@ -1478,7 +1807,9 @@
         "fr": "API TriviaBot",
         "es": "API de TriviaBot",
         "de": "TriviaBot API",
-        "hi": "सामान्य ज्ञान एपीआई"
+        "hi": "सामान्य ज्ञान एपीआई",
+        "sv": "TriviaBot API",
+        "ru": "TriviaBot API"
     },
     "DBPING": {
         "en": "Database",
@@ -1487,7 +1818,9 @@
         "fr": "Base de données",
         "es": "Base de datos",
         "de": "Datenbank",
-        "hi": "डेटाबेस"
+        "hi": "डेटाबेस",
+        "sv": "Databas",
+        "ru": "База данных"
     },
     "OKPING": {
         "en": "These figures are within expected ranges!",
@@ -1496,7 +1829,9 @@
         "fr": "Ces chiffres sont dans les fourchettes attendues!",
         "es": "¡Estas cifras están dentro de los rangos esperados!",
         "de": "Diese Zahlen liegen innerhalb der erwarteten Bereiche!",
-        "hi": "ये आंकड़े अपेक्षित सीमाओं के भीतर हैं!"
+        "hi": "ये आंकड़े अपेक्षित सीमाओं के भीतर हैं!",
+        "sv": "Dessa siffror ligger inom förväntade intervall!",
+        "ru": "Эти цифры находятся в ожидаемых пределах!"
     },
     "BADPING": {
         "en": "Something odd is happening. Please remain calm!",
@@ -1505,25 +1840,31 @@
         "fr": "Il se passe quelque chose d'étrange. Restez calme!",
         "es": "Algo extraño está sucediendo. ¡Por favor, mantén la calma!",
         "de": "Es passiert etwas Seltsames. Bitte bleiben Sie ruhig!",
-        "hi": "कुछ अजीब हो रहा है। कृपया शांत रहें!"
+        "hi": "कुछ अजीब हो रहा है। कृपया शांत रहें!",
+        "sv": "Något konstigt händer. Var lugn!",
+        "ru": "Происходит что-то странное. Сохраняйте спокойствие!"
     },
     "TIME2": {
         "en": "%d hours, %d mins",
         "tr": "%d saat,%d dakika",
         "pt": "%d horas, %d minutos",
         "fr": "%d heures, %d min",
-        "es": "%d horas,%d minutos",
+        "es": "%d horas, %d minutos",
         "de": "%d Stunden,%d Minuten",
-        "hi": "%d घंटे, %d मिनट"
+        "hi": "%d घंटे, %d मिनट",
+        "sv": "%d timmar, %d minuter",
+        "ru": "%d часов, %d минут"
     },
     "TIME3": {
         "en": "%d days, %d hours, %d mins",
         "tr": "%d gün, %d saat, %d dakika",
         "pt": "%d dias, %d horas, %d minutos",
         "fr": "%d jours, %d heures, %d min",
-        "es": "%d días,%d horas,%d minutos",
+        "es": "%d días, %d horas, %d minutos",
         "de": "%d Tage,%d Stunden,%d Minuten",
-        "hi": "%d दिन,% d घंटे, %d मिनट"
+        "hi": "%d दिन,%d घंटे, %d मिनट",
+        "sv": "%d dagar, %d timmar, %d minuter",
+        "ru": "%d дней, %d часов, %d минут"
     },
     "PRIVACY": {
         "en": "Team Privacy",
@@ -1532,7 +1873,9 @@
         "fr": "Confidentialité de l'équipe",
         "es": "Privacidad del equipo",
         "de": "Team Datenschutz",
-        "hi": "टीम की गोपनीयता"
+        "hi": "टीम की गोपनीयता",
+        "sv": "Lagens integritet",
+        "ru": "Конфиденциальность команды"
     },
     "PRV_ON": {
         "en": "Your Team Privacy setting is set to: **ON**.\n\nYou will show as ``[ Private Member ]`` in team member lists.",
@@ -1541,7 +1884,9 @@
         "fr": "Le paramètre de confidentialité de votre équipe est défini sur: **ACTIVÉ**.\n\nVous s'afficherez comme ``[Private Member]`` dans les listes des membres de l'équipe.",
         "es": "La configuración de privacidad de su equipo está establecida en: **ACTIVADO**.\n\nAparecerá como ``[Private Member]`` en las listas de miembros del equipo.",
         "de": "Ihre Team-Datenschutzeinstellung ist auf **EIN** eingestellt.\n\nSie werden in den Teammitgliedslisten als ``[Private Member]`` angezeigt.",
-        "hi": "आपकी टीम गोपनीयता सेटिंग पर सेट है: **ऑन​​** ।\n\nआप टीम के सदस्य सूचियों में  ``[Private Member]`` के रूप में दिखाएंगे।"
+        "hi": "आपकी टीम गोपनीयता सेटिंग पर सेट है: **ऑन​​** ।\n\nआप टीम के सदस्य सूचियों में  ``[Private Member]`` के रूप में दिखाएंगे।",
+        "sv": "Din sekretessinställning för team är inställd på: ** PÅ **.\n\nDu kommer att visas som ``[Private Member]`` i teammedlemmar.",
+        "ru": "Настройки конфиденциальности вашей группы: ** ВКЛ **.\n\nВы будете отображаться как ``[Private Member]`` в списках участников команды."
     },
     "PRV_OFF": {
         "en": "Your Team Privacy setting is set to: **OFF**.\n\nYou will show as your username in team member lists.",
@@ -1550,7 +1895,9 @@
         "fr": "Votre paramètre de confidentialité de l'équipe est défini sur: **OFF**.\n\nVous s'afficherez comme votre nom d'utilisateur dans les listes des membres de l'équipe.",
         "es": "La configuración de privacidad de su equipo está establecida en: **APAGADO**.\n\nAparecerá como su nombre de usuario en las listas de miembros del equipo.",
         "de": "Ihre Team-Datenschutzeinstellung ist auf **AUS** eingestellt.\n\nSie werden als Benutzername in den Teammitgliedslisten angezeigt.",
-        "hi": "आपकी टीम गोपनीयता सेटिंग पर सेट है: **।**\n\nआप टीम सदस्य सूची में अपने उपयोगकर्ता नाम के रूप में दिखाएंगे।"
+        "hi": "आपकी टीम गोपनीयता सेटिंग पर सेट है: **।**\n\nआप टीम सदस्य सूची में अपने उपयोगकर्ता नाम के रूप में दिखाएंगे।",
+        "sv": "Din sekretessinställning för team är inställd på: ** AV **.\n\nDu kommer att visas som ditt användarnamn i teammedlemmar.",
+        "ru": "Настройки конфиденциальности вашей команды: **ВЫКЛ**.\n\nВы будете отображаться как ваше имя пользователя в списках участников команды."
     },
     "NOTQUITERIGHT": {
         "en": "That's not quite right...",
@@ -1559,7 +1906,9 @@
         "fr": "Ce n'est pas tout à fait vrai...",
         "es": "Eso no es del todo bien...",
         "de": "Das ist nicht ganz richtig...",
-        "hi": "वह बात तो ठीक नहीं है..."
+        "hi": "वह बात तो ठीक नहीं है...",
+        "sv": "Det är inte helt rätt ...",
+        "ru": "Это не совсем так ..."
     },
     "NOSUCHTEAM": {
         "en": "There is no team called ``%s``",
@@ -1568,7 +1917,9 @@
         "fr": "Il n'y a pas d'équipe appelée ``%s``",
         "es": "No hay un equipo llamado ``%s``",
         "de": "Es gibt kein Team namens ``%s``",
-        "hi": "कोई टीम नहीं है जिसे ``% s`` कहा जाता है"
+        "hi": "कोई टीम नहीं है जिसे ``% s`` कहा जाता है",
+        "sv": "Det finns inget lag som heter ``%s``",
+        "ru": "Нет команды под названием ``%s``"
     },
     "TINFO": {
         "en": "Team Information",
@@ -1577,7 +1928,9 @@
         "fr": "Informations sur l'équipe",
         "es": "Información del equipo",
         "de": "Teaminformationen",
-        "hi": "टीम की जानकारी"
+        "hi": "टीम की जानकारी",
+        "sv": "Teaminformation",
+        "ru": "Информация о команде"
     },
     "NAME": {
         "en": "Name",
@@ -1586,7 +1939,9 @@
         "fr": "Nom",
         "es": "Nombre",
         "de": "Name",
-        "hi": "नाम"
+        "hi": "नाम",
+        "sv": "namn",
+        "ru": "название"
     },
     "FOUNDER": {
         "en": "Founder",
@@ -1595,7 +1950,9 @@
         "fr": "Fondateur",
         "es": "Fundador",
         "de": "Gründer",
-        "hi": "संस्थापक"
+        "hi": "संस्थापक",
+        "sv": "Grundare",
+        "ru": "Основатель"
     },
     "MEMBERCOUNT": {
         "en": "Member Count",
@@ -1604,7 +1961,9 @@
         "fr": "Nombre de membres",
         "es": "cuenta de miembro",
         "de": "Mitgliederzahl",
-        "hi": "सदस्य गणना"
+        "hi": "सदस्य गणना",
+        "sv": "medlemsantal",
+        "ru": "Количество участников"
     },
     "POINTSTOTAL": {
         "en": "Points Total",
@@ -1613,7 +1972,9 @@
         "fr": "Total de points",
         "es": "Total de puntos",
         "de": "Gesamtpunktzahl",
-        "hi": "अंक कुल"
+        "hi": "अंक कुल",
+        "sv": "Poäng totalt",
+        "ru": "Всего очков"
     },
     "GLOBALRANK": {
         "en": "Global Rank",
@@ -1622,7 +1983,9 @@
         "fr": "Classement mondial",
         "es": "Posición Mundial",
         "de": "Globaler Rang",
-        "hi": "वैश्विक रैंक"
+        "hi": "वैश्विक रैंक",
+        "sv": "Global rang",
+        "ru": "Глобальный рейтинг"
     },
     "DATEFOUNDED": {
         "en": "Date Founded",
@@ -1631,7 +1994,9 @@
         "fr": "Date de création",
         "es": "Fecha de fundación",
         "de": "Datum gefunden",
-        "hi": "दिनांक स्थापित"
+        "hi": "दिनांक स्थापित",
+        "sv": "Datum grundat",
+        "ru": "Дата основания"
     },
     "TEAMHUB": {
         "en": "[View Team Hub Page](https:\/\/triviabot.co.uk\/team\/%s)",
@@ -1640,7 +2005,9 @@
         "fr": "[Afficher la page du hub d'équipe](https:\/\/triviabot.co.uk\/team\/%s)",
         "es": "[Ver página de Team Hub](https:\/\/triviabot.co.uk\/team\/%s)",
         "de": "[Team Hub-Seite anzeigen](https:\/\/triviabot.co.uk\/team\/%s)",
-        "hi": "[टीम हब पेज देखें](https:\/\/triviabot.co.uk\/team\/%s)"
+        "hi": "[टीम हब पेज देखें](https:\/\/triviabot.co.uk\/team\/%s)",
+        "sv": "[Visa Team Hub Page](https:\/\/triviabot.co.uk\/team\/%s)",
+        "ru": "[Просмотреть страницу Team Hub](https:\/\/triviabot.co.uk\/team\/%s)"
     },
     "TOP10TEAMS": {
         "en": "Top Ten Teams",
@@ -1649,7 +2016,9 @@
         "fr": "Les dix meilleures équipes",
         "es": "Diez mejores equipos",
         "de": "Top Ten Teams",
-        "hi": "शीर्ष दस टीमें"
+        "hi": "शीर्ष दस टीमें",
+        "sv": "Topp tio lag",
+        "ru": "Десять лучших команд"
     },
     "MONTHLYNITRO": {
         "en": "Monthly Nitro Leaderboard",
@@ -1658,7 +2027,9 @@
         "fr": "Classement mensuel Nitro",
         "es": "Tabla de clasificación mensual de Nitro",
         "de": "Monatliche Nitro-Rangliste",
-        "hi": "मासिक नाइट्रो लीडरबोर्ड"
+        "hi": "मासिक नाइट्रो लीडरबोर्ड",
+        "sv": "Månatlig Leaderboard för nitro",
+        "ru": "Ежемесячная таблица лидеров Nitro"
     },
     "LANGCHANGE": {
         "en": "TriviaBot's language has been set to English (UK)",
@@ -1667,7 +2038,9 @@
         "fr": "La langue de TriviaBot a été définie sur le français",
         "es": "El idioma de TriviaBot se ha establecido en Español",
         "de": "Die Sprache von TriviaBot wurde auf Deutsch eingestellt.",
-        "hi": "ट्रिवियाबोट की भाषा हिंदी के लिए निर्धारित की गई है"
+        "hi": "ट्रिवियाबोट की भाषा हिंदी के लिए निर्धारित की गई है",
+        "sv": "TriviaBots språk har ställts in på Svenska",
+        "ru": "Язык TriviaBot был установлен на русский"
     },
     "SUPPORTEDLANGS": {
         "en": "The supported languages for TriviaBot are:",
@@ -1676,7 +2049,9 @@
         "fr": "Les langues prises en charge pour TriviaBot sont:",
         "es": "Los idiomas admitidos para TriviaBot son:",
         "de": "Die unterstützten Sprachen für TriviaBot sind:",
-        "hi": "सामान्य ज्ञान के लिए समर्थित भाषाएँ हैं:"
+        "hi": "सामान्य ज्ञान के लिए समर्थित भाषाएँ हैं:",
+        "sv": "De språk som stöds för TriviaBot är:",
+        "ru": "Поддерживаемые языки для TriviaBot:"
     },
     "HOWTOCHANGE": {
         "en": "Use ``!language <code>`` (e.g. ``!language en``) to change the bot's language",
@@ -1685,7 +2060,9 @@
         "fr": "Utilisez ``!language <code>`` (par exemple ``!language en``) pour changer la langue du bot",
         "es": "Utilice ``!language <code>`` (por ejemplo, ``!language en``) para cambiar el idioma del bot",
         "de": "Verwenden Sie ``!language <code> `` (z. B. ``!language en``), um die Sprache des Bots zu ändern",
-        "hi": "बॉट की भाषा बदलने के लिए ``!language <कोड> `` (जैसे ``!language en``) का उपयोग करें"
+        "hi": "बॉट की भाषा बदलने के लिए ``!language <कोड> `` (जैसे ``!language en``) का उपयोग करें",
+        "sv": "Använd ``!language <kod>`` (t.ex. ``!language en``) för att ändra botens språk",
+        "ru": "Используйте ``!language <код>`` (например, ``!language en``), чтобы изменить язык бота."
     },
     "PREFIXSET": {
         "en": "The bot's prefix is now: ``%s``",
@@ -1694,7 +2071,9 @@
         "fr": "Le préfixe du bot est maintenant: ``%s``",
         "es": "El prefijo del bot es ahora: ``%s``",
         "de": "Das Präfix des Bots lautet jetzt: ``%s``",
-        "hi": "बॉट का उपसर्ग अब: ``%s`` है"
+        "hi": "बॉट का उपसर्ग अब: ``%s`` है",
+        "sv": "Botens prefix är nu: ``%s``",
+        "ru": "Префикс бота теперь: ``%s``"
     },
     "BADLANG": {
         "en": "No such language. Use ``!language`` without a parameter to see the valid language list.",
@@ -1703,7 +2082,9 @@
         "fr": "Pas de tel langage. Utilisez ``!language`` sans paramètre pour voir la liste des langues valides.",
         "es": "No existe ese lenguaje. Utilice ``!language`` sin un parámetro para ver la lista de idiomas válida.",
         "de": "Keine solche Sprache. Verwenden Sie ``!language`` ohne Parameter, um die gültige Sprachliste anzuzeigen.",
-        "hi": "ऐसी कोई भाषा नहीं। मान्य भाषा सूची देखने के लिए पैरामीटर के बिना ``!language`` का उपयोग करें।"
+        "hi": "ऐसी कोई भाषा नहीं। मान्य भाषा सूची देखने के लिए पैरामीटर के बिना ``!language`` का उपयोग करें।",
+        "sv": "Inget sådant språk. Använd ``!language`` utan en parameter för att se giltig språklista.",
+        "ru": "Нет такого языка. Используйте ``!language`` без параметра, чтобы увидеть список допустимых языков."
     },
     "MODONLY": {
         "en": "Only roles specified in the dashboard, or the server owner, can execute this command.",
@@ -1712,6 +2093,8 @@
         "fr": "Seuls les rôles spécifiés dans le tableau de bord, ou le propriétaire du serveur, peuvent exécuter cette commande.",
         "es": "Solo los roles especificados en el panel, o el propietario del servidor, pueden ejecutar este comando.",
         "de": "Nur im Dashboard angegebene Rollen oder der Serverbesitzer können diesen Befehl ausführen.",
-        "hi": "केवल डैशबोर्ड या सर्वर के मालिक में निर्दिष्ट भूमिकाएँ इस आदेश को निष्पादित कर सकती हैं।"
+        "hi": "केवल डैशबोर्ड या सर्वर के मालिक में निर्दिष्ट भूमिकाएँ इस आदेश को निष्पादित कर सकती हैं।",
+        "sv": "Endast roller som anges i instrumentpanelen eller serverägaren kan utföra detta kommando.",
+        "ru": "Эту команду могут выполнять только роли, указанные на панели управления, или владелец сервера."
     }
 }

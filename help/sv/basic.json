@@ -1,0 +1,52 @@
+{
+        "title": ":user: hjälp",
+        "color": :color:,
+        "url": "https://triviabot.co.uk",
+        "timestamp": ":ts:",
+        "thumbnail": {
+                "url": "https://triviabot.co.uk/images/triviabot_tl_icon.png"
+        },
+        "footer": {
+                "text": "Drivs av TriviaBot - hjälp begärd av: författare:",
+                "icon_url": "https://triviabot.co.uk/images/triviabot_icon.png"
+        },
+        "fields": [
+                {
+                        "name": "Hitta hjälp och konfigurera: användare: via instrumentpanelen",
+                        "value": "Alla inställningar och konfigurationer för denna bot kan hanteras via [TriviaBot Dashboard](https://triviabot.co.uk/dashboard). För ytterligare hjälp, gå med i [officiella brainbox.cc diskordsserver](https://discord.gg/brainbox).\n<:blank:667278047006949386> ",
+                        "inline": false
+                },
+                {
+                        "name": "<:dice:722798416765255800> Startar trivia",
+                        "value": "[Hur man startar och stoppar trivia-spel, via splittring eller via instrumentpanelen](https://triviabot.co.uk/help/#start)\n<:blank:667278047006949386>",
+                        "inline": false
+                },
+                {
+                        "name": ":gear: Configuration",
+                        "värde": "[Konfigurera TriviaBot för din server (inklusive ändring av botens prefix)](https://triviabot.co.uk/help/#config)\n<:blank:667278047006949386>",
+                        "inline": false
+                },
+                {
+                        "name": "<:gift:722798417197268992> Community Rewards",
+                        "value": "[Ställa in rollbelöningar för din server, för att ge användare roller för att vinna eller delta](https://triviabot.co.uk/help/#rolerewards)\n<:blank:667278047006949386>",
+                        "inline": false
+                },
+                {
+                        "name": "<:nitro:750660974029176833> Spela för att vinna Nitro",
+                        "value": "[Om du är nummer ett i början av varje månad kan du vinna Discord Nitro Classic. Klicka här för att se nitro-topplistan!](https://triviabot.co.uk/monthly-nitro/)\n<:blank:667278047006949386> ",
+                        "inline": false
+
+                },
+                {
+                        "name": "<: crystalball:722798415045460008> Rösta på TriviaBot",
+                        "värde": "[Rösta på TriviaBot på topp.gg för personliga tips via direktmeddelande](https://top.gg/bot/715906723982082139/vote)\n<:blank:667278047006949386>",
+                        "inline": false
+                },
+                {
+                        "name": ": money_with_wings: Premium",
+                        "value": "[Ta reda på hur du får mer med TriviaBot Premium, inklusive schemalagda spel, längre snabbfireomgångar och anpassade leaderboard-sidor](https://triviabot.co.uk/premium/)\n<:blank:667278047006949386> ",
+                        "inline": false
+                }
+        ],
+        "description": ""
+}
