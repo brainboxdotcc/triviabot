@@ -22,7 +22,7 @@
                         "inline": false
                 },
                 {
-                        "name": ":gear: Configuration",
+                        "name": ":gear: Конфигурация",
                         "value": "[Настройка TriviaBot для вашего сервера (включая изменение префикса бота)](https://triviabot.co.uk/help/#config)\n<:blank:667278047006949386>",
                         "inline": false
                 },
@@ -43,7 +43,7 @@
                         "inline": false
                 },
                 {
-                        "name": ": money_with_wings: Premium",
+                        "name": ":money_with_wings: Премиум",
                         "value": "[Узнайте, как получить больше с TriviaBot Premium, включая запланированные игры, более длинные раунды быстрого огня и настраиваемые страницы таблицы лидеров](https://triviabot.co.uk/premium/)\n<:blank:667278047006949386> ",
                         "inline": false
                 }
