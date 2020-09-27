@@ -294,7 +294,7 @@ int main(int argc, char** argv) {
 			.file_logging(true)
 			.log_level(spdlog::level::trace)
 			.token(token)
-			.force_shard_count(dev ? 1 : 4)
+			.force_shard_count(dev ? 1 : 8)
 			.intents(intents)
 		);
 		aegis_bot.wsdbg = false;

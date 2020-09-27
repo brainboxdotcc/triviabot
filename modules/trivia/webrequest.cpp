@@ -26,6 +26,7 @@
 #include <queue>
 #include "webrequest.h"
 #include <sporks/stringops.h>
+#include "httplib.h"
 
 std::unordered_map<std::string, asio::ip::basic_resolver<asio::ip::tcp>::results_type> _resolver_cache;
 asio::io_context * _io_context = nullptr;
@@ -94,11 +95,11 @@ std::string url_encode(const std::string &value) {
 
 std::string web_request(const std::string &_host, const std::string &_path, const std::string &_body)
 {
-	websocketpp::http::parser::response hresponse;
+	//websocketpp::http::parser::response hresponse;
 
 	try
 	{
-		asio::ip::basic_resolver<asio::ip::tcp>::results_type r;
+		/*asio::ip::basic_resolver<asio::ip::tcp>::results_type r;
 
 		const std::string & tar_host = _host;
 
@@ -119,9 +120,9 @@ std::string web_request(const std::string &_host, const std::string &_path, cons
 		asio::streambuf request;
 		std::ostream request_stream(&request);
 		request_stream << (_body.empty() ? "GET" : "POST") << " " << _path << " HTTP/1.0\r\n";
-		request_stream << "Host: " << tar_host << "\r\n";
-		request_stream << "Accept: */*\r\n";
-		request_stream << "User-Agent: TriviaBot (1.0.0)\r\n";
+		request_stream << "Host: " << tar_host << "\r\n";*/
+		//request_stream << "Accept: */*\r\n";
+		/*request_stream << "User-Agent: TriviaBot (1.0.0)\r\n";
 		request_stream << "Connection: close\r\n";
 		request_stream << "Content-Length: " << _body.length() << "\r\n";
 		request_stream << "Content-Type: text/plain\r\n";
@@ -139,14 +140,45 @@ std::string web_request(const std::string &_host, const std::string &_path, cons
 			response_content << &response;
 
 		std::istringstream istrm(response_content.str());
-		hresponse.consume(istrm);
+		hresponse.consume(istrm);*/
+
+		httplib::Client cli(_host.c_str(), 80);
+		httplib::Headers headers = {
+			{"X-API-Auth", apikey}
+		};
+		cli.set_default_headers(headers);
+
+		std::string rv;
+		int code = 0;
+
+		if (_body.empty()) {
+			if (auto res = cli.Get(_path.c_str())) {
+				if (res->status == 200) {
+					rv = res->body;
+				}
+				std::cout << "status: " << res->status << "\n";
+			} else {
+				std::cout << "error: " << res.error() << "\n";
+			}
+		}
+		else {
+			if (auto res = cli.Post(_path.c_str(), _body.c_str(), "text/plain")) {
+				if (res->status == 200) {
+					rv = res->body;
+				}
+				std::cout << "status: " << res->status << "\n";
+			} else {
+				std::cout << "error: " << res.error() << "\n";
+			}
+		}
+			
+		return rv;
 	}
 	catch (std::exception& e)
 	{
 		std::cout << "Exception: " << e.what() << "\n";
 	}
-
-	return hresponse.get_body();
+	return "";
 }
 
 void later(const std::string &_path, const std::string &_body)
