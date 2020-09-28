@@ -22,7 +22,7 @@
  *
  ***********************************************************************************************************/
 
-$total_shards = 4;
+$total_shards = 8;
 
 $settings = json_decode(file_get_contents("config.json"));
 $conn = mysqli_connect($settings->dbhost, $settings->dbuser, $settings->dbpass);
