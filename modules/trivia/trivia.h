@@ -116,6 +116,7 @@ public:
 	void StopGame(class state_t* state, const guild_settings_t &settings);
 	void CheckForQueuedStarts();
 	virtual bool OnMessage(const modevent::message_create &message, const std::string& clean_message, bool mentioned, const std::vector<std::string> &stringmentions);
+	bool RealOnMessage(const modevent::message_create &message, const std::string& clean_message, bool mentioned, const std::vector<std::string> &stringmentions, int64_t author_id = 0);
 	void GetHelp(const std::string &section, int64_t channelID, const std::string &botusername, int64_t botid, const std::string &author, int64_t authorid, const guild_settings_t &settings);
 	void CacheUser(int64_t user, int64_t channel_id);
 };

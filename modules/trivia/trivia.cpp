@@ -238,7 +238,7 @@ guild_settings_t TriviaModule::GetGuildSettings(int64_t guild_id)
 std::string TriviaModule::GetVersion()
 {
 	/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-	std::string version = "$ModVer 22$";
+	std::string version = "$ModVer 23$";
 	return "3.0." + version.substr(8,version.length() - 9);
 }
 
@@ -729,7 +729,8 @@ void TriviaModule::CheckForQueuedStarts()
 			m
 		};
 
-		OnMessage(msg, msg.msg.get_content(), false, {});
+		RealOnMessage(msg, msg.msg.get_content(), false, {}, user_id);
+
 		db::query("DELETE FROM start_queue WHERE channel_id = ?", {channel_id});
 	}
 }
@@ -748,16 +749,24 @@ void TriviaModule::CacheUser(int64_t user, int64_t channel_id)
 
 bool TriviaModule::OnMessage(const modevent::message_create &message, const std::string& clean_message, bool mentioned, const std::vector<std::string> &stringmentions)
 {
+	return RealOnMessage(message, clean_message, mentioned, stringmentions, 0);
+}
+
+bool TriviaModule::RealOnMessage(const modevent::message_create &message, const std::string& clean_message, bool mentioned, const std::vector<std::string> &stringmentions, int64_t _author_id)
+{
 	std::vector<std::string> param;
 	std::string botusername = bot->user.username;
 	std::string username;
 	aegis::gateway::objects::message msg = message.msg;
 
+	// Allow overriding of author id from remote start code
+	int64_t author_id = _author_id ? _author_id : msg.get_author_id().get();
+
 	if (!message.has_user()) {
 		return true;
 	}
 
-	aegis::user* user = bot->core.find_user(msg.get_author_id());
+	aegis::user* user = bot->core.find_user(author_id);
 	if (user) {
 		username = user->get_username();
 	}
@@ -851,7 +860,7 @@ bool TriviaModule::OnMessage(const modevent::message_create &message, const std:
 							SimpleEmbed(":thumbsup:", fmt::format(_("INSANE_CORRECT", settings), username, trivia_message, state->insane_left, state->insane_num), c->get_id().get());
 						}
 					}
-					update_score_only(msg.get_author_id(), state->guild_id, 1);
+					update_score_only(author_id, state->guild_id, 1);
 					if (log_question_index(state->guild_id, state->channel_id, state->round, state->streak, state->last_to_answer, state->gamestate)) {
 						StopGame(state, settings);
 						return false;
@@ -879,31 +888,31 @@ bool TriviaModule::OnMessage(const modevent::message_create &message, const std:
 						ans_message.append(fmt::format(_("RECORD_TIME", settings), username));
 						submit_time = time_to_answer;
 					}
-					int32_t newscore = update_score(msg.get_author_id(), state->guild_id, submit_time, state->curr_qid, score);
+					int32_t newscore = update_score(author_id, state->guild_id, submit_time, state->curr_qid, score);
 					ans_message.append(fmt::format(_("SCORE_UPDATE", settings), username, newscore ? newscore : score));
 
-					std::string teamname = get_current_team(msg.get_author_id());
+					std::string teamname = get_current_team(author_id);
 					if (!empty(teamname) && teamname != "!NOTEAM") {
-						add_team_points(teamname, score, msg.get_author_id());
+						add_team_points(teamname, score, author_id);
 						int32_t newteamscore = get_team_points(teamname);
 						ans_message.append(fmt::format(_("TEAM_SCORE", settings), teamname, score, pts, newteamscore));
 					}
 
-					if (state->last_to_answer == msg.get_author_id()) {
+					if (state->last_to_answer == author_id) {
 						/* Amend current streak */
 						state->streak++;
 						ans_message.append(fmt::format(_("ON_A_STREAK", settings), username, state->streak));
-						streak_t s = get_streak(msg.get_author_id(), state->guild_id);
+						streak_t s = get_streak(author_id, state->guild_id);
 						if (state->streak > s.personalbest) {
 							ans_message.append(_("BEATEN_BEST", settings));
-							change_streak(msg.get_author_id(), state->guild_id, state->streak);
+							change_streak(author_id, state->guild_id, state->streak);
 						} else {
 							ans_message.append(fmt::format(_("NOT_THERE_YET", settings), s.personalbest));
 						}
-						if (state->streak > s.bigstreak && s.topstreaker != msg.get_author_id()) {
+						if (state->streak > s.bigstreak && s.topstreaker != author_id) {
 							ans_message.append(fmt::format(_("STREAK_BEATDOWN", settings), username, s.topstreaker, state->streak));
 						}
-					} else if (state->streak > 1 && state->last_to_answer && state->last_to_answer != msg.get_author_id()) {
+					} else if (state->streak > 1 && state->last_to_answer && state->last_to_answer != author_id) {
 						ans_message.append(fmt::format(_("STREAK_ENDER", settings), username, state->last_to_answer, state->streak));
 						state->streak = 1;
 					} else {
@@ -911,7 +920,7 @@ bool TriviaModule::OnMessage(const modevent::message_create &message, const std:
 					}
 
 					/* Update last person to answer */
-					state->last_to_answer = msg.get_author_id();
+					state->last_to_answer = author_id;
 
 					aegis::channel* c = bot->core.find_channel(channel_id);
 					if (c) {
@@ -935,7 +944,7 @@ bool TriviaModule::OnMessage(const modevent::message_create &message, const std:
 		aegis::channel* c = bot->core.find_channel(channel_id);
 		if (c && user != nullptr) {
 
-			bot->core.log->info("CMD (USER={}, GUILD={}): <{}> {}", msg.get_author_id(), c->get_guild().get_id().get(), username, clean_message);
+			bot->core.log->info("CMD (USER={}, GUILD={}): <{}> {}", author_id, c->get_guild().get_id().get(), username, clean_message);
 
 			if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == c->get_guild().get_id()) {
 
@@ -947,11 +956,11 @@ bool TriviaModule::OnMessage(const modevent::message_create &message, const std:
 
 				/* Check for moderator status - first check if owner */
 				aegis::guild* g = bot->core.find_guild(guild_id);
-				bool moderator = (g && g->get_owner() == msg.get_author_id());
+				bool moderator = (g && g->get_owner() == author_id);
 				/* Now iterate the list of moderator roles from settings */
 				if (!moderator) {
 					for (auto x = settings.moderator_roles.begin(); x != settings.moderator_roles.end(); ++x) {
-						if (c->get_guild().member_has_role(msg.get_author_id(), *x)) {
+						if (c->get_guild().member_has_role(author_id, *x)) {
 							moderator = true;
 							break;
 						}
@@ -985,7 +994,7 @@ bool TriviaModule::OnMessage(const modevent::message_create &message, const std:
 					bool resumed = false;
 
 					if (base_command == "fstart") {
-						db::resultset rs = db::query("SELECT * FROM trivia_access WHERE user_id = ? AND enabled = 1", {msg.get_author_id()});
+						db::resultset rs = db::query("SELECT * FROM trivia_access WHERE user_id = ? AND enabled = 1", {author_id});
 						if (rs.size() > 0) {
 							int64_t cid;
 							tokens >> cid;
@@ -1077,8 +1086,8 @@ bool TriviaModule::OnMessage(const modevent::message_create &message, const std:
 								EmbedWithFields(fmt::format(_("NEWROUND", settings), (quickfire ? "**QUICKFIRE** " : ""), (resumed ? _("RESUMED", settings) : _("STARTED", settings)), (resumed ? _("ABOTADMIN", settings) : username)), {{_("QUESTION", settings), fmt::format("{}", questions), false}, {_("GETREADY", settings), _("FIRSTCOMING", settings), false}, {_("HOWPLAY", settings), _("INSTRUCTIONS", settings)}}, c->get_id().get());
 								state->timer = new std::thread(&state_t::tick, state);
 
-								CacheUser(msg.get_author_id(), channel_id);
-								log_game_start(state->guild_id, state->channel_id, questions, quickfire, c->get_name(), msg.get_author_id(), state->shuffle_list);
+								CacheUser(author_id, channel_id);
+								log_game_start(state->guild_id, state->channel_id, questions, quickfire, c->get_name(), author_id, state->shuffle_list);
 							} else {
 								state->terminating = true;
 							}
@@ -1108,7 +1117,7 @@ bool TriviaModule::OnMessage(const modevent::message_create &message, const std:
 							}
 							state = nullptr;
 						}
-						CacheUser(msg.get_author_id(), channel_id);
+						CacheUser(author_id, channel_id);
 						log_game_end(c->get_guild().get_id().get(), c->get_id().get());
 					} else {
 						SimpleEmbed(":warning:", fmt::format(_("NOTRIVIA", settings), username), c->get_id().get());
@@ -1116,11 +1125,11 @@ bool TriviaModule::OnMessage(const modevent::message_create &message, const std:
 					return false;
 				} else if (base_command == "vote") {
 					SimpleEmbed(":white_check_mark:", fmt::format(fmt::format("{}\n{}", _("PRIVHINT", settings), _("VOTEAD", settings)), bot->user.id.get(), settings.prefix), c->get_id().get());
-					CacheUser(msg.get_author_id(), channel_id);
+					CacheUser(author_id, channel_id);
 				} else if (base_command == "votehint" || base_command == "vh") {
 					if (game_in_progress) {
 						if ((state->gamestate == TRIV_FIRST_HINT || state->gamestate == TRIV_SECOND_HINT || state->gamestate == TRIV_TIME_UP) && (state->round % 10) != 0 && state->curr_answer != "") {
-							db::resultset rs = db::query("SELECT *,(unix_timestamp(vote_time) + 43200 - unix_timestamp()) as remaining FROM infobot_votes WHERE snowflake_id = ? AND now() < vote_time + interval 12 hour", {msg.get_author_id()});
+							db::resultset rs = db::query("SELECT *,(unix_timestamp(vote_time) + 43200 - unix_timestamp()) as remaining FROM infobot_votes WHERE snowflake_id = ? AND now() < vote_time + interval 12 hour", {author_id});
 							if (rs.size() == 0) {
 								SimpleEmbed("<:wc_rs:667695516737470494>", fmt::format(fmt::format("{}\n{}", _("NOTVOTED", settings), _("VOTEAD", settings)), bot->user.id.get(), settings.prefix), c->get_id().get());
 								return false;
@@ -1144,9 +1153,9 @@ bool TriviaModule::OnMessage(const modevent::message_create &message, const std:
 									personal_hint[personal_hint.length() - 1] = '#';
 									personal_hint = ReplaceString(personal_hint, " ", "#");
 									// Get the API to do this, because DMs in aegis are unreliable right now.
-									send_hint(msg.get_author_id(), personal_hint, remaining_hints);
-									db::query("UPDATE infobot_votes SET dm_hints = ? WHERE snowflake_id = ?", {remaining_hints, msg.get_author_id()});
-									CacheUser(msg.get_author_id(), channel_id);
+									send_hint(author_id, personal_hint, remaining_hints);
+									db::query("UPDATE infobot_votes SET dm_hints = ? WHERE snowflake_id = ?", {remaining_hints, author_id});
+									CacheUser(author_id, channel_id);
 
 									return false;
 								}
@@ -1161,7 +1170,7 @@ bool TriviaModule::OnMessage(const modevent::message_create &message, const std:
 					}
 				} else if (base_command == "stats") {
 					show_stats(c->get_guild().get_id(), channel_id);
-					CacheUser(msg.get_author_id(), channel_id);
+					CacheUser(author_id, channel_id);
 				} else if (base_command == "info") {
 					std::stringstream s;
 					time_t diff = bot->core.uptime() / 1000;
@@ -1220,26 +1229,26 @@ bool TriviaModule::OnMessage(const modevent::message_create &message, const std:
 						c->create_message_embed("", embed_json);
 						bot->sent_messages++;
 					}
-					CacheUser(msg.get_author_id(), channel_id);
+					CacheUser(author_id, channel_id);
 				} else if (base_command == "join") {
 					std::string teamname;
 					std::getline(tokens, teamname);
 					teamname = trim(teamname);
-					if (join_team(msg.get_author_id(), teamname, c->get_id().get())) {
+					if (join_team(author_id, teamname, c->get_id().get())) {
 						SimpleEmbed(":busts_in_silhouette:", fmt::format(_("JOINED", settings), teamname, username), c->get_id().get(), _("CALLFORBACKUP", settings));
 					} else {
 						SimpleEmbed(":warning:", fmt::format(_("CANTJOIN", settings), username), c->get_id().get());
 					}
-					CacheUser(msg.get_author_id(), channel_id);
+					CacheUser(author_id, channel_id);
 				} else if (base_command == "create") {
 					std::string newteamname;
 					std::getline(tokens, newteamname);
 					newteamname = trim(newteamname);
-					std::string teamname = get_current_team(msg.get_author_id());
+					std::string teamname = get_current_team(author_id);
 					if (teamname.empty() || teamname == "!NOTEAM") {
 						newteamname = create_new_team(newteamname);
 						if (newteamname != "__NO__") {
-							join_team(msg.get_author_id(), newteamname, c->get_id().get());
+							join_team(author_id, newteamname, c->get_id().get());
 							SimpleEmbed(":busts_in_silhouette:", fmt::format(_("CREATED", settings), newteamname, username), c->get_id().get(), _("ZELDAREFERENCE", settings));
 						} else {
 							SimpleEmbed(":warning:", fmt::format(_("CANTCREATE", settings), username), c->get_id().get());
@@ -1247,21 +1256,21 @@ bool TriviaModule::OnMessage(const modevent::message_create &message, const std:
 					} else {
 						SimpleEmbed(":warning:", fmt::format(_("ALREADYMEMBER", settings), username, teamname), c->get_id().get());
 					}
-					CacheUser(msg.get_author_id(), channel_id);
+					CacheUser(author_id, channel_id);
 				} else if (base_command == "leave") {
-					std::string teamname = get_current_team(msg.get_author_id());
+					std::string teamname = get_current_team(author_id);
 					if (teamname.empty() || teamname == "!NOTEAM") {
 						SimpleEmbed(":warning:", fmt::format(_("YOULONER", settings), username, settings.prefix), c->get_id().get());
 					} else {
-						leave_team(msg.get_author_id());
+						leave_team(author_id);
 						SimpleEmbed(":busts_in_silhouette:", fmt::format(_("LEFTTEAM", settings), username, teamname), c->get_id().get(), _("COMEBACK", settings));
 					}
-					CacheUser(msg.get_author_id(), channel_id);
+					CacheUser(author_id, channel_id);
 				} else if (base_command == "help") {
 					std::string section;
 					tokens >> section;
 					GetHelp(section, channel_id, bot->user.username, bot->user.id.get(), msg.get_user().get_username(), msg.get_user().get_id().get(), settings);
-					CacheUser(msg.get_author_id(), channel_id);
+					CacheUser(author_id, channel_id);
 				} else {
 					/* Custom commands handled completely by the API */
 					bool command_exists = false;
@@ -1283,8 +1292,8 @@ bool TriviaModule::OnMessage(const modevent::message_create &message, const std:
 							std::string rest;
 							std::getline(tokens, rest);
 							rest = trim(rest);
-							CacheUser(msg.get_author_id(), channel_id);
-							std::string reply = trim(custom_command(base_command, trim(rest), msg.get_author_id(), channel_id, c->get_guild().get_id().get()));
+							CacheUser(author_id, channel_id);
+							std::string reply = trim(custom_command(base_command, trim(rest), author_id, channel_id, c->get_guild().get_id().get()));
 							if (!reply.empty()) {
 								ProcessEmbed(reply, channel_id);
 							}
@@ -1298,7 +1307,7 @@ bool TriviaModule::OnMessage(const modevent::message_create &message, const std:
 					}
 				}
 				if (base_command == "reloadlang") {
-					db::resultset rs = db::query("SELECT * FROM trivia_access WHERE user_id = ? AND enabled = 1", {msg.get_author_id()});
+					db::resultset rs = db::query("SELECT * FROM trivia_access WHERE user_id = ? AND enabled = 1", {author_id});
 					if (rs.size() > 0) {
 						std::ifstream langfile("../lang.json");
 						json* newlang = new json();
