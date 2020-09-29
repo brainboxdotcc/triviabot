@@ -36,7 +36,7 @@ void TriviaModule::CheckReconnects() {
 	if (!rs.empty()) {
 		for (auto r = rs.begin(); r != rs.end(); ++r) {
 			auto & s = bot->core.get_shard_by_id(from_string<uint32_t>((*r)["id"], std::dec));
-			db::query("UPDATE infobot_shard_status SET forcereconnect = 1 WHERE id = '?'", {(*r)["id"]});
+			db::query("UPDATE infobot_shard_status SET forcereconnect = 0 WHERE id = '?'", {(*r)["id"]});
 			bot->core.get_shard_mgr().close(s);
 			sleep(2);
 			s.connect();
