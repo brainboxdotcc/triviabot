@@ -238,7 +238,7 @@ guild_settings_t TriviaModule::GetGuildSettings(int64_t guild_id)
 std::string TriviaModule::GetVersion()
 {
 	/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-	std::string version = "$ModVer 23$";
+	std::string version = "$ModVer 24$";
 	return "3.0." + version.substr(8,version.length() - 9);
 }
 
@@ -257,6 +257,7 @@ void TriviaModule::UpdatePresenceLine()
 		/* Can't translate this, it's per-shard! */
 		bot->core.update_presence(fmt::format("Trivia! {} questions, {} active games on {} servers through {} shards", Comma(questions), Comma(GetActiveGames()), Comma(bot->core.get_guild_count()), Comma(bot->core.shard_max_count)), aegis::gateway::objects::activity::Game);
 		CheckForQueuedStarts();
+		CheckReconnects();
 	}
 }
 
