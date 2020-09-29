@@ -74,7 +74,7 @@ foreach($monitors->monitors as $monitor) {
 		$url = $monitor->url;
 		$shardinfo = mysqli_fetch_object(mysqli_query($conn, "SELECT * FROM infobot_shard_status WHERE id = " . mysqli_real_escape_string($conn, $m[1])));
 		if ($shardinfo) {
-			mysqli_query($conn, "UPDATE infobot_shard_status SET uptimerobot_heartbeat = '" . mysqli_real_escape_string($conn, $monitor->url) . "' WHERE id = " . mysqli_real_escape_string($conn, $m[1]));
+			mysqli_query($conn, "UPDATE infobot_shard_status SET uptimerobot_id = '" . mysqli_real_escape_string($conn, $monitor->id) . "', uptimerobot_heartbeat = '" . mysqli_real_escape_string($conn, $monitor->url) . "' WHERE id = " . mysqli_real_escape_string($conn, $m[1]));
 			if ($shardinfo->connected && $shardinfo->online && (time() - date('Z')) - strtotime($shardinfo->updated) < 240) {
 				$utr_response = file_get_contents($monitor->url);
 				mysqli_query($conn, "UPDATE infobot_shard_status SET uptimerobot_response = '" . mysqli_real_escape_string($conn, $utr_response) . "' WHERE id = " . mysqli_real_escape_string($conn, $m[1]));
