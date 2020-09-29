@@ -2100,6 +2100,7 @@
     },
     "WELCOME": {
         "en": "Thank you for inviting **TriviaBot** to %s! To get started with the bot, simply type ``!start`` to start a slow game of trivia or ``!quickfire`` to start a fast-paced game.\n\nYou can quickly set the bot's prefix with the ``!language`` and ``!prefix`` commands or by using the [dashboard](https://triviabot.co.uk/dashboard) where you can also remotely start and stop games, change who has access to the bot, and more!\n\nFor further help please join [the official support server](https://discord.gg/brainbox).\n\nHave fun!",
+	"tr": "Thank you for inviting **TriviaBot** to %s! To get started with the bot, simply type ``!start`` to start a slow game of trivia or ``!quickfire`` to start a fast-paced game.\n\nYou can quickly set the bot's prefix with the ``!language`` and ``!prefix`` commands or by using the [dashboard](https://triviabot.co.uk/dashboard) where you can also remotely start and stop games, change who has access to the bot, and more!\n\nFor further help please join [the official support server](https://discord.gg/brainbox).\n\nHave fun!",
         "pt": "Thank you for inviting **TriviaBot** to %s! To get started with the bot, simply type ``!start`` to start a slow game of trivia or ``!quickfire`` to start a fast-paced game.\n\nYou can quickly set the bot's prefix with the ``!language`` and ``!prefix`` commands or by using the [dashboard](https://triviabot.co.uk/dashboard) where you can also remotely start and stop games, change who has access to the bot, and more!\n\nFor further help please join [the official support server](https://discord.gg/brainbox).\n\nHave fun!",
         "fr": "Thank you for inviting **TriviaBot** to %s! To get started with the bot, simply type ``!start`` to start a slow game of trivia or ``!quickfire`` to start a fast-paced game.\n\nYou can quickly set the bot's prefix with the ``!language`` and ``!prefix`` commands or by using the [dashboard](https://triviabot.co.uk/dashboard) where you can also remotely start and stop games, change who has access to the bot, and more!\n\nFor further help please join [the official support server](https://discord.gg/brainbox).\n\nHave fun!",
         "es": "Thank you for inviting **TriviaBot** to %s! To get started with the bot, simply type ``!start`` to start a slow game of trivia or ``!quickfire`` to start a fast-paced game.\n\nYou can quickly set the bot's prefix with the ``!language`` and ``!prefix`` commands or by using the [dashboard](https://triviabot.co.uk/dashboard) where you can also remotely start and stop games, change who has access to the bot, and more!\n\nFor further help please join [the official support server](https://discord.gg/brainbox).\n\nHave fun!",
@@ -2107,6 +2108,16 @@
         "hi": "Thank you for inviting **TriviaBot** to %s! To get started with the bot, simply type ``!start`` to start a slow game of trivia or ``!quickfire`` to start a fast-paced game.\n\nYou can quickly set the bot's prefix with the ``!language`` and ``!prefix`` commands or by using the [dashboard](https://triviabot.co.uk/dashboard) where you can also remotely start and stop games, change who has access to the bot, and more!\n\nFor further help please join [the official support server](https://discord.gg/brainbox).\n\nHave fun!",
         "sv": "Thank you for inviting **TriviaBot** to %s! To get started with the bot, simply type ``!start`` to start a slow game of trivia or ``!quickfire`` to start a fast-paced game.\n\nYou can quickly set the bot's prefix with the ``!language`` and ``!prefix`` commands or by using the [dashboard](https://triviabot.co.uk/dashboard) where you can also remotely start and stop games, change who has access to the bot, and more!\n\nFor further help please join [the official support server](https://discord.gg/brainbox).\n\nHave fun!",
         "ru": "Thank you for inviting **TriviaBot** to %s! To get started with the bot, simply type ``!start`` to start a slow game of trivia or ``!quickfire`` to start a fast-paced game.\n\nYou can quickly set the bot's prefix with the ``!language`` and ``!prefix`` commands or by using the [dashboard](https://triviabot.co.uk/dashboard) where you can also remotely start and stop games, change who has access to the bot, and more!\n\nFor further help please join [the official support server](https://discord.gg/brainbox).\n\nHave fun!"
+    },
+    "SHARD_IS": {
+	 "en": "That server is on shard %d",
+	 "tr": "Bu sunucu %d parça üzerinde",
+	 "pt": "Esse servidor está no fragmento %d",
+	 "fr": "Ce serveur est sur la partition %d",
+	 "es": "Ese servidor está en el fragmento %d",
+	 "de": "Dieser server befindet sich auf shard %d",
+	 "hi": "वह सर्वर शार्द 1%d पर है",
+	 "sv": "Servern är på skärva %d",
+	 "ru": "Этот сервер находится на шарде %d"
     }
-
 }
