@@ -102,9 +102,6 @@ TriviaModule::~TriviaModule()
 	DisposeThread(presence_update);
 	DisposeThread(command_processor);
 	std::lock_guard<std::mutex> user_cache_lock(states_mutex);
-	for (auto state = states.begin(); state != states.end(); ++state) {
-		delete state->second;
-	}
 	states.clear();
 	delete notvowel;
 	delete number_tidy_dollars;
@@ -266,7 +263,7 @@ guild_settings_t TriviaModule::GetGuildSettings(int64_t guild_id)
 std::string TriviaModule::GetVersion()
 {
 	/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-	std::string version = "$ModVer 27$";
+	std::string version = "$ModVer 28$";
 	return "3.0." + version.substr(8,version.length() - 9);
 }
 
@@ -868,7 +865,6 @@ state_t* TriviaModule::GetState(int64_t channel_id) {
 	std::vector<int64_t> removals;
 	for (auto& s : states) {
 		if (s.second && s.second->terminating) {
-			delete s.second;
 			removals.push_back(s.first);
 		} else if (!s.second) {
 			removals.push_back(s.first);

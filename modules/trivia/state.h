@@ -64,6 +64,7 @@ class state_t
 	uint32_t curr_timesasked;
 	time_t next_quickfire;
 	std::map<std::string, bool> insane;
+	std::mutex timer_mutex;
 	std::thread* timer;
 
 	state_t(class TriviaModule* _creator);
