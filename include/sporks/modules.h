@@ -187,10 +187,10 @@ public:
  * plus some helper methods to identify and report the version number of the module.
  */
 class Module {
-protected:
+public:
 	/* Pointer back to the bot instance that created this module */
 	Bot* bot;
-public:
+
 	/* Instantiate a module, the ModuleLoader is passed in so that we can attach events */
 	Module(Bot* instigator, ModuleLoader* ml);
 

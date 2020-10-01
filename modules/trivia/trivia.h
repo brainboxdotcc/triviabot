@@ -30,6 +30,7 @@
 #include <atomic>
 #include <deque>
 #include "settings.h"
+#include "commands.h"
 
 // Number of seconds after which a game is considered hung and its thread exits.
 // This can happen if a game gets lost in a discord gateway outage (!)
@@ -51,17 +52,6 @@ struct field_t
 	bool _inline;
 };
 
-class in_cmd
-{
- public:
-	std::string msg;
-	int64_t author_id;
-	int64_t channel_id;
-	int64_t guild_id;
-	bool mentions_bot;
-	in_cmd(const std::string &m, int64_t author, int64_t channel, int64_t guild, bool mention);
-};
-
 /**
  * Module class for trivia system
  */
@@ -74,24 +64,26 @@ class TriviaModule : public Module
 	PCRE* number_tidy_positive;
 	PCRE* number_tidy_negative;
 	PCRE* prefix_match;
-	std::map<int64_t, class state_t*> states;
 	std::unordered_map<int64_t, time_t> limits;
 	std::vector<std::string> api_commands;
 	std::thread* presence_update;
 	bool terminating;
-	std::mutex states_mutex;
 	std::mutex cmds_mutex;
-	time_t startup;
 	json numstrs;
-	json* lang;
 	std::mutex cmdmutex;
 	std::deque<in_cmd> commandqueue;
 	std::deque<in_cmd> to_process;
 	std::thread* command_processor;
+	command_list_t commands;
 public:
+	time_t startup;
+	json* lang;
+	std::mutex states_mutex;
+	std::map<int64_t, class state_t*> states;
 	TriviaModule(Bot* instigator, ModuleLoader* ml);
 	Bot* GetBot();
 	virtual ~TriviaModule();
+	void SetupCommands();
 	void queue_command(const std::string &message, int64_t author, int64_t channel, int64_t guild, bool mention);
 	void handle_command(const in_cmd &cmd);
 	void ProcessCommands();
