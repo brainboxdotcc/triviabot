@@ -37,11 +37,39 @@ in_msg::in_msg(const std::string &m, int64_t author, bool mention) : msg(m), aut
 {
 }
 
-state_t::state_t(TriviaModule* _creator) : creator(_creator), terminating(false), channel_id(0), guild_id(0), numquestions(0), round(0), score(0), start_time(0), shuffle_list({}), gamestate(TRIV_ASK_QUESTION), curr_qid(0),
-					recordtime(0), curr_question(""), curr_answer(""), curr_customhint1(""), curr_customhint2(""), curr_category(""), curr_lastasked(0), curr_recordtime(0), curr_lastcorrect(""),
-					last_to_answer(0), streak(0), asktime(0), found(false), interval(20), insane_num(0), insane_left(0), curr_timesasked(0), next_quickfire(0), insane({}), timer(nullptr), shuffle1(""), shuffle2("")
-
+state_t::state_t(TriviaModule* _creator)
 {
+	creator = _creator;
+	creator->GetBot()->core.log->debug("state_t::state()");
+	terminating = false;
+	channel_id = guild_id = 0;
+	numquestions = round = score = 0;
+	start_time = 0;
+	shuffle_list.clear();
+	gamestate = TRIV_ASK_QUESTION;
+	curr_qid = 0;
+	recordtime = 0;
+	curr_question = "";
+	curr_answer = "";
+	curr_customhint1 = "";
+	curr_customhint2 = "";
+	curr_category = "";
+       	curr_lastasked = 0;
+	curr_recordtime = 0;
+	curr_lastcorrect = "";
+	last_to_answer = 0;
+	streak = 0;
+	asktime = 0;
+	found = false;
+	interval = TRIV_INTERVAL;
+	insane_num = 0;
+	insane_left = 0;
+	curr_timesasked = 0;
+	next_quickfire = 0;
+	insane.clear();
+	timer = nullptr;
+	shuffle1 = "";
+	shuffle2 = "";
 }
 
 void state_t::queue_message(const std::string &message, int64_t author_id, bool mentions_bot)

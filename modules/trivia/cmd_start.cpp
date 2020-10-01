@@ -76,6 +76,7 @@ void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 	}
 
 	if (!state) {
+		creator->GetBot()->core.log->debug("start game, no existing state");
 		int32_t max_quickfire = (settings.premium ? 200 : 15);
 		if ((!quickfire && (questions < 5 || questions > 200)) || (quickfire && (questions < 5 || questions > max_quickfire))) {
 			if (quickfire) {
@@ -89,34 +90,39 @@ void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 			}
 			return;
 		}
-		std::vector<std::string> sl = fetch_shuffle_list(c->get_guild().get_id());
+		std::vector<std::string> sl = fetch_shuffle_list(cmd.guild_id);
 		if (sl.size() < 50) {
 			creator->SimpleEmbed(":warning:", fmt::format(_("SPOOPY2", settings), username), c->get_id().get(), _("BROKED", settings));
 			return;
 		} else  {
-			state = new state_t(creator);
-			state->start_time = time(NULL);
-			state->shuffle_list = sl;
-			state->gamestate = TRIV_ASK_QUESTION;
-			state->numquestions = questions + 1;
-			state->streak = 1;
-			state->last_to_answer = 0;
-			state->round = 1;
-			state->interval = (quickfire ? (TRIV_INTERVAL / 4) : TRIV_INTERVAL);
-			state->channel_id = cmd.channel_id;
-			state->curr_qid = 0;
-			state->curr_answer = "";
-			state->guild_id = cmd.guild_id;
-			creator->bot->core.log->info("Started game on guild {}, channel {}, {} questions [{}]", cmd.guild_id, cmd.channel_id, questions, quickfire ? "quickfire" : "normal");
-			creator->EmbedWithFields(fmt::format(_("NEWROUND", settings), (quickfire ? "**QUICKFIRE** " : ""), (resumed ? _("RESUMED", settings) : _("STARTED", settings)), (resumed ? _("ABOTADMIN", settings) : username)), {{_("QUESTION", settings), fmt::format("{}", questions), false}, {_("GETREADY", settings), _("FIRSTCOMING", settings), false}, {_("HOWPLAY", settings), _("INSTRUCTIONS", settings)}}, cmd.channel_id);
 			{
 				std::lock_guard<std::mutex> user_cache_lock(creator->states_mutex);
+				creator->GetBot()->core.log->debug("state pointer is {}", (int64_t)state);
+				state = new state_t(creator);
+				creator->GetBot()->core.log->debug("state pointer is now {}", (int64_t)state);
+				state->start_time = time(NULL);
+				state->shuffle_list = sl;
+				state->gamestate = TRIV_ASK_QUESTION;
+				state->numquestions = questions + 1;
+				state->streak = 1;
+				state->last_to_answer = 0;
+				state->round = 1;
+				state->interval = (quickfire ? (TRIV_INTERVAL / 4) : TRIV_INTERVAL);
+				state->channel_id = cmd.channel_id;
+				state->curr_qid = 0;
+				state->curr_answer = "";
+				state->guild_id = cmd.guild_id;
+				creator->bot->core.log->info("Started game on guild {}, channel {}, {} questions [{}]", cmd.guild_id, cmd.channel_id, questions, quickfire ? "quickfire" : "normal");
+				creator->EmbedWithFields(fmt::format(_("NEWROUND", settings), (quickfire ? "**QUICKFIRE** " : ""), (resumed ? _("RESUMED", settings) : _("STARTED", settings)), (resumed ? _("ABOTADMIN", settings) : username)), {{_("QUESTION", settings), fmt::format("{}", questions), false}, {_("GETREADY", settings), _("FIRSTCOMING", settings), false}, {_("HOWPLAY", settings), _("INSTRUCTIONS", settings)}}, cmd.channel_id);
 				creator->states[cmd.channel_id] = state;
+				creator->GetBot()->core.log->debug("create new timer");
 				state->timer = new std::thread(&state_t::tick, state);
+				creator->GetBot()->core.log->debug("finished creating timer");
 			}
 
 			creator->CacheUser(cmd.author_id, cmd.channel_id);
 			log_game_start(state->guild_id, state->channel_id, questions, quickfire, c->get_name(), cmd.author_id, state->shuffle_list);
+			creator->GetBot()->core.log->debug("returning from start game");
 			return;
 		}
 	} else {

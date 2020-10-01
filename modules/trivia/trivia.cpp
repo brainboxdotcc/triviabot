@@ -168,49 +168,50 @@ bool TriviaModule::OnAllShardsReady()
 
 		bool quickfire = (*game)["quickfire"].get<std::string>() == "1";
 
-		state_t* state = new state_t(this);
-		state->start_time = time(NULL);
-
-		/* Get shuffle list from state */
-		if (!(*game)["qlist"].get<std::string>().empty()) {
-			json shuffle = json::parse((*game)["qlist"].get<std::string>());
-
-			for (auto s = shuffle.begin(); s != shuffle.end(); ++s) {
-				state->shuffle_list.push_back(s->get<std::string>());
-			}
-			bot->core.log->debug("Resume shuffle list length: {}", state->shuffle_list.size());
-			state->gamestate = (trivia_state_t)from_string<uint32_t>((*game)["state"].get<std::string>(), std::dec);
-		} else {
-			/* No shuffle list to resume from, create a new one */
-			state->shuffle_list = fetch_shuffle_list(from_string<int64_t>((*game)["guild_id"].get<std::string>(), std::dec));
-			state->gamestate = TRIV_ASK_QUESTION;
-		}
-
-		state->numquestions = from_string<uint32_t>((*game)["questions"].get<std::string>(), std::dec) + 1;
-		state->streak = from_string<uint32_t>((*game)["streak"].get<std::string>(), std::dec);
-		state->last_to_answer = from_string<int64_t>((*game)["lastanswered"].get<std::string>(), std::dec);
-		state->round = from_string<uint32_t>((*game)["question_index"].get<std::string>(), std::dec);
-		state->interval = (quickfire ? (TRIV_INTERVAL / 4) : TRIV_INTERVAL);
-		state->channel_id = from_string<int64_t>((*game)["channel_id"].get<std::string>(), std::dec);
-		state->guild_id = from_string<int64_t>((*game)["guild_id"].get<std::string>(), std::dec);
-		state->curr_qid = 0;
-		state->curr_answer = "";
-		/* Force fetching of question */
-		if (state->round % 10 == 0) {
-			do_insane_round(state, true);
-		} else {
-			do_normal_round(state, true);
-		}
-		aegis::channel* c = bot->core.find_channel(state->channel_id);
+		/* XXX: Note: The mutex here is VITAL to thread safety of the state list! DO NOT move it! */
 		{
 			std::lock_guard<std::mutex> user_cache_lock(states_mutex);
+			state_t* state = new state_t(this);
+			state->start_time = time(NULL);
+
+			/* Get shuffle list from state */
+			if (!(*game)["qlist"].get<std::string>().empty()) {
+				json shuffle = json::parse((*game)["qlist"].get<std::string>());
+	
+				for (auto s = shuffle.begin(); s != shuffle.end(); ++s) {
+					state->shuffle_list.push_back(s->get<std::string>());
+				}
+				bot->core.log->debug("Resume shuffle list length: {}", state->shuffle_list.size());
+				state->gamestate = (trivia_state_t)from_string<uint32_t>((*game)["state"].get<std::string>(), std::dec);
+			} else {
+				/* No shuffle list to resume from, create a new one */
+				state->shuffle_list = fetch_shuffle_list(from_string<int64_t>((*game)["guild_id"].get<std::string>(), std::dec));
+				state->gamestate = TRIV_ASK_QUESTION;
+			}
+	
+			state->numquestions = from_string<uint32_t>((*game)["questions"].get<std::string>(), std::dec) + 1;
+			state->streak = from_string<uint32_t>((*game)["streak"].get<std::string>(), std::dec);
+			state->last_to_answer = from_string<int64_t>((*game)["lastanswered"].get<std::string>(), std::dec);
+			state->round = from_string<uint32_t>((*game)["question_index"].get<std::string>(), std::dec);
+			state->interval = (quickfire ? (TRIV_INTERVAL / 4) : TRIV_INTERVAL);
+			state->channel_id = from_string<int64_t>((*game)["channel_id"].get<std::string>(), std::dec);
+			state->guild_id = from_string<int64_t>((*game)["guild_id"].get<std::string>(), std::dec);
+			state->curr_qid = 0;
+			state->curr_answer = "";
+			/* Force fetching of question */
+			if (state->round % 10 == 0) {
+				do_insane_round(state, true);
+			} else {
+				do_normal_round(state, true);
+			}
+			aegis::channel* c = bot->core.find_channel(state->channel_id);
 			states[state->channel_id] = state;
-		}
-		if (c) {
-			bot->core.log->info("Resumed game on guild {}, channel {}, {} questions [{}]", state->guild_id, state->channel_id, state->numquestions, quickfire ? "quickfire" : "normal");
-			state->timer = new std::thread(&state_t::tick, state);
-		} else {
-			state->terminating = true;
+			if (c) {
+				bot->core.log->info("Resumed game on guild {}, channel {}, {} questions [{}]", state->guild_id, state->channel_id, state->numquestions, quickfire ? "quickfire" : "normal");
+				state->timer = new std::thread(&state_t::tick, state);
+			} else {
+				state->terminating = true;
+			}
 		}
 	}
 	return true;
@@ -263,7 +264,7 @@ guild_settings_t TriviaModule::GetGuildSettings(int64_t guild_id)
 std::string TriviaModule::GetVersion()
 {
 	/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-	std::string version = "$ModVer 28$";
+	std::string version = "$ModVer 29$";
 	return "3.0." + version.substr(8,version.length() - 9);
 }
 
