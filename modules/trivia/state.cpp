@@ -82,12 +82,9 @@ state_t::~state_t()
 {
 	terminating = true;
 	gamestate = TRIV_END;
-	if (creator) {
-		creator->GetBot()->core.log->debug("state_t::~state(): G:{} C:{}", guild_id, channel_id);
-		/* XXX DANGER WILL ROBINSON!
-		 * This is the ONLY place allowed to delete the timer!!! */
-		creator->DisposeThread(timer);
-	}
+	/* XXX DANGER WILL ROBINSON!
+	 * This is the ONLY place allowed to delete the timer!!! */
+	creator->DisposeThread(timer);
 }
 
 void state_t::handle_message(const in_msg& m)
