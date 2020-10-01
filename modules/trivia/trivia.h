@@ -28,6 +28,7 @@
 #include <map>
 #include <vector>
 #include <atomic>
+#include <deque>
 #include "settings.h"
 
 // Number of seconds after which a game is considered hung and its thread exits.
@@ -48,6 +49,17 @@ struct field_t
 	std::string name;
 	std::string value;
 	bool _inline;
+};
+
+class in_cmd
+{
+ public:
+	std::string msg;
+	int64_t author_id;
+	int64_t channel_id;
+	int64_t guild_id;
+	bool mentions_bot;
+	in_cmd(const std::string &m, int64_t author, int64_t channel, int64_t guild, bool mention);
 };
 
 /**
@@ -72,10 +84,17 @@ class TriviaModule : public Module
 	time_t startup;
 	json numstrs;
 	json* lang;
+	std::mutex cmdmutex;
+	std::deque<in_cmd> commandqueue;
+	std::deque<in_cmd> to_process;
+	std::thread* command_processor;
 public:
 	TriviaModule(Bot* instigator, ModuleLoader* ml);
 	Bot* GetBot();
 	virtual ~TriviaModule();
+	void queue_command(const std::string &message, int64_t author, int64_t channel, int64_t guild, bool mention);
+	void handle_command(const in_cmd &cmd);
+	void ProcessCommands();
 	virtual bool OnPresenceUpdate();
 	std::string _(const std::string &k, const guild_settings_t& settings);
 	virtual bool OnAllShardsReady();
@@ -120,5 +139,6 @@ public:
 	void GetHelp(const std::string &section, int64_t channelID, const std::string &botusername, int64_t botid, const std::string &author, int64_t authorid, const guild_settings_t &settings);
 	void CacheUser(int64_t user, int64_t channel_id);
 	void CheckReconnects();
+	state_t* GetState(int64_t channel_id);
 };
 

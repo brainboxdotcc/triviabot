@@ -28,7 +28,6 @@
 #include <sporks/stringops.h>
 #include "httplib.h"
 
-std::unordered_map<std::string, asio::ip::basic_resolver<asio::ip::tcp>::results_type> _resolver_cache;
 asio::io_context * _io_context = nullptr;
 std::string apikey;
 std::mutex faflock;
@@ -95,53 +94,8 @@ std::string url_encode(const std::string &value) {
 
 std::string web_request(const std::string &_host, const std::string &_path, const std::string &_body)
 {
-	//websocketpp::http::parser::response hresponse;
-
 	try
 	{
-		/*asio::ip::basic_resolver<asio::ip::tcp>::results_type r;
-
-		const std::string & tar_host = _host;
-
-		auto it = _resolver_cache.find(tar_host);
-		if (it == _resolver_cache.end())
-		{
-			asio::ip::tcp::resolver resolver(*_io_context);
-			r = resolver.resolve(tar_host, "80");
-			_resolver_cache.emplace(tar_host, r);
-		}
-		else
-			r = it->second;
-
-
-		asio::ip::tcp::socket socket(*_io_context);
-		asio::connect(socket, r);
-
-		asio::streambuf request;
-		std::ostream request_stream(&request);
-		request_stream << (_body.empty() ? "GET" : "POST") << " " << _path << " HTTP/1.0\r\n";
-		request_stream << "Host: " << tar_host << "\r\n";*/
-		//request_stream << "Accept: */*\r\n";
-		/*request_stream << "User-Agent: TriviaBot (1.0.0)\r\n";
-		request_stream << "Connection: close\r\n";
-		request_stream << "Content-Length: " << _body.length() << "\r\n";
-		request_stream << "Content-Type: text/plain\r\n";
-		request_stream << "X-API-Auth: " << apikey << "\r\n\r\n";
-		request_stream << _body;
-
-		asio::write(socket, request);
-		asio::streambuf response;
-		asio::read_until(socket, response, "\r\n");
-		std::stringstream response_content;
-		response_content << &response;
-
-		asio::error_code error;
-		while (asio::read(socket, response, asio::transfer_at_least(1), error))
-			response_content << &response;
-
-		std::istringstream istrm(response_content.str());
-		hresponse.consume(istrm);*/
-
 		httplib::Client cli(_host.c_str(), 80);
 		httplib::Headers headers = {
 			{"X-API-Auth", apikey}
@@ -156,9 +110,6 @@ std::string web_request(const std::string &_host, const std::string &_path, cons
 				if (res->status == 200) {
 					rv = res->body;
 				}
-				std::cout << "status: " << res->status << "\n";
-			} else {
-				std::cout << "error: " << res.error() << "\n";
 			}
 		}
 		else {
@@ -166,9 +117,9 @@ std::string web_request(const std::string &_host, const std::string &_path, cons
 				if (res->status == 200) {
 					rv = res->body;
 				}
-				std::cout << "status: " << res->status << "\n";
+				//std::cout << "status: " << res->status << "\n";
 			} else {
-				std::cout << "error: " << res.error() << "\n";
+				//std::cout << "error: " << res.error() << "\n";
 			}
 		}
 			

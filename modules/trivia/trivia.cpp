@@ -34,10 +34,6 @@
 #include "webrequest.h"
 #include "piglatin.h"
 
-/**
- * Module class for trivia system
- */
-
 TriviaModule::TriviaModule(Bot* instigator, ModuleLoader* ml) : Module(instigator, ml), terminating(false)
 {
 	srand(time(NULL) * time(NULL));
@@ -50,6 +46,7 @@ TriviaModule::TriviaModule(Bot* instigator, ModuleLoader* ml) : Module(instigato
 	prefix_match = new PCRE("prefix");
 	set_io_context(bot->io, Bot::GetConfig("apikey"));
 	presence_update = new std::thread(&TriviaModule::UpdatePresenceLine, this);
+	command_processor = new std::thread(&TriviaModule::ProcessCommands, this);
 	startup = time(NULL);
 	{
 		std::lock_guard<std::mutex> cmd_list_lock(cmds_mutex);
@@ -63,6 +60,35 @@ TriviaModule::TriviaModule(Bot* instigator, ModuleLoader* ml) : Module(instigato
 	lang = new json();
 	langfile >> *lang;
 	bot->core.log->info("Language strings count: {}", lang->size());
+}
+
+void TriviaModule::queue_command(const std::string &message, int64_t author, int64_t channel, int64_t guild, bool mention)
+{
+	std::lock_guard<std::mutex> cmd_lock(cmdmutex);
+	commandqueue.push_back(in_cmd(message, author, channel, guild, mention));
+}
+
+void TriviaModule::ProcessCommands()
+{
+	while (!terminating) {
+		{
+			std::lock_guard<std::mutex> cmd_lock(cmdmutex);
+			if (!commandqueue.empty()) {
+				to_process.clear();
+				for (auto m = commandqueue.begin(); m != commandqueue.end(); ++m) {
+					to_process.push_back(*m);
+				}
+				commandqueue.clear();
+			}
+		}
+		if (!to_process.empty()) {
+			for (auto m = to_process.begin(); m != to_process.end(); ++m) {
+				handle_command(*m);
+			}
+			to_process.clear();
+		}
+		usleep(100000);
+	}
 }
 
 Bot* TriviaModule::GetBot()
@@ -238,7 +264,7 @@ guild_settings_t TriviaModule::GetGuildSettings(int64_t guild_id)
 std::string TriviaModule::GetVersion()
 {
 	/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-	std::string version = "$ModVer 24$";
+	std::string version = "$ModVer 25$";
 	return "3.0." + version.substr(8,version.length() - 9);
 }
 
@@ -755,8 +781,6 @@ bool TriviaModule::OnMessage(const modevent::message_create &message, const std:
 
 bool TriviaModule::RealOnMessage(const modevent::message_create &message, const std::string& clean_message, bool mentioned, const std::vector<std::string> &stringmentions, int64_t _author_id)
 {
-	std::vector<std::string> param;
-	std::string botusername = bot->user.username;
 	std::string username;
 	aegis::gateway::objects::message msg = message.msg;
 
@@ -772,8 +796,6 @@ bool TriviaModule::RealOnMessage(const modevent::message_create &message, const 
 		username = user->get_username();
 	}
 	
-	bool game_in_progress = false;
-
 	/* Retrieve current state for channel, if there is no state object, no game is in progress */
 	state_t* state = nullptr;
 	int64_t guild_id = 0;
@@ -807,135 +829,16 @@ bool TriviaModule::RealOnMessage(const modevent::message_create &message, const 
 		trivia_message = conv_num(clean_message, settings);
 	}
 	trivia_message = tidy_num(trivia_message);
-	{
-		std::lock_guard<std::mutex> user_cache_lock(states_mutex);
-
-		std::vector<int64_t> removals;
-		for (auto s : states) {
-			if (s.second && s.second->terminating) {
-				delete s.second;
-				removals.push_back(s.first);
-			} else if (!s.second) {
-				removals.push_back(s.first);
-			}
-		}
-		for (auto r : removals) {
-			states.erase(r);
-		}
-
-		auto state_iter = states.find(channel_id);
-		if (state_iter != states.end()) {
-			state = state_iter->second;
-			game_in_progress = true;
-		}
-	}
+	state = GetState(channel_id);
 
 	if (mentioned && prefix_match->Match(clean_message)) {
 		c->create_message(fmt::format(_("PREFIX", settings), settings.prefix, settings.prefix));
 		return false;
 	}
 
-	if (game_in_progress) {
-		if (state->gamestate == TRIV_ASK_QUESTION || state->gamestate == TRIV_FIRST_HINT || state->gamestate == TRIV_SECOND_HINT || state->gamestate == TRIV_TIME_UP) {
-
-			aegis::channel* c = bot->core.find_channel(channel_id);
-			
-			if (state->round % 10 == 0) {
-				/* Insane round */
-				auto i = state->insane.find(lowercase(trivia_message));
-				if (i != state->insane.end()) {
-					state->insane.erase(i);
-
-					if (--state->insane_left < 1) {
-						if (c) {
-							SimpleEmbed(":thumbsup:", fmt::format(_("LAST_ONE", settings), username), c->get_id().get());
-						}
-						if (state->round <= state->numquestions - 1) {
-							state->round++;
-							state->gamestate = TRIV_ANSWER_CORRECT;
-						} else {
-							state->gamestate = TRIV_END;
-						}
-					} else {
-						if (c) {
-							SimpleEmbed(":thumbsup:", fmt::format(_("INSANE_CORRECT", settings), username, trivia_message, state->insane_left, state->insane_num), c->get_id().get());
-						}
-					}
-					update_score_only(author_id, state->guild_id, 1);
-					if (log_question_index(state->guild_id, state->channel_id, state->round, state->streak, state->last_to_answer, state->gamestate)) {
-						StopGame(state, settings);
-						return false;
-					}
-				}
-			} else {
-				/* Normal round */
-
-				/* Answer on channel is an exact match for the current answer and/or it is numeric, OR, it's non-numeric and has a levenstein distance near enough to the current answer (account for misspellings) */
-				if (!state->curr_answer.empty() && ((trivia_message.length() >= state->curr_answer.length() && lowercase(state->curr_answer) == lowercase(trivia_message)) || (!PCRE("^\\$(\\d+)$").Match(state->curr_answer) && !PCRE("^(\\d+)$").Match(state->curr_answer) && (state->curr_answer.length() > 5 && levenstein(trivia_message, state->curr_answer) < 2)))) {
-					/* Correct answer */
-					state->gamestate = TRIV_ANSWER_CORRECT;
-					time_t time_to_answer = time(NULL) - state->asktime;
-					std::string pts = (state->score > 1 ? _("POINTS", settings) : _("POINT", settings));
-					time_t submit_time = state->recordtime;
-					int32_t score = state->score;
-
-					/* Clear the answer here or there is a race condition where two may answer at the same time during the web requests below */
-					std::string saved_answer = state->curr_answer;
-					state->curr_answer = "";
-
-					std::string ans_message;
-					ans_message.append(fmt::format(_("NORM_CORRECT", settings), saved_answer, score, pts, time_to_answer));
-					if (time_to_answer < state->recordtime) {
-						ans_message.append(fmt::format(_("RECORD_TIME", settings), username));
-						submit_time = time_to_answer;
-					}
-					int32_t newscore = update_score(author_id, state->guild_id, submit_time, state->curr_qid, score);
-					ans_message.append(fmt::format(_("SCORE_UPDATE", settings), username, newscore ? newscore : score));
-
-					std::string teamname = get_current_team(author_id);
-					if (!empty(teamname) && teamname != "!NOTEAM") {
-						add_team_points(teamname, score, author_id);
-						int32_t newteamscore = get_team_points(teamname);
-						ans_message.append(fmt::format(_("TEAM_SCORE", settings), teamname, score, pts, newteamscore));
-					}
-
-					if (state->last_to_answer == author_id) {
-						/* Amend current streak */
-						state->streak++;
-						ans_message.append(fmt::format(_("ON_A_STREAK", settings), username, state->streak));
-						streak_t s = get_streak(author_id, state->guild_id);
-						if (state->streak > s.personalbest) {
-							ans_message.append(_("BEATEN_BEST", settings));
-							change_streak(author_id, state->guild_id, state->streak);
-						} else {
-							ans_message.append(fmt::format(_("NOT_THERE_YET", settings), s.personalbest));
-						}
-						if (state->streak > s.bigstreak && s.topstreaker != author_id) {
-							ans_message.append(fmt::format(_("STREAK_BEATDOWN", settings), username, s.topstreaker, state->streak));
-						}
-					} else if (state->streak > 1 && state->last_to_answer && state->last_to_answer != author_id) {
-						ans_message.append(fmt::format(_("STREAK_ENDER", settings), username, state->last_to_answer, state->streak));
-						state->streak = 1;
-					} else {
-						state->streak = 1;
-					}
-
-					/* Update last person to answer */
-					state->last_to_answer = author_id;
-
-					aegis::channel* c = bot->core.find_channel(channel_id);
-					if (c) {
-						SimpleEmbed(":thumbsup:", ans_message, c->get_id().get(), fmt::format(_("CORRECT", settings), username));
-					}
-
-					if (log_question_index(state->guild_id, state->channel_id, state->round, state->streak, state->last_to_answer, state->gamestate)) {
-						StopGame(state, settings);
-						return false;
-					}
-				}
-			}
-
-		}
+	if (state) {
+		/* The state_t class handles potential answers, but only when a game is running on this guild */
+		state->queue_message(trivia_message, author_id, mentioned);
 	}
 
 	if (lowercase(clean_message.substr(0, settings.prefix.length())) == lowercase(settings.prefix)) {
@@ -945,448 +848,41 @@ bool TriviaModule::RealOnMessage(const modevent::message_create &message, const 
 		aegis::channel* c = bot->core.find_channel(channel_id);
 		if (c && user != nullptr) {
 
+			queue_command(command, author_id, channel_id, c->get_guild().get_id().get(), mentioned);
 			bot->core.log->info("CMD (USER={}, GUILD={}): <{}> {}", author_id, c->get_guild().get_id().get(), username, clean_message);
-
-			if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == c->get_guild().get_id()) {
-
-				std::stringstream tokens(command);
-
-				std::string base_command;
-			
-				tokens >> base_command;
-
-				/* Check for moderator status - first check if owner */
-				aegis::guild* g = bot->core.find_guild(guild_id);
-				bool moderator = (g && g->get_owner() == author_id);
-				/* Now iterate the list of moderator roles from settings */
-				if (!moderator) {
-					for (auto x = settings.moderator_roles.begin(); x != settings.moderator_roles.end(); ++x) {
-						if (c->get_guild().member_has_role(author_id, *x)) {
-							moderator = true;
-							break;
-						}
-					}
-				}
-
-				base_command = lowercase(base_command);
-
-				/* Support for old-style commands e.g. !trivia start instead of !start */
-				if (base_command == "trivia") {
-					tokens >> base_command;
-					base_command = lowercase(base_command);
-				}
-
-				if (base_command == "qf") {
-					base_command = "quickfire";
-				}
-
-				if (base_command == "start" || base_command == "quickfire" || base_command == "trivia" || base_command == "fstart") {
-
-					int32_t questions;
-					std::string str_q;
-					tokens >> str_q;
-					if (str_q.empty()) {
-						questions = 10;
-					} else {
-						questions = from_string<int32_t>(str_q, std::dec);
-					}
-
-					bool quickfire = (base_command == "quickfire");
-					bool resumed = false;
-
-					if (base_command == "fstart") {
-						db::resultset rs = db::query("SELECT * FROM trivia_access WHERE user_id = ? AND enabled = 1", {author_id});
-						if (rs.size() > 0) {
-							int64_t cid;
-							tokens >> cid;
-							auto newc = bot->core.find_channel(cid);
-							if (!newc) {
-								SimpleEmbed(":warning:", fmt::format(_("CHANNEL_WUT", settings), username), c->get_id().get());
-								return false;
-							} else {
-								SimpleEmbed(":white_check_mark:", fmt::format(_("ROUND_START_ID", settings), questions, cid), c->get_id().get());
-								c = newc;
-								channel_id = cid;
-								resumed = true;
-								guild_id = c->get_guild().get_id().get();
-								settings = GetGuildSettings(guild_id);
-								SimpleEmbed(":white_check_mark:", _("RESTART_RESUME", settings), c->get_id().get());
-							}
-						} else {
-							SimpleEmbed(":warning:", _("STAFF_ONLY", settings), c->get_id().get());
-						}
-					}
-
-					json document;
-					std::ifstream configfile("../config.json");
-					configfile >> document;
-					json shitlist = document["shitlist"];
-					aegis::channel* c = bot->core.find_channel(channel_id);
-					for (auto entry = shitlist.begin(); entry != shitlist.end(); ++entry) {
-						int64_t sl_guild_id = from_string<int64_t>(entry->get<std::string>(), std::dec);
-								if (c->get_guild().get_id().get() == sl_guild_id) {
-							SimpleEmbed(":warning:", fmt::format(_("SHITLISTED", settings), username, bot->user.id.get()), c->get_id().get());
-							return false;
-						}
-						}
-
-					if (!settings.premium) {
-						std::lock_guard<std::mutex> user_cache_lock(states_mutex);
-						for (auto j = states.begin(); j != states.end(); ++j) {
-							if (j->second->guild_id == c->get_guild().get_id() && j->second->gamestate != TRIV_END) {
-								aegis::channel* active_channel = bot->core.find_channel(j->second->channel_id);
-								if (active_channel) {
-									EmbedWithFields(_("NOWAY", settings), {{_("ALREADYACTIVE", settings), fmt::format(_("CHANNELREF", settings), active_channel->get_id().get()), false},
-											{_("GETPREMIUM", settings), _("PREMDETAIL1", settings), false}}, c->get_id().get());
-									return false;
-								}
-							}
-						}
-					}
-
-					if (!game_in_progress) {
-						int32_t max_quickfire = (settings.premium ? 200 : 15);
-						if ((!quickfire && (questions < 5 || questions > 200)) || (quickfire && (questions < 5 || questions > max_quickfire))) {
-							if (quickfire) {
-								if (questions > max_quickfire && !settings.premium) {
-									EmbedWithFields(_("MAX15", settings), {{_("GETPREMIUM", settings), _("PREMDETAIL2", settings), false}}, c->get_id().get());
-								} else {
-									SimpleEmbed(":warning:", fmt::format(_("MAX15DETAIL", settings), username, max_quickfire), c->get_id().get());
-								}
-							} else {
-								SimpleEmbed(":warning:", fmt::format(_("MAX200", settings), username), c->get_id().get());
-							}
-							return false;
-						}
-
-						std::vector<std::string> sl = fetch_shuffle_list(c->get_guild().get_id());
-						if (sl.size() < 50) {
-							SimpleEmbed(":warning:", fmt::format(_("SPOOPY2", settings), username), c->get_id().get(), _("BROKED", settings));
-							return false;
-						} else  {
-							state = new state_t(this);
-							state->start_time = time(NULL);
-							state->shuffle_list = sl;
-							state->gamestate = TRIV_ASK_QUESTION;
-							state->numquestions = questions + 1;
-							state->streak = 1;
-							state->last_to_answer = 0;
-							state->round = 1;
-							state->interval = (quickfire ? (TRIV_INTERVAL / 4) : TRIV_INTERVAL);
-							state->channel_id = channel_id;
-							state->curr_qid = 0;
-							state->curr_answer = "";
-							aegis::channel* c = bot->core.find_channel(channel_id);
-							{
-								std::lock_guard<std::mutex> user_cache_lock(states_mutex);
-								states[channel_id] = state;
-							}
-							if (c) {
-								state->guild_id = c->get_guild().get_id();
-								bot->core.log->info("Started game on guild {}, channel {}, {} questions [{}]", state->guild_id, channel_id, questions, quickfire ? "quickfire" : "normal");
-								EmbedWithFields(fmt::format(_("NEWROUND", settings), (quickfire ? "**QUICKFIRE** " : ""), (resumed ? _("RESUMED", settings) : _("STARTED", settings)), (resumed ? _("ABOTADMIN", settings) : username)), {{_("QUESTION", settings), fmt::format("{}", questions), false}, {_("GETREADY", settings), _("FIRSTCOMING", settings), false}, {_("HOWPLAY", settings), _("INSTRUCTIONS", settings)}}, c->get_id().get());
-								state->timer = new std::thread(&state_t::tick, state);
-
-								CacheUser(author_id, channel_id);
-								log_game_start(state->guild_id, state->channel_id, questions, quickfire, c->get_name(), author_id, state->shuffle_list);
-							} else {
-								state->terminating = true;
-							}
-
-							return false;
-						}
-					} else {
-						SimpleEmbed(":warning:", fmt::format(_("ALREADYRUN", settings), username), c->get_id().get());
-						return false;
-					}
-				} else if (base_command == "stop") {
-					if (game_in_progress) {
-						if (settings.only_mods_stop) {
-							if (!moderator) {
-								SimpleEmbed(":warning:", fmt::format(_("CANTSTOPMEIMTHEGINGERBREADMAN", settings), username), c->get_id().get());
-								return false;
-							}
-						}
-						SimpleEmbed(":octagonal_sign:", fmt::format(_("STOPOK", settings), username), c->get_id().get());
-						{
-							std::lock_guard<std::mutex> user_cache_lock(states_mutex);
-							auto i = states.find(channel_id);
-							if (i != states.end()) {
-								i->second->terminating = true;
-							} else {
-								bot->core.log->error("Channel deleted while game stopping on this channel, cid={}", channel_id);
-							}
-							state = nullptr;
-						}
-						CacheUser(author_id, channel_id);
-						log_game_end(c->get_guild().get_id().get(), c->get_id().get());
-					} else {
-						SimpleEmbed(":warning:", fmt::format(_("NOTRIVIA", settings), username), c->get_id().get());
-					}
-					return false;
-				} else if (base_command == "vote") {
-					SimpleEmbed(":white_check_mark:", fmt::format(fmt::format("{}\n{}", _("PRIVHINT", settings), _("VOTEAD", settings)), bot->user.id.get(), settings.prefix), c->get_id().get());
-					CacheUser(author_id, channel_id);
-				} else if (base_command == "votehint" || base_command == "vh") {
-					if (game_in_progress) {
-						if ((state->gamestate == TRIV_FIRST_HINT || state->gamestate == TRIV_SECOND_HINT || state->gamestate == TRIV_TIME_UP) && (state->round % 10) != 0 && state->curr_answer != "") {
-							db::resultset rs = db::query("SELECT *,(unix_timestamp(vote_time) + 43200 - unix_timestamp()) as remaining FROM infobot_votes WHERE snowflake_id = ? AND now() < vote_time + interval 12 hour", {author_id});
-							if (rs.size() == 0) {
-								SimpleEmbed("<:wc_rs:667695516737470494>", fmt::format(fmt::format("{}\n{}", _("NOTVOTED", settings), _("VOTEAD", settings)), bot->user.id.get(), settings.prefix), c->get_id().get());
-								return false;
-							} else {
-								int64_t remaining_hints = from_string<int64_t>(rs[0]["dm_hints"], std::dec);
-								int32_t secs = from_string<int32_t>(rs[0]["remaining"], std::dec);
-								int32_t mins = secs / 60 % 60;
-								float hours = floor(secs / 60 / 60);
-								if (remaining_hints < 1) {
-									SimpleEmbed(":warning:", fmt::format(fmt::format("{}\n{}", fmt::format(_("NOMOREHINTS", settings), username), _("VOTEAD", settings)), bot->user.id.get(), hours, mins), c->get_id().get());
-								} else {
-									remaining_hints--;
-									if (remaining_hints > 0) {
-										SimpleEmbed(":white_check_mark:", fmt::format(_("VH1", settings), username, remaining_hints, hours, mins), c->get_id().get());
-									} else {
-										SimpleEmbed(":white_check_mark:", fmt::format(_("VH2", settings), username, hours, mins), c->get_id().get());
-									}
-									std::string personal_hint = state->curr_answer;
-									personal_hint = lowercase(personal_hint);
-									personal_hint[0] = '#';
-									personal_hint[personal_hint.length() - 1] = '#';
-									personal_hint = ReplaceString(personal_hint, " ", "#");
-									// Get the API to do this, because DMs in aegis are unreliable right now.
-									send_hint(author_id, personal_hint, remaining_hints);
-									db::query("UPDATE infobot_votes SET dm_hints = ? WHERE snowflake_id = ?", {remaining_hints, author_id});
-									CacheUser(author_id, channel_id);
-
-									return false;
-								}
-							}
-						} else {
-							SimpleEmbed(":warning:", fmt::format(_("WAITABIT", settings), username), c->get_id().get());
-							return false;
-						}
-					} else {
-						SimpleEmbed(":warning:", fmt::format(fmt::format("{}\n{}", fmt::format(_("NOROUND", settings), username), _("VOTEAD", settings)), bot->user.id.get()), c->get_id().get());
-						return false;
-					}
-				} else if (base_command == "stats") {
-					show_stats(c->get_guild().get_id(), channel_id);
-					CacheUser(author_id, channel_id);
-				} else if (base_command == "info") {
-					std::stringstream s;
-					time_t diff = bot->core.uptime() / 1000;
-					int seconds = diff % 60;
-					diff /= 60;
-					int minutes = diff % 60;
-					diff /= 60;
-					int hours = diff % 24;
-					diff /= 24;
-					int days = diff;
-					int64_t servers = bot->core.get_guild_count();
-					int64_t users = bot->core.get_member_count();
-					char uptime[32];
-					snprintf(uptime, 32, "%d day%s, %02d:%02d:%02d", days, (days != 1 ? "s" : ""), hours, minutes, seconds);
-					char startstr[256];
-					tm _tm;
-					gmtime_r(&startup, &_tm);
-					strftime(startstr, 255, "%x, %I:%M%p", &_tm);
-
-					const statusfield statusfields[] = {
-						statusfield(_("ACTIVEGAMES", settings), Comma(GetActiveGames())),
-						statusfield(_("TOTALSERVERS", settings), Comma(servers)),
-						statusfield(_("CONNSINCE", settings), startstr),
-						statusfield(_("ONLINEUSERS", settings), Comma(users)),
-						statusfield(_("UPTIME", settings), std::string(uptime)),
-						statusfield(_("SHARDS", settings), Comma(bot->core.shard_max_count)),
-						statusfield(_("MEMBERINTENT", settings), _((bot->HasMemberIntents() ? "TICKYES" : "CROSSNO"), settings)),
-						statusfield(_("TESTMODE", settings), _((bot->IsTestMode() ? "TICKYES" : "CROSSNO"), settings)),
-						statusfield(_("DEVMODE", settings), _((bot->IsDevMode() ? "TICKYES" : "CROSSNO"), settings)),
-						statusfield(_("MYPREFIX", settings), "``" + escape_json(settings.prefix) + "``"),
-						statusfield(_("BOTVER", settings), std::string(GetVersion())),
-						statusfield(_("LIBVER", settings), std::string(AEGIS_VERSION_TEXT)),
-						statusfield("", "")
-					};
-
-					s << "{\"title\":\"" << bot->user.username << " " << _("INFO", settings);
-					s << "\",\"color\":" << settings.embedcolour << ",\"url\":\"https:\\/\\/triviabot.co.uk\\/\\/\",";
-					s << "\"footer\":{\"link\":\"https:\\/\\/triviabot.co.uk\\/\",\"text\":\"" << _("POWERED_BY", settings) << "\",\"icon_url\":\"https:\\/\\/triviabot.co.uk\\/images\\/triviabot_tl_icon.png\"},\"fields\":[";
-					for (int i = 0; statusfields[i].name != ""; ++i) {
-						s << "{\"name\":\"" <<  statusfields[i].name << "\",\"value\":\"" << statusfields[i].value << "\", \"inline\": true}";
-						if (statusfields[i + 1].name != "") {
-							s << ",";
-						}
-					}
-
-					s << "],\"description\":\"" << (settings.premium ? _("YAYPREMIUM", settings) : "") << "\"}";
-
-					json embed_json;
-					try {
-						embed_json = json::parse(s.str());
-					}
-					catch (const std::exception &e) {
-						bot->core.log->error("Malformed json created when reporting info: {}", s.str());
-					}
-					if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == c->get_guild().get_id()) {
-						c->create_message_embed("", embed_json);
-						bot->sent_messages++;
-					}
-					CacheUser(author_id, channel_id);
-				} else if (base_command == "join") {
-					std::string teamname;
-					std::getline(tokens, teamname);
-					teamname = trim(teamname);
-					if (join_team(author_id, teamname, c->get_id().get())) {
-						SimpleEmbed(":busts_in_silhouette:", fmt::format(_("JOINED", settings), teamname, username), c->get_id().get(), _("CALLFORBACKUP", settings));
-					} else {
-						SimpleEmbed(":warning:", fmt::format(_("CANTJOIN", settings), username), c->get_id().get());
-					}
-					CacheUser(author_id, channel_id);
-				} else if (base_command == "create") {
-					std::string newteamname;
-					std::getline(tokens, newteamname);
-					newteamname = trim(newteamname);
-					std::string teamname = get_current_team(author_id);
-					if (teamname.empty() || teamname == "!NOTEAM") {
-						newteamname = create_new_team(newteamname);
-						if (newteamname != "__NO__") {
-							join_team(author_id, newteamname, c->get_id().get());
-							SimpleEmbed(":busts_in_silhouette:", fmt::format(_("CREATED", settings), newteamname, username), c->get_id().get(), _("ZELDAREFERENCE", settings));
-						} else {
-							SimpleEmbed(":warning:", fmt::format(_("CANTCREATE", settings), username), c->get_id().get());
-						}
-					} else {
-						SimpleEmbed(":warning:", fmt::format(_("ALREADYMEMBER", settings), username, teamname), c->get_id().get());
-					}
-					CacheUser(author_id, channel_id);
-				} else if (base_command == "leave") {
-					std::string teamname = get_current_team(author_id);
-					if (teamname.empty() || teamname == "!NOTEAM") {
-						SimpleEmbed(":warning:", fmt::format(_("YOULONER", settings), username, settings.prefix), c->get_id().get());
-					} else {
-						leave_team(author_id);
-						SimpleEmbed(":busts_in_silhouette:", fmt::format(_("LEFTTEAM", settings), username, teamname), c->get_id().get(), _("COMEBACK", settings));
-					}
-					CacheUser(author_id, channel_id);
-				} else if (base_command == "help") {
-					std::string section;
-					tokens >> section;
-					GetHelp(section, channel_id, bot->user.username, bot->user.id.get(), msg.get_user().get_username(), msg.get_user().get_id().get(), settings);
-					CacheUser(author_id, channel_id);
-				} else {
-					/* Custom commands handled completely by the API */
-					bool command_exists = false;
-					{
-						std::lock_guard<std::mutex> cmd_list_lock(cmds_mutex);
-						command_exists = (std::find(api_commands.begin(), api_commands.end(), trim(lowercase(base_command))) != api_commands.end());
-					}
-					if (command_exists) {
-						bool can_execute = false;
-						auto check = limits.find(channel_id);
-						if (check == limits.end()) {
-							can_execute = true;
-							limits[channel_id] = time(NULL) + PER_CHANNEL_RATE_LIMIT;
-						} else if (time(NULL) > check->second) {
-							can_execute = true;
-							limits[channel_id] = time(NULL) + PER_CHANNEL_RATE_LIMIT;
-						}
-						if (can_execute) {
-							std::string rest;
-							std::getline(tokens, rest);
-							rest = trim(rest);
-							CacheUser(author_id, channel_id);
-							std::string reply = trim(custom_command(base_command, trim(rest), author_id, channel_id, c->get_guild().get_id().get()));
-							if (!reply.empty()) {
-								ProcessEmbed(reply, channel_id);
-							}
-						} else {
-							/* Display rate limit message */
-							SimpleEmbed(":snail:", fmt::format(_("RATELIMITED", settings), PER_CHANNEL_RATE_LIMIT, base_command), c->get_id().get(), _("WOAHTHERE", settings));
-							bot->core.log->debug("Command '{}' not sent to API, rate limited", trim(lowercase(base_command)));
-						}
-					} else {
-						bot->core.log->debug("Command '{}' not known to API", trim(lowercase(base_command)));
-					}
-				}
-				if (base_command == "reloadlang") {
-					db::resultset rs = db::query("SELECT * FROM trivia_access WHERE user_id = ? AND enabled = 1", {author_id});
-					if (rs.size() > 0) {
-						std::ifstream langfile("../lang.json");
-						json* newlang = new json();
-						json* oldlang = this->lang;
-
-						langfile >> *newlang;
-
-						this->lang = newlang;
-						sleep(1);
-						delete oldlang;
-
-						bot->core.log->info("Language strings count: {}", lang->size());
-						SimpleEmbed(":flags:", fmt::format("Reloaded lang.json, **{}** containing language strings.", lang->size()), c->get_id().get());
-					} else {
-						SimpleEmbed(":warning:", _("STAFF_ONLY", settings), c->get_id().get());
-					}
-				}
-			}
-
-		} else {
-			bot->core.log->error("Invalid user record in command");
+			return false;
 		}
+
 	}
 
 	return true;
 }
 
-/**
- * Emit help using a json file in the help/ directory. Missing help files emit a generic error message.
- */
-void TriviaModule::GetHelp(const std::string &section, int64_t channelID, const std::string &botusername, int64_t botid, const std::string &author, int64_t authorid, const guild_settings_t &settings)
-{
-	json embed_json;
-	char timestamp[256];
-	time_t timeval = time(NULL);
-	aegis::channel* channel = bot->core.find_channel(channelID);
-	int32_t colour = settings.embedcolour;
 
-	if (!channel) {
-		bot->core.log->error("Can't find channel {}!", channelID);
-		return;
-	}
+state_t* TriviaModule::GetState(int64_t channel_id) {
+	std::lock_guard<std::mutex> user_cache_lock(states_mutex);
+	state_t* state = nullptr;
 
-	std::ifstream t("../help/" + settings.language + "/" + (section.empty() ? "basic" : section) + ".json");
-	if (!t) {
-		t = std::ifstream("../help/" + settings.language + "/error.json");
-	}
-	std::string json((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
-
-	tm _tm;
-	gmtime_r(&timeval, &_tm);
-	strftime(timestamp, sizeof(timestamp), "%Y-%m-%d %H:%M:%S", &_tm);
-
-	json = ReplaceString(json, ":section:" , section);
-	json = ReplaceString(json, ":user:", botusername);
-	json = ReplaceString(json, ":id:", std::to_string(botid));
-	json = ReplaceString(json, ":author:", author);
-	json = ReplaceString(json, ":ts:", timestamp);
-	json = ReplaceString(json, ":color:", std::to_string(colour));
-
-	try {
-		embed_json = json::parse(json);
-	}
-	catch (const std::exception &e) {
-		if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == channel->get_guild().get_id()) {
-			channel->create_message(fmt::format(_("HERPDERP", settings), authorid));
-			bot->sent_messages++;
+	std::vector<int64_t> removals;
+	for (auto& s : states) {
+		if (s.second && s.second->terminating) {
+			delete s.second;
+			removals.push_back(s.first);
+		} else if (!s.second) {
+			removals.push_back(s.first);
 		}
-		bot->core.log->error("Malformed help file {}.json!", section);
-		return;
+	}
+	for (auto r : removals) {
+		states.erase(r);
 	}
 
-	if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == channel->get_guild().get_id()) {
-		channel->create_message_embed("", embed_json);
-		bot->sent_messages++;
+	auto state_iter = states.find(channel_id);
+	if (state_iter != states.end()) {
+		state = state_iter->second;
 	}
+
+	return state;
 }
-
 
 ENTRYPOINT(TriviaModule);
 

@@ -3,6 +3,8 @@
 #include <vector>
 #include <map>
 #include <thread>
+#include <deque>
+#include <mutex>
 
 enum trivia_state_t
 {
@@ -15,10 +17,22 @@ enum trivia_state_t
 };
 
 
+class in_msg
+{
+ public:
+	std::string msg;
+	int64_t author_id;
+	bool mentions_bot;
+	in_msg(const std::string &m, int64_t author, bool mention);
+};
+
 class state_t
 {
 	class TriviaModule* creator;
  public:
+	std::mutex queuemutex;
+	std::deque<in_msg> messagequeue;
+	std::deque<in_msg> to_process;
 	bool terminating;
 	uint64_t channel_id;
 	uint64_t guild_id;
@@ -55,5 +69,7 @@ class state_t
 	state_t(class TriviaModule* _creator);
 	~state_t();
 	void tick();
+	void queue_message(const std::string &message, int64_t author_id, bool mentions_bot = false);
+	void handle_message(const in_msg& m);
 };
 
