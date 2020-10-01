@@ -87,7 +87,7 @@ void TriviaModule::ProcessCommands()
 			}
 			to_process.clear();
 		}
-		usleep(100000);
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	}
 }
 
@@ -99,6 +99,7 @@ Bot* TriviaModule::GetBot()
 TriviaModule::~TriviaModule()
 {
 	DisposeThread(presence_update);
+	DisposeThread(command_processor);
 	std::lock_guard<std::mutex> user_cache_lock(states_mutex);
 	for (auto state = states.begin(); state != states.end(); ++state) {
 		delete state->second;
@@ -264,7 +265,7 @@ guild_settings_t TriviaModule::GetGuildSettings(int64_t guild_id)
 std::string TriviaModule::GetVersion()
 {
 	/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-	std::string version = "$ModVer 25$";
+	std::string version = "$ModVer 26$";
 	return "3.0." + version.substr(8,version.length() - 9);
 }
 

@@ -189,7 +189,7 @@ void state_t::tick()
 				}
 				to_process.clear();
 			}
-			usleep(100000);
+			std::this_thread::sleep_for(std::chrono::milliseconds(100));
 			if (terminating) {
 				break;
 			}
