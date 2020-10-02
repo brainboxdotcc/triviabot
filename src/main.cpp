@@ -169,41 +169,34 @@ void Bot::onReady(aegis::gateway::events::ready ready) {
  */
 void Bot::onMessage(aegis::gateway::events::message_create message) {
 
-	/* Ignore self, and bots */
-	if (message.msg.get_user().get_id() != user.id && message.msg.get_user().is_bot() == false) {
+	received_messages++;
 
-		received_messages++;
-
-		/* Replace all mentions with raw nicknames */
-		bool mentioned = false;
-		std::string mentions_removed = message.msg.get_content();
-		std::vector<std::string> stringmentions;
-		for (auto m = message.msg.mentions.begin(); m != message.msg.mentions.end(); ++m) {
-			stringmentions.push_back(std::to_string(m->get()));
-			aegis::user* u = core.find_user(*m);
-			if (u) {
+	/* Replace all mentions with raw nicknames */
+	bool mentioned = false;
+	std::string mentions_removed = message.msg.get_content();
+	std::vector<std::string> stringmentions;
+	for (auto m = message.msg.mentions.begin(); m != message.msg.mentions.end(); ++m) {
+		stringmentions.push_back(std::to_string(m->get()));
+		aegis::user* u = core.find_user(*m);
+		if (u) {
 			mentions_removed = ReplaceString(mentions_removed, std::string("<@") + std::to_string(m->get()) + ">", u->get_username());
 			mentions_removed = ReplaceString(mentions_removed, std::string("<@!") + std::to_string(m->get()) + ">", u->get_username());
-			}
-			if (*m == user.id) {
-				mentioned = true;
-			}
 		}
-
-		std::string botusername = this->user.username;
-
-		/* Remove bot's nickname from start of message, if it's there */
-		while (mentions_removed.substr(0, botusername.length()) == botusername) {
-			mentions_removed = trim(mentions_removed.substr(botusername.length(), mentions_removed.length()));
+		if (*m == user.id) {
+			mentioned = true;
 		}
-		/* Remove linefeeds, they mess with botnix */
-		mentions_removed = trim(mentions_removed);
-
-		/* Call modules */
-		FOREACH_MOD(I_OnMessage,OnMessage(message, mentions_removed, mentioned, stringmentions));
-
-		core.log->flush();
 	}
+
+	std::string botusername = this->user.username;
+	/* Remove bot's nickname from start of message, if it's there */
+	while (mentions_removed.substr(0, botusername.length()) == botusername) {
+		mentions_removed = trim(mentions_removed.substr(botusername.length(), mentions_removed.length()));
+	}
+	/* Remove linefeeds, they mess with botnix */
+	mentions_removed = trim(mentions_removed);
+
+	/* Call modules */
+	FOREACH_MOD(I_OnMessage,OnMessage(message, mentions_removed, mentioned, stringmentions));
 }
 
 void Bot::onChannel(aegis::gateway::events::channel_create channel_create) {
