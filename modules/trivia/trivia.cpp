@@ -264,7 +264,7 @@ guild_settings_t TriviaModule::GetGuildSettings(int64_t guild_id)
 std::string TriviaModule::GetVersion()
 {
 	/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-	std::string version = "$ModVer 30$";
+	std::string version = "$ModVer 31$";
 	return "3.0." + version.substr(8,version.length() - 9);
 }
 
@@ -788,6 +788,7 @@ bool TriviaModule::RealOnMessage(const modevent::message_create &message, const 
 	int64_t author_id = _author_id ? _author_id : msg.get_author_id().get();
 
 	if (!message.has_user()) {
+		bot->core.log->debug("Message has no user! Message id {} author id {}", msg.get_id().get(), author_id);
 		return true;
 	}
 
@@ -833,6 +834,7 @@ bool TriviaModule::RealOnMessage(const modevent::message_create &message, const 
 
 	if (mentioned && prefix_match->Match(clean_message)) {
 		c->create_message(fmt::format(_("PREFIX", settings), settings.prefix, settings.prefix));
+		bot->core.log->debug("Respond to prefix request on channel {}", msg.get_channel_id().get());
 		return false;
 	}
 
@@ -851,6 +853,8 @@ bool TriviaModule::RealOnMessage(const modevent::message_create &message, const 
 			queue_command(command, author_id, channel_id, c->get_guild().get_id().get(), mentioned);
 			bot->core.log->info("CMD (USER={}, GUILD={}): <{}> {}", author_id, c->get_guild().get_id().get(), username, clean_message);
 			return false;
+		} else {
+			bot->core.log->debug("User or channel is null when handling command. c={0:x} u={1:x}", (int64_t)c, (int64_t)user);
 		}
 
 	}
