@@ -38,7 +38,9 @@ command_vote_t::command_vote_t(class TriviaModule* _creator, const std::string &
 
 void command_vote_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_settings_t &settings, const std::string &username, bool is_moderator, aegis::channel* c, aegis::user* user, state_t* state)
 {
-	creator->SimpleEmbed(":white_check_mark:", fmt::format(fmt::format("{}\n{}", _("PRIVHINT", settings), _("VOTEAD", settings)), creator->bot->user.id.get(), settings.prefix), cmd.channel_id);
+	std::string a = fmt::format(_("VOTEAD", settings), creator->bot->user.id.get(), settings.prefix);
+	std::string b = _("PRIVHINT", settings);
+	creator->SimpleEmbed(":white_check_mark:", b + "\n" + a, cmd.channel_id);
 	creator->CacheUser(cmd.author_id, cmd.channel_id);
 }
 
