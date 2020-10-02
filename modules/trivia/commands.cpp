@@ -78,6 +78,8 @@ void TriviaModule::handle_command(const in_cmd &cmd) {
 
 	try {
 		state_t* state = GetState(cmd.channel_id);
+
+
 	
 		if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == cmd.channel_id) {
 	
@@ -118,6 +120,7 @@ void TriviaModule::handle_command(const in_cmd &cmd) {
 			auto command = commands.find(base_command);
 			if (command != commands.end()) {
 				/* Commands handled in the bot in C++ */
+				bot->core.log->debug("command_t '{}' routed to handler", base_command);
 				command->second->call(cmd, tokens, settings, username, moderator, c, user, state);
 			} else {
 				/* Custom commands handled completely by the API as a REST call */
@@ -154,6 +157,8 @@ void TriviaModule::handle_command(const in_cmd &cmd) {
 					bot->core.log->debug("Command '{}' not known to API", trim(lowercase(base_command)));
 				}
 			}
+		} else {
+			bot->core.log->debug("Dropped command {} due to test mode", trim(lowercase(base_command)));
 		}
 	}
 	catch (std::exception &e) {

@@ -264,7 +264,7 @@ guild_settings_t TriviaModule::GetGuildSettings(int64_t guild_id)
 std::string TriviaModule::GetVersion()
 {
 	/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-	std::string version = "$ModVer 31$";
+	std::string version = "$ModVer 32$";
 	return "3.0." + version.substr(8,version.length() - 9);
 }
 
@@ -811,12 +811,12 @@ bool TriviaModule::RealOnMessage(const modevent::message_create &message, const 
 		if (c) {
 			guild_id = c->get_guild().get_id().get();
 		} else {
-			bot->core.log->warn("Channel is missing!!! C:{}", msg.get_channel_id().get());
+			bot->core.log->warn("Channel is missing!!! C:{} A:{}", msg.get_channel_id().get(), author_id);
 			return true;
 		}
 	} else {
 		/* No channel! */
-		bot->core.log->debug("Message without channel, {}", msg.get_id().get());
+		bot->core.log->debug("Message without channel, M:{} A:{}", msg.get_id().get(), author_id);
 		return true;
 	}
 
@@ -834,29 +834,26 @@ bool TriviaModule::RealOnMessage(const modevent::message_create &message, const 
 
 	if (mentioned && prefix_match->Match(clean_message)) {
 		c->create_message(fmt::format(_("PREFIX", settings), settings.prefix, settings.prefix));
-		bot->core.log->debug("Respond to prefix request on channel {}", msg.get_channel_id().get());
+		bot->core.log->debug("Respond to prefix request on channel C:{} A:{}", channel_id, author_id);
 		return false;
-	}
-
-	if (state) {
-		/* The state_t class handles potential answers, but only when a game is running on this guild */
-		state->queue_message(trivia_message, author_id, mentioned);
 	}
 
 	if (lowercase(clean_message.substr(0, settings.prefix.length())) == lowercase(settings.prefix)) {
 		/* Command */
 
 		std::string command = clean_message.substr(settings.prefix.length(), clean_message.length() - settings.prefix.length());
-		aegis::channel* c = bot->core.find_channel(channel_id);
-		if (c && user != nullptr) {
-
-			queue_command(command, author_id, channel_id, c->get_guild().get_id().get(), mentioned);
-			bot->core.log->info("CMD (USER={}, GUILD={}): <{}> {}", author_id, c->get_guild().get_id().get(), username, clean_message);
+		if (user != nullptr) {
+			queue_command(command, author_id, channel_id, guild_id, mentioned);
+			bot->core.log->info("CMD (USER={}, GUILD={}): <{}> {}", author_id, guild_id, username, clean_message);
 			return false;
 		} else {
-			bot->core.log->debug("User or channel is null when handling command. c={0:x} u={1:x}", (int64_t)c, (int64_t)user);
+			bot->core.log->debug("User is null when handling command. C:{} A:{}", channel_id, author_id);
 		}
 
+	} else if (state) {
+		/* The state_t class handles potential answers, but only when a game is running on this guild */
+		state->queue_message(trivia_message, author_id, mentioned);
+		bot->core.log->debug("Processed potential answer message from A:{} on C:{}", author_id, channel_id);
 	}
 
 	return true;
