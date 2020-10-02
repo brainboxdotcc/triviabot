@@ -158,7 +158,7 @@ void TriviaModule::handle_command(const in_cmd &cmd) {
 				}
 			}
 		} else {
-			bot->core.log->debug("Dropped command {} due to test mode", trim(lowercase(base_command)));
+			bot->core.log->debug("Dropped command {} due to test mode", cmd.msg);
 		}
 	}
 	catch (std::exception &e) {
