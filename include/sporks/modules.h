@@ -98,6 +98,14 @@ enum Implementation
 		{ \
 			core.log->error("Exception caught in module: {}", modexcept.what()); \
 		} \
+		catch (fmt::v6::format_error) \
+		{ \
+			core.log->error("fmt::v6::format_error caught in module: {}", modexcept.what()); \
+		} \
+		catch (...) \
+		{ \
+			core.log->error("Non-exception caught in module!"); \
+		} \
 	} \
 };
 
