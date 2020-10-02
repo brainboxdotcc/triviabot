@@ -36,7 +36,7 @@ endif( ZLIB_FOUND )
 include_directories( "include" )
 
 target_link_libraries(bot dl ssl crypto z mysqlclient pcre ${ZLIB_LIBRARIES})
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -pthread -g -O2 -fPIC -rdynamic -fsanitize=address")
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -pthread -g -O2 -fPIC -rdynamic")
 set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O2")
 
 target_link_libraries(bot)
