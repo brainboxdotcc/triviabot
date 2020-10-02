@@ -42,7 +42,8 @@ void command_votehint_t::call(const in_cmd &cmd, std::stringstream &tokens, guil
 		if ((state->gamestate == TRIV_FIRST_HINT || state->gamestate == TRIV_SECOND_HINT || state->gamestate == TRIV_TIME_UP) && (state->round % 10) != 0 && state->curr_answer != "") {
 			db::resultset rs = db::query("SELECT *,(unix_timestamp(vote_time) + 43200 - unix_timestamp()) as remaining FROM infobot_votes WHERE snowflake_id = ? AND now() < vote_time + interval 12 hour", {cmd.author_id});
 			if (rs.size() == 0) {
-				creator->SimpleEmbed("<:wc_rs:667695516737470494>", fmt::format(fmt::format("{}\n{}", _("NOTVOTED", settings), _("VOTEAD", settings)), creator->bot->user.id.get(), settings.prefix), cmd.channel_id);
+				std::string a = fmt::format(_("VOTEAD", settings), creator->bot->user.id.get(), settings.prefix);
+				creator->SimpleEmbed("<:wc_rs:667695516737470494>", _("NOTVOTED", settings) + a, cmd.channel_id);
 				return;
 			} else {
 				int64_t remaining_hints = from_string<int64_t>(rs[0]["dm_hints"], std::dec);
@@ -50,7 +51,9 @@ void command_votehint_t::call(const in_cmd &cmd, std::stringstream &tokens, guil
 				int32_t mins = secs / 60 % 60;
 				float hours = floor(secs / 60 / 60);
 				if (remaining_hints < 1) {
-					creator->SimpleEmbed(":warning:", fmt::format(fmt::format("{}\n{}", fmt::format(_("NOMOREHINTS", settings), username), _("VOTEAD", settings)), creator->bot->user.id.get(), hours, mins), cmd.channel_id);
+					std::string a = fmt::format(_("NOMOREHINTS", settings), username);
+					std::string b = fmt::format(_("VOTEAD", settings), creator->bot->user.id.get(), settings.prefix);
+					creator->SimpleEmbed(":warning:", a.append(b), cmd.channel_id);
 				} else {
 					remaining_hints--;
 					if (remaining_hints > 0) {
@@ -75,7 +78,9 @@ void command_votehint_t::call(const in_cmd &cmd, std::stringstream &tokens, guil
 			return;
 		}
 	} else {
-		creator->SimpleEmbed(":warning:", fmt::format(fmt::format("{}\n{}", fmt::format(_("NOROUND", settings), username), _("VOTEAD", settings)), creator->bot->user.id.get()), cmd.channel_id);
+		std::string a = fmt::format(_("NOROUND", settings), username);
+		std::string b = fmt::format(_("VOTEAD", settings), creator->bot->user.id.get(), settings.prefix);
+		creator->SimpleEmbed(":warning:", a + b, cmd.channel_id);
 		return;
 	}
 }
