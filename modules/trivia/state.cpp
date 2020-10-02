@@ -199,48 +199,56 @@ void state_t::handle_message(const in_msg& m)
 void state_t::tick()
 {
 	while (!terminating) {
-		for (int j = 0; j < this->interval * 10; j++) {
-			{
-				std::lock_guard<std::mutex> q_lock(queuemutex);
-				if (!messagequeue.empty()) {
-					to_process.clear();
-					for (auto m = messagequeue.begin(); m != messagequeue.end(); ++m) {
+		try {
+			for (int j = 0; j < this->interval * 10; j++) {
+				{
+						std::lock_guard<std::mutex> q_lock(queuemutex);
+					if (!messagequeue.empty()) {
+						to_process.clear();
+						for (auto m = messagequeue.begin(); m != messagequeue.end(); ++m) {
 						to_process.push_back(*m);
-					}
+							}
 					messagequeue.clear();
+					}
 				}
-			}
 			if (!to_process.empty()) {
-				for (auto m = to_process.begin(); m != to_process.end(); ++m) {
+						for (auto m = to_process.begin(); m != to_process.end(); ++m) {
 					handle_message(*m);
+					}
+					to_process.clear();
 				}
-				to_process.clear();
+				std::this_thread::sleep_for(std::chrono::milliseconds(100));
+				if (terminating) {
+					break;
+				}
 			}
-			std::this_thread::sleep_for(std::chrono::milliseconds(100));
-			if (terminating) {
-				break;
+	
+			if (!terminating && !creator->GetBot()->core.find_guild(guild_id)) {
+				creator->GetBot()->core.log->error("Guild {} deleted (bot kicked?), removing active game states", guild_id);
+				log_game_end(guild_id, channel_id);
+				terminating = true;
+				gamestate = TRIV_END;
+			}
+			if (!terminating && !creator->GetBot()->core.find_channel(channel_id)) {
+				log_game_end(guild_id, channel_id);
+				terminating = true;
+				gamestate = TRIV_END;
+			}
+		
+			creator->Tick(this);
+			int64_t game_length = time(NULL) - start_time;
+			if (game_length >= GAME_REAP_SECS) {
+				terminating = true;
+				gamestate = TRIV_END;
+				creator->GetBot()->core.log->debug("state_t::tick(): G:{} C:{} reaped game of length {} seconds", guild_id, channel_id, game_length);
+				log_game_end(guild_id, channel_id);
 			}
 		}
-
-		if (!terminating && !creator->GetBot()->core.find_guild(guild_id)) {
-			creator->GetBot()->core.log->error("Guild {} deleted (bot kicked?), removing active game states", guild_id);
-			log_game_end(guild_id, channel_id);
-			terminating = true;
-			gamestate = TRIV_END;
+		catch (std::exception &e) {
+			creator->GetBot()->core.log->debug("state_t exception! - {}", e.what());
 		}
-		if (!terminating && !creator->GetBot()->core.find_channel(channel_id)) {
-			log_game_end(guild_id, channel_id);
-			terminating = true;
-			gamestate = TRIV_END;
-		}
-
-		creator->Tick(this);
-		int64_t game_length = time(NULL) - start_time;
-		if (game_length >= GAME_REAP_SECS) {
-			terminating = true;
-			gamestate = TRIV_END;
-			creator->GetBot()->core.log->debug("state_t::tick(): G:{} C:{} reaped game of length {} seconds", guild_id, channel_id, game_length);
-			log_game_end(guild_id, channel_id);
+		catch (...) {
+			creator->GetBot()->core.log->debug("state_t exception! - non-object");
 		}
 	}
 }

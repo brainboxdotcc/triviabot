@@ -76,83 +76,91 @@ void TriviaModule::SetupCommands()
 
 void TriviaModule::handle_command(const in_cmd &cmd) {
 
-	state_t* state = GetState(cmd.channel_id);
-
-	if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == cmd.channel_id) {
-
-		std::stringstream tokens(cmd.msg);
-		std::string base_command;
-		std::string username;
-		tokens >> base_command;
-
-		aegis::channel* c = bot->core.find_channel(cmd.channel_id);
-		aegis::user* user = bot->core.find_user(cmd.author_id);
-		if (user) {
-			username = user->get_username();
-		}
-
-		guild_settings_t settings = GetGuildSettings(cmd.guild_id);
-
-		/* Check for moderator status - first check if owner */
-		aegis::guild* g = bot->core.find_guild(cmd.guild_id);
-		bool moderator = (g && g->get_owner() == cmd.author_id);
-		/* Now iterate the list of moderator roles from settings */
-		if (!moderator) {
-			for (auto x = settings.moderator_roles.begin(); x != settings.moderator_roles.end(); ++x) {
-				if (c->get_guild().member_has_role(cmd.author_id, *x)) {
-					moderator = true;
-					break;
-				}
-			}
-		}
-
-		base_command = lowercase(base_command);
-
-		/* Support for old-style commands e.g. !trivia start instead of !start */
-		if (base_command == "trivia") {
+	try {
+		state_t* state = GetState(cmd.channel_id);
+	
+		if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == cmd.channel_id) {
+	
+			std::stringstream tokens(cmd.msg);
+			std::string base_command;
+			std::string username;
 			tokens >> base_command;
-			base_command = lowercase(base_command);
-		}
-
-		auto command = commands.find(base_command);
-		if (command != commands.end()) {
-			/* Commands handled in the bot in C++ */
-			command->second->call(cmd, tokens, settings, username, moderator, c, user, state);
-		} else {
-			/* Custom commands handled completely by the API as a REST call */
-			bool command_exists = false;
-			{
-				std::lock_guard<std::mutex> cmd_list_lock(cmds_mutex);
-				command_exists = (std::find(api_commands.begin(), api_commands.end(), trim(lowercase(base_command))) != api_commands.end());
+	
+			aegis::channel* c = bot->core.find_channel(cmd.channel_id);
+			aegis::user* user = bot->core.find_user(cmd.author_id);
+			if (user) {
+				username = user->get_username();
 			}
-			if (command_exists) {
-				bool can_execute = false;
-				auto check = limits.find(cmd.channel_id);
-				if (check == limits.end()) {
-					can_execute = true;
-					limits[cmd.channel_id] = time(NULL) + PER_CHANNEL_RATE_LIMIT;
-				} else if (time(NULL) > check->second) {
-					can_execute = true;
-					limits[cmd.channel_id] = time(NULL) + PER_CHANNEL_RATE_LIMIT;
+	
+			guild_settings_t settings = GetGuildSettings(cmd.guild_id);
+	
+			/* Check for moderator status - first check if owner */
+			aegis::guild* g = bot->core.find_guild(cmd.guild_id);
+			bool moderator = (g && g->get_owner() == cmd.author_id);
+			/* Now iterate the list of moderator roles from settings */
+			if (!moderator) {
+				for (auto x = settings.moderator_roles.begin(); x != settings.moderator_roles.end(); ++x) {
+					if (c->get_guild().member_has_role(cmd.author_id, *x)) {
+						moderator = true;
+						break;
+					}
 				}
-				if (can_execute) {
-					std::string rest;
-					std::getline(tokens, rest);
-					rest = trim(rest);
-					CacheUser(cmd.author_id, cmd.channel_id);
-					std::string reply = trim(custom_command(base_command, trim(rest), cmd.author_id, cmd.channel_id, cmd.guild_id));
-					if (!reply.empty()) {
-						ProcessEmbed(reply, cmd.channel_id);
+			}
+	
+			base_command = lowercase(base_command);
+	
+			/* Support for old-style commands e.g. !trivia start instead of !start */
+			if (base_command == "trivia") {
+				tokens >> base_command;
+				base_command = lowercase(base_command);
+			}
+	
+			auto command = commands.find(base_command);
+			if (command != commands.end()) {
+				/* Commands handled in the bot in C++ */
+				command->second->call(cmd, tokens, settings, username, moderator, c, user, state);
+			} else {
+				/* Custom commands handled completely by the API as a REST call */
+				bool command_exists = false;
+				{
+					std::lock_guard<std::mutex> cmd_list_lock(cmds_mutex);
+					command_exists = (std::find(api_commands.begin(), api_commands.end(), trim(lowercase(base_command))) != api_commands.end());
+				}
+				if (command_exists) {
+					bool can_execute = false;
+					auto check = limits.find(cmd.channel_id);
+					if (check == limits.end()) {
+						can_execute = true;
+						limits[cmd.channel_id] = time(NULL) + PER_CHANNEL_RATE_LIMIT;
+					} else if (time(NULL) > check->second) {
+						can_execute = true;
+						limits[cmd.channel_id] = time(NULL) + PER_CHANNEL_RATE_LIMIT;
+					}
+					if (can_execute) {
+						std::string rest;
+						std::getline(tokens, rest);
+						rest = trim(rest);
+						CacheUser(cmd.author_id, cmd.channel_id);
+						std::string reply = trim(custom_command(base_command, trim(rest), cmd.author_id, cmd.channel_id, cmd.guild_id));
+						if (!reply.empty()) {
+							ProcessEmbed(reply, cmd.channel_id);
+						}
+					} else {
+						/* Display rate limit message */
+						SimpleEmbed(":snail:", fmt::format(_("RATELIMITED", settings), PER_CHANNEL_RATE_LIMIT, base_command), cmd.channel_id, _("WOAHTHERE", settings));
+						bot->core.log->debug("Command '{}' not sent to API, rate limited", trim(lowercase(base_command)));
 					}
 				} else {
-					/* Display rate limit message */
-					SimpleEmbed(":snail:", fmt::format(_("RATELIMITED", settings), PER_CHANNEL_RATE_LIMIT, base_command), cmd.channel_id, _("WOAHTHERE", settings));
-					bot->core.log->debug("Command '{}' not sent to API, rate limited", trim(lowercase(base_command)));
+					bot->core.log->debug("Command '{}' not known to API", trim(lowercase(base_command)));
 				}
-			} else {
-				bot->core.log->debug("Command '{}' not known to API", trim(lowercase(base_command)));
 			}
 		}
+	}
+	catch (std::exception &e) {
+		bot->core.log->debug("command_t exception! - {}", e.what());
+	}
+	catch (...) {
+		bot->core.log->debug("command_t exception! - non-object");
 	}
 }
 
