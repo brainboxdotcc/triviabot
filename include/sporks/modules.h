@@ -94,13 +94,13 @@ enum Implementation
 				break; \
 			} \
 		} \
-		catch (std::exception& modexcept) \
-		{ \
-			core.log->error("Exception caught in module: {}", modexcept.what()); \
-		} \
 		catch (fmt::v6::format_error &modexcept) \
 		{ \
 			core.log->error("fmt::v6::format_error caught in module: {}", modexcept.what()); \
+		} \
+		catch (std::exception& modexcept) \
+		{ \
+			core.log->error("Exception caught in module: {}", modexcept.what()); \
 		} \
 		catch (...) \
 		{ \
