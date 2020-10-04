@@ -164,6 +164,12 @@ bool TriviaModule::OnAllShardsReady()
 	hostname[1023] = '\0';
 	gethostname(hostname, 1023);
 	json active = get_active(hostname);
+
+	if (bot->IsTestMode()) {
+		/* Don't resume games in test mode */
+		return true;
+	}
+
 	for (auto game = active.begin(); game != active.end(); ++game) {
 
 		bool quickfire = (*game)["quickfire"].get<std::string>() == "1";
@@ -264,7 +270,7 @@ guild_settings_t TriviaModule::GetGuildSettings(int64_t guild_id)
 std::string TriviaModule::GetVersion()
 {
 	/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-	std::string version = "$ModVer 32$";
+	std::string version = "$ModVer 33$";
 	return "3.0." + version.substr(8,version.length() - 9);
 }
 
@@ -282,8 +288,12 @@ void TriviaModule::UpdatePresenceLine()
 		bot->counters["activegames"] = GetActiveGames();
 		/* Can't translate this, it's per-shard! */
 		bot->core.update_presence(fmt::format("Trivia! {} questions, {} active games on {} servers through {} shards", Comma(questions), Comma(GetActiveGames()), Comma(bot->core.get_guild_count()), Comma(bot->core.shard_max_count)), aegis::gateway::objects::activity::Game);
-		CheckForQueuedStarts();
-		CheckReconnects();
+
+		if (!bot->IsTestMode()) {
+			/* Don't handle shard reconnects or queued starts in test mode */
+			CheckForQueuedStarts();
+			CheckReconnects();
+		}
 	}
 }
 
@@ -787,6 +797,8 @@ bool TriviaModule::RealOnMessage(const modevent::message_create &message, const 
 	// Allow overriding of author id from remote start code
 	int64_t author_id = _author_id ? _author_id : msg.get_author_id().get();
 
+	bool isbot = msg.author.is_bot();
+
 	if (!message.has_user()) {
 		bot->core.log->debug("Message has no user! Message id {} author id {}", msg.get_id().get(), author_id);
 		return true;
@@ -795,6 +807,10 @@ bool TriviaModule::RealOnMessage(const modevent::message_create &message, const 
 	aegis::user* user = bot->core.find_user(author_id);
 	if (user) {
 		username = user->get_username();
+		if (isbot) {
+			bot->core.log->debug("Dropped BOT: {0}#{1} ({2})", user->get_username(),user->get_discriminator(), user->get_id().get());
+			return true;
+		}
 	}
 	
 	/* Retrieve current state for channel, if there is no state object, no game is in progress */
