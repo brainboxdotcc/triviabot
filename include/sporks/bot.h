@@ -75,6 +75,8 @@ class Bot {
 
 	void SetSignals();
 
+	uint32_t my_cluster_id;
+
 public:
 
 	asio::io_context* io;
@@ -97,6 +99,8 @@ public:
 	bool IsDevMode();
 	bool IsTestMode();
 	bool HasMemberIntents();
+	uint32_t GetClusterID();
+	void SetClusterID(uint32_t c);
 
 	ModuleLoader* Loader;
 

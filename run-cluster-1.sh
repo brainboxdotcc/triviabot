@@ -24,7 +24,7 @@ ulimit -c unlimited
 # run repeatedly until ctrl+c
 while true;
 do
-	./bot -members
-	../mail-core-file.sh $(pwd)
+	./bot -members -clusterid 1 -maxclusters 2
+	../mail-core-file.sh 1 $(pwd)
 done
 

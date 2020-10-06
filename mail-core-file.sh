@@ -18,6 +18,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-cd "$1"
+cd "$2"
 # run gdb in batch mode to generate mail the stack trace of the latest crash to the error_recipeint from config.json
-/usr/bin/gdb -batch -ex "set pagination off" -ex "set height 0" -ex "set width 0" -ex "bt full" ./bot $(ls -Art ./*core* | tail -n 1) | grep -v ^"No stack."$ | mutt -s "TriviaBot rebooted, stack trace and log attached" -a log/aegis.log -- $(/usr/bin/jq -r '.error_recipient' ../config.json)
+/usr/bin/gdb -batch -ex "set pagination off" -ex "set height 0" -ex "set width 0" -ex "bt full" ./bot $(ls -Art ./*core* | tail -n 1) | grep -v ^"No stack."$ | mutt -s "TriviaBot cluster $1 rebooted, stack trace and log attached" -a log/aegis.log -- $(/usr/bin/jq -r '.error_recipient' ../config.json)

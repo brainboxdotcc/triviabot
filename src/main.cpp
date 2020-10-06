@@ -44,7 +44,7 @@ json configdocument;
 /**
  * Constructor (creates threads, loads all modules)
  */
-Bot::Bot(bool development, bool testing, bool intents, aegis::core &aegiscore, asio::io_context* _io) : dev(development), test(testing), memberintents(intents), io(_io), thr_presence(nullptr), terminate(false), shard_init_count(0), core(aegiscore), sent_messages(0), received_messages(0) {
+Bot::Bot(bool development, bool testing, bool intents, aegis::core &aegiscore, asio::io_context* _io) : dev(development), test(testing), memberintents(intents), io(_io), thr_presence(nullptr), terminate(false), shard_init_count(0), core(aegiscore), sent_messages(0), received_messages(0), my_cluster_id(0) {
 	Loader = new ModuleLoader(this);
 	Loader->LoadAll();
 
@@ -220,6 +220,8 @@ int main(int argc, char** argv) {
 	int dev = 0;	/* Note: getopt expects ints, this is actually treated as bool */
 	int test = 0;
 	int members = 0;
+	uint32_t clusterid = 0;
+	uint32_t maxclusters = 0;
 
 	/* Set this specifically so that stringstreams don't do weird things on other locales printing decimal numbers for SQL */
 	std::setlocale(LC_ALL, "en_GB.UTF-8");
@@ -227,9 +229,11 @@ int main(int argc, char** argv) {
 	/* Parse command line parameters using getopt() */
 	struct option longopts[] =
 	{
-		{ "dev",	no_argument,		&dev,		1 },
-		{ "test",	no_argument,		&test,		1 },
-		{ "members",	no_argument,		&members,	1 },
+		{ "dev",	no_argument,		&dev,		1   },
+		{ "test",	no_argument,		&test,		1   },
+		{ "members",	no_argument,		&members,	1   },
+		{ "clusterid",  required_argument,	NULL,		'c' },
+		{ "maxclusters",required_argument,	NULL,		'm' },
 		{ 0, 0, 0, 0 }
 	};
 
@@ -239,6 +243,7 @@ int main(int argc, char** argv) {
 	/* Yes, getopt is ugly, but what you gonna do... */
 	int index;
 	char arg;
+	bool clusters_defined = false;
 
 	/* opterr is an extern int. Doesn't smell of thread safety to me, bad GNU bad! */
 	opterr = 0;
@@ -247,16 +252,32 @@ int main(int argc, char** argv) {
 			case 0:
 				/* getopt_long_only() set an int variable, just keep going */
 			break;
+			case 'c':
+				/* Cluster id */
+				clusterid = from_string<uint32_t>(optarg, std::dec);
+				clusters_defined = true;
+			break;
+			case 'm':
+				/* Number of clusters */
+				maxclusters = from_string<uint32_t>(optarg, std::dec);
+			break;
 			case '?':
 			default:
 				std::cerr << "Unknown parameter '" << argv[optind - 1] << "'\n";
 				std::cerr << "Usage: " << argv[0] << " [-dev] [-test] [-members]\n\n";
-				std::cerr << "-dev:     Run using development token\n";
-				std::cerr << "-test:    Run using live token, but eat all outbound messages except on test server\n";
-				std::cerr << "-members: Issue a GUILD_MEMBERS intent on shard registration\n";
+				std::cerr << "-dev:         Run using development token\n";
+				std::cerr << "-test:        Run using live token, but eat all outbound messages except on test server\n";
+				std::cerr << "-members:     Issue a GUILD_MEMBERS intent on shard registration\n";
+				std::cerr << "-clusterid:   The current cluster id to identify for, must be set with -maxclusters\n";
+				std::cerr << "-maxclusters: The maximum number of clusters the bot is running, must be set with -clusterid\n";
 				exit(1);
 			break;
 		}
+	}
+
+	if (clusters_defined && maxclusters == 0) {
+		std::cerr << "ERROR: You have defined a cluster id with -clusterid but no cluster count with -maxclusters.\n";
+		exit(2);
 	}
 
 	/* This will eventually need approval from discord HQ, so make sure it's a command line parameter we have to explicitly enable */
@@ -287,8 +308,10 @@ int main(int argc, char** argv) {
 			.file_logging(true)
 			.log_level(spdlog::level::trace)
 			.token(token)
-			.force_shard_count(dev ? 1 : 8)
+			.force_shard_count(dev ? 2 : 8)
 			.intents(intents)
+			.clustering(clusterid, maxclusters)
+			.log_name(fmt::format("aegis-{}.log", clusterid))
 		);
 		aegis_bot.wsdbg = false;
 
@@ -299,6 +322,7 @@ int main(int argc, char** argv) {
 
 		/* Bot class handles application logic */
 		Bot client(dev, test, members, aegis_bot, _io.get());
+		client.SetClusterID(clusterid);
 
 		/* Attach events to the Bot class methods from aegis::core */
 		aegis_bot.set_on_message_create(std::bind(&Bot::onMessage, &client, std::placeholders::_1));
@@ -347,5 +371,13 @@ int main(int argc, char** argv) {
 		/* Reconnection delay to prevent hammering discord */
 		::sleep(30);
 	}
+}
+
+uint32_t Bot::GetClusterID() {
+	return my_cluster_id;
+}
+
+void Bot::SetClusterID(uint32_t c) {
+	my_cluster_id = c;
 }
 

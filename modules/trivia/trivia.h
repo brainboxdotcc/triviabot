@@ -92,7 +92,16 @@ public:
 	virtual bool OnAllShardsReady();
 	virtual bool OnChannelDelete(const modevent::channel_delete &cd);
 	virtual bool OnGuildDelete(const modevent::guild_delete &gd);
+
+	/* Returns a local count */
+	int64_t GetActiveLocalGames();
+
+	/* These return a sum across all clusters using the database */
 	int64_t GetActiveGames();
+	int64_t GetGuildTotal();
+	int64_t GetMemberTotal();
+	int64_t GetChannelTotal();
+
 	guild_settings_t GetGuildSettings(int64_t guild_id);
 	std::string escape_json(const std::string &s);
 	void ProcessEmbed(const std::string &embed_json, int64_t channelID);
