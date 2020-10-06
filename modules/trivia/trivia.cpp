@@ -115,18 +115,21 @@ TriviaModule::~TriviaModule()
 
 bool TriviaModule::OnPresenceUpdate()
 {
+	/* Note: Only updates this cluster's shards! */
 	const aegis::shards::shard_mgr& s = bot->core.get_shard_mgr();
 	const std::vector<std::unique_ptr<aegis::shards::shard>>& shards = s.get_shards();
 	for (auto i = shards.begin(); i != shards.end(); ++i) {
 		const aegis::shards::shard* shard = i->get();
-		db::query("INSERT INTO infobot_shard_status (id, connected, online, uptime, transfer, transfer_compressed) VALUES('?','?','?','?','?','?') ON DUPLICATE KEY UPDATE connected = '?', online = '?', uptime = '?', transfer = '?', transfer_compressed = '?'",
+		db::query("INSERT INTO infobot_shard_status (id, cluster_id, connected, online, uptime, transfer, transfer_compressed) VALUES('?','?','?','?','?','?','?') ON DUPLICATE KEY UPDATE cluster_id = '?', connected = '?', online = '?', uptime = '?', transfer = '?', transfer_compressed = '?'",
 			{
 				shard->get_id(),
+				bot->GetClusterID(),
 				shard->is_connected(),
 				shard->is_online(),
 				shard->uptime(),
 				shard->get_transfer_u(),
 				shard->get_transfer(),
+				bot->GetClusterID(),
 				shard->is_connected(),
 				shard->is_online(),
 				shard->uptime(),
@@ -172,6 +175,13 @@ bool TriviaModule::OnAllShardsReady()
 
 	for (auto game = active.begin(); game != active.end(); ++game) {
 
+		int64_t guild_id = from_string<int64_t>((*game)["guild_id"].get<std::string>(), std::dec);
+
+		/* Skip games to resume that arent on this cluster */
+		if (!bot->core.find_guild(guild_id)) {
+			continue;
+		}
+
 		bool quickfire = (*game)["quickfire"].get<std::string>() == "1";
 
 		/* XXX: Note: The mutex here is VITAL to thread safety of the state list! DO NOT move it! */
@@ -201,7 +211,7 @@ bool TriviaModule::OnAllShardsReady()
 			state->round = from_string<uint32_t>((*game)["question_index"].get<std::string>(), std::dec);
 			state->interval = (quickfire ? (TRIV_INTERVAL / 4) : TRIV_INTERVAL);
 			state->channel_id = from_string<int64_t>((*game)["channel_id"].get<std::string>(), std::dec);
-			state->guild_id = from_string<int64_t>((*game)["guild_id"].get<std::string>(), std::dec);
+			state->guild_id = guild_id;
 			state->curr_qid = 0;
 			state->curr_answer = "";
 			/* Force fetching of question */
@@ -233,8 +243,9 @@ bool TriviaModule::OnGuildDelete(const modevent::guild_delete &gd)
 	return true;
 }
 
-int64_t TriviaModule::GetActiveGames()
+int64_t TriviaModule::GetActiveLocalGames()
 {
+	/* Counts local games running on this cluster only */
 	int64_t a = 0;
 	std::lock_guard<std::mutex> user_cache_lock(states_mutex);
 	for (auto state = states.begin(); state != states.end(); ++state) {
@@ -244,6 +255,52 @@ int64_t TriviaModule::GetActiveGames()
 	}
 	return a;
 }
+
+int64_t TriviaModule::GetActiveGames()
+{
+	/* Counts all games across all clusters */
+	auto rs = db::query("SELECT SUM(games) AS games FROM infobot_discord_counts WHERE dev = ?", {bot->IsDevMode() ? 1 : 0});
+	if (rs.size()) {
+		return from_string<int64_t>(rs[0]["games"], std::dec);
+	} else {
+		return 0;
+	}
+}
+
+int64_t TriviaModule::GetGuildTotal()
+{
+	/* Counts all games across all clusters */
+	auto rs = db::query("SELECT SUM(server_count) AS server_count FROM infobot_discord_counts WHERE dev = ?", {bot->IsDevMode() ? 1 : 0});
+	if (rs.size()) {
+		return from_string<int64_t>(rs[0]["server_count"], std::dec);
+	} else {
+		return 0;
+	}
+}
+
+int64_t TriviaModule::GetMemberTotal()
+{
+	/* Counts all games across all clusters */
+	auto rs = db::query("SELECT SUM(user_count) AS user_count FROM infobot_discord_counts WHERE dev = ?", {bot->IsDevMode() ? 1 : 0});
+	if (rs.size()) {
+		return from_string<int64_t>(rs[0]["user_count"], std::dec);
+	} else {
+		return 0;
+	}
+}
+
+int64_t TriviaModule::GetChannelTotal()
+{
+	/* Counts all games across all clusters */
+	auto rs = db::query("SELECT SUM(channel_count) AS channel_count FROM infobot_discord_counts WHERE dev = ?", {bot->IsDevMode() ? 1 : 0});
+	if (rs.size()) {
+		return from_string<int64_t>(rs[0]["channel_count"], std::dec);
+	} else {
+		return 0;
+	}
+}
+
+
 
 guild_settings_t TriviaModule::GetGuildSettings(int64_t guild_id)
 {
@@ -270,7 +327,7 @@ guild_settings_t TriviaModule::GetGuildSettings(int64_t guild_id)
 std::string TriviaModule::GetVersion()
 {
 	/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-	std::string version = "$ModVer 33$";
+	std::string version = "$ModVer 34$";
 	return "3.0." + version.substr(8,version.length() - 9);
 }
 
@@ -281,13 +338,14 @@ std::string TriviaModule::GetDescription()
 
 void TriviaModule::UpdatePresenceLine()
 {
-	bot->counters["activegames"] = 0;
 	while (!terminating) {
 		sleep(20);
 		int32_t questions = get_total_questions();
-		bot->counters["activegames"] = GetActiveGames();
+		bot->counters["activegames"] = GetActiveLocalGames();
+		std::string presence = fmt::format("Trivia! {} questions, {} active games on {} servers through {} shards, cluster {}", Comma(questions), Comma(GetActiveGames()), Comma(this->GetGuildTotal()), Comma(bot->core.shard_max_count), bot->GetClusterID());
+		bot->core.log->debug("PRESENCE: {}", presence);
 		/* Can't translate this, it's per-shard! */
-		bot->core.update_presence(fmt::format("Trivia! {} questions, {} active games on {} servers through {} shards", Comma(questions), Comma(GetActiveGames()), Comma(bot->core.get_guild_count()), Comma(bot->core.shard_max_count)), aegis::gateway::objects::activity::Game);
+		bot->core.update_presence(presence, aegis::gateway::objects::activity::Game);
 
 		if (!bot->IsTestMode()) {
 			/* Don't handle shard reconnects or queued starts in test mode */
@@ -751,24 +809,27 @@ void TriviaModule::CheckForQueuedStarts()
 	db::resultset rs = db::query("SELECT * FROM start_queue ORDER BY queuetime", {});
 	for (auto r = rs.begin(); r != rs.end(); ++r) {
 		int64_t guild_id = from_string<int64_t>((*r)["guild_id"], std::dec);
-		int64_t channel_id = from_string<int64_t>((*r)["channel_id"], std::dec);
-		int64_t user_id = from_string<int64_t>((*r)["user_id"], std::dec);
-		int32_t questions = from_string<int32_t>((*r)["questions"], std::dec);
-		int32_t quickfire = from_string<int32_t>((*r)["quickfire"], std::dec);
-		bot->core.log->info("Remote start, guild_id={} channel_id={} user_id={} questions={} type={}", guild_id, channel_id, user_id, questions, quickfire ? "quickfire" : "normal");
-		guild_settings_t settings = GetGuildSettings(guild_id);
-		aegis::gateway::objects::message m(fmt::format("{}{} {}", settings.prefix, (quickfire ? "quickfire" : "start"), questions), bot->core.find_channel(channel_id), bot->core.find_guild(guild_id));
+		/* Check that this guild is on this cluster, if so we can start this game */
+		if (bot->core.find_guild(guild_id)) {
+			int64_t channel_id = from_string<int64_t>((*r)["channel_id"], std::dec);
+			int64_t user_id = from_string<int64_t>((*r)["user_id"], std::dec);
+			int32_t questions = from_string<int32_t>((*r)["questions"], std::dec);
+			int32_t quickfire = from_string<int32_t>((*r)["quickfire"], std::dec);
+			bot->core.log->info("Remote start, guild_id={} channel_id={} user_id={} questions={} type={}", guild_id, channel_id, user_id, questions, quickfire ? "quickfire" : "normal");
+			guild_settings_t settings = GetGuildSettings(guild_id);
+			aegis::gateway::objects::message m(fmt::format("{}{} {}", settings.prefix, (quickfire ? "quickfire" : "start"), questions), bot->core.find_channel(channel_id), bot->core.find_guild(guild_id));
 
-		struct modevent::message_create msg = {
-			*(bot->core.get_shard_mgr().get_shards()[0]),
-			*(bot->core.find_user(user_id)),
-			*(bot->core.find_channel(channel_id)),
-			m
-		};
+			struct modevent::message_create msg = {
+				*(bot->core.get_shard_mgr().get_shards()[0]),
+				*(bot->core.find_user(user_id)),
+				*(bot->core.find_channel(channel_id)),
+				m
+			};
 
-		RealOnMessage(msg, msg.msg.get_content(), false, {}, user_id);
-
-		db::query("DELETE FROM start_queue WHERE channel_id = ?", {channel_id});
+			RealOnMessage(msg, msg.msg.get_content(), false, {}, user_id);
+	
+			db::query("DELETE FROM start_queue WHERE channel_id = ?", {channel_id});
+		}
 	}
 }
 
@@ -808,7 +869,7 @@ bool TriviaModule::RealOnMessage(const modevent::message_create &message, const 
 	if (user) {
 		username = user->get_username();
 		if (isbot) {
-			bot->core.log->debug("Dropped BOT: {0}#{1} ({2})", user->get_username(),user->get_discriminator(), user->get_id().get());
+			/* Drop bots here */
 			return true;
 		}
 	}

@@ -49,7 +49,7 @@ public:
 	virtual std::string GetVersion()
 	{
 		/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-		std::string version = "$ModVer 8$";
+		std::string version = "$ModVer 9$";
 		return "1.0." + version.substr(8,version.length() - 9);
 	}
 
@@ -81,9 +81,9 @@ public:
 		int64_t ram = GetRSS();
 		int64_t games = bot->counters.find("activegames") != bot->counters.end() ?  bot->counters["activegames"] : 0;
 
-		db::query("INSERT INTO infobot_discord_counts (shard_id, dev, user_count, server_count, shard_count, channel_count, sent_messages, received_messages, memory_usage, games) VALUES('?','?','?','?','?','?','?','?','?','?') ON DUPLICATE KEY UPDATE user_count = '?', server_count = '?', shard_count = '?', channel_count = '?', sent_messages = '?', received_messages = '?', memory_usage = '?', games = '?'",
+		db::query("INSERT INTO infobot_discord_counts (shard_id, cluster_id, dev, user_count, server_count, shard_count, channel_count, sent_messages, received_messages, memory_usage, games) VALUES('?','?','?','?','?','?','?','?','?','?','?') ON DUPLICATE KEY UPDATE user_count = '?', server_count = '?', shard_count = '?', channel_count = '?', sent_messages = '?', received_messages = '?', memory_usage = '?', games = '?'",
 			{
-				0, bot->IsDevMode(), users, servers, bot->core.shard_max_count,
+				0, bot->GetClusterID(), bot->IsDevMode(), users, servers, bot->core.shard_max_count,
 				channel_count, bot->sent_messages, bot->received_messages, ram, games,
 				users, servers, bot->core.shard_max_count,
 				channel_count, bot->sent_messages, bot->received_messages, ram, games

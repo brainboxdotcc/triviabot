@@ -49,8 +49,8 @@ void command_info_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_se
 	int days = diff;
 
 	/* TODO: Make these cluster-safe */
-	int64_t servers = creator->bot->core.get_guild_count();
-	int64_t users = creator->bot->core.get_member_count();
+	int64_t servers = creator->GetGuildTotal();
+	int64_t users = creator->GetMemberTotal();
 
 	char uptime[32];
 	snprintf(uptime, 32, "%d day%s, %02d:%02d:%02d", days, (days != 1 ? "s" : ""), hours, minutes, seconds);
@@ -65,6 +65,7 @@ void command_info_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_se
 		statusfield(_("CONNSINCE", settings), startstr),
 		statusfield(_("ONLINEUSERS", settings), Comma(users)),
 		statusfield(_("UPTIME", settings), std::string(uptime)),
+		statusfield(_("CLUSTER", settings), Comma(creator->bot->GetClusterID())),
 		statusfield(_("SHARDS", settings), Comma(creator->bot->core.shard_max_count)),
 		statusfield(_("MEMBERINTENT", settings), _((creator->bot->HasMemberIntents() ? "TICKYES" : "CROSSNO"), settings)),
 		statusfield(_("TESTMODE", settings), _((creator->bot->IsTestMode() ? "TICKYES" : "CROSSNO"), settings)),
