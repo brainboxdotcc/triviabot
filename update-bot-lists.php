@@ -42,7 +42,7 @@ if (!$conn) {
 
 mysqli_select_db($conn, $settings->dbname);
 /* Fetch statistics from all shards for non-development instances */
-$totals = mysqli_fetch_object(mysqli_query($conn, "SELECT SUM(user_count) AS users, SUM(server_count) AS servers, SUM(shard_count) AS shards, SUM(sent_messages) AS sent_messages, SUM(received_messages) AS received_messages, MAX(memory_usage) AS memory_usage, SUM(channel_count) AS channels FROM infobot_discord_counts WHERE dev = 0"));
+$totals = mysqli_fetch_object(mysqli_query($conn, "SELECT SUM(user_count) AS users, SUM(server_count) AS servers, MAX(shard_count) AS shards, SUM(sent_messages) AS sent_messages, SUM(received_messages) AS received_messages, MAX(memory_usage) AS memory_usage, SUM(channel_count) AS channels FROM infobot_discord_counts WHERE dev = 0"));
 
 /* Get a list of all bot listing sites */
 $q = mysqli_query($conn, "SELECT * FROM infobot_discord_list_sites");

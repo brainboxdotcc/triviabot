@@ -35,11 +35,16 @@ void TriviaModule::CheckReconnects() {
 	db::resultset rs = db::query("SELECT * FROM infobot_shard_status WHERE forcereconnect = 1 AND cluster_id = ?", {bot->GetClusterID()});
 	if (!rs.empty()) {
 		for (auto r = rs.begin(); r != rs.end(); ++r) {
-			auto & s = bot->core.get_shard_by_id(from_string<uint32_t>((*r)["id"], std::dec));
+			try {
+				auto & s = bot->core.get_shard_by_id(from_string<uint32_t>((*r)["id"], std::dec));
+				bot->core.get_shard_mgr().close(s);
+				sleep(2);
+				s.connect();
+			}
+			catch (...) {
+				bot->core.log->error("Unable to get shard {} to reconnect it! Something broked!", (*r)["id"]);
+			}
 			db::query("UPDATE infobot_shard_status SET forcereconnect = 0 WHERE id = '?'", {(*r)["id"]});
-			bot->core.get_shard_mgr().close(s);
-			sleep(2);
-			s.connect();
 		}
 	}
 }
