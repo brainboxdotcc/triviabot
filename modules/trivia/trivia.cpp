@@ -166,7 +166,7 @@ bool TriviaModule::OnAllShardsReady()
 	char hostname[1024];
 	hostname[1023] = '\0';
 	gethostname(hostname, 1023);
-	json active = get_active(hostname);
+	json active = get_active(hostname, bot->GetClusterID());
 
 	if (bot->IsTestMode()) {
 		/* Don't resume games in test mode */
@@ -176,11 +176,6 @@ bool TriviaModule::OnAllShardsReady()
 	for (auto game = active.begin(); game != active.end(); ++game) {
 
 		int64_t guild_id = from_string<int64_t>((*game)["guild_id"].get<std::string>(), std::dec);
-
-		/* Skip games to resume that arent on this cluster */
-		if (!bot->core.find_guild(guild_id)) {
-			continue;
-		}
 
 		bool quickfire = (*game)["quickfire"].get<std::string>() == "1";
 
@@ -327,7 +322,7 @@ guild_settings_t TriviaModule::GetGuildSettings(int64_t guild_id)
 std::string TriviaModule::GetVersion()
 {
 	/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-	std::string version = "$ModVer 34$";
+	std::string version = "$ModVer 36$";
 	return "3.0." + version.substr(8,version.length() - 9);
 }
 

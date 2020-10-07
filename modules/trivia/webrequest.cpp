@@ -271,9 +271,9 @@ int32_t update_score(int64_t snowflake_id, int64_t guild_id, time_t recordtime, 
 	return from_string<int32_t>(fetch_page(fmt::format("?opt=score&nick={}&recordtime={}&id={}&score={}&guild_id={}", snowflake_id, recordtime, id, score, guild_id)), std::dec);
 }
 
-json get_active(const std::string &hostname)
+json get_active(const std::string &hostname, int64_t cluster_id)
 {
-	std::string active = fetch_page(fmt::format("?opt=getactive&hostname={}", hostname));
+	std::string active = fetch_page(fmt::format("?opt=getactive&hostname={}cluster={}", hostname, cluster_id));
 	return json::parse(active);
 }
 
