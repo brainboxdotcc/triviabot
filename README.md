@@ -9,6 +9,7 @@ This source code repository is for reference and learning only as it **wont work
 ## Project and System status
 
 ![Discord](https://img.shields.io/discord/537746810471448576?label=discord) ![Dashboard](https://img.shields.io/website?down_color=red&label=dashboard&url=https%3A%2F%2Ftriviabot.co.uk) [![Codacy Badge](https://app.codacy.com/project/badge/Grade/539bd833fab042eea3a59724841ef1bb)](https://www.codacy.com/gh/brainboxdotcc/triviabot?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=brainboxdotcc/triviabot&amp;utm_campaign=Badge_Grade) ![CircleCI](https://img.shields.io/circleci/build/github/brainboxdotcc/triviabot/master)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fbrainboxdotcc%2Ftriviabot.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fbrainboxdotcc%2Ftriviabot?ref=badge_shield)
 
 [Service Status](https://status.triviabot.co.uk)
 
@@ -101,3 +102,7 @@ run.sh will restart the bot executable continually if it dies. If the bot quits,
 | 3.0 / 2005      | IRC                            | [Botnix](https://www.botnix.org) 1.0 Beta 1        | Perl 5.6            | Discontinued |
 | 4.0 / 2020      | [Discord](https://discord.com) | [Sporks](https://sporks.gg), [aegis.cpp](https://github.com/zeroxs/aegis.cpp)   | C++17               | Active       |
 
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fbrainboxdotcc%2Ftriviabot.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fbrainboxdotcc%2Ftriviabot?ref=badge_large)
