@@ -2363,5 +2363,49 @@
         "hi": "इनाम में आंखे टिकाना",
         "sv": "Ögon på priset",
         "ru": "Глаза на приз"
+    },
+    "UNLOCK_DETAIL": {
+        "en": "You have unlocked an achievement on **TriviaBot**!",
+        "fr": "Vous avez déverrouillé une réussite sur **TriviaBot**!",
+        "pt": "Você desbloqueou uma conquista no **TriviaBot**!",
+        "tr": "**TriviaBot**'da bir başarının kilidini açtınız!",
+        "es": "¡Has desbloqueado un logro en **TriviaBot**!",
+        "de": "Du hast einen Erfolg auf **TriviaBot** freigeschaltet!",
+        "hi": "आपने **TriviaBot** पर एक उपलब्धि का खुलासा किया है!",
+        "sv": "Du har låst upp en prestation på **TriviaBot**!",
+        "ru": "Вы получили достижение на **TriviaBot**!"
+    },
+    "EARNED": {
+        "en": "You earned an achievement!",
+        "fr": "Vous avez gagné un exploit!",
+        "pt": "Você ganhou uma conquista!",
+        "tr": "Bir başarı kazandınız!",
+        "es": "¡Obtuviste un logro!",
+        "de": "Du hast einen Erfolg verdient!",
+        "hi": "आपने एक उपलब्धि अर्जित की!",
+        "sv": "Du fick en prestation!",
+        "ru": "Вы получили достижение!"
+    },
+    "TROPHYCABINET": {
+        "en": "Your Trophy Cabinet",
+        "fr": "Votre armoire à trophées",
+        "pt": "Seu gabinete de troféus",
+        "tr": "Kupa Dolabınız",
+        "es": "Tu gabinete de trofeos",
+        "de": "Dein Trophäenschrank",
+        "hi": "आपकी ट्रॉफी कैबिनेट",
+        "sv": "Ditt troféskåp",
+        "ru": "Ваш трофейный шкаф"
+    },
+    "ACHCOUNT": {
+        "en": "**%d** achievements unlocked, **%d** achievements still to unlock.",
+        "fr": "**%d** succès déverrouillés, **%d** succès à débloquer.",
+        "pt": "**%d** conquistas desbloqueadas, **%d** conquistas ainda por desbloquear.",
+        "tr": "**%d** başarıların kilidi açıldı, **%d** başarıların kilidi açılmaya devam ediyor.",
+        "es": "**%d** logros desbloqueados, **%d** logros aún por desbloquear.",
+        "de": "**%d** Erfolge freigeschaltet, **%d** Erfolge noch freigeschaltet.",
+        "hi": "**%d** उपलब्धियां अनलॉक की गईं, {1} **%d** ब्धियां**अभी भी अनलॉक करने के लिए।",
+        "sv": "**%d** prestationer olåsta, **%d** prestationer fortfarande att låsa upp.",
+        "ru": "Разблокировано достижений: **%d**, еще предстоит разблокировать достижений: **%d**."
     }
 }
