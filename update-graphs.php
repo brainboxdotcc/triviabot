@@ -22,8 +22,8 @@
  *
  ***********************************************************************************************************/
 
-$total_shards = 8;
-$clusters = 2;
+$total_shards = 16;
+$clusters = 8;
 $testuser = 'brain';
 
 $settings = json_decode(file_get_contents("config.json"));

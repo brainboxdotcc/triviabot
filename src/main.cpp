@@ -308,7 +308,7 @@ int main(int argc, char** argv) {
 			.file_logging(true)
 			.log_level(spdlog::level::trace)
 			.token(token)
-			.force_shard_count(dev ? 2 : 8)
+			.force_shard_count(dev ? 2 : from_string<uint32_t>(Bot::GetConfig("shardcount"), std::dec))
 			.intents(intents)
 			.clustering(clusterid, maxclusters)
 			.log_name(fmt::format("aegis-{}.log", clusterid))

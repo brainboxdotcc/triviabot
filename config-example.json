@@ -1,6 +1,7 @@
 {
 	"devtoken": "<dev bot token>",
 	"livetoken": "<live bot token>",
+	"shardcount": 2,
 	"dbhost": "<mysql host>",
 	"dbuser": "<mysql user>",
 	"dbpass": "<mysql pass>",
