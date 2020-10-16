@@ -2407,5 +2407,16 @@
         "hi": "**%d** उपलब्धियां अनलॉक की गईं, {1} **%d** ब्धियां**अभी भी अनलॉक करने के लिए।",
         "sv": "**%d** prestationer olåsta, **%d** prestationer fortfarande att låsa upp.",
         "ru": "Разблокировано достижений: **%d**, еще предстоит разблокировать достижений: **%d**."
+    },
+    "TOVIEWACH": {
+        "en": "Use the !achievements command on any channel to view your trophy cabinet at any time.",
+        "fr": "Utilisez la commande !achievements sur n'importe quel canal pour afficher votre armoire à trophées à tout moment.",
+        "pt": "Use o comando !achievements em qualquer canal para ver seu armário de troféus a qualquer momento.",
+        "tr": "Kupa dolabınızı istediğiniz zaman görüntülemek için herhangi bir kanalda !achievements komutunu kullanın.",
+        "es": "Usa el comando !achievements en cualquier canal para ver tu vitrina de trofeos en cualquier momento.",
+        "de": "Verwenden sie den befehl !achievements Auf einem beliebigen kanal, um ihren trophäenschrank jederzeit anzuzeigen.",
+	"hi": "किसी भी समय अपने ट्रॉफी कैबिनेट को देखने के लिए किसी भी चैनल पर !achievements आदेश का उपयोग करें।",
+        "sv": "Använd kommandot !achievements på valfri kanal för att se ditt troféskåp när som helst.",
+        "ru": "Используйте команду !achievements на любом канале, чтобы просмотреть свой шкаф трофеев в любое время."
     }
 }
