@@ -85,7 +85,7 @@ run.sh will restart the bot executable continually if it dies. If the bot quits,
 
 ### Command line parameters
 
-    ./bot [--dev|--test] [--members]
+    ./bot [--dev|--test] [--members] [--clusterid <id> --maxclusters <n>]
 
 | Argument        | Meaning                                                |
 | --------------- |------------------------------------------------------- |
