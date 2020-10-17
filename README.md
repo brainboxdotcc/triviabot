@@ -57,6 +57,7 @@ Edit the config-example.json file and save it as config.json. The configuration 
 |----------|-------------|
 |devtoken  | Discord bot token for a development version of the bot, allowing you to keep development and live copies separate |
 |livetoken | Discord bot token for live version of the bot (see above) |
+|shardcount| Number of shards in total, split across clusters|
 | dbhost   | Hostname or IP address of MySQL server where the triviabot client schema is hosted |
 | dbuser   | Username for MySQL server |
 | dbpass   | Password for MySQL server |
@@ -84,13 +85,15 @@ run.sh will restart the bot executable continually if it dies. If the bot quits,
 
 ### Command line parameters
 
-    ./bot [--dev|--test] [--members]
+    ./bot [--dev|--test] [--members] [--clusterid <id> --maxclusters <n>]
 
 | Argument        | Meaning                                                |
 | --------------- |------------------------------------------------------- |
 | --dev           | Run using the development token in the config file. Mutually exclusive with ``--test``     |
 | --test          | Run using the live token in the config file, but squelch all outbound messages unless they originate from the test server (also defined in the config file)  |
 | --members       | Send a GUILD_MEMBERS intent when identifying to the discord gateway. Note that you'll need this after October 2020 for bots in over 100 servers. |
+| --clusterid     | The id of this process in a cluster of maxclusters processes. Shards are equally shared between all clusters, e.g. if you have two clusters and ten shards each cluster process will have 5 shards on it.|
+| --maxclusters   | Number of cluster processes to share shards across. You must launch at least this many processes, each of which has a unique cluster id between 0 and max - 1 as it's id using the --clusterid command line parameter |
 
 # Version History
 
