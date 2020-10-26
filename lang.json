@@ -2415,8 +2415,96 @@
         "tr": "Kupa dolabınızı istediğiniz zaman görüntülemek için herhangi bir kanalda !achievements komutunu kullanın.",
         "es": "Usa el comando !achievements en cualquier canal para ver tu vitrina de trofeos en cualquier momento.",
         "de": "Verwenden sie den befehl !achievements Auf einem beliebigen kanal, um ihren trophäenschrank jederzeit anzuzeigen.",
-	"hi": "किसी भी समय अपने ट्रॉफी कैबिनेट को देखने के लिए किसी भी चैनल पर !achievements आदेश का उपयोग करें।",
+        "hi": "किसी भी समय अपने ट्रॉफी कैबिनेट को देखने के लिए किसी भी चैनल पर !achievements आदेश का उपयोग करें।",
         "sv": "Använd kommandot !achievements på valfri kanal för att se ditt troféskåp när som helst.",
         "ru": "Используйте команду !achievements на любом канале, чтобы просмотреть свой шкаф трофеев в любое время."
+    },
+    "CATDISABLED": {
+        "en": "Category **'%s'** is now disabled on this guild. You will no longer see questions from this category from the next time you start a new game.",
+        "fr": "La catégorie **'%s'** est maintenant désactivée sur cette guilde. Vous ne verrez plus les questions de cette catégorie à partir du prochain démarrage d'un nouveau jeu.",
+        "pt": "A categoria **'%s'** agora está desativada nesta guilda. Você não verá mais perguntas desta categoria na próxima vez que iniciar um novo jogo.",
+        "tr": "**'%s'** kategorisi artık bu guild'de devre dışı bırakıldı. Artık yeni bir oyuna başladığınızda bu kategorideki soruları görmeyeceksiniz.",
+        "es": "La categoría **'%s'** ahora está deshabilitada en este gremio. Ya no verá preguntas de esta categoría la próxima vez que inicie un nuevo juego.",
+        "de": "Die Kategorie **'%s'** ist jetzt in dieser Gilde deaktiviert. Beim nächsten Start eines neuen Spiels werden keine Fragen aus dieser Kategorie mehr angezeigt.",
+        "hi": "श्रेणी ** %s' * अब इस गिल्ड पर अक्षम है। अगली बार जब आप एक नया गेम शुरू करेंगे, तो आप इस श्रेणी के प्रश्न नहीं देखेंगे।",
+        "sv": "Kategori **'%s'** är nu inaktiverad i denna guild. Du kommer inte längre se frågor från den här kategorin nästa gång du startar ett nytt spel.",
+        "ru": "Категория **'%s'** теперь отключена в этой гильдии. Вы больше не будете видеть вопросы из этой категории, когда в следующий раз начнете новую игру."
+    },
+    "CATENABLED": {
+        "en": "Category **'%s'** is now enabled on this guild. You will see questions from this category from the next time you start a new game.",
+        "fr": "La catégorie **'%s'** est maintenant activée sur cette guilde. Vous verrez des questions de cette catégorie la prochaine fois que vous démarrez un nouveau jeu.",
+        "pt": "A categoria **'%s'** agora está habilitada nesta guilda. Você verá perguntas dessa categoria na próxima vez que iniciar um novo jogo.",
+        "tr": "**'%s'** kategorisi artık bu loncada etkinleştirildi. Bir sonraki yeni oyuna başladığınızda bu kategorideki soruları göreceksiniz.",
+        "es": "La categoría **'%s'** ahora está habilitada en este gremio. Verá preguntas de esta categoría la próxima vez que inicie un nuevo juego.",
+        "de": "Die Kategorie **'%s'** ist jetzt in dieser Gilde aktiviert. Sie werden Fragen aus dieser Kategorie sehen, wenn Sie das nächste Mal ein neues Spiel starten.",
+        "hi": "श्रेणी ** %s' * अब इस गिल्ड पर सक्षम है। अगली बार जब आप एक नया गेम शुरू करेंगे, तो आप इस श्रेणी के प्रश्न देखेंगे।",
+        "sv": "Kategori **'%s'** är nu aktiverat i denna guild. Du kommer att se frågor från den här kategorin nästa gång du startar ett nytt spel.",
+        "ru": "Категория **'%s'** теперь включена в эту гильдию. Вы увидите вопросы из этой категории, когда в следующий раз начнете новую игру."
+    },
+    "CATDONE": {
+        "en": "As you wish...",
+        "fr": "Comme vous le souhaitez...",
+        "pt": "Como quiser...",
+        "tr": "Nasıl istersen...",
+        "es": "Como desées...",
+        "de": "Wie du möchtest...",
+        "hi": "जैसे आपको ठीक लगे...",
+        "sv": "Som du önskar...",
+        "ru": "Как хотите..."
+    },
+    "CATLIST": {
+        "en": "List of categories",
+        "fr": "Liste des catégories",
+        "pt": "Lista de categorias",
+        "tr": "Kategori listesi",
+        "es": "Lista de categorías",
+        "de": "Liste der Kategorien",
+        "hi": "श्रेणियों की सूची",
+        "sv": "Lista över kategorier",
+        "ru": "Список категорий"
+    },
+    "CATHINT": {
+        "en": "Use ``!enable`` and ``!disable`` to disable a category for your guild.",
+        "fr": "Utilisez ``!enable`` et ``!disable`` pour désactiver une catégorie pour votre guilde.",
+        "pt": "Use ``!enable`` e ``!disable`` para desabilitar uma categoria para sua guilda.",
+        "tr": "Loncanız için bir kategoriyi devre dışı bırakmak için ``!enable`` ve ``!disable``",
+        "es": "Usa ``!enable`` y ``!disable`` para deshabilitar una categoría para tu gremio.",
+        "de": "Verwende ``!enable`` und ``!disable``, um eine Kategorie für deine Gilde zu deaktivieren.",
+        "hi": "अपने समाज के लिए एक श्रेणी को निष्क्रिय करने के लिए `` सक्षम क!enable`` और ``!disable`` उयोग करें।",
+        "sv": "Använd ``!enable`` och ``!disable`` för att inaktivera en kategori för din guild.",
+        "ru": "Используйте ``!enable`` и ``!disable``, чтобы отключить категорию для вашей гильдии."
+    },
+    "CATERROR": {
+        "en": "I can't do that, Dave",
+        "fr": "Je ne peux pas faire ça, Dave",
+        "pt": "Eu não posso fazer isso Dave",
+        "tr": "Bunu yapamam Dave",
+        "es": "No puedo hacer eso, dave",
+        "de": "Das kann ich nicht, Dave",
+        "hi": "मैं ऐसा नहीं कर सकता, डेव",
+        "sv": "Jag kan inte göra det, Dave",
+        "ru": "Я не могу этого сделать, Дэйв"
+    },
+    "NOSUCHCAT": {
+        "en": "There is no category named ``%s``",
+        "fr": "Il n'y a pas de catégorie nommée ``%s``",
+        "pt": "Não existe uma categoria chamada ``%s``",
+        "tr": "``%s`` adlı bir kategori yok",
+        "es": "No hay una categoría llamada ``%s``",
+        "de": "Es gibt keine Kategorie mit dem Namen ``%s``",
+        "hi": "``%s`` नाम की कोई श्रेणी नहीं है",
+        "sv": "Det finns ingen kategori som heter ``%s``",
+        "ru": "Нет категории с названием ``%s``"
+    },
+    "TOOFEWCATS": {
+        "en": "You cannot disable this category as this would mean less than %d percent of TriviaBot's questions remain to be asked in games. This would be unfair to other players competing on leaderboards or for nitro. Please enable some other categories if you want to disable this one.",
+        "fr": "Vous ne pouvez pas désactiver cette catégorie car cela signifierait que moins de %d pour cent des questions de TriviaBot restent à poser dans les jeux. Ce serait injuste pour les autres joueurs en compétition sur les classements ou pour la nitro. Veuillez activer d'autres catégories si vous souhaitez désactiver celle-ci.",
+        "pt": "Você não pode desabilitar esta categoria, pois isso significaria que menos de %d por cento das perguntas do TriviaBot permanecem a serem feitas nos jogos. Isso seria injusto com outros jogadores competindo em tabelas de classificação ou nitro. Habilite algumas outras categorias se quiser desabilitar esta.",
+        "tr": "Bu kategoriyi devre dışı bırakamazsınız çünkü bu, TriviaBot'un sorularının yüzde %d azının oyunlarda sorulacağı anlamına gelir. Bu, liderlik tablolarında veya nitro için rekabet eden diğer oyuncular için haksızlık olur. Lütfen bunu devre dışı bırakmak istiyorsanız diğer bazı kategorileri etkinleştirin.",
+        "es": "No puede desactivar esta categoría, ya que esto significaría que menos del %d por ciento de las preguntas de TriviaBot quedan por hacerse en los juegos. Esto sería injusto para otros jugadores que compiten en tablas de clasificación o por nitro. Habilite algunas otras categorías si desea deshabilitar esta.",
+        "de": "Sie können diese Kategorie nicht deaktivieren, da dies bedeuten würde, dass weniger als %d Prozent der Fragen von TriviaBot in Spielen noch zu stellen sind. Dies wäre unfair gegenüber anderen Spielern, die auf Bestenlisten oder um Nitro kämpfen. Bitte aktivieren Sie einige andere Kategorien, wenn Sie diese deaktivieren möchten.",
+        "hi": "आप इस श्रेणी को अक्षम नहीं कर सकते क्योंकि इसका मतलब यह होगा कि सामान्य ज्ञान के%d प्रतिशत से कम गेम में प्रश्न पूछे जा सकते हैं। लीडरबोर्ड पर या नाइट्रो के लिए प्रतिस्पर्धा करने वाले अन्य खिलाड़ियों के साथ यह अनुचित होगा। यदि आप इसे अक्षम करना चाहते हैं तो कृपया कुछ अन्य श्रेणियां सक्षम करें।",
+        "sv": "Du kan inte inaktivera den här kategorin eftersom det skulle betyda att mindre än %d procent av TriviaBots frågor återstår att ställa i spel. Detta skulle vara orättvist för andra spelare som tävlar på topplistor eller för nitro. Aktivera några andra kategorier om du vill inaktivera den här.",
+        "ru": "Вы не можете отключить эту категорию, так как это будет означать, что в играх останется задавать менее %d процентов вопросов TriviaBot. Это было бы несправедливо по отношению к другим игрокам, участвующим в списках лидеров или за нитро. Пожалуйста, включите некоторые другие категории, если вы хотите отключить эту."
     }
 }

@@ -322,7 +322,7 @@ guild_settings_t TriviaModule::GetGuildSettings(int64_t guild_id)
 std::string TriviaModule::GetVersion()
 {
 	/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-	std::string version = "$ModVer 36$";
+	std::string version = "$ModVer 38$";
 	return "3.0." + version.substr(8,version.length() - 9);
 }
 
@@ -715,9 +715,9 @@ void TriviaModule::show_stats(int64_t guild_id, int64_t channel_id)
 		score >> snowflake_id;
 		aegis::user* u = bot->core.find_user(snowflake_id);
 		if (u) {
-			msg.append(fmt::format("{}. **{}** ({})\n", count++, u->get_full_name(), points));
+			msg.append(fmt::format("{}. ``{}`` ({})\n", count++, u->get_full_name(), points));
 		} else {
-			msg.append(fmt::format("{}. **Deleted User#0000** ({})\n", count++, points));
+			msg.append(fmt::format("{}. ``Deleted User#0000`` ({})\n", count++, points));
 		}
 	}
 	if (msg.empty()) {
