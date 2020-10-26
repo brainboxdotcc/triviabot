@@ -2,12 +2,12 @@
 
 **TLDR: No low quality questions**
 
-_We will not accept any questions which clearly have a small amount of time or research put into them (also known as `spam questions`). Here are some examples of low quality questions and high quality questions._
+_We will not accept any questions which clearly have a small amount of time or research put into them (a.k.a. `spam questions`) or are hard for moderators to verify. Here are some examples of low quality questions that will get denied and possibly a submission ban for the submitter._
 
 `what is 1 + 1`:
 This question is low quality because it incorporates something that almost everyone knows and isn't really trivia. We will deny this question.
 
-`Is discord owned by facebook`:
+`Is <something> <something>?`:
 This question is low quality because it is a simple yes/no question that can be answered in under a second by just typing `yes and no` in chat.
 
 `Who is the current president of the USA`:
@@ -18,9 +18,6 @@ This question is low quality since it breaks grammar rules and has spelling mist
 
 `What is the best game`:
 This question is low quality since it relies heavily on opinion, not statistics.
-
-`What is the first name of first gaming youtuber to reach 50 million subscribers`:
-This question is **high** quality since it specifies what the answer is (first name) and is easily fact check-able.
 
 `<insert random spam>`:
 You'll receive a warning or ban for this.
@@ -45,5 +42,10 @@ Questions should not depend on the person being asked the question. Questions sh
 
 `What was <random YouTuber with less than 1K subs>' first/last/original video/post/channel name/creation date/etc?`
 Tiny YouTubers, twitch streamers with a small following are not notable enough.
+
+_Here are some examples of high quality questions._
+
+`What is the first name of first gaming youtuber to reach 50 million subscribers`:
+This question is **high** quality since it specifies what the answer is (first name) and is easily fact check-able.
 
 **Remember, questions are accepted at the moderators discretion!**
