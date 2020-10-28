@@ -121,6 +121,7 @@ void state_t::handle_message(const in_msg& m)
 					}
 				}
 				update_score_only(m.author_id, this->guild_id, 1);
+				creator->CacheUser(m.author_id, this->channel_id);
 				if (log_question_index(this->guild_id, this->channel_id, this->round, this->streak, this->last_to_answer, this->gamestate)) {
 					creator->StopGame(this, settings);
 					return;
@@ -133,6 +134,7 @@ void state_t::handle_message(const in_msg& m)
 			if (!this->curr_answer.empty() && ((m.msg.length() >= this->curr_answer.length() && lowercase(this->curr_answer) == lowercase(m.msg)) || (!PCRE("^\\$(\\d+)$").Match(this->curr_answer) && !PCRE("^(\\d+)$").Match(this->curr_answer) && (this->curr_answer.length() > 5 && creator->levenstein(m.msg, this->curr_answer) < 2)))) {
 				/* Correct answer */
 				this->gamestate = TRIV_ANSWER_CORRECT;
+				creator->CacheUser(m.author_id, this->channel_id);
 				time_t time_to_answer = time(NULL) - this->asktime;
 				std::string pts = (this->score > 1 ? creator->_("POINTS", settings) : creator->_("POINT", settings));
 				time_t submit_time = this->recordtime;
