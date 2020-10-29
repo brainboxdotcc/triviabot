@@ -65,6 +65,7 @@ class TriviaModule : public Module
 	PCRE* number_tidy_negative;
 	PCRE* prefix_match;
 	std::unordered_map<int64_t, time_t> limits;
+	std::unordered_map<int64_t, time_t> last_rl_warning;
 	std::vector<std::string> api_commands;
 	std::thread* presence_update;
 	bool terminating;

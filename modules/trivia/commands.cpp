@@ -119,9 +119,35 @@ void TriviaModule::handle_command(const in_cmd &cmd) {
 	
 			auto command = commands.find(base_command);
 			if (command != commands.end()) {
-				/* Commands handled in the bot in C++ */
-				bot->core.log->debug("command_t '{}' routed to handler", base_command);
-				command->second->call(cmd, tokens, settings, username, moderator, c, user, state);
+			/* Commands handled in the bot in C++ */
+				bool can_execute = false;
+				auto check = limits.find(cmd.channel_id);
+				if (check == limits.end()) {
+					can_execute = true;
+					limits[cmd.channel_id] = time(NULL) + PER_CHANNEL_RATE_LIMIT;
+				} else if (time(NULL) > check->second) {
+					can_execute = true;
+					limits[cmd.channel_id] = time(NULL) + PER_CHANNEL_RATE_LIMIT;
+				}
+				if (can_execute) {
+					bot->core.log->debug("command_t '{}' routed to handler", base_command);
+					command->second->call(cmd, tokens, settings, username, moderator, c, user, state);
+				} else {
+					/* Display rate limit message, but only one per rate limit period */
+					bool emit_rl_warning = false;
+					auto check = last_rl_warning.find(cmd.channel_id);
+					if (check == last_rl_warning.end()) {
+						emit_rl_warning = true;
+						last_rl_warning[cmd.channel_id] = time(NULL) + PER_CHANNEL_RATE_LIMIT;
+					} else if (time(NULL) > check->second) {
+						emit_rl_warning = true;
+						last_rl_warning[cmd.channel_id] = time(NULL) + PER_CHANNEL_RATE_LIMIT;
+					}
+					if (emit_rl_warning) {
+						SimpleEmbed(":snail:", fmt::format(_("RATELIMITED", settings), PER_CHANNEL_RATE_LIMIT, base_command), cmd.channel_id, _("WOAHTHERE", settings));
+					}
+					bot->core.log->debug("command_t '{}' NOT routed to handler on channel {}, limiting", base_command, cmd.channel_id);
+				}
 			} else {
 				/* Custom commands handled completely by the API as a REST call */
 				bool command_exists = false;
@@ -149,8 +175,20 @@ void TriviaModule::handle_command(const in_cmd &cmd) {
 							ProcessEmbed(reply, cmd.channel_id);
 						}
 					} else {
-						/* Display rate limit message */
-						SimpleEmbed(":snail:", fmt::format(_("RATELIMITED", settings), PER_CHANNEL_RATE_LIMIT, base_command), cmd.channel_id, _("WOAHTHERE", settings));
+						/* Display rate limit message, but only one per rate limit period */
+						bool emit_rl_warning = false;
+						auto check = last_rl_warning.find(cmd.channel_id);
+						if (check == last_rl_warning.end()) {
+							emit_rl_warning = true;
+							last_rl_warning[cmd.channel_id] = time(NULL) + PER_CHANNEL_RATE_LIMIT;
+						} else if (time(NULL) > check->second) {
+							emit_rl_warning = true;
+							last_rl_warning[cmd.channel_id] = time(NULL) + PER_CHANNEL_RATE_LIMIT;
+						}
+						if (emit_rl_warning) {
+							SimpleEmbed(":snail:", fmt::format(_("RATELIMITED", settings), PER_CHANNEL_RATE_LIMIT, base_command), cmd.channel_id, _("WOAHTHERE", settings));
+						}
+
 						bot->core.log->debug("Command '{}' not sent to API, rate limited", trim(lowercase(base_command)));
 					}
 				} else {
