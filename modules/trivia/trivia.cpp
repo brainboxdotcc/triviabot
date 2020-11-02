@@ -301,7 +301,7 @@ guild_settings_t TriviaModule::GetGuildSettings(int64_t guild_id)
 {
 	aegis::guild* guild = bot->core.find_guild(guild_id);
 	if (guild == nullptr) {
-		return guild_settings_t(guild_id, "!", {}, 3238819, false, false, false, 0, "", "en");
+		return guild_settings_t(guild_id, "!", {}, 3238819, false, false, false, 0, "", "en", 20);
 	} else {
 		db::resultset r = db::query("SELECT * FROM bot_guild_settings WHERE snowflake_id = ?", {guild_id});
 		if (!r.empty()) {
@@ -311,10 +311,10 @@ guild_settings_t TriviaModule::GetGuildSettings(int64_t guild_id)
 			while ((s >> role_id)) {
 				role_list.push_back(role_id);
 			}
-			return guild_settings_t(from_string<int64_t>(r[0]["snowflake_id"], std::dec), r[0]["prefix"], role_list, from_string<uint32_t>(r[0]["embedcolour"], std::dec), (r[0]["premium"] == "1"), (r[0]["only_mods_stop"] == "1"), (r[0]["role_reward_enabled"] == "1"), from_string<int64_t>(r[0]["role_reward_id"], std::dec), r[0]["custom_url"], r[0]["language"]);
+			return guild_settings_t(from_string<int64_t>(r[0]["snowflake_id"], std::dec), r[0]["prefix"], role_list, from_string<uint32_t>(r[0]["embedcolour"], std::dec), (r[0]["premium"] == "1"), (r[0]["only_mods_stop"] == "1"), (r[0]["role_reward_enabled"] == "1"), from_string<int64_t>(r[0]["role_reward_id"], std::dec), r[0]["custom_url"], r[0]["language"], from_string<uint32_t>(r[0]["question_interval"], std::dec));
 		} else {
 			db::query("INSERT INTO bot_guild_settings (snowflake_id) VALUES('?')", {guild_id});
-			return guild_settings_t(guild_id, "!", {}, 3238819, false, false, false, 0, "", "en");
+			return guild_settings_t(guild_id, "!", {}, 3238819, false, false, false, 0, "", "en", 20);
 		}
 	}
 }
@@ -322,7 +322,7 @@ guild_settings_t TriviaModule::GetGuildSettings(int64_t guild_id)
 std::string TriviaModule::GetVersion()
 {
 	/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-	std::string version = "$ModVer 38$";
+	std::string version = "$ModVer 39$";
 	return "3.0." + version.substr(8,version.length() - 9);
 }
 
@@ -649,7 +649,7 @@ void TriviaModule::do_time_up(state_t* state)
 	}
 
 	if (c && state->round <= state->numquestions - 2) {
-		SimpleEmbed("<a:loading:658667224067735562>", fmt::format(_("COMING_UP", settings), state->interval), c->get_id().get(), _("REST", settings));
+		SimpleEmbed("<a:loading:658667224067735562>", fmt::format(_("COMING_UP", settings), state->interval == TRIV_INTERVAL ? settings.question_interval : state->interval), c->get_id().get(), _("REST", settings));
 	}
 
 	state->gamestate = (state->round > state->numquestions ? TRIV_END : TRIV_ASK_QUESTION);

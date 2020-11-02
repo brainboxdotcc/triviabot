@@ -202,9 +202,15 @@ void state_t::tick()
 {
 	while (!terminating) {
 		try {
-			for (int j = 0; j < this->interval * 10; j++) {
+			int32_t _interval = this->interval * 10;
+			if (gamestate == TRIV_ASK_QUESTION && this->interval == TRIV_INTERVAL) {
+				guild_settings_t settings = creator->GetGuildSettings(guild_id);
+				_interval = settings.question_interval * 10;
+			}
+
+			for (int j = 0; j < _interval; j++) {
 				{
-						std::lock_guard<std::mutex> q_lock(queuemutex);
+					std::lock_guard<std::mutex> q_lock(queuemutex);
 					if (!messagequeue.empty()) {
 						to_process.clear();
 						for (auto m = messagequeue.begin(); m != messagequeue.end(); ++m) {
@@ -213,9 +219,9 @@ void state_t::tick()
 					messagequeue.clear();
 					}
 				}
-			if (!to_process.empty()) {
-						for (auto m = to_process.begin(); m != to_process.end(); ++m) {
-					handle_message(*m);
+				if (!to_process.empty()) {
+					for (auto m = to_process.begin(); m != to_process.end(); ++m) {
+						handle_message(*m);
 					}
 					to_process.clear();
 				}

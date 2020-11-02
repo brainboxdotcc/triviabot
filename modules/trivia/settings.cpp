@@ -32,7 +32,8 @@ guild_settings_t::guild_settings_t(int64_t _guild_id,
 		bool _role_reward_enabled,
 		int64_t _role_reward_id,
 		const std::string &_custom_url,
-		const std::string &_language)
+		const std::string &_language,
+		int32_t _question_interval)
 	        :
 			guild_id(_guild_id),
 			prefix(_prefix),
@@ -43,5 +44,6 @@ guild_settings_t::guild_settings_t(int64_t _guild_id,
 			role_reward_enabled(_role_reward_enabled),
 			role_reward_id(_role_reward_id),
 			custom_url(_custom_url),
-			language(_language)
+			language(_language),
+			question_interval(_question_interval < 20 || _question_interval > 120 ? 20 : _question_interval)
 { }
