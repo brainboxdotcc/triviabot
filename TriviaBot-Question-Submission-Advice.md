@@ -48,4 +48,11 @@ _Here are some examples of high quality questions._
 `What is the first name of first gaming youtuber to reach 50 million subscribers`:
 This question is **high** quality since it specifies what the answer is (first name) and is easily fact check-able.
 
-**Remember, questions are accepted at the moderators discretion!**
+`Who was the first person to unite all of China under a single ruler during the three kingdoms?`
+This question is **high** quality because it is easy to check (Google™️), non-debatable, and doesn't change over time.
+
+`What is the name of the bond that holds water molecules together?`
+This question is **high** quality because it can be checked by mods easily and is non-debatable.
+
+**Remember, questions are accepted at the Official Trivia Moderators' discretion!**
+_Arguing or diputing a decision made by a mod will result in a permanent non-appealable ban from submitting questions._
