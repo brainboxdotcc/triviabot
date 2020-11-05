@@ -55,4 +55,4 @@ This question is **high** quality because it is easy to check (Google™️), no
 This question is **high** quality because it can be checked by mods easily and is non-debatable.
 
 **Remember, questions are accepted at the Official Trivia Moderators' discretion!**
-_Arguing or diputing a decision made by a mod will result in a permanent non-appealable ban from submitting questions._
+_Arguing or diputing a decision made by a mod may and most likely will result in a permanent, non-appealable ban from submitting questions._
