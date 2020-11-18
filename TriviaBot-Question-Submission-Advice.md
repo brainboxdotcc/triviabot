@@ -1,7 +1,5 @@
 <H1>How to submit good questions to TriviaBot</H1>
 
-**TLDR; No low quality questions**
-
 _We will not accept any questions which clearly have a small amount of time or research put into them (a.k.a. `spam questions`) and/or are hard for moderators to verify. Here are some examples of low quality questions that will get denied and possibly a submission ban or warn for the submitter._
 
 `what is 1 + 1`:
