@@ -18,13 +18,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-cd build
-# enable core dumps for debugging
-ulimit -c unlimited
-# run repeatedly until ctrl+c
-while true;
+
+# Obtain cluster count to start from config.json
+clusters=$(/usr/bin/jq -r '.clustercount' config.json)
+max=$(expr $clusters - 1)
+
+# Start a screen session for each cluster
+for i in $(seq 0 $max)
 do
-	./bot -members -clusterid 1 -maxclusters 8
-	../mail-core-file.sh 1 $(pwd)
+	# Start cluster
+	/usr/bin/screen -dmS triviabot$i ./run-cluster.sh $i $clusters
+	# Wait one minute between each cluster startup to ensure we dont hit rate limits for IDENTIFY
+	/bin/sleep 1m
 done
 

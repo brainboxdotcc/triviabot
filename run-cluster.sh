@@ -18,13 +18,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
 cd build
+
 # enable core dumps for debugging
 ulimit -c unlimited
+
 # run repeatedly until ctrl+c
+# This runs within a screen session, which we can bring to the foreground to
+# monitor its status whenever we like.
 while true;
 do
-	./bot -members -clusterid 4 -maxclusters 8
-	../mail-core-file.sh 4 $(pwd)
+	# Run bot, cluster id and max clusters are passed in from start.sh
+	./bot -members -clusterid $1 -maxclusters $2
+	../mail-core-file.sh $1 $(pwd)
 done
 
