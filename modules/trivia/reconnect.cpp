@@ -36,13 +36,28 @@ void TriviaModule::CheckReconnects() {
 	if (!rs.empty()) {
 		for (auto r = rs.begin(); r != rs.end(); ++r) {
 			try {
-				auto & s = bot->core.get_shard_by_id(from_string<uint32_t>((*r)["id"], std::dec));
-				bot->core.get_shard_mgr().close(s);
-				sleep(2);
-				s.connect();
+				bool reconnected = false;
+				auto& sl = bot->core.get_shard_mgr().get_shards();
+				for (auto &sp : sl) {
+					auto s = sp.get();
+					if (s->get_id() == from_string<uint32_t>((*r)["id"], std::dec)) {
+						db::query("UPDATE infobot_shard_status SET reconnect_status = '?' WHERE id = ?", {std::string("Disconnecting..."), (*r)["id"]});
+						bot->core.get_shard_mgr().close(s);
+						sleep(2);
+						db::query("UPDATE infobot_shard_status SET reconnect_status = '?' WHERE id = ?", {std::string("Connecting..."), (*r)["id"]});
+						s->connect();
+						reconnected = true;
+					}
+				}
+				if (!reconnected) {
+					db::query("UPDATE infobot_shard_status SET reconnect_status = '?' WHERE id = ?", {std::string("Can't find shard to reconnect it, please restart the cluster"), (*r)["id"]});
+				} else {
+					db::query("UPDATE infobot_shard_status SET reconnect_status = '?' WHERE id = ?", {std::string("Shard reconnected"), (*r)["id"]});
+				}
 			}
 			catch (...) {
 				bot->core.log->error("Unable to get shard {} to reconnect it! Something broked!", (*r)["id"]);
+				db::query("UPDATE infobot_shard_status SET reconnect_status = '?' WHERE id = ?", {std::string("Shard reconnection error, please restart the cluster"), (*r)["id"]});
 			}
 			db::query("UPDATE infobot_shard_status SET forcereconnect = 0 WHERE id = '?'", {(*r)["id"]});
 		}

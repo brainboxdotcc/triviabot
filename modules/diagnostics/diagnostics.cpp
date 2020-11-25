@@ -87,7 +87,7 @@ public:
 	virtual std::string GetVersion()
 	{
 		/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-		std::string version = "$ModVer 25$";
+		std::string version = "$ModVer 26$";
 		return "1.0." + version.substr(8,version.length() - 9);
 	}
 
@@ -105,7 +105,7 @@ public:
 	virtual bool OnMessage(const modevent::message_create &message, const std::string& clean_message, bool mentioned, const std::vector<std::string> &stringmentions)
 	{
 		std::vector<std::string> param;
-		shards[message.shard.get_id()].last_message = std::chrono::steady_clock::now();
+		//shards[message.shard.get_id()].last_message = std::chrono::steady_clock::now();
 
 		if (mentioned && diagnosticmessage->Match(clean_message, param) && param.size() >= 3) {
 
