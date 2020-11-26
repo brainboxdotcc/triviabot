@@ -41,6 +41,8 @@
  */
 json configdocument;
 
+uint32_t maxclusters = 0;
+
 /**
  * Constructor (creates threads, loads all modules)
  */
@@ -156,7 +158,8 @@ void Bot::onReady(aegis::gateway::events::ready ready) {
 
 	/* Event broadcast when all shards are ready */
 	shard_init_count++;
-	if (shard_init_count == core.shard_max_count) {
+	/* BUGFIX: In a clustered environment, the shard max is divided by the number of clusters */
+	if (shard_init_count == core.shard_max_count / (maxclusters ? maxclusters : 1)) {
 		FOREACH_MOD(I_OnAllShardsReady, OnAllShardsReady());
 	}
 }
@@ -221,7 +224,6 @@ int main(int argc, char** argv) {
 	int test = 0;
 	int members = 0;
 	uint32_t clusterid = 0;
-	uint32_t maxclusters = 0;
 
 	/* Set this specifically so that stringstreams don't do weird things on other locales printing decimal numbers for SQL */
 	std::setlocale(LC_ALL, "en_GB.UTF-8");
