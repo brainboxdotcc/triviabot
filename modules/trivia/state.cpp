@@ -32,6 +32,7 @@
 #include "state.h"
 #include "trivia.h"
 #include "webrequest.h"
+#include "wlower.h"
 
 in_msg::in_msg(const std::string &m, int64_t author, bool mention) : msg(m), author_id(author), mentions_bot(mention)
 {
@@ -101,7 +102,7 @@ void state_t::handle_message(const in_msg& m)
 			
 		if (this->round % 10 == 0) {
 			/* Insane round */
-			auto i = this->insane.find(lowercase(m.msg));
+			auto i = this->insane.find(utf8lower(m.msg, settings.language == "es"));
 			if (i != this->insane.end()) {
 				this->insane.erase(i);
 
@@ -131,7 +132,7 @@ void state_t::handle_message(const in_msg& m)
 			/* Normal round */
 
 			/* Answer on channel is an exact match for the current answer and/or it is numeric, OR, it's non-numeric and has a levenstein distance near enough to the current answer (account for misspellings) */
-			if (!this->curr_answer.empty() && ((m.msg.length() >= this->curr_answer.length() && lowercase(this->curr_answer) == lowercase(m.msg)) || (!PCRE("^\\$(\\d+)$").Match(this->curr_answer) && !PCRE("^(\\d+)$").Match(this->curr_answer) && (this->curr_answer.length() > 5 && creator->levenstein(m.msg, this->curr_answer) < 2)))) {
+			if (!this->curr_answer.empty() && ((m.msg.length() >= this->curr_answer.length() && utf8lower(this->curr_answer, settings.language == "es") == utf8lower(m.msg, settings.language == "es")) || (!PCRE("^\\$(\\d+)$").Match(this->curr_answer) && !PCRE("^(\\d+)$").Match(this->curr_answer) && (this->curr_answer.length() > 5 && (utf8lower(this->curr_answer, settings.language == "es") == utf8lower(m.msg, settings.language == "es") || creator->levenstein(m.msg, this->curr_answer) < 2))))) {
 				/* Correct answer */
 				this->gamestate = TRIV_ANSWER_CORRECT;
 				creator->CacheUser(m.author_id, this->channel_id);

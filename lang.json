@@ -2506,5 +2506,16 @@
         "hi": "आप इस श्रेणी को अक्षम नहीं कर सकते क्योंकि इसका मतलब यह होगा कि सामान्य ज्ञान के%d प्रतिशत से कम गेम में प्रश्न पूछे जा सकते हैं। लीडरबोर्ड पर या नाइट्रो के लिए प्रतिस्पर्धा करने वाले अन्य खिलाड़ियों के साथ यह अनुचित होगा। यदि आप इसे अक्षम करना चाहते हैं तो कृपया कुछ अन्य श्रेणियां सक्षम करें।",
         "sv": "Du kan inte inaktivera den här kategorin eftersom det skulle betyda att mindre än %d procent av TriviaBots frågor återstår att ställa i spel. Detta skulle vara orättvist för andra spelare som tävlar på topplistor eller för nitro. Aktivera några andra kategorier om du vill inaktivera den här.",
         "ru": "Вы не можете отключить эту категорию, так как это будет означать, что в играх останется задавать менее %d процентов вопросов TriviaBot. Это было бы несправедливо по отношению к другим игрокам, участвующим в списках лидеров или за нитро. Пожалуйста, включите некоторые другие категории, если вы хотите отключить эту."
+    },
+    "INSANESTATS": {
+        "en": "Insane Round Statistics",
+        "fr": "Statistiques du tour fou",
+        "pt": "Estatísticas Insane Round",
+        "tr": "Insane Round İstatistikleri",
+        "es": "Estadísticas de Insane Round",
+        "de": "Wahnsinnsrundenstatistik",
+        "hi": "पागल दौर सांख्यिकी",
+        "sv": "Insane Round Statistics",
+        "ru": "Статистика безумного раунда"
     }
 }

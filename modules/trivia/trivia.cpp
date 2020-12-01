@@ -33,6 +33,7 @@
 #include "trivia.h"
 #include "webrequest.h"
 #include "piglatin.h"
+#include "wlower.h"
 
 TriviaModule::TriviaModule(Bot* instigator, ModuleLoader* ml) : Module(instigator, ml), terminating(false)
 {
@@ -322,7 +323,7 @@ guild_settings_t TriviaModule::GetGuildSettings(int64_t guild_id)
 std::string TriviaModule::GetVersion()
 {
 	/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-	std::string version = "$ModVer 39$";
+	std::string version = "$ModVer 40$";
 	return "3.0." + version.substr(8,version.length() - 9);
 }
 
@@ -396,7 +397,7 @@ void TriviaModule::do_insane_round(state_t* state, bool silent)
 			state->curr_question = trim(*n);
 		} else {
 			if (*n != "***END***") {
-				state->insane[lowercase(trim(*n))] = true;
+				state->insane[utf8lower(trim(*n), settings.language == "es")] = true;
 			}
 		}
 	}
