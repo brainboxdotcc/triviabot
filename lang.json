@@ -1,14 +1,14 @@
 {
     "EMBED_ERROR_1": {
-        "en": "<:sporks_error:664735896251269130> I can't make an **embed** from this: ```js\n{0}\n```**Error:** ``{1}``",
-        "tr": "<:sporks_error:664735896251269130> Bundan **yerleştirme** yapamıyorum: ```js\n{0}\n``` **Hata:** ``{1}``",
-        "pt": "<:sporks_error:664735896251269130> Não consigo fazer um **embed** a partir deste: ```js\n{0}\n``` ** Erro:** ``{1}``",
-        "fr": "<:sporks_error:664735896251269130> Je ne peux pas faire une **embed** à partir de ceci: ```js\n{0}\n``` **Erreur:** ``{1}``",
-        "es": "<:sporks_error:664735896251269130> No puedo hacer una ** incrustación ** de esto: ```js\n{0}\n```**Error:** ``{1}``",
-        "de": "<:sporks_error:664735896251269130> Ich kann daraus keine ** Einbettung ** machen: ```js\n{0}\n``` ** Fehler:** ``{1}``",
-        "hi": "<:sporks_error:664735896251269130> मैं इससे **एम्बेड नहीं ** कर सकता: ```js\n{0}\n``` **त्रुटि:** `` {1}``",
-        "sv": "<:sporks_error:664735896251269130> Jag kan inte skapa en **bädda in** från detta: ```js\n{0}\n``` **Fel:** ``{1}``",
-        "ru": "<:sporks_error:664735896251269130> Я не могу **встроить** из этого: ```js\n{0}\n``` **Ошибка:** ``{1}``"
+        "en": "<:sporks_error:664735896251269130> I can't make an **embed** from this: ```js\n{0}\n```**Error:** `{1}`",
+        "tr": "<:sporks_error:664735896251269130> Bundan **yerleştirme** yapamıyorum: ```js\n{0}\n``` **Hata:** `{1}`",
+        "pt": "<:sporks_error:664735896251269130> Não consigo fazer um **embed** a partir deste: ```js\n{0}\n``` ** Erro:** `{1}`",
+        "fr": "<:sporks_error:664735896251269130> Je ne peux pas faire une **embed** à partir de ceci: ```js\n{0}\n``` **Erreur:** `{1}`",
+        "es": "<:sporks_error:664735896251269130> No puedo hacer una ** incrustación ** de esto: ```js\n{0}\n```**Error:** `{1}`",
+        "de": "<:sporks_error:664735896251269130> Ich kann daraus keine ** Einbettung ** machen: ```js\n{0}\n``` ** Fehler:** `{1}`",
+        "hi": "<:sporks_error:664735896251269130> मैं इससे **एम्बेड नहीं ** कर सकता: ```js\n{0}\n``` **त्रुटि:** ` {1}`",
+        "sv": "<:sporks_error:664735896251269130> Jag kan inte skapa en **bädda in** från detta: ```js\n{0}\n``` **Fel:** `{1}`",
+        "ru": "<:sporks_error:664735896251269130> Я не могу **встроить** из этого: ```js\n{0}\n``` **Ошибка:** `{1}`"
     },
     "MALFORMED_UNICODE": {
         "en": "Malformed unicode in embed: {0}",
@@ -847,15 +847,15 @@
         "ru": "Остановка раунда!"
     },
     "PREFIX": {
-        "en": "My prefix on this server is ``{0}``. Type ``{1}help`` for help.",
-        "tr": "Bu sunucudaki ön ekim ``{0}``. Yardım için ``{1}help`` yazın.",
-        "pt": "Meu prefixo neste servidor é ``{0}``. Digite ``{1}help`` para obter ajuda.",
-        "fr": "Mon préfixe sur ce serveur est ``{0}``. Tapez ``{1}help`` pour obtenir de l'aide.",
-        "es": "Mi prefijo en este servidor es ``{0}``. Escriba ``{1} ayuda`` para obtener ayuda.",
-        "de": "Mein Präfix auf diesem Server ist `` {0} ``. Geben Sie `` {1} help`` ein, um Hilfe zu erhalten.",
-        "hi": "इस सर्वर पर मेरा उपसर्ग ``{0}`` है। मदद के लिए `` `{1}help`` मदद `टाइप करें।",
-        "sv": "Mitt prefix på den här servern är ``{0}``. Skriv ``{1}help`` för hjälp.",
-        "ru": "Мой префикс на этом сервере - ``{0}``. Для получения справки введите ``{1}help``."
+        "en": "My prefix on this server is `{0}`. Type `{1}help` for help.",
+        "tr": "Bu sunucudaki ön ekim `{0}`. Yardım için `{1}help` yazın.",
+        "pt": "Meu prefixo neste servidor é `{0}`. Digite `{1}help` para obter ajuda.",
+        "fr": "Mon préfixe sur ce serveur est `{0}`. Tapez `{1}help` pour obtenir de l'aide.",
+        "es": "Mi prefijo en este servidor es `{0}`. Escriba `{1} ayuda` para obtener ayuda.",
+        "de": "Mein Präfix auf diesem Server ist ` {0} `. Geben Sie ` {1} help` ein, um Hilfe zu erhalten.",
+        "hi": "इस सर्वर पर मेरा उपसर्ग `{0}` है। मदद के लिए ` `{1}help` मदद `टाइप करें।",
+        "sv": "Mitt prefix på den här servern är `{0}`. Skriv `{1}help` för hjälp.",
+        "ru": "Мой префикс на этом сервере - `{0}`. Для получения справки введите `{1}help`."
     },
     "LAST_ONE": {
         "en": "**{0}** found the last answer!",
@@ -1320,15 +1320,15 @@
         "ru": "Здесь нет викторин, **{0}**!"
     },
     "VOTEAD": {
-        "en": "[Vote for the bot every 12 hours](https:\/\/top.gg\/bot\/{0}\/vote) to get eight uses of the ``{1}votehint`` command, which gives you a personal hint via direct message!",
-        "tr": "[Bot için her 12 saatte bir oy verin](https:\/\/top.gg\/bot\/{0}\/vote) ``{1}votehint`` komutunu sekiz kez kullanın, bu da size doğrudan aracılığıyla kişisel bir ipucu verir İleti!",
-        "pt": "[Vote no bot a cada 12 horas](https:\/\/top.gg\/bot\/{0}\/vote) para obter oito usos do comando ``{1}votehint``, que fornece uma dica pessoal via direta mensagem!",
-        "fr": "[Votez pour le bot toutes les 12 heures](https:\/\/top.gg\/bot\/{0}\/vote) pour obtenir huit utilisations de la commande ``{1}votehint``, qui vous donne un indice personnel par message direct!",
-        "es": "[Vote por el bot cada 12 horas](https:\/\/top.gg\/bot\/{0}\/vote) para obtener ocho usos del comando ``{1}votehint``, que le brinda una pista personal a través de ¡mensaje!",
-        "de": "[Stimmen Sie alle 12 Stunden für den Bot ab](https:\/\/top.gg\/bot\/{0}\/vote), um acht Verwendungen des Befehls ``{1}votehint`` zu erhalten, der Ihnen direkt einen persönlichen Hinweis gibt Botschaft!",
-        "hi": "[प्रत्येक 12 घंटे में बॉट के लिए वोट दें](https:\/\/top.gg\/bot\/{0}\/vote) ``{1}votehint`` कमांड के आठ उपयोग प्राप्त करने के लिए, जो आपको प्रत्यक्ष के माध्यम से एक व्यक्तिगत संकेत देता है संदेश!",
-        "sv": "[Rösta på botten var 12: e timme](https:\/\/top.gg\/bot\/{0}\/vote) för att få åtta användningar av kommandot ``{1}votehint``, vilket ger dig en personlig ledtråd via direkt meddelande!",
-        "ru": "[Голосуйте за бота каждые 12 часов](https:\/\/top.gg\/bot\/{0}\/vote), чтобы получить восемь использований команды ``{1}votehint``, которая дает вам личную подсказку через прямую сообщение!"
+        "en": "[Vote for the bot every 12 hours](https:\/\/top.gg\/bot\/{0}\/vote) to get eight uses of the `{1}votehint` command, which gives you a personal hint via direct message!",
+        "tr": "[Bot için her 12 saatte bir oy verin](https:\/\/top.gg\/bot\/{0}\/vote) `{1}votehint` komutunu sekiz kez kullanın, bu da size doğrudan aracılığıyla kişisel bir ipucu verir İleti!",
+        "pt": "[Vote no bot a cada 12 horas](https:\/\/top.gg\/bot\/{0}\/vote) para obter oito usos do comando `{1}votehint`, que fornece uma dica pessoal via direta mensagem!",
+        "fr": "[Votez pour le bot toutes les 12 heures](https:\/\/top.gg\/bot\/{0}\/vote) pour obtenir huit utilisations de la commande `{1}votehint`, qui vous donne un indice personnel par message direct!",
+        "es": "[Vote por el bot cada 12 horas](https:\/\/top.gg\/bot\/{0}\/vote) para obtener ocho usos del comando `{1}votehint`, que le brinda una pista personal a través de ¡mensaje!",
+        "de": "[Stimmen Sie alle 12 Stunden für den Bot ab](https:\/\/top.gg\/bot\/{0}\/vote), um acht Verwendungen des Befehls `{1}votehint` zu erhalten, der Ihnen direkt einen persönlichen Hinweis gibt Botschaft!",
+        "hi": "[प्रत्येक 12 घंटे में बॉट के लिए वोट दें](https:\/\/top.gg\/bot\/{0}\/vote) `{1}votehint` कमांड के आठ उपयोग प्राप्त करने के लिए, जो आपको प्रत्यक्ष के माध्यम से एक व्यक्तिगत संकेत देता है संदेश!",
+        "sv": "[Rösta på botten var 12: e timme](https:\/\/top.gg\/bot\/{0}\/vote) för att få åtta användningar av kommandot `{1}votehint`, vilket ger dig en personlig ledtråd via direkt meddelande!",
+        "ru": "[Голосуйте за бота каждые 12 часов](https:\/\/top.gg\/bot\/{0}\/vote), чтобы получить восемь использований команды `{1}votehint`, которая дает вам личную подсказку через прямую сообщение!"
     },
     "PRIVHINT": {
         "en": "**Get Private Hints by Voting!**\n",
@@ -1881,15 +1881,15 @@
         "ru": "Конфиденциальность команды"
     },
     "PRV_ON": {
-        "en": "Your Team Privacy setting is set to: **ON**.\n\nYou will show as ``[ Private Member ]`` in team member lists.",
-        "tr": "Takım Gizliliği ayarınız: **AÇIK**.\n\nTakım üye listelerinde ``[Private Member]`` olarak görüneceksiniz.",
-        "pt": "A configuração de privacidade da equipe está definida como: **ON**.\n\nVocê aparecerá como ``[Private Member]`` nas listas de membros da equipe.",
-        "fr": "Le paramètre de confidentialité de votre équipe est défini sur: **ACTIVÉ**.\n\nVous s'afficherez comme ``[Private Member]`` dans les listes des membres de l'équipe.",
-        "es": "La configuración de privacidad de su equipo está establecida en: **ACTIVADO**.\n\nAparecerá como ``[Private Member]`` en las listas de miembros del equipo.",
-        "de": "Ihre Team-Datenschutzeinstellung ist auf **EIN** eingestellt.\n\nSie werden in den Teammitgliedslisten als ``[Private Member]`` angezeigt.",
-        "hi": "आपकी टीम गोपनीयता सेटिंग पर सेट है: **ऑन​​** ।\n\nआप टीम के सदस्य सूचियों में  ``[Private Member]`` के रूप में दिखाएंगे।",
-        "sv": "Din sekretessinställning för team är inställd på: ** PÅ **.\n\nDu kommer att visas som ``[Private Member]`` i teammedlemmar.",
-        "ru": "Настройки конфиденциальности вашей группы: ** ВКЛ **.\n\nВы будете отображаться как ``[Private Member]`` в списках участников команды."
+        "en": "Your Team Privacy setting is set to: **ON**.\n\nYou will show as `[ Private Member ]` in team member lists.",
+        "tr": "Takım Gizliliği ayarınız: **AÇIK**.\n\nTakım üye listelerinde `[Private Member]` olarak görüneceksiniz.",
+        "pt": "A configuração de privacidade da equipe está definida como: **ON**.\n\nVocê aparecerá como `[Private Member]` nas listas de membros da equipe.",
+        "fr": "Le paramètre de confidentialité de votre équipe est défini sur: **ACTIVÉ**.\n\nVous s'afficherez comme `[Private Member]` dans les listes des membres de l'équipe.",
+        "es": "La configuración de privacidad de su equipo está establecida en: **ACTIVADO**.\n\nAparecerá como `[Private Member]` en las listas de miembros del equipo.",
+        "de": "Ihre Team-Datenschutzeinstellung ist auf **EIN** eingestellt.\n\nSie werden in den Teammitgliedslisten als `[Private Member]` angezeigt.",
+        "hi": "आपकी टीम गोपनीयता सेटिंग पर सेट है: **ऑन​​** ।\n\nआप टीम के सदस्य सूचियों में  `[Private Member]` के रूप में दिखाएंगे।",
+        "sv": "Din sekretessinställning för team är inställd på: ** PÅ **.\n\nDu kommer att visas som `[Private Member]` i teammedlemmar.",
+        "ru": "Настройки конфиденциальности вашей группы: ** ВКЛ **.\n\nВы будете отображаться как `[Private Member]` в списках участников команды."
     },
     "PRV_OFF": {
         "en": "Your Team Privacy setting is set to: **OFF**.\n\nYou will show as your username in team member lists.",
@@ -1914,15 +1914,15 @@
         "ru": "Это не совсем так ..."
     },
     "NOSUCHTEAM": {
-        "en": "There is no team called ``%s``",
-        "tr": "``%s`` adında bir takım yok",
-        "pt": "Não há equipe chamada ``%s``",
-        "fr": "Il n'y a pas d'équipe appelée ``%s``",
-        "es": "No hay un equipo llamado ``%s``",
-        "de": "Es gibt kein Team namens ``%s``",
-        "hi": "कोई टीम नहीं है जिसे ``% s`` कहा जाता है",
-        "sv": "Det finns inget lag som heter ``%s``",
-        "ru": "Нет команды под названием ``%s``"
+        "en": "There is no team called `%s`",
+        "tr": "`%s` adında bir takım yok",
+        "pt": "Não há equipe chamada `%s`",
+        "fr": "Il n'y a pas d'équipe appelée `%s`",
+        "es": "No hay un equipo llamado `%s`",
+        "de": "Es gibt kein Team namens `%s`",
+        "hi": "कोई टीम नहीं है जिसे `% s` कहा जाता है",
+        "sv": "Det finns inget lag som heter `%s`",
+        "ru": "Нет команды под названием `%s`"
     },
     "TINFO": {
         "en": "Team Information",
@@ -2057,37 +2057,37 @@
         "ru": "Поддерживаемые языки для TriviaBot:"
     },
     "HOWTOCHANGE": {
-        "en": "Use ``!language <code>`` (e.g. ``!language en``) to change the bot's language",
-        "tr": "Botun dilini değiştirmek için ``!language <kodu>`` (örneğin ``!language en``) kullanın",
-        "pt": "Use ``!language <código>`` (por exemplo, ``!language en``) para alterar o idioma do bot",
-        "fr": "Utilisez ``!language <code>`` (par exemple ``!language en``) pour changer la langue du bot",
-        "es": "Utilice ``!language <code>`` (por ejemplo, ``!language en``) para cambiar el idioma del bot",
-        "de": "Verwenden Sie ``!language <code> `` (z. B. ``!language en``), um die Sprache des Bots zu ändern",
-        "hi": "बॉट की भाषा बदलने के लिए ``!language <कोड> `` (जैसे ``!language en``) का उपयोग करें",
-        "sv": "Använd ``!language <kod>`` (t.ex. ``!language en``) för att ändra botens språk",
-        "ru": "Используйте ``!language <код>`` (например, ``!language en``), чтобы изменить язык бота."
+        "en": "Use `!language <code>` (e.g. `!language en`) to change the bot's language",
+        "tr": "Botun dilini değiştirmek için `!language <kodu>` (örneğin `!language en`) kullanın",
+        "pt": "Use `!language <código>` (por exemplo, `!language en`) para alterar o idioma do bot",
+        "fr": "Utilisez `!language <code>` (par exemple `!language en`) pour changer la langue du bot",
+        "es": "Utilice `!language <code>` (por ejemplo, `!language en`) para cambiar el idioma del bot",
+        "de": "Verwenden Sie `!language <code> ` (z. B. `!language en`), um die Sprache des Bots zu ändern",
+        "hi": "बॉट की भाषा बदलने के लिए `!language <कोड> ` (जैसे `!language en`) का उपयोग करें",
+        "sv": "Använd `!language <kod>` (t.ex. `!language en`) för att ändra botens språk",
+        "ru": "Используйте `!language <код>` (например, `!language en`), чтобы изменить язык бота."
     },
     "PREFIXSET": {
-        "en": "The bot's prefix is now: ``%s``",
-        "tr": "Botun öneki artık: ``%s``",
-        "pt": "O prefixo do bot agora é: ``%s``",
-        "fr": "Le préfixe du bot est maintenant: ``%s``",
-        "es": "El prefijo del bot es ahora: ``%s``",
-        "de": "Das Präfix des Bots lautet jetzt: ``%s``",
-        "hi": "बॉट का उपसर्ग अब: ``%s`` है",
-        "sv": "Botens prefix är nu: ``%s``",
-        "ru": "Префикс бота теперь: ``%s``"
+        "en": "The bot's prefix is now: `%s`",
+        "tr": "Botun öneki artık: `%s`",
+        "pt": "O prefixo do bot agora é: `%s`",
+        "fr": "Le préfixe du bot est maintenant: `%s`",
+        "es": "El prefijo del bot es ahora: `%s`",
+        "de": "Das Präfix des Bots lautet jetzt: `%s`",
+        "hi": "बॉट का उपसर्ग अब: `%s` है",
+        "sv": "Botens prefix är nu: `%s`",
+        "ru": "Префикс бота теперь: `%s`"
     },
     "BADLANG": {
-        "en": "No such language. Use ``!language`` without a parameter to see the valid language list.",
-        "tr": "Böyle bir dil yok. Geçerli dil listesini görmek için parametresiz ``!language`` kullanın.",
-        "pt": "Não existe tal linguagem. Use ``!language`` sem um parâmetro para ver a lista de idiomas válidos.",
-        "fr": "Pas de tel langage. Utilisez ``!language`` sans paramètre pour voir la liste des langues valides.",
-        "es": "No existe ese lenguaje. Utilice ``!language`` sin un parámetro para ver la lista de idiomas válida.",
-        "de": "Keine solche Sprache. Verwenden Sie ``!language`` ohne Parameter, um die gültige Sprachliste anzuzeigen.",
-        "hi": "ऐसी कोई भाषा नहीं। मान्य भाषा सूची देखने के लिए पैरामीटर के बिना ``!language`` का उपयोग करें।",
-        "sv": "Inget sådant språk. Använd ``!language`` utan en parameter för att se giltig språklista.",
-        "ru": "Нет такого языка. Используйте ``!language`` без параметра, чтобы увидеть список допустимых языков."
+        "en": "No such language. Use `!language` without a parameter to see the valid language list.",
+        "tr": "Böyle bir dil yok. Geçerli dil listesini görmek için parametresiz `!language` kullanın.",
+        "pt": "Não existe tal linguagem. Use `!language` sem um parâmetro para ver a lista de idiomas válidos.",
+        "fr": "Pas de tel langage. Utilisez `!language` sans paramètre pour voir la liste des langues valides.",
+        "es": "No existe ese lenguaje. Utilice `!language` sin un parámetro para ver la lista de idiomas válida.",
+        "de": "Keine solche Sprache. Verwenden Sie `!language` ohne Parameter, um die gültige Sprachliste anzuzeigen.",
+        "hi": "ऐसी कोई भाषा नहीं। मान्य भाषा सूची देखने के लिए पैरामीटर के बिना `!language` का उपयोग करें।",
+        "sv": "Inget sådant språk. Använd `!language` utan en parameter för att se giltig språklista.",
+        "ru": "Нет такого языка. Используйте `!language` без параметра, чтобы увидеть список допустимых языков."
     },
     "MODONLY": {
         "en": "Only roles specified in the dashboard, or the server owner, can execute this command.",
@@ -2101,15 +2101,15 @@
         "ru": "Эту команду могут выполнять только роли, указанные на панели управления, или владелец сервера."
     },
     "WELCOME": {
-        "en": "Thank you for inviting **TriviaBot** to %s! To get started with the bot, simply type ``!start`` to start a slow game of trivia or ``!quickfire`` to start a fast-paced game.\n\nYou can quickly set the bot's prefix with the ``!language`` and ``!prefix`` commands or by using the [dashboard](https:\/\/triviabot.co.uk\/dashboard) where you can also remotely start and stop games, change who has access to the bot, and more!\n\nFor further help please join [the official support server](https:\/\/discord.gg\/brainbox).\n\nHave fun!",
-        "tr": "Thank you for inviting **TriviaBot** to %s! To get started with the bot, simply type ``!start`` to start a slow game of trivia or ``!quickfire`` to start a fast-paced game.\n\nYou can quickly set the bot's prefix with the ``!language`` and ``!prefix`` commands or by using the [dashboard](https:\/\/triviabot.co.uk\/dashboard) where you can also remotely start and stop games, change who has access to the bot, and more!\n\nFor further help please join [the official support server](https:\/\/discord.gg\/brainbox).\n\nHave fun!",
-        "pt": "Thank you for inviting **TriviaBot** to %s! To get started with the bot, simply type ``!start`` to start a slow game of trivia or ``!quickfire`` to start a fast-paced game.\n\nYou can quickly set the bot's prefix with the ``!language`` and ``!prefix`` commands or by using the [dashboard](https:\/\/triviabot.co.uk\/dashboard) where you can also remotely start and stop games, change who has access to the bot, and more!\n\nFor further help please join [the official support server](https:\/\/discord.gg\/brainbox).\n\nHave fun!",
-        "fr": "Thank you for inviting **TriviaBot** to %s! To get started with the bot, simply type ``!start`` to start a slow game of trivia or ``!quickfire`` to start a fast-paced game.\n\nYou can quickly set the bot's prefix with the ``!language`` and ``!prefix`` commands or by using the [dashboard](https:\/\/triviabot.co.uk\/dashboard) where you can also remotely start and stop games, change who has access to the bot, and more!\n\nFor further help please join [the official support server](https:\/\/discord.gg\/brainbox).\n\nHave fun!",
-        "es": "Thank you for inviting **TriviaBot** to %s! To get started with the bot, simply type ``!start`` to start a slow game of trivia or ``!quickfire`` to start a fast-paced game.\n\nYou can quickly set the bot's prefix with the ``!language`` and ``!prefix`` commands or by using the [dashboard](https:\/\/triviabot.co.uk\/dashboard) where you can also remotely start and stop games, change who has access to the bot, and more!\n\nFor further help please join [the official support server](https:\/\/discord.gg\/brainbox).\n\nHave fun!",
-        "de": "Thank you for inviting **TriviaBot** to %s! To get started with the bot, simply type ``!start`` to start a slow game of trivia or ``!quickfire`` to start a fast-paced game.\n\nYou can quickly set the bot's prefix with the ``!language`` and ``!prefix`` commands or by using the [dashboard](https:\/\/triviabot.co.uk\/dashboard) where you can also remotely start and stop games, change who has access to the bot, and more!\n\nFor further help please join [the official support server](https:\/\/discord.gg\/brainbox).\n\nHave fun!",
-        "hi": "Thank you for inviting **TriviaBot** to %s! To get started with the bot, simply type ``!start`` to start a slow game of trivia or ``!quickfire`` to start a fast-paced game.\n\nYou can quickly set the bot's prefix with the ``!language`` and ``!prefix`` commands or by using the [dashboard](https:\/\/triviabot.co.uk\/dashboard) where you can also remotely start and stop games, change who has access to the bot, and more!\n\nFor further help please join [the official support server](https:\/\/discord.gg\/brainbox).\n\nHave fun!",
-        "sv": "Thank you for inviting **TriviaBot** to %s! To get started with the bot, simply type ``!start`` to start a slow game of trivia or ``!quickfire`` to start a fast-paced game.\n\nYou can quickly set the bot's prefix with the ``!language`` and ``!prefix`` commands or by using the [dashboard](https:\/\/triviabot.co.uk\/dashboard) where you can also remotely start and stop games, change who has access to the bot, and more!\n\nFor further help please join [the official support server](https:\/\/discord.gg\/brainbox).\n\nHave fun!",
-        "ru": "Thank you for inviting **TriviaBot** to %s! To get started with the bot, simply type ``!start`` to start a slow game of trivia or ``!quickfire`` to start a fast-paced game.\n\nYou can quickly set the bot's prefix with the ``!language`` and ``!prefix`` commands or by using the [dashboard](https:\/\/triviabot.co.uk\/dashboard) where you can also remotely start and stop games, change who has access to the bot, and more!\n\nFor further help please join [the official support server](https:\/\/discord.gg\/brainbox).\n\nHave fun!"
+        "en": "Thank you for inviting **TriviaBot** to %s! To get started with the bot, simply type `!start` to start a slow game of trivia or `!quickfire` to start a fast-paced game.\n\nYou can quickly set the bot's prefix with the `!language` and `!prefix` commands or by using the [dashboard](https:\/\/triviabot.co.uk\/dashboard) where you can also remotely start and stop games, change who has access to the bot, and more!\n\nFor further help please join [the official support server](https:\/\/discord.gg\/brainbox).\n\nHave fun!",
+        "tr": "Thank you for inviting **TriviaBot** to %s! To get started with the bot, simply type `!start` to start a slow game of trivia or `!quickfire` to start a fast-paced game.\n\nYou can quickly set the bot's prefix with the `!language` and `!prefix` commands or by using the [dashboard](https:\/\/triviabot.co.uk\/dashboard) where you can also remotely start and stop games, change who has access to the bot, and more!\n\nFor further help please join [the official support server](https:\/\/discord.gg\/brainbox).\n\nHave fun!",
+        "pt": "Thank you for inviting **TriviaBot** to %s! To get started with the bot, simply type `!start` to start a slow game of trivia or `!quickfire` to start a fast-paced game.\n\nYou can quickly set the bot's prefix with the `!language` and `!prefix` commands or by using the [dashboard](https:\/\/triviabot.co.uk\/dashboard) where you can also remotely start and stop games, change who has access to the bot, and more!\n\nFor further help please join [the official support server](https:\/\/discord.gg\/brainbox).\n\nHave fun!",
+        "fr": "Thank you for inviting **TriviaBot** to %s! To get started with the bot, simply type `!start` to start a slow game of trivia or `!quickfire` to start a fast-paced game.\n\nYou can quickly set the bot's prefix with the `!language` and `!prefix` commands or by using the [dashboard](https:\/\/triviabot.co.uk\/dashboard) where you can also remotely start and stop games, change who has access to the bot, and more!\n\nFor further help please join [the official support server](https:\/\/discord.gg\/brainbox).\n\nHave fun!",
+        "es": "Thank you for inviting **TriviaBot** to %s! To get started with the bot, simply type `!start` to start a slow game of trivia or `!quickfire` to start a fast-paced game.\n\nYou can quickly set the bot's prefix with the `!language` and `!prefix` commands or by using the [dashboard](https:\/\/triviabot.co.uk\/dashboard) where you can also remotely start and stop games, change who has access to the bot, and more!\n\nFor further help please join [the official support server](https:\/\/discord.gg\/brainbox).\n\nHave fun!",
+        "de": "Thank you for inviting **TriviaBot** to %s! To get started with the bot, simply type `!start` to start a slow game of trivia or `!quickfire` to start a fast-paced game.\n\nYou can quickly set the bot's prefix with the `!language` and `!prefix` commands or by using the [dashboard](https:\/\/triviabot.co.uk\/dashboard) where you can also remotely start and stop games, change who has access to the bot, and more!\n\nFor further help please join [the official support server](https:\/\/discord.gg\/brainbox).\n\nHave fun!",
+        "hi": "Thank you for inviting **TriviaBot** to %s! To get started with the bot, simply type `!start` to start a slow game of trivia or `!quickfire` to start a fast-paced game.\n\nYou can quickly set the bot's prefix with the `!language` and `!prefix` commands or by using the [dashboard](https:\/\/triviabot.co.uk\/dashboard) where you can also remotely start and stop games, change who has access to the bot, and more!\n\nFor further help please join [the official support server](https:\/\/discord.gg\/brainbox).\n\nHave fun!",
+        "sv": "Thank you for inviting **TriviaBot** to %s! To get started with the bot, simply type `!start` to start a slow game of trivia or `!quickfire` to start a fast-paced game.\n\nYou can quickly set the bot's prefix with the `!language` and `!prefix` commands or by using the [dashboard](https:\/\/triviabot.co.uk\/dashboard) where you can also remotely start and stop games, change who has access to the bot, and more!\n\nFor further help please join [the official support server](https:\/\/discord.gg\/brainbox).\n\nHave fun!",
+        "ru": "Thank you for inviting **TriviaBot** to %s! To get started with the bot, simply type `!start` to start a slow game of trivia or `!quickfire` to start a fast-paced game.\n\nYou can quickly set the bot's prefix with the `!language` and `!prefix` commands or by using the [dashboard](https:\/\/triviabot.co.uk\/dashboard) where you can also remotely start and stop games, change who has access to the bot, and more!\n\nFor further help please join [the official support server](https:\/\/discord.gg\/brainbox).\n\nHave fun!"
     },
     "SHARD_IS": {
         "en": "That server is on shard %d",
@@ -2464,15 +2464,15 @@
         "ru": "Список категорий"
     },
     "CATHINT": {
-        "en": "Use ``!enable`` and ``!disable`` to disable a category for your guild.",
-        "fr": "Utilisez ``!enable`` et ``!disable`` pour désactiver une catégorie pour votre guilde.",
-        "pt": "Use ``!enable`` e ``!disable`` para desabilitar uma categoria para sua guilda.",
-        "tr": "Loncanız için bir kategoriyi devre dışı bırakmak için ``!enable`` ve ``!disable``",
-        "es": "Usa ``!enable`` y ``!disable`` para deshabilitar una categoría para tu gremio.",
-        "de": "Verwende ``!enable`` und ``!disable``, um eine Kategorie für deine Gilde zu deaktivieren.",
-        "hi": "अपने समाज के लिए एक श्रेणी को निष्क्रिय करने के लिए `` सक्षम क!enable`` और ``!disable`` उयोग करें।",
-        "sv": "Använd ``!enable`` och ``!disable`` för att inaktivera en kategori för din guild.",
-        "ru": "Используйте ``!enable`` и ``!disable``, чтобы отключить категорию для вашей гильдии."
+        "en": "Use `!enable` and `!disable` to disable a category for your guild.",
+        "fr": "Utilisez `!enable` et `!disable` pour désactiver une catégorie pour votre guilde.",
+        "pt": "Use `!enable` e `!disable` para desabilitar uma categoria para sua guilda.",
+        "tr": "Loncanız için bir kategoriyi devre dışı bırakmak için `!enable` ve `!disable`",
+        "es": "Usa `!enable` y `!disable` para deshabilitar una categoría para tu gremio.",
+        "de": "Verwende `!enable` und `!disable`, um eine Kategorie für deine Gilde zu deaktivieren.",
+        "hi": "अपने समाज के लिए एक श्रेणी को निष्क्रिय करने के लिए ` सक्षम क!enable` और `!disable` उयोग करें।",
+        "sv": "Använd `!enable` och `!disable` för att inaktivera en kategori för din guild.",
+        "ru": "Используйте `!enable` и `!disable`, чтобы отключить категорию для вашей гильдии."
     },
     "CATERROR": {
         "en": "I can't do that, Dave",
@@ -2486,15 +2486,15 @@
         "ru": "Я не могу этого сделать, Дэйв"
     },
     "NOSUCHCAT": {
-        "en": "There is no category named ``%s``",
-        "fr": "Il n'y a pas de catégorie nommée ``%s``",
-        "pt": "Não existe uma categoria chamada ``%s``",
-        "tr": "``%s`` adlı bir kategori yok",
-        "es": "No hay una categoría llamada ``%s``",
-        "de": "Es gibt keine Kategorie mit dem Namen ``%s``",
-        "hi": "``%s`` नाम की कोई श्रेणी नहीं है",
-        "sv": "Det finns ingen kategori som heter ``%s``",
-        "ru": "Нет категории с названием ``%s``"
+        "en": "There is no category named `%s`",
+        "fr": "Il n'y a pas de catégorie nommée `%s`",
+        "pt": "Não existe uma categoria chamada `%s`",
+        "tr": "`%s` adlı bir kategori yok",
+        "es": "No hay una categoría llamada `%s`",
+        "de": "Es gibt keine Kategorie mit dem Namen `%s`",
+        "hi": "`%s` नाम की कोई श्रेणी नहीं है",
+        "sv": "Det finns ingen kategori som heter `%s`",
+        "ru": "Нет категории с названием `%s`"
     },
     "TOOFEWCATS": {
         "en": "You cannot disable this category as this would mean less than %d percent of TriviaBot's questions remain to be asked in games. This would be unfair to other players competing on leaderboards or for nitro. Please enable some other categories if you want to disable this one.",
