@@ -1319,6 +1319,17 @@
         "sv": "**{0}**, endast moderatorer kan stoppa trivia på den här servern!",
         "ru": "**{0}**, только модераторы могут останавливать мелочи на этом сервере!"
     },
+    "AREYOUSTARTINGSOMETHING": {
+	    "en": "**{0}**, only moderators can start trivia on this server!",
+	    "tr": "**{0}**, bu sunucuda sadece moderatörler trivia başlatabilir!",
+	    "pt": "**{0}**, apenas moderadores podem iniciar curiosidades neste servidor!",
+	    "fr": "**{0}**, seuls les modérateurs peuvent démarrer des anecdotes sur ce serveur!",
+	    "es": "**{0}**, ¡Solo los moderadores pueden iniciar trivia en este servidor!",
+	    "de": "**{0}**, Nur Moderatoren können auf diesem Server Wissenswertes starten!",
+	    "hi": "**{0}**, केवल मध्यस्थ इस सर्वर पर सामान्य ज्ञान शुरू कर सकते हैं!",
+	    "sv": "**{0}**, endast moderatorer kan starta trivia på denna server!",
+	    "ru": "**{0}**, запускать мелочи на этом сервере могут только модераторы!"
+    },
     "STOPOK": {
         "en": "**{0}** has stopped the round of trivia!",
         "tr": "**{0}** genel kültür yarışmasını durdurdu!",

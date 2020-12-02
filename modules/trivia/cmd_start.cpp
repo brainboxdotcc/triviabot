@@ -62,6 +62,14 @@ void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 		}
 	}
 
+	if (settings.only_mods_start) {
+		if (!is_moderator) {
+			creator->SimpleEmbed(":warning:", fmt::format(_("AREYOUSTARTINGSOMETHING", settings), username), cmd.channel_id);
+			return;
+		}
+	}
+
+
 	if (!settings.premium) {
 		std::lock_guard<std::mutex> user_cache_lock(creator->states_mutex);
 		for (auto j = creator->states.begin(); j != creator->states.end(); ++j) {
