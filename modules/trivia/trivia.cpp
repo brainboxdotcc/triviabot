@@ -325,7 +325,7 @@ guild_settings_t TriviaModule::GetGuildSettings(int64_t guild_id)
 std::string TriviaModule::GetVersion()
 {
 	/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-	std::string version = "$ModVer 44$";
+	std::string version = "$ModVer 45$";
 	return "3.0." + version.substr(8,version.length() - 9);
 }
 
@@ -818,9 +818,10 @@ void TriviaModule::CheckForQueuedStarts()
 			int64_t user_id = from_string<int64_t>((*r)["user_id"], std::dec);
 			int32_t questions = from_string<int32_t>((*r)["questions"], std::dec);
 			int32_t quickfire = from_string<int32_t>((*r)["quickfire"], std::dec);
-			bot->core.log->info("Remote start, guild_id={} channel_id={} user_id={} questions={} type={}", guild_id, channel_id, user_id, questions, quickfire ? "quickfire" : "normal");
+			int32_t hintless = from_string<int32_t>((*r)["hintless"], std::dec);
+			bot->core.log->info("Remote start, guild_id={} channel_id={} user_id={} questions={} type={}", guild_id, channel_id, user_id, questions, hintless ? "hardcore" : (quickfire ? "quickfire" : "normal"));
 			guild_settings_t settings = GetGuildSettings(guild_id);
-			aegis::gateway::objects::message m(fmt::format("{}{} {}", settings.prefix, (quickfire ? "quickfire" : "start"), questions), bot->core.find_channel(channel_id), bot->core.find_guild(guild_id));
+			aegis::gateway::objects::message m(fmt::format("{}{} {}", settings.prefix, (hintless ? "hardcore" : (quickfire ? "quickfire" : "start")), questions), bot->core.find_channel(channel_id), bot->core.find_guild(guild_id));
 
 			struct modevent::message_create msg = {
 				*(bot->core.get_shard_mgr().get_shards()[0]),
