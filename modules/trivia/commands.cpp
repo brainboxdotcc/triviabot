@@ -58,6 +58,8 @@ void TriviaModule::SetupCommands()
 		{"start", new command_start_t(this, "start")},
 		{"quickfire", new command_start_t(this, "quickfire")},
 		{"qf", new command_start_t(this, "quickfire")},
+		{"hardcore", new command_start_t(this, "hardcore")},
+		{"hc", new command_start_t(this, "hardcore")},
 		{"trivia", new command_start_t(this, "start")},
 		{"stop", new command_stop_t(this, "stop")},
 		{"vote", new command_vote_t(this, "vote")},

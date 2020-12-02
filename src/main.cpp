@@ -156,10 +156,14 @@ void Bot::onReady(aegis::gateway::events::ready ready) {
 	this->user = ready.user;
 	FOREACH_MOD(I_OnReady, OnReady(ready));
 
-	/* Event broadcast when all shards are ready */
 	shard_init_count++;
+
+	core.log->debug("onReady({}/{})", shard_init_count, core.shard_max_count / (maxclusters ? maxclusters : 1));
+
+	/* Event broadcast when all shards are ready */
 	/* BUGFIX: In a clustered environment, the shard max is divided by the number of clusters */
 	if (shard_init_count == core.shard_max_count / (maxclusters ? maxclusters : 1)) {
+		core.log->debug("OnAllShardsReady()!");
 		FOREACH_MOD(I_OnAllShardsReady, OnAllShardsReady());
 	}
 }

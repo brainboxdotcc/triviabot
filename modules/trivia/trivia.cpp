@@ -171,6 +171,7 @@ bool TriviaModule::OnAllShardsReady()
 
 	if (bot->IsTestMode()) {
 		/* Don't resume games in test mode */
+		bot->core.log->debug("Not resuming games in test mode");
 		return true;
 	}
 
@@ -207,6 +208,7 @@ bool TriviaModule::OnAllShardsReady()
 			state->round = from_string<uint32_t>((*game)["question_index"].get<std::string>(), std::dec);
 			state->interval = (quickfire ? (TRIV_INTERVAL / 4) : TRIV_INTERVAL);
 			state->channel_id = from_string<int64_t>((*game)["channel_id"].get<std::string>(), std::dec);
+			state->hintless = ((*game)["hintless"].get<std::string>()) == "1";
 			state->guild_id = guild_id;
 			state->curr_qid = 0;
 			state->curr_answer = "";
@@ -323,7 +325,7 @@ guild_settings_t TriviaModule::GetGuildSettings(int64_t guild_id)
 std::string TriviaModule::GetVersion()
 {
 	/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-	std::string version = "$ModVer 42$";
+	std::string version = "$ModVer 43$";
 	return "3.0." + version.substr(8,version.length() - 9);
 }
 
@@ -404,6 +406,7 @@ void TriviaModule::do_insane_round(state_t* state, bool silent)
 	state->insane_left = state->insane.size();
 	state->insane_num = state->insane.size();
 	state->gamestate = TRIV_FIRST_HINT;
+
 
 	aegis::channel* c = bot->core.find_channel(state->channel_id);
 	if (c) {
@@ -564,9 +567,13 @@ void TriviaModule::do_normal_round(state_t* state, bool silent)
 		}
 	}
 
-	state->score = (state->interval == TRIV_INTERVAL ? 4 : 8);
-	/* Advance state to first hint */
-	state->gamestate = TRIV_FIRST_HINT;
+	state->score = (state->hintless ? 6 : (state->interval == TRIV_INTERVAL ? 4 : 8));
+	/* Advance state to first hint, if hints are enabled, otherwise go straight to time up */
+	if (state->hintless) {
+		state->gamestate = TRIV_TIME_UP;
+	} else {
+		state->gamestate = TRIV_FIRST_HINT;
+	}
 	if (log_question_index(state->guild_id, state->channel_id, state->round, state->streak, state->last_to_answer, state->gamestate)) {
 		StopGame(state, settings);
 	}

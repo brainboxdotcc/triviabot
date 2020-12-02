@@ -1033,6 +1033,17 @@
         "sv": "Omgången av {0} frågor startade på kanal-id {1}",
         "ru": "По идентификатору канала {1} начат раунд вопросов ({0})"
     },
+    "ROUND_START_ID_NH": {
+        "en": "Round of {0} questions started on channel id {1} **without hints**!",
+        "tr": "{1} kanal kimliğiyle ilgili {0} soru turu başladı... **ipuçları olmadan*8!",
+        "pt": "Rodada de {0} perguntas começou no canal id {1} **sem dicas**!",
+        "fr": "Une série de {0} questions a commencé sur l'ID de chaîne {1} **sans indices**!",
+        "es": "La ronda de {0} preguntas comenzó con la identificación del canal {1} **sin pistas**!",
+        "de": "Die Runde der {0} Fragen wurde mit der Kanal-ID {1} gestartet **ohne andeutungen**!",
+        "hi": "{0} सवालों का दौर चैनल आईडी {1} पर शुरू हुआ",
+        "sv": "Omgången av {0} frågor startade på kanal-id {1} **utan tips**!",
+        "ru": "По идентификатору канала {1} начат раунд вопросов {0} **без подсказок**!"
+    },
     "RESTART_RESUME": {
         "en": "Because the bot was restarted, your game was stopped. This game has been resumed.",
         "tr": "Bot yeniden başlatıldığı için oyununuz durduruldu. Bu oyun devam etti.",
@@ -1230,6 +1241,17 @@
         "hi": ":question: न्यू {0} ट्रिविया राउंड {1} बाय {2}!",
         "sv": ":question: Ny {0} triviaomgång {1} av {2}!",
         "ru": ":question: Новый {0} раунд викторин {1} от {2}!"
+    },
+    "NEWROUND_NH": {
+        "en": ":question: New {0}trivia round {1} by {2} **without hints**!",
+        "tr": ":question: {2} ile yeni {0} bilgi yarışması {1} **ipuçları olmadan**!",
+        "pt": ":question: Nova {0}rodada de perguntas e respostas {1} de {2} **sem dicas**!",
+        "fr": ":question: Nouveau {0}tour de questions-réponses {1} de {2} **sans indices**!",
+        "es": ":question: ¡Nueva {0}ronda de preguntas y respuestas {1} de {2} **sin pistas**!",
+        "de": ":question: Neue {0} Trivia-Runde {1} von {2} **ohne andeutungen**!",
+        "hi": ":question: न्यू {0} ट्रिविया राउंड {1} बाय {2}!",
+        "sv": ":question: Ny {0} triviaomgång {1} av {2} **utan tips**!",
+        "ru": ":question: Новый {0} раунд викторин {1} от {2} **без подсказок**!"
     },
     "GETREADY": {
         "en": "Get Ready",

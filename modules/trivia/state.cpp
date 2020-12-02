@@ -71,6 +71,7 @@ state_t::state_t(TriviaModule* _creator)
 	timer = nullptr;
 	shuffle1 = "";
 	shuffle2 = "";
+	hintless = false;
 }
 
 void state_t::queue_message(const std::string &message, int64_t author_id, bool mentions_bot)

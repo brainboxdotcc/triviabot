@@ -46,7 +46,8 @@ void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 	} else {
 		questions = from_string<int32_t>(str_q, std::dec);
 	}
-	bool quickfire = (base_command == "quickfire");
+	bool quickfire = (base_command == "quickfire" || base_command == "qf");
+	bool hintless = (base_command == "hardcore" || base_command == "hc");
 	bool resumed = false;
 
 	json document;
@@ -111,9 +112,10 @@ void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 				state->channel_id = cmd.channel_id;
 				state->curr_qid = 0;
 				state->curr_answer = "";
+				state->hintless = hintless;
 				state->guild_id = cmd.guild_id;
 				creator->bot->core.log->info("Started game on guild {}, channel {}, {} questions [{}]", cmd.guild_id, cmd.channel_id, questions, quickfire ? "quickfire" : "normal");
-				creator->EmbedWithFields(fmt::format(_("NEWROUND", settings), (quickfire ? "**QUICKFIRE** " : ""), (resumed ? _("RESUMED", settings) : _("STARTED", settings)), (resumed ? _("ABOTADMIN", settings) : username)), {{_("QUESTION", settings), fmt::format("{}", questions), false}, {_("GETREADY", settings), _("FIRSTCOMING", settings), false}, {_("HOWPLAY", settings), _("INSTRUCTIONS", settings)}}, cmd.channel_id);
+				creator->EmbedWithFields(fmt::format(_((state->hintless ? "NEWROUND_NH" : "NEWROUND"), settings), (state->hintless ? "**HARDCORE** " : (quickfire ? "**QUICKFIRE** " : "")), (resumed ? _("RESUMED", settings) : _("STARTED", settings)), (resumed ? _("ABOTADMIN", settings) : username)), {{_("QUESTION", settings), fmt::format("{}", questions), false}, {_("GETREADY", settings), _("FIRSTCOMING", settings), false}, {_("HOWPLAY", settings), _("INSTRUCTIONS", settings)}}, cmd.channel_id);
 				creator->states[cmd.channel_id] = state;
 				creator->GetBot()->core.log->debug("create new timer");
 				state->timer = new std::thread(&state_t::tick, state);
@@ -121,7 +123,7 @@ void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 			}
 
 			creator->CacheUser(cmd.author_id, cmd.channel_id);
-			log_game_start(state->guild_id, state->channel_id, questions, quickfire, c->get_name(), cmd.author_id, state->shuffle_list);
+			log_game_start(state->guild_id, state->channel_id, questions, quickfire, c->get_name(), cmd.author_id, state->shuffle_list, state->hintless);
 			creator->GetBot()->core.log->debug("returning from start game");
 			return;
 		}
