@@ -103,11 +103,13 @@ void state_t::handle_message(const in_msg& m)
 			
 		if (this->round % 10 == 0) {
 			/* Insane round */
+			bool done = false;
 			auto i = this->insane.find(utf8lower(m.msg, settings.language == "es"));
 			if (i != this->insane.end()) {
 				this->insane.erase(i);
 
 				if (--this->insane_left < 1) {
+					done = true;
 					if (c) {
 						creator->SimpleEmbed(":thumbsup:", fmt::format(creator->_("LAST_ONE", settings), username), c->get_id().get());
 					}
@@ -124,9 +126,12 @@ void state_t::handle_message(const in_msg& m)
 				}
 				update_score_only(m.author_id, this->guild_id, 1);
 				creator->CacheUser(m.author_id, this->channel_id);
-				if (log_question_index(this->guild_id, this->channel_id, this->round, this->streak, this->last_to_answer, this->gamestate)) {
-					creator->StopGame(this, settings);
-					return;
+				if (done) {
+					/* Only save state if all answers have been found */
+					if (log_question_index(this->guild_id, this->channel_id, this->round, this->streak, this->last_to_answer, this->gamestate)) {
+						creator->StopGame(this, settings);
+						return;
+					}
 				}
 			}
 		} else {
