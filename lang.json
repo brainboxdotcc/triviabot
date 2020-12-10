@@ -10,7 +10,9 @@
         "sv": "<:sporks_error:664735896251269130> Jag kan inte skapa en **bädda in** från detta: ```js\n{0}\n``` **Fel:** `{1}`",
         "ru": "<:sporks_error:664735896251269130> Я не могу **встроить** из этого: ```js\n{0}\n``` **Ошибка:** `{1}`",
         "it": "<:sporks_error:664735896251269130> Non riesco a creare un **incorporamento** da questo: `` `js\n{0}\n`` `**Errore:**` {1} `",
-        "pl": "<:sporks_error:664735896251269130> Nie mogę wykonać **osadzenia** z tego: `` js\n{0}\n`` **Błąd:** `` {1} ``"
+        "pl": "<:sporks_error:664735896251269130> Nie mogę wykonać **osadzenia** z tego: `` js\n{0}\n`` **Błąd:** `` {1} ``",
+        "ko": "<:sporks_error:664735896251269130> 다음에서 ** embed **를 만들 수 없습니다.```js\n{0}\n```** 오류 : **`{1}`",
+        "ja": "<:sporks_error:664735896251269130> これから**埋め込み**を作成できません： `` `js\n{0}\n`` `**エラー：**` {1} `"
     },
     "MALFORMED_UNICODE": {
         "en": "Malformed unicode in embed: {0}",
@@ -23,7 +25,9 @@
         "sv": "Felaktig unicode i bädden: {0}",
         "ru": "Неправильный формат юникода при встраивании: {0}",
         "it": "Unicode non valido nell'incorporamento: {0}",
-        "pl": "Nieprawidłowy format Unicode we umieszczeniu: {0}"
+        "pl": "Nieprawidłowy format Unicode we umieszczeniu: {0}",
+        "ko": "삽입시 잘못된 유니 코드 : {0}",
+        "ja": "埋め込みの不正な形式のUnicode：{0}"
     },
     "POWERED_BY": {
         "en": "Powered By TriviaBot!",
@@ -36,7 +40,9 @@
         "sv": "Drivs av TriviaBot!",
         "ru": "Работает на TriviaBot!",
         "it": "Alimentato da TriviaBot!",
-        "pl": "Obsługiwane przez TriviaBot!"
+        "pl": "Obsługiwane przez TriviaBot!",
+        "ko": "TriviaBot 제공!",
+        "ja": "TriviaBotを搭載！"
     },
     "ROMAN": {
         "en": "Roman numerals: {0}",
@@ -49,7 +55,9 @@
         "sv": "Romerska siffror: {0}",
         "ru": "Римские цифры: {0}",
         "it": "Numeri romani: {0}",
-        "pl": "Cyfry rzymskie: {0}"
+        "pl": "Cyfry rzymskie: {0}",
+        "ko": "로마 숫자 : {0}",
+        "ja": "ローマ数字：{0}"
     },
     "ONE": {
         "en": "one",
@@ -62,7 +70,9 @@
         "sv": "ett",
         "ru": "один",
         "it": "uno",
-        "pl": "jeden"
+        "pl": "jeden",
+        "ko": "하나",
+        "ja": "1"
     },
     "TWO": {
         "en": "two",
@@ -75,7 +85,9 @@
         "sv": "två",
         "ru": "два",
         "it": "Due",
-        "pl": "dwa"
+        "pl": "dwa",
+        "ko": "두",
+        "ja": "二"
     },
     "THREE": {
         "en": "three",
@@ -88,7 +100,9 @@
         "sv": "tre",
         "ru": "три",
         "it": "tre",
-        "pl": "trzy"
+        "pl": "trzy",
+        "ko": "세",
+        "ja": "三"
     },
     "FOUR": {
         "en": "four",
@@ -101,7 +115,9 @@
         "sv": "fyra",
         "ru": "четыре",
         "it": "quattro",
-        "pl": "cztery"
+        "pl": "cztery",
+        "ko": "네",
+        "ja": "四"
     },
     "FIVE": {
         "en": "five",
@@ -114,7 +130,9 @@
         "sv": "fem",
         "ru": "пять",
         "it": "cinque",
-        "pl": "pięć"
+        "pl": "pięć",
+        "ko": "다섯",
+        "ja": "五"
     },
     "SIX": {
         "en": "six",
@@ -127,7 +145,9 @@
         "sv": "sex",
         "ru": "шесть",
         "it": "sei",
-        "pl": "sześć"
+        "pl": "sześć",
+        "ko": "육",
+        "ja": "6"
     },
     "SEVEN": {
         "en": "seven",
@@ -140,7 +160,9 @@
         "sv": "sju",
         "ru": "Семь",
         "it": "Sette",
-        "pl": "siedem"
+        "pl": "siedem",
+        "ko": "일곱",
+        "ja": "セブン"
     },
     "EIGHT": {
         "en": "eight",
@@ -153,7 +175,9 @@
         "sv": "åtta",
         "ru": "восемь",
         "it": "otto",
-        "pl": "osiem"
+        "pl": "osiem",
+        "ko": "여덟",
+        "ja": "8"
     },
     "NINE": {
         "en": "nine",
@@ -166,7 +190,9 @@
         "sv": "nio",
         "ru": "девять",
         "it": "nove",
-        "pl": "dziewięć"
+        "pl": "dziewięć",
+        "ko": "아홉",
+        "ja": "ナイン"
     },
     "TEN": {
         "en": "ten",
@@ -179,7 +205,9 @@
         "sv": "tio",
         "ru": "десять",
         "it": "dieci",
-        "pl": "dziesięć"
+        "pl": "dziesięć",
+        "ko": "십",
+        "ja": "十"
     },
     "ELEVEN": {
         "en": "eleven",
@@ -192,7 +220,9 @@
         "sv": "elva",
         "ru": "одиннадцать",
         "it": "undici",
-        "pl": "jedenaście"
+        "pl": "jedenaście",
+        "ko": "열한",
+        "ja": "十一"
     },
     "TWELVE": {
         "en": "twelve",
@@ -205,7 +235,9 @@
         "sv": "tolv",
         "ru": "двенадцать",
         "it": "dodici",
-        "pl": "dwanaście"
+        "pl": "dwanaście",
+        "ko": "열 두번째",
+        "ja": "12"
     },
     "THIRTEEN": {
         "en": "thirteen",
@@ -218,7 +250,9 @@
         "sv": "tretton",
         "ru": "тринадцать",
         "it": "tredici",
-        "pl": "trzynaście"
+        "pl": "trzynaście",
+        "ko": "열셋",
+        "ja": "13"
     },
     "FOURTEEN": {
         "en": "fourteen",
@@ -231,7 +265,9 @@
         "sv": "fjorton",
         "ru": "четырнадцать",
         "it": "quattordici",
-        "pl": "czternaście"
+        "pl": "czternaście",
+        "ko": "십사",
+        "ja": "14"
     },
     "FIFTEEN": {
         "en": "fifteen",
@@ -244,7 +280,9 @@
         "sv": "femton",
         "ru": "пятнадцать",
         "it": "quindici",
-        "pl": "piętnaście"
+        "pl": "piętnaście",
+        "ko": "열 다섯",
+        "ja": "15"
     },
     "SIXTEEN": {
         "en": "sixteen",
@@ -257,7 +295,9 @@
         "sv": "sexton",
         "ru": "шестнадцать",
         "it": "sedici",
-        "pl": "szesnaście"
+        "pl": "szesnaście",
+        "ko": "열 여섯",
+        "ja": "16"
     },
     "SEVENTEEN": {
         "en": "seventeen",
@@ -270,7 +310,9 @@
         "sv": "sjutton",
         "ru": "семнадцать",
         "it": "diciassette",
-        "pl": "siedemnaście"
+        "pl": "siedemnaście",
+        "ko": "십칠",
+        "ja": "17"
     },
     "EIGHTEEN": {
         "en": "eighteen",
@@ -283,7 +325,9 @@
         "sv": "arton",
         "ru": "восемнадцать",
         "it": "diciotto",
-        "pl": "osiemnaście"
+        "pl": "osiemnaście",
+        "ko": "십팔",
+        "ja": "18"
     },
     "NINETEEN": {
         "en": "nineteen",
@@ -296,7 +340,9 @@
         "sv": "nitton",
         "ru": "девятнадцать",
         "it": "diciannove",
-        "pl": "dziewiętnaście"
+        "pl": "dziewiętnaście",
+        "ko": "십구",
+        "ja": "19"
     },
     "TWENTY": {
         "en": "twenty",
@@ -309,7 +355,9 @@
         "sv": "tjugo",
         "ru": "двадцать",
         "it": "venti",
-        "pl": "dwadzieścia"
+        "pl": "dwadzieścia",
+        "ko": "이십",
+        "ja": "20"
     },
     "THIRTY": {
         "en": "thirty",
@@ -322,7 +370,9 @@
         "sv": "trettio",
         "ru": "тридцать",
         "it": "trenta",
-        "pl": "trzydzieści"
+        "pl": "trzydzieści",
+        "ko": "서른",
+        "ja": "30"
     },
     "FOURTY": {
         "en": "fourty",
@@ -335,7 +385,9 @@
         "sv": "fyrtio",
         "ru": "сорок",
         "it": "quaranta",
-        "pl": "czterdzieści"
+        "pl": "czterdzieści",
+        "ko": "사십",
+        "ja": "40"
     },
     "FIFTY": {
         "en": "fifty",
@@ -348,7 +400,9 @@
         "sv": "femtio",
         "ru": "пятьдесят",
         "it": "cinquanta",
-        "pl": "pięćdziesiąt"
+        "pl": "pięćdziesiąt",
+        "ko": "오십",
+        "ja": "50"
     },
     "SIXTY": {
         "en": "sixty",
@@ -361,7 +415,9 @@
         "sv": "sextio",
         "ru": "шестьдесят",
         "it": "sessanta",
-        "pl": "sześćdziesiąt"
+        "pl": "sześćdziesiąt",
+        "ko": "육십",
+        "ja": "60"
     },
     "SEVENTY": {
         "en": "seventy",
@@ -374,7 +430,9 @@
         "sv": "sjuttio",
         "ru": "семьдесят",
         "it": "Settanta",
-        "pl": "siedemdziesiąt"
+        "pl": "siedemdziesiąt",
+        "ko": "칠십",
+        "ja": "70"
     },
     "EIGHTY": {
         "en": "eighty",
@@ -387,7 +445,9 @@
         "sv": "åttio",
         "ru": "восемьдесят",
         "it": "ottanta",
-        "pl": "osiemdziesiąt"
+        "pl": "osiemdziesiąt",
+        "ko": "여든",
+        "ja": "80人"
     },
     "NINETY": {
         "en": "ninety",
@@ -400,7 +460,9 @@
         "sv": "nittio",
         "ru": "девяносто",
         "it": "novanta",
-        "pl": "dziewięćdziesiąt"
+        "pl": "dziewięćdziesiąt",
+        "ko": "구십",
+        "ja": "90"
     },
     "HUNDRED": {
         "en": "hundred",
@@ -413,7 +475,9 @@
         "sv": "hundra",
         "ru": "сотня",
         "it": "centinaio",
-        "pl": "sto"
+        "pl": "sto",
+        "ko": "백",
+        "ja": "百"
     },
     "THOUSAND": {
         "en": "thousand",
@@ -426,7 +490,9 @@
         "sv": "tusen",
         "ru": "тысяча",
         "it": "mille",
-        "pl": "tysiąc"
+        "pl": "tysiąc",
+        "ko": "천",
+        "ja": "千"
     },
     "DOLLARS": {
         "en": "dollars",
@@ -439,7 +505,9 @@
         "sv": "dollar",
         "ru": "доллары",
         "it": "dollari",
-        "pl": "dolary"
+        "pl": "dolary",
+        "ko": "불화",
+        "ja": "ドル"
     },
     "ZERO": {
         "en": "zero",
@@ -452,7 +520,9 @@
         "sv": "noll",
         "ru": "нуль",
         "it": "zero",
-        "pl": "zero"
+        "pl": "zero",
+        "ko": "제로",
+        "ja": "ゼロ"
     },
     "AND_SPACED": {
         "en": " and ",
@@ -465,7 +535,9 @@
         "sv": " och ",
         "ru": " и ",
         "it": " e ",
-        "pl": " i "
+        "pl": " i ",
+        "ko": " 과",
+        "ja": " そして"
     },
     "MILLION": {
         "en": "million",
@@ -478,7 +550,9 @@
         "sv": "miljon",
         "ru": "миллион",
         "it": "milioni",
-        "pl": "milion"
+        "pl": "milion",
+        "ko": "백만",
+        "ja": "百万"
     },
     "HTM_REGEX": {
         "en": "hundred|thousand|million",
@@ -491,7 +565,9 @@
         "sv": "hundra|tusen|miljoner",
         "ru": "сто|тысяч|миллионов",
         "it": "cento|mille|milioni",
-        "pl": "sto|tysięcy|milionów"
+        "pl": "sto|tysięcy|milionów",
+        "ko": "백 | 천 | 백만",
+        "ja": "百|千|百万"
     },
     "HINT_LETTERLONG": {
         "en": "{0} letters long. Starts with '{1}' and ends with '{2}'.",
@@ -504,7 +580,9 @@
         "sv": "{0} bokstäver långa. Börjar med \"{1}\" och slutar med \"{2}\".",
         "ru": "Длина букв: {0}. Начинается с \"{1}\" и заканчивается \"{2}\".",
         "it": "{0} lettere lunghe. Inizia con \"{1}\" e finisce con \"{2}\".",
-        "pl": "{0} litery długości. Zaczyna się od „{1}” i kończy na „{2}”."
+        "pl": "{0} litery długości. Zaczyna się od „{1}” i kończy na „{2}”.",
+        "ko": "{0} 자 길이입니다. '{1}'로 시작하고 '{2}'로 끝납니다.",
+        "ja": "{0} 文字の長さ。 「{1}」で始まり、「{2}」で終わります。"
     },
     "HINT_VOWELCOUNT": {
         "en": "{0} letters long and contains {1} vowels.",
@@ -517,7 +595,9 @@
         "sv": "{0} bokstäver långa och innehåller {1} vokaler.",
         "ru": "Букв: {0} и содержит {1} гласных.",
         "it": "{0} lettere lunghe e contiene {1} vocali.",
-        "pl": "{0} litery długości i zawiera {1} samogłoski."
+        "pl": "{0} litery długości i zawiera {1} samogłoski.",
+        "ko": "{0} 개의 글자로 {1} 모음을 포함합니다.",
+        "ja": "{0} 文字の長さで、{1} 母音が含まれています。"
     },
     "COMMA_PLUS_SPACE": {
         "en": ", plus ",
@@ -530,7 +610,9 @@
         "sv": ", plus ",
         "ru": ", плюс ",
         "it": ", più ",
-        "pl": ", plus "
+        "pl": ", plus ",
+        "ko": ", 플러스",
+        "ja": "、プラス"
     },
     "LOWEST_NONNEG": {
         "en": "The lowest non-negative number",
@@ -543,7 +625,9 @@
         "sv": "Det lägsta icke-negativa talet",
         "ru": "Наименьшее неотрицательное число",
         "it": "Il numero non negativo più basso",
-        "pl": "Najniższa liczba nieujemna"
+        "pl": "Najniższa liczba nieujemna",
+        "ko": "음수가 아닌 가장 낮은 수",
+        "ja": "最小の非負の数"
     },
     "INDOLLARS": {
         "en": "{0}, in dollars",
@@ -556,7 +640,9 @@
         "sv": "{0}, i dollar",
         "ru": "{0}, в долларах",
         "it": "{0}, in dollari",
-        "pl": "{0} w dolarach"
+        "pl": "{0} w dolarach",
+        "ko": "{0}, 달러",
+        "ja": "{0}、ドル"
     },
     "QUESTION_COUNTER": {
         "en": ":question: Question {0} of {1}",
@@ -569,7 +655,9 @@
         "sv": ":question: Fråga {0} av {1}",
         "ru": ":question: Вопрос {0} из {1}",
         "it": ":question: domanda {0} di {1}",
-        "pl": ":question: Pytanie {0} z {1}"
+        "pl": ":question: Pytanie {0} z {1}",
+        "ko": ": 질문 : 질문 {0} \/ {1}",
+        "ja": "：質問：{1}の質問{0}"
     },
     "INSANE_ROUND": {
         "en": "Insane Round!",
@@ -582,7 +670,9 @@
         "sv": "Galen runda!",
         "ru": "Безумный раунд!",
         "it": "Round pazzo!",
-        "pl": "Szalona runda!"
+        "pl": "Szalona runda!",
+        "ko": "미친 라운드!",
+        "ja": "非常識なラウンド！"
     },
     "INSANE_ANS_COUNT": {
         "en": "Total of {0} possible answers",
@@ -595,7 +685,9 @@
         "sv": "Totalt {0} möjliga svar",
         "ru": "Всего возможных ответов: {0}",
         "it": "Totale di {0} risposte possibili",
-        "pl": "Łącznie {0} możliwych odpowiedzi"
+        "pl": "Łącznie {0} możliwych odpowiedzi",
+        "ko": "가능한 답변 총 {0} 개",
+        "ja": "合計{0}の可能な回答"
     },
     "QUESTION": {
         "en": "Question",
@@ -608,7 +700,9 @@
         "sv": "Fråga",
         "ru": "Вопрос",
         "it": "Domanda",
-        "pl": "Pytanie"
+        "pl": "Pytanie",
+        "ko": "질문",
+        "ja": "質問"
     },
     "Q_FETCH_ERROR": {
         "en": ":question: Couldn't fetch question from API",
@@ -621,7 +715,9 @@
         "sv": ":question: Det gick inte att hämta frågan från API",
         "ru": ":question: Не удалось получить вопрос из API",
         "it": ":question: impossibile recuperare la domanda dall'API",
-        "pl": ":question: Nie udało się pobrać pytania z API"
+        "pl": ":question: Nie udało się pobrać pytania z API",
+        "ko": ":question: API에서 질문을 가져올 수 없습니다.",
+        "ja": ":question: APIから質問を取得できませんでした"
     },
     "Q_SPOOPY": {
         "en": "This seems spoopy",
@@ -634,7 +730,9 @@
         "sv": "Detta verkar otrevligt",
         "ru": "Это кажется глупым",
         "it": "Questo sembra spoopy",
-        "pl": "Wydaje się, że to zepsute"
+        "pl": "Wydaje się, że to zepsute",
+        "ko": "이것은 으스스한 것 같습니다",
+        "ja": "これは不気味なようです"
     },
     "Q_CONTACT_DEVS": {
         "en": "[Please contact the developers](https:\/\/discord.gg\/brainbox)",
@@ -647,7 +745,9 @@
         "sv": "[Vänligen kontakta utvecklarna](https:\/\/discord.gg\/brainbox)",
         "ru": "[Свяжитесь с разработчиками](https:\/\/discord.gg\/brainbox)",
         "it": "[Contatta gli sviluppatori](https:\/\/discord.gg\/brainbox)",
-        "pl": "[Skontaktuj się z programistami](https:\/\/discord.gg\/brainbox)"
+        "pl": "[Skontaktuj się z programistami](https:\/\/discord.gg\/brainbox)",
+        "ko": "[개발자에게 문의하세요](https:\/\/discord.gg\/brainbox)",
+        "ja": "[開発者に連絡してください](https:\/\/discord.gg\/brainbox)"
     },
     "ROUND_STOPPING": {
         "en": "Round stopping",
@@ -660,7 +760,9 @@
         "sv": "Runda stopp",
         "ru": "Круглая остановка",
         "it": "Arresto rotondo",
-        "pl": "Okrągłe zatrzymanie"
+        "pl": "Okrągłe zatrzymanie",
+        "ko": "라운드 정지",
+        "ja": "ラウンドストップ"
     },
     "ERROR_BROKE_IT": {
         "en": "Error has stopped play!",
@@ -673,7 +775,9 @@
         "sv": "Fel har slutat spela!",
         "ru": "Ошибка остановила воспроизведение!",
         "it": "L'errore ha interrotto la riproduzione!",
-        "pl": "Błąd przestał grać!"
+        "pl": "Błąd przestał grać!",
+        "ko": "오류로 인해 재생이 중지되었습니다!",
+        "ja": "エラーが再生を停止しました！"
     },
     "SCRAMBLED_ANSWER": {
         "en": "Scrambled Answer: {0}",
@@ -686,7 +790,9 @@
         "sv": "Förvrängd svar: {0}",
         "ru": "Зашифрованный ответ: {0}",
         "it": "Risposta criptata: {0}",
-        "pl": "Zaszyfrowana odpowiedź: {0}"
+        "pl": "Zaszyfrowana odpowiedź: {0}",
+        "ko": "스크램블 답변 : {0}",
+        "ja": "スクランブルされた回答：{0}"
     },
     "HEX": {
         "en": "Hexadecimal: {0:x}",
@@ -699,7 +805,9 @@
         "sv": "Hexadecimal: {0:x}",
         "ru": "Шестнадцатеричный: {0:x}",
         "it": "Esadecimale: {0:x}",
-        "pl": "Szesnastkowy: {0:x}"
+        "pl": "Szesnastkowy: {0:x}",
+        "ko": "16 진수 : {0:x}",
+        "ja": "16進数：{0:x}"
     },
     "OCT": {
         "en": "Octal: {0:o}",
@@ -712,7 +820,9 @@
         "sv": "Oktal: {0:o}",
         "ru": "Восьмеричный: {0:o}",
         "it": "Ottale: {0:o}",
-        "pl": "Ósemkowe: {0:o}"
+        "pl": "Ósemkowe: {0:o}",
+        "ko": "8 진수 : {0:o}",
+        "ja": "8進数：{0:o}"
     },
     "BIN": {
         "en": "Binary: {0:b}",
@@ -725,7 +835,9 @@
         "sv": "Binär: {0:b}",
         "ru": "Двоичный: {0:b}",
         "it": "Binario: {0:b}",
-        "pl": "Binarny: {0:b}"
+        "pl": "Binarny: {0:b}",
+        "ko": "바이너리 : {0:b}",
+        "ja": "バイナリ：{0:b}"
     },
     "CATEGORY": {
         "en": "Category",
@@ -738,7 +850,9 @@
         "sv": "Kategori",
         "ru": "Категория",
         "it": "Categoria",
-        "pl": "Kategoria"
+        "pl": "Kategoria",
+        "ko": "범주",
+        "ja": "カテゴリー"
     },
     "BRAIN_BROKE_IT": {
         "en": "Something's up, got a question with no text! This shouldn't happen...",
@@ -751,7 +865,9 @@
         "sv": "Något är uppe, har en fråga utan text! Detta borde inte hända ...",
         "ru": "Что-то случилось, есть вопрос без текста! Этого не должно происходить ...",
         "it": "Qualcosa è successo, ho una domanda senza testo! Questo non dovrebbe accadere ...",
-        "pl": "Coś się dzieje, mam pytanie bez tekstu! To nie powinno się wydarzyć ..."
+        "pl": "Coś się dzieje, mam pytanie bez tekstu! To nie powinno się wydarzyć ...",
+        "ko": "문제가 발생했습니다. 텍스트가없는 질문이 있습니다. 이런 일이 있어서는 안됩니다 ...",
+        "ja": "何か問題が発生しました。テキストのない質問があります。これは起こらないはずです..."
     },
     "FETCH_Q": {
         "en": "Fetch Question",
@@ -764,7 +880,9 @@
         "sv": "Hämta fråga",
         "ru": "Получить вопрос",
         "it": "Recupera domanda",
-        "pl": "Pobierz pytanie"
+        "pl": "Pobierz pytanie",
+        "ko": "질문 가져 오기",
+        "ja": "質問を取得"
     },
     "SECS_LEFT": {
         "en": "You have **{0}** seconds remaining!",
@@ -777,7 +895,9 @@
         "sv": "Du har **{0}** sekunder kvar!",
         "ru": "У вас осталось **{0}** секунд!",
         "it": "Hai **{0}** secondi rimanenti!",
-        "pl": "Pozostało Ci **{0}** sekund!"
+        "pl": "Pozostało Ci **{0}** sekund!",
+        "ko": "**{0}** 초 남았습니다!",
+        "ja": "残り**{0}**秒です！"
     },
     "FIRST_HINT": {
         "en": "First Hint",
@@ -790,7 +910,9 @@
         "sv": "Första ledtråden",
         "ru": "Первый совет",
         "it": "Primo suggerimento",
-        "pl": "Pierwsza wskazówka"
+        "pl": "Pierwsza wskazówka",
+        "ko": "첫 번째 힌트",
+        "ja": "最初のヒント"
     },
     "SECOND_HINT": {
         "en": "Second Hint",
@@ -803,7 +925,9 @@
         "ru": "Второй намек",
         "hi": "दूसरा संकेत",
         "it": "Secondo suggerimento",
-        "pl": "Druga wskazówka"
+        "pl": "Druga wskazówka",
+        "ko": "두 번째 힌트",
+        "ja": "2番目のヒント"
     },
     "INSANE_FOUND": {
         "en": "**{0}** answers were found!",
@@ -816,7 +940,9 @@
         "sv": "**{0}** svar hittades!",
         "ru": "Найдено **{0}** ответов!",
         "it": "**{0}** risposte trovate!",
-        "pl": "Znaleziono **{0}** odpowiedzi!"
+        "pl": "Znaleziono **{0}** odpowiedzi!",
+        "ko": "**{0}** 답변을 찾았습니다!",
+        "ja": "**{0}**回答が見つかりました！"
     },
     "ANS_WAS": {
         "en": "The answer was: **{0}**",
@@ -829,7 +955,9 @@
         "sv": "Svaret var: **{0}**",
         "ru": "Ответ был: **{0}**",
         "it": "La risposta è stata: **{0}**",
-        "pl": "Odpowiedź brzmiała: **{0}**"
+        "pl": "Odpowiedź brzmiała: **{0}**",
+        "ko": "대답 : **{0}**",
+        "ja": "答えは：**{0}**"
     },
     "STREAK_SMASHED": {
         "en": "**{0}**'s streak of **{1}** answers in a row comes to a grinding halt!",
@@ -842,7 +970,9 @@
         "sv": "**{0}** s sträcka av **{1}** svar i rad slutar slipa!",
         "ru": "Серия **{0}** ответов подряд **{1}** подошла к концу!",
         "it": "La serie di **{0}** di **{1}** risposte di fila si ferma!",
-        "pl": "Seria **{1}** odpowiedzi z rzędu **{0}** zatrzymuje się!"
+        "pl": "Seria **{1}** odpowiedzi z rzędu **{0}** zatrzymuje się!",
+        "ko": "**{0}** 의 연속 **{1}** 답변이 끊임없이 중단됩니다!",
+        "ja": "**{0}** の一連の**{1}**の回答が連続して停止します！"
     },
     "TIME_UP": {
         "en": "Time Up!",
@@ -855,7 +985,9 @@
         "sv": "Tiden är ute!",
         "ru": "Время вышло!",
         "it": "Tempo scaduto!",
-        "pl": "Koniec czasu!"
+        "pl": "Koniec czasu!",
+        "ko": "시간 최대!",
+        "ja": "タイムアップ！"
     },
     "OUT_OF_TIME": {
         "en": "Out of time!",
@@ -868,7 +1000,9 @@
         "sv": "För sent!",
         "ru": "Вне времени!",
         "it": "Fuori tempo!",
-        "pl": "Brak czasu!"
+        "pl": "Brak czasu!",
+        "ko": "시간 중!",
+        "ja": "時間がなくなって！"
     },
     "COMING_UP": {
         "en": "Next question coming up in about **{0}** seconds...",
@@ -881,7 +1015,9 @@
         "sv": "Nästa fråga kommer om cirka **{0}** sekunder ...",
         "ru": "Следующий вопрос появится примерно через **{0}** секунд ...",
         "it": "Prossima domanda in arrivo tra circa **{0}** secondi ...",
-        "pl": "Następne pytanie za około **{0}** sekund ..."
+        "pl": "Następne pytanie za około **{0}** sekund ...",
+        "ko": "약 **{0}** 초 후에 다음 질문이 표시됩니다 ...",
+        "ja": "次の質問は約**{0}**秒で出てきます..."
     },
     "REST": {
         "en": "A little time to rest your fingers...",
@@ -894,7 +1030,9 @@
         "sv": "Lite tid att vila fingrarna ...",
         "ru": "Пора дать пальцам отдохнуть ...",
         "it": "Un po 'di tempo per riposare le dita ...",
-        "pl": "Trochę czasu na odpoczynek palców ..."
+        "pl": "Trochę czasu na odpoczynek palców ...",
+        "ko": "손가락을 쉬는 시간 ...",
+        "ja": "指を休める少しの時間..."
     },
     "END1": {
         "en": "End of round of **{0}** questions",
@@ -907,7 +1045,9 @@
         "sv": "Slutet på omgången av **{0}** frågor",
         "ru": "Конец раунда **{0}** вопросов",
         "it": "Fine del round di **{0}** domande",
-        "pl": "Koniec rundy pytań **{0}**"
+        "pl": "Koniec rundy pytań **{0}**",
+        "ko": "**{0}** 질문의 라운드 종료",
+        "ja": "**{0}** の質問のラウンドの終わり"
     },
     "END_TITLE": {
         "en": "End of the round",
@@ -920,7 +1060,9 @@
         "sv": "Slutet på omgången",
         "ru": "Конец раунда",
         "it": "Fine del round",
-        "pl": "Koniec rundy"
+        "pl": "Koniec rundy",
+        "ko": "라운드 종료",
+        "ja": "ラウンドの終わり"
     },
     "LEADERBOARD": {
         "en": "Trivia Leaderboard",
@@ -933,7 +1075,9 @@
         "sv": "Trivia Ledartavla",
         "ru": "Таблица лидеров",
         "it": "Classifica trivia",
-        "pl": "Tablica wyników ciekawostek"
+        "pl": "Tablica wyników ciekawostek",
+        "ko": "퀴즈 리더 보드",
+        "ja": "雑学クイズリーダーボード"
     },
     "TOP_TEN": {
         "en": "Today's Top Ten",
@@ -946,7 +1090,9 @@
         "sv": "Dagens topp tio",
         "ru": "Сегодняшняя десятка",
         "it": "La top ten di oggi",
-        "pl": "Dzisiejsza pierwsza dziesiątka"
+        "pl": "Dzisiejsza pierwsza dziesiątka",
+        "ko": "오늘의 탑텐",
+        "ja": "今日のトップテン"
     },
     "MORE_INFO": {
         "en": "More Information",
@@ -959,7 +1105,9 @@
         "sv": "Mer information",
         "ru": "Больше информации",
         "it": "Maggiori informazioni",
-        "pl": "Więcej informacji"
+        "pl": "Więcej informacji",
+        "ko": "추가 정보",
+        "ja": "詳しくは"
     },
     "LEADER_LINK": {
         "en": "[View server leaderboards](https:\/\/triviabot.co.uk\/stats\/{0})\nDaily scores reset at midnight GMT.",
@@ -972,7 +1120,9 @@
         "sv": "[Visa serverlistor](https:\/\/triviabot.co.uk\/stats\/{0})\nDagliga poäng återställs vid midnatt GMT.",
         "ru": "[Просмотреть таблицы лидеров серверов](https:\/\/triviabot.co.uk\/stats\/ {0})\nЕжедневные результаты обнуляются в полночь по Гринвичу.",
         "it": "[Visualizza le classifiche dei server](https:\/\/triviabot.co.uk\/stats\/ {0})\nI punteggi giornalieri si azzerano a mezzanotte GMT.",
-        "pl": "[Wyświetl rankingi serwerów](https:\/\/triviabot.co.uk\/stats\/ {0})\nDzienne wyniki resetują się o północy GMT."
+        "pl": "[Wyświetl rankingi serwerów](https:\/\/triviabot.co.uk\/stats\/ {0})\nDzienne wyniki resetują się o północy GMT.",
+        "ko": "[서버 리더 보드보기](https:\/\/triviabot.co.uk\/stats\/{0})\n일일 점수는 GMT 자정에 재설정됩니다.",
+        "ja": "[サーバーリーダーボードを表示](https:\/\/triviabot.co.uk\/stats\/{0})\n毎日のスコアはグリニッジ標準時の深夜にリセットされます。"
     },
     "DASH_STOP": {
         "en": "The round of trivia was stopped from the [dashboard](https:\/\/triviabot.co.uk\/dashboard\/)!",
@@ -985,7 +1135,9 @@
         "sv": "Rundan av trivia stoppades från [instrumentpanelen](https:\/\/triviabot.co.uk\/dashboard\/)!",
         "ru": "Раунд мелочей был остановлен из [панели управления](https:\/\/triviabot.co.uk\/dashboard\/)!",
         "it": "Il giro di curiosità è stato interrotto dalla [dashboard](https:\/\/triviabot.co.uk\/dashboard\/)!",
-        "pl": "Runda ciekawostek została zatrzymana z [dashboardu](https:\/\/triviabot.co.uk\/dashboard\/)!"
+        "pl": "Runda ciekawostek została zatrzymana z [dashboardu](https:\/\/triviabot.co.uk\/dashboard\/)!",
+        "ko": "[dashboard](https:\/\/triviabot.co.uk\/dashboard\/)에서 퀴즈 라운드가 중단되었습니다!",
+        "ja": "雑学クイズのラウンドは[ダッシュボード](https:\/\/triviabot.co.uk\/dashboard\/)から停止されました！"
     },
     "STOPPING": {
         "en": "Round Stopping!",
@@ -998,7 +1150,9 @@
         "sv": "Rundstopp!",
         "ru": "Остановка раунда!",
         "it": "Arresto del round!",
-        "pl": "Round Stopping!"
+        "pl": "Round Stopping!",
+        "ko": "라운드 중지!",
+        "ja": "ラウンドストップ！"
     },
     "PREFIX": {
         "en": "My prefix on this server is `{0}`. Type `{1}help` for help.",
@@ -1011,7 +1165,9 @@
         "sv": "Mitt prefix på den här servern är `{0}`. Skriv `{1}help` för hjälp.",
         "ru": "Мой префикс на этом сервере - `{0}`. Для получения справки введите `{1}help`.",
         "it": "Il mio prefisso su questo server è \"{0}\". Digita \"{1} help\" per chiedere aiuto.",
-        "pl": "Mój prefiks na tym serwerze to „{0}”. Wpisz „{1} pomoc”, aby uzyskać pomoc."
+        "pl": "Mój prefiks na tym serwerze to „{0}”. Wpisz „{1} pomoc”, aby uzyskać pomoc.",
+        "ko": "이 서버의 내 접두사는`{0}`입니다. 도움말을 보려면`{1} help`를 입력하세요.",
+        "ja": "このサーバーのプレフィックスは `{0}`です。ヘルプが必要な場合は、「{1} help」と入力してください。"
     },
     "LAST_ONE": {
         "en": "**{0}** found the last answer!",
@@ -1024,7 +1180,9 @@
         "sv": "**{0}** hittade det sista svaret!",
         "ru": "**{0}** нашел последний ответ!",
         "it": "**{0}** trovato l'ultima risposta!",
-        "pl": "**{0}** znalazłem ostatnią odpowiedź!"
+        "pl": "**{0}** znalazłem ostatnią odpowiedź!",
+        "ko": "**{0}** 마지막 답변을 찾았습니다!",
+        "ja": "**{0}**最後の答えが見つかりました！"
     },
     "INSANE_CORRECT": {
         "en": "**{0}** was correct with **{1}**, gaining one point! **{2}** answers remaining out of **{3}**.",
@@ -1037,7 +1195,9 @@
         "sv": "**{0}** var korrekt med **{1}**, fick en poäng! **{2}** svar kvar av **{3}**.",
         "ru": "**{0}** правильно с **{1}**, получил одно очко! **{2}** ответов осталось из **{3}**.",
         "it": "**{0}** era corretto con **{1}**, guadagnando un punto! **{2}** risposte rimanenti su **{3}**.",
-        "pl": "**{0}** było poprawne z **{1}**, zyskując jeden punkt! **{2}** odpowiedzi pozostałe z **{3}**."
+        "pl": "**{0}** było poprawne z **{1}**, zyskując jeden punkt! **{2}** odpowiedzi pozostałe z **{3}**.",
+        "ko": "**{0}**는 **{1}**로 정확하여 1 점을 얻었습니다! **{3}** 개 중 **{2}** 개의 답변이 남았습니다.",
+        "ja": "**{0}**は**{1}**で正解で、1ポイントを獲得しました。 **{2}**回答は**{3}**から残っています。"
     },
     "POINT": {
         "en": "point",
@@ -1050,7 +1210,9 @@
         "sv": "punkt",
         "ru": "точка",
         "it": "punto",
-        "pl": "punkt"
+        "pl": "punkt",
+        "ko": "포인트",
+        "ja": "ポイント"
     },
     "POINTS": {
         "en": "points",
@@ -1063,7 +1225,9 @@
         "sv": "poäng",
         "ru": "точки",
         "it": "punti",
-        "pl": "zwrotnica"
+        "pl": "zwrotnica",
+        "ko": "포인트들",
+        "ja": "ポイント"
     },
     "NORM_CORRECT": {
         "en": "The answer was **{0}**. You gain **{1}** {2} for answering in **{3}** seconds!",
@@ -1076,7 +1240,9 @@
         "sv": "Svaret var **{0}**. Du får **{1}** {2} för att svara på **{3}** sekunder!",
         "ru": "Ответ был **{0}**. Вы получаете **{1}** {2} за ответ в течение **{3}** секунд!",
         "it": "La risposta è stata **{0}**. Guadagni **{1}** {2} rispondendo in **{3}** secondi!",
-        "pl": "Odpowiedź brzmiała **{0}**. Zyskujesz **{1}** {2} za odpowiedź w **{3}** sekundy!"
+        "pl": "Odpowiedź brzmiała **{0}**. Zyskujesz **{1}** {2} za odpowiedź w **{3}** sekundy!",
+        "ko": "답은 **{0}**였습니다. **{3}** 초 안에 답변하면 **{1}** {2}을 (를) 얻을 수 있습니다.",
+        "ja": "答えは**{0}**でした。 **{3}**秒で答えると、**{1}** {2}を獲得できます！"
     },
     "RECORD_TIME": {
         "en": "\n**{0}** has broken the record time for this question!",
@@ -1089,7 +1255,9 @@
         "sv": "\n**{0}** har brutit rekordtiden för denna fråga!",
         "ru": "\n**{0}** побил рекорд по времени ответа на этот вопрос!",
         "it": "\n**{0}** ha battuto il tempo record per questa domanda!",
-        "pl": "\n**{0}** pobił rekordowy czas dla tego pytania!"
+        "pl": "\n**{0}** pobił rekordowy czas dla tego pytania!",
+        "ko": "\n**{0}**이 (가)이 질문의 기록 시간을 깼습니다!",
+        "ja": "\n**{0}**はこの質問の記録的な時間を破りました！"
     },
     "SCORE_UPDATE": {
         "en": "\n**{0}**'s score is now **{1}**.",
@@ -1102,7 +1270,9 @@
         "sv": "\n**{0}** poäng är nu **{1}**.",
         "ru": "\n**{0}** теперь набрал **{1}**.",
         "it": "\nIl punteggio di **{0}** è ora **{1}**.",
-        "pl": "\n**{0}** ma teraz wynik **{1}**."
+        "pl": "\n**{0}** ma teraz wynik **{1}**.",
+        "ko": "\n**{0}**의 점수는 이제 **{1}**입니다.",
+        "ja": "\n**{0}**のスコアは**{1}**になりました。"
     },
     "TEAM_SCORE": {
         "en": "\nTeam **{0}** also gains **{1}** {2} and is now on **{3}**",
@@ -1115,7 +1285,9 @@
         "sv": "\nTeam **{0}** vinner också **{1}** {2} och är nu på **{3}**",
         "ru": "\nКоманда **{0}** также набирает **{1}** {2} и теперь на **{3}**",
         "it": "\nIl team **{0}** guadagna anche **{1}** {2} e ora è in **{3}**",
-        "pl": "\nDrużyna **{0}** również zyskuje **{1}** {2} i jest teraz na **{3}**"
+        "pl": "\nDrużyna **{0}** również zyskuje **{1}** {2} i jest teraz na **{3}**",
+        "ko": "\n**{0}** 팀도 **{1}** {2}을 (를) 얻고 현재 **{3}**에 있습니다.",
+        "ja": "\nチーム**{0}**も**{1}** {2}を獲得し、現在**{3}**にいます"
     },
     "ON_A_STREAK": {
         "en": "\n**{0}** is on a streak! **{1}** questions and counting",
@@ -1128,7 +1300,9 @@
         "sv": "\n**{0}** är på rad! **{1}** frågor och räkningar",
         "ru": "\n**{0}** на ударе! **{1}** вопросы и подсчет",
         "it": "\n**{0}** è in serie! **{1}** domande e conteggio",
-        "pl": "\n**{0}** ma dobrą passę! **{1}** pytania i liczenie"
+        "pl": "\n**{0}** ma dobrą passę! **{1}** pytania i liczenie",
+        "ko": "\n**{0}** 연승 중입니다! **{1}** 질문 및 계산",
+        "ja": "\n**{0}**が連続しています！ **{1}**質問とカウント"
     },
     "BEATEN_BEST": {
         "en": ", and has beaten their personal best!",
@@ -1141,7 +1315,9 @@
         "sv": ", och har slagit sitt personliga bästa!",
         "ru": ", и побил свой личный рекорд!",
         "it": ", e ha battuto il loro record personale!",
-        "pl": ", i pobił swoje rekordy osobiste!"
+        "pl": ", i pobił swoje rekordy osobiste!",
+        "ko": ", 그리고 그들의 개인 최고 기록을 이겼습니다!",
+        "ja": "、そして彼らの個人的なベストを打ち負かしました！"
     },
     "NOT_THERE_YET": {
         "en": ", but has some way to go yet before they beat their personal best of **{0}**",
@@ -1154,7 +1330,9 @@
         "sv": ", men har ett tag kvar innan de slog sitt personliga bästa av **{0}**",
         "ru": ", но им еще предстоит кое-что сделать, прежде чем они побьют свой личный рекорд **{0}**",
         "it": ", ma ha ancora molta strada da fare prima di battere il record personale di **{0}**",
-        "pl": ", ale ma przed sobą jeszcze wiele, zanim pobiją swój rekord życiowy **{0}**"
+        "pl": ", ale ma przed sobą jeszcze wiele, zanim pobiją swój rekord życiowy **{0}**",
+        "ko": ",하지만 **{0}**의 개인 최고 기록을 이기기 전에 아직 가야 할 방법이 있습니다.",
+        "ja": "、しかし、彼らが**{0}**の個人的なベストを打ち負かす前にまだ行く方法があります"
     },
     "STREAK_BEATDOWN": {
         "en": "\n**{0}** just beat <@{1}>'s record streak of {2} answers!",
@@ -1166,8 +1344,10 @@
         "hi": "\n**{0}** बस हरा दो <@ {1}> रिकॉर्ड 2 {उत्तर} की लकीर!",
         "sv": "\n**{0}** slog bara <@{1}> s rekordsträcka med {2} svar!",
         "ru": "\n**{0}** просто побейте рекордную серию ответов <@{1}> в {2}!",
-        "it": "\n**{0}** ha appena battuto la serie record di {2} risposte di <@ {1}>!",
-        "pl": "\n**{0}** właśnie pobił <@ {1}> rekordową passę {2} odpowiedzi!"
+        "it": "\n**{0}** ha appena battuto la serie record di {2} risposte di <@{1}>!",
+        "pl": "\n**{0}** właśnie pobił <@{1}> rekordową passę {2} odpowiedzi!",
+        "ko": "\n**{0}** <@{1}> 의 기록적인 {2} 답변 기록을 이겼습니다!",
+        "ja": "\n**{0}** <@{1}> の{2}の回答の記録を破りました！"
     },
     "STREAK_ENDER": {
         "en": "\n**{0}** just ended <@{1}>'s streak of {2} answers in a row!",
@@ -1180,7 +1360,9 @@
         "sv": "\n**{0}** avslutade precis <@{1}> s rad med {2} svar i rad!",
         "ru": "\n**{0}** только что завершил серию ответов <@{1}> подряд ({2})!",
         "it": "\n**{0}** ha appena terminato la serie di <@{1}> di {2} risposte di fila!",
-        "pl": "\n**{0}** właśnie zakończył <@{1}> serię {2} odpowiedzi z rzędu!"
+        "pl": "\n**{0}** właśnie zakończył <@{1}> serię {2} odpowiedzi z rzędu!",
+        "ko": "\n**{0}** 방금 <@{1}> 님의 연속 {2} 개의 답변이 끝났습니다.",
+        "ja": "\n**{0}** <@{1}> の{2}回答の連続が連続して終了しました！"
     },
     "CORRECT": {
         "en": "Correct, {0}!",
@@ -1193,7 +1375,9 @@
         "sv": "Korrekt, {0}!",
         "ru": "Верно, {0}!",
         "it": "Esatto, {0}!",
-        "pl": "Dobrze, {0}!"
+        "pl": "Dobrze, {0}!",
+        "ko": "맞습니다. {0}!",
+        "ja": "正解、{0}！"
     },
     "CHANNEL_WUT": {
         "en": "**{0}**, this channel ID does not exist!",
@@ -1206,7 +1390,9 @@
         "sv": "**{0}**, detta kanal-ID finns inte!",
         "ru": "**{0}**, этого идентификатора канала не существует!",
         "it": "**{0}**, questo ID canale non esiste!",
-        "pl": "**{0}**, ten identyfikator kanału nie istnieje!"
+        "pl": "**{0}**, ten identyfikator kanału nie istnieje!",
+        "ko": "**{0}**,이 채널 ID는 존재하지 않습니다!",
+        "ja": "**{0}**、このチャンネルIDは存在しません！"
     },
     "ROUND_START_ID": {
         "en": "Round of {0} questions started on channel id {1}",
@@ -1219,7 +1405,9 @@
         "sv": "Omgången av {0} frågor startade på kanal-id {1}",
         "ru": "По идентификатору канала {1} начат раунд вопросов ({0})",
         "it": "Round di {0} domande iniziate sull'ID canale {1}",
-        "pl": "Runda {0} pytań rozpoczęła się od identyfikatora kanału {1}"
+        "pl": "Runda {0} pytań rozpoczęła się od identyfikatora kanału {1}",
+        "ko": "채널 ID {1}에서 시작된 {0} 라운드의 질문",
+        "ja": "チャネルID {1}で開始された{0}の質問のラウンド"
     },
     "ROUND_START_ID_NH": {
         "en": "Round of {0} questions started on channel id {1} **without hints**!",
@@ -1232,7 +1420,9 @@
         "sv": "Omgången av {0} frågor startade på kanal-id {1} **utan tips**!",
         "ru": "По идентификатору канала {1} начат раунд вопросов {0} **без подсказок**!",
         "it": "Round di {0} domande iniziate sull'ID canale {1} ** senza suggerimenti **!",
-        "pl": "Rozpoczęto rundę {0} pytań od identyfikatora kanału {1} ** bez podpowiedzi **!"
+        "pl": "Rozpoczęto rundę {0} pytań od identyfikatora kanału {1} ** bez podpowiedzi **!",
+        "ko": "** 힌트없이 ** 채널 ID {1}에서 {0} 개의 질문이 시작되었습니다.",
+        "ja": "{0}の質問のラウンドはチャンネルID {1}で始まりました**ヒントなし**！"
     },
     "RESTART_RESUME": {
         "en": "Because the bot was restarted, your game was stopped. This game has been resumed.",
@@ -1245,7 +1435,9 @@
         "sv": "Eftersom bot startades om stoppades ditt spel. Detta spel har återupptagits.",
         "ru": "Поскольку бот был перезапущен, ваша игра была остановлена. Эта игра была возобновлена.",
         "it": "Poiché il bot è stato riavviato, il gioco è stato interrotto. Questo gioco è stato ripreso.",
-        "pl": "Ponieważ bot został uruchomiony ponownie, Twoja gra została zatrzymana. Ta gra została wznowiona."
+        "pl": "Ponieważ bot został uruchomiony ponownie, Twoja gra została zatrzymana. Ta gra została wznowiona.",
+        "ko": "봇이 다시 시작 되었기 때문에 게임이 중지되었습니다. 이 게임은 재개되었습니다.",
+        "ja": "ボットが再起動されたため、ゲームは停止しました。このゲームは再開されました。"
     },
     "STAFF_ONLY": {
         "en": "Only bot moderators can use this command",
@@ -1258,7 +1450,9 @@
         "sv": "Endast botmoderatorer kan använda detta kommando",
         "ru": "Только модераторы ботов могут использовать эту команду",
         "it": "Solo i moderatori del bot possono utilizzare questo comando",
-        "pl": "Tylko moderatorzy botów mogą używać tego polecenia"
+        "pl": "Tylko moderatorzy botów mogą używać tego polecenia",
+        "ko": "봇 중재자 만이 명령을 사용할 수 있습니다.",
+        "ja": "このコマンドを使用できるのはボットモデレーターのみです"
     },
     "SHITLISTED": {
         "en": "**{0}**, you can't start a round of trivia here, as the bot owner has explicitly blocked games from being started on this server.\nIf you want to start a round of trivia, first [invite the bot](https:\/\/discord.com\/oauth2\/authorize?client_id={1}&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code) to your own server!",
@@ -1271,7 +1465,9 @@
         "sv": "**{0}**, du kan inte starta en omgång trivia här, eftersom botägaren uttryckligen har blockerat spel från att startas på den här servern.\nOm du vill starta en omgång trivia, först [bjuda in botten](https:\/\/discord.com\/oauth2\/authorize?client_id={1}&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code) till din egen server!",
         "ru": "**{0}**, здесь нельзя начинать серию мелочей, так как владелец бота явно заблокировал запуск игр на этом сервере.\nЕсли вы хотите начать серию мелочей, сначала [пригласите бота](https:\/\/discord.com\/oauth2\/authorize?client_id={1}&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code) на свой сервер!",
         "it": "**{0}**, non puoi iniziare un giro di curiosità qui, poiché il proprietario del bot ha esplicitamente bloccato l'avvio dei giochi su questo server.\nSe vuoi iniziare un giro di curiosità, prima [invita il bot](https:\/\/discord.com\/oauth2\/authorize?client_id={1}&scope=bot+identity&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code) al tuo server!",
-        "pl": "**{0}**, nie możesz tutaj rozpocząć rundy ciekawostek, ponieważ właściciel bota wyraźnie zablokował uruchamianie gier na tym serwerze.\nJeśli chcesz rozpocząć rundę ciekawostek, najpierw [zaproś bota](https:\/\/discord.com\/oauth2\/authorize?client_id={1}&scope=bot+identity&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code) na własny serwer!"
+        "pl": "**{0}**, nie możesz tutaj rozpocząć rundy ciekawostek, ponieważ właściciel bota wyraźnie zablokował uruchamianie gier na tym serwerze.\nJeśli chcesz rozpocząć rundę ciekawostek, najpierw [zaproś bota](https:\/\/discord.com\/oauth2\/authorize?client_id={1}&scope=bot+identity&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code) na własny serwer!",
+        "ko": "**{0}**, 봇 소유자가이 서버에서 게임이 시작되는 것을 명시 적으로 차단 했으므로 여기서 퀴즈를 시작할 수 없습니다.\n퀴즈를 시작하려면 먼저 [봇 초대](https:\/\/discord.com\/oauth2\/authorize?client_id={1}&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code) 자신의 서버에!",
+        "ja": "**{0}**、ボットの所有者がこのサーバーでのゲームの開始を明示的にブロックしているため、ここで雑学クイズを開始することはできません。\n雑学クイズのラウンドを開始する場合は、最初に[ボットを招待](https:\/\/discord.com\/oauth2\/authorize?client_id={1}&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code)を自分のサーバーに！"
     },
     "NOWAY": {
         "en": ":warning: Can't start two rounds at once on one server!",
@@ -1284,7 +1480,9 @@
         "sv": ":warning: inte starta två omgångar samtidigt på en server!",
         "ru": ":warning: Невозможно запустить сразу два раунда на одном сервере!",
         "it": ":warning: non è possibile avviare due round contemporaneamente su un server!",
-        "pl": ":warning: nie można rozpocząć dwóch rund na raz na jednym serwerze!"
+        "pl": ":warning: nie można rozpocząć dwóch rund na raz na jednym serwerze!",
+        "ko": ":warning: 한 서버에서 한 번에 두 라운드를 시작할 수 없습니다!",
+        "ja": ":warning: 1つのサーバーで一度に2つのラウンドを開始することはできません！"
     },
     "ALREADYACTIVE": {
         "en": "A round of trivia is already active",
@@ -1297,7 +1495,9 @@
         "sv": "En omgång trivia är redan aktiv",
         "ru": "Раунд мелочей уже активен",
         "it": "Un giro di curiosità è già attivo",
-        "pl": "Runda ciekawostek jest już aktywna"
+        "pl": "Runda ciekawostek jest już aktywna",
+        "ko": "한 라운드의 퀴즈가 이미 활성화되었습니다.",
+        "ja": "雑学クイズのラウンドはすでにアクティブです"
     },
     "CHANNELREF": {
         "en": "Please see <#{0}> to join the game",
@@ -1310,7 +1510,9 @@
         "sv": "Se <#{0}> för att gå med i spelet",
         "ru": "См. <#{0}>, чтобы присоединиться к игре\n******",
         "it": "Vedi <#{0}> per partecipare al gioco",
-        "pl": "Zobacz <#{0}>, aby dołączyć do gry"
+        "pl": "Zobacz <#{0}>, aby dołączyć do gry",
+        "ko": "게임에 참여하려면 <#{0}>을 (를) 참조하세요.",
+        "ja": "ゲームに参加するには<#{0}>をご覧ください"
     },
     "GETPREMIUM": {
         "en": "Get TriviaBot Premium!",
@@ -1323,7 +1525,9 @@
         "sv": "Skaffa TriviaBot Premium!",
         "ru": "Получите TriviaBot Premium!",
         "it": "Ottieni TriviaBot Premium!",
-        "pl": "Zdobądź TriviaBot Premium!"
+        "pl": "Zdobądź TriviaBot Premium!",
+        "ko": "TriviaBot 프리미엄을 받으세요!",
+        "ja": "TriviaBotプレミアムを入手！"
     },
     "PREMDETAIL1": {
         "en": "If you want to do this, TriviaBot Premium lets you run as many concurrent games on the same server as you want. For more information please see the [TriviaBot Premium Page](https:\/\/triviabot.co.uk\/premium\/).",
@@ -1336,7 +1540,9 @@
         "sv": "Om du vill göra detta låter TriviaBot Premium dig köra så många samtidiga spel på samma server som du vill. För mer information se [TriviaBot Premium-sidan](https:\/\/triviabot.co.uk\/premium\/).",
         "ru": "Если вы хотите это сделать, TriviaBot Premium позволяет запускать столько одновременных игр на одном сервере, сколько вы хотите. Для получения дополнительной информации посетите [Премиум-страницу TriviaBot](https:\/\/triviabot.co.uk\/premium\/).",
         "it": "Se vuoi farlo, TriviaBot Premium ti consente di eseguire tutti i giochi simultanei sullo stesso server che desideri. Per ulteriori informazioni, consultare la [Pagina TriviaBot Premium](https:\/\/triviabot.co.uk\/premium\/).",
-        "pl": "Jeśli chcesz to zrobić, TriviaBot Premium umożliwia uruchamianie tylu jednoczesnych gier na tym samym serwerze, ile chcesz. Więcej informacji można znaleźć na [stronie TriviaBot Premium](https:\/\/triviabot.co.uk\/premium\/)."
+        "pl": "Jeśli chcesz to zrobić, TriviaBot Premium umożliwia uruchamianie tylu jednoczesnych gier na tym samym serwerze, ile chcesz. Więcej informacji można znaleźć na [stronie TriviaBot Premium](https:\/\/triviabot.co.uk\/premium\/).",
+        "ko": "이렇게하려면 TriviaBot Premium을 사용하여 동일한 서버에서 원하는만큼의 동시 게임을 실행할 수 있습니다. 자세한 내용은 [TriviaBot 프리미엄 페이지](https:\/\/triviabot.co.uk\/premium\/)를 참조하세요.",
+        "ja": "これを実行したい場合、TriviaBot Premiumを使用すると、同じサーバー上で必要な数の同時ゲームを実行できます。詳細については、[TriviaBotプレミアムページ](https:\/\/triviabot.co.uk\/premium\/)を参照してください。"
     },
     "PREMDETAIL2": {
         "en": "If you want to do this, TriviaBot Premium lets you run quickfire rounds of up to 200 questions! For more information please see the [TriviaBot Premium Page](https:\/\/triviabot.co.uk\/premium\/).",
@@ -1349,7 +1555,9 @@
         "sv": "Om du vill göra detta låter TriviaBot Premium dig köra quickfire-rundor med upp till 200 frågor! För mer information se [TriviaBot Premium-sidan](https:\/\/triviabot.co.uk\/premium\/).",
         "ru": "Если вы хотите сделать это, TriviaBot Premium позволяет запускать быстрые раунды, задавая до 200 вопросов! Для получения дополнительной информации посетите [Премиум-страницу TriviaBot](https:\/\/triviabot.co.uk\/premium\/).",
         "it": "Se vuoi farlo, TriviaBot Premium ti consente di eseguire round veloci fino a 200 domande! Per ulteriori informazioni, consultare la [Pagina TriviaBot Premium](https:\/\/triviabot.co.uk\/premium\/).",
-        "pl": "Jeśli chcesz to zrobić, TriviaBot Premium umożliwia przeprowadzanie szybkich rund do 200 pytań! Więcej informacji można znaleźć na [stronie TriviaBot Premium](https:\/\/triviabot.co.uk\/premium\/)."
+        "pl": "Jeśli chcesz to zrobić, TriviaBot Premium umożliwia przeprowadzanie szybkich rund do 200 pytań! Więcej informacji można znaleźć na [stronie TriviaBot Premium](https:\/\/triviabot.co.uk\/premium\/).",
+        "ko": "이 작업을 수행하려면 TriviaBot Premium을 사용하여 최대 200 개의 질문에 대한 빠른 라운드를 실행할 수 있습니다! 자세한 내용은 [TriviaBot 프리미엄 페이지](https:\/\/triviabot.co.uk\/premium\/)를 참조하세요.",
+        "ja": "これを実行したい場合、TriviaBot Premiumを使用すると、最大200の質問のクイックファイアラウンドを実行できます。詳細については、[TriviaBotプレミアムページ](https:\/\/triviabot.co.uk\/premium\/)を参照してください。"
     },
     "MAX15": {
         "en": ":warning: Can't start a quickfire round of more than 15 questions",
@@ -1362,7 +1570,9 @@
         "sv": ":warning: Kan inte starta en snabbeldrunda med mer än 15 frågor",
         "ru": ":warning: Не могу начать быстрый раунд из более чем 15 вопросов",
         "it": ":warning: non è possibile avviare un round rapido di più di 15 domande",
-        "pl": ":warning: nie można rozpocząć szybkiej rundy zawierającej więcej niż 15 pytań"
+        "pl": ":warning: nie można rozpocząć szybkiej rundy zawierającej więcej niż 15 pytań",
+        "ko": ":warning: 15 개 이상의 질문에 대한 빠른 라운드를 시작할 수 없습니다.",
+        "ja": ":warning: 15を超える質問のクイックファイアラウンドを開始できません"
     },
     "MAX15DETAIL": {
         "en": "**{0}**, you can't create a quickfire trivia round of less than 5 or more than {1} questions!",
@@ -1375,7 +1585,9 @@
         "sv": "**{0}**, du kan inte skapa en trivia-runda med mindre än fem eller fler än {1} frågor!",
         "ru": "**{0}**, вы не можете создать викторину из менее 5 или более {1} вопросов!",
         "it": "**{0}**, non puoi creare un quiz veloce con meno di 5 o più di {1} domande!",
-        "pl": "**{0}**, nie możesz utworzyć szybkiej rundy quizowej zawierającej mniej niż 5 lub więcej pytań niż {1}!"
+        "pl": "**{0}**, nie możesz utworzyć szybkiej rundy quizowej zawierającej mniej niż 5 lub więcej pytań niż {1}!",
+        "ko": "**{0}**, 5 개 미만 또는 {1} 개 이상의 질문으로 구성된 빠른 퀴즈 라운드를 만들 수 없습니다.",
+        "ja": "**{0}**、5つ未満または{1}を超える質問のクイックファイアトリビアラウンドを作成することはできません。"
     },
     "MAX200": {
         "en": "**{0}**, you can't create a normal trivia round of less than 5 or more than 200 questions!",
@@ -1388,7 +1600,9 @@
         "sv": "**{0}**, du kan inte skapa en vanlig trivia-runda på mindre än fem eller mer än 200 frågor!",
         "ru": "**{0}**, вы не можете создать обычный раунд викторины, состоящий из менее 5 или более 200 вопросов!",
         "it": "**{0}**, non puoi creare un normale quiz con meno di 5 o più di 200 domande!",
-        "pl": "**{0}**, nie możesz utworzyć normalnej rundy quizów składającej się z mniej niż 5 lub więcej niż 200 pytań!"
+        "pl": "**{0}**, nie możesz utworzyć normalnej rundy quizów składającej się z mniej niż 5 lub więcej niż 200 pytań!",
+        "ko": "**{0}**, 5 개 미만 또는 200 개 이상의 질문으로 구성된 일반 퀴즈 라운드를 만들 수 없습니다.",
+        "ja": "**{0}**、5つ未満または200を超える質問の通常の雑学クイズラウンドを作成することはできません。"
     },
     "SPOOPY2": {
         "en": "**{0}**, something spoopy happened. Please try again in a couple of minutes!",
@@ -1401,7 +1615,9 @@
         "sv": "**{0}**, något spökigt hände. Försök igen om några minuter!",
         "ru": "**{0}**, произошло нечто странное. Пожалуйста, попробуйте еще раз через пару минут!",
         "it": "**{0}**, si è verificato un errore. Riprova tra un paio di minuti!",
-        "pl": "**{0}**, coś się stało. Spróbuj ponownie za kilka minut!"
+        "pl": "**{0}**, coś się stało. Spróbuj ponownie za kilka minut!",
+        "ko": "**{0}**, 이상한 일이 발생했습니다. 몇 분 후에 다시 시도하십시오!",
+        "ja": "**{0}**、何か不気味なことが起こりました。数分後にもう一度お試しください。"
     },
     "BROKED": {
         "en": "That wasn't supposed to happen...",
@@ -1414,7 +1630,9 @@
         "sv": "Det skulle inte hända ...",
         "ru": "Этого не должно было случиться ...",
         "it": "Non doveva succedere ...",
-        "pl": "To nie miało się stać ..."
+        "pl": "To nie miało się stać ...",
+        "ko": "그렇게해서는 안되는 일 ...",
+        "ja": "それは起こるはずではなかった..."
     },
     "RESUMED": {
         "en": "resumed",
@@ -1427,7 +1645,9 @@
         "sv": "återupptogs",
         "ru": "возобновлен",
         "it": "ripreso",
-        "pl": "wznowiono"
+        "pl": "wznowiono",
+        "ko": "재개",
+        "ja": "再開"
     },
     "STARTED": {
         "en": "started",
@@ -1440,7 +1660,9 @@
         "sv": "satte igång",
         "ru": "началось",
         "it": "iniziato",
-        "pl": "Rozpoczęty"
+        "pl": "Rozpoczęty",
+        "ko": "시작",
+        "ja": "開始しました"
     },
     "ABOTADMIN": {
         "en": "a bot admin",
@@ -1453,7 +1675,9 @@
         "sv": "en botadministratör",
         "ru": "администратор бота",
         "it": "un amministratore di bot",
-        "pl": "administrator bota"
+        "pl": "administrator bota",
+        "ko": "봇 관리자",
+        "ja": "ボット管理者"
     },
     "NEWROUND": {
         "en": ":question: New {0}trivia round {1} by {2}!",
@@ -1466,7 +1690,9 @@
         "sv": ":question: Ny {0} triviaomgång {1} av {2}!",
         "ru": ":question: Новый {0} раунд викторин {1} от {2}!",
         "it": ":question: Nuovo {0} giro di domande {1} di {2}!",
-        "pl": ":question: Nowa {0} runda ciekawostek {1} autorstwa {2}!"
+        "pl": ":question: Nowa {0} runda ciekawostek {1} autorstwa {2}!",
+        "ko": ":question: {2}의 새로운 {0} 퀴즈 라운드 {1}!",
+        "ja": ":question: {2}による新しい{0}雑学クイズラウンド{1}！"
     },
     "NEWROUND_NH": {
         "en": ":question: New {0}trivia round {1} by {2} **without hints**!",
@@ -1479,7 +1705,9 @@
         "sv": ":question: Ny {0} triviaomgång {1} av {2} **utan tips**!",
         "ru": ":question: Новый {0} раунд викторин {1} от {2} **без подсказок**!",
         "it": ":question: Nuovo {0} giro di quiz {1} di {2} ** senza suggerimenti **!",
-        "pl": ":question: Nowa {0} runda z ciekawostkami {1} autorstwa {2} ** bez podpowiedzi **!"
+        "pl": ":question: Nowa {0} runda z ciekawostkami {1} autorstwa {2} ** bez podpowiedzi **!",
+        "ko": ":question: {2}의 새로운 {0} 퀴즈 라운드 {1} ** 힌트 없음 **!",
+        "ja": ":question: 新しい{0}雑学クイズラウンド{1} by {2} **ヒントなし**！"
     },
     "GETREADY": {
         "en": "Get Ready",
@@ -1492,7 +1720,9 @@
         "sv": "Gör dig redo",
         "ru": "Приготовься",
         "it": "Preparati",
-        "pl": "Przygotuj się"
+        "pl": "Przygotuj się",
+        "ko": "준비해",
+        "ja": "準備をしなさい"
     },
     "FIRSTCOMING": {
         "en": "First question coming up!",
@@ -1505,7 +1735,9 @@
         "sv": "Första frågan kommer upp!",
         "ru": "Возникает первый вопрос!",
         "it": "Prima domanda in arrivo!",
-        "pl": "Pierwsze pytanie!"
+        "pl": "Pierwsze pytanie!",
+        "ko": "첫 번째 질문이 나옵니다!",
+        "ja": "最初の質問が出てきます！"
     },
     "HOWPLAY": {
         "en": "How to play",
@@ -1518,7 +1750,9 @@
         "sv": "Hur man spelar",
         "ru": "Как играть",
         "it": "Come giocare",
-        "pl": "Jak grać"
+        "pl": "Jak grać",
+        "ko": "게임 방법",
+        "ja": "遊び方"
     },
     "INSTRUCTIONS": {
         "en": "Type your answer on channel to answer a question. The first to answer gets the points. To report any incorrect or invalid question, click the link in the title of the question's message.",
@@ -1531,7 +1765,9 @@
         "sv": "Skriv ditt svar på kanalen för att svara på en fråga. Den första som svarar får poängen. För att rapportera eventuella felaktiga eller ogiltiga frågor, klicka på länken i rubriken på frågan.",
         "ru": "Введите свой ответ на канале, чтобы ответить на вопрос. Очки начисляются первым, кто ответит. Чтобы сообщить о любом неправильном или недопустимом вопросе, щелкните ссылку в заголовке сообщения с вопросом.",
         "it": "Digita la tua risposta sul canale per rispondere a una domanda. Il primo a rispondere ottiene i punti. Per segnalare qualsiasi domanda errata o non valida, fare clic sul collegamento nel titolo del messaggio della domanda.",
-        "pl": "Wpisz swoją odpowiedź na kanale, aby odpowiedzieć na pytanie. Pierwszy, który odpowie, otrzymuje punkty. Aby zgłosić nieprawidłowe lub nieprawidłowe pytanie, kliknij łącze w tytule wiadomości z pytaniem."
+        "pl": "Wpisz swoją odpowiedź na kanale, aby odpowiedzieć na pytanie. Pierwszy, który odpowie, otrzymuje punkty. Aby zgłosić nieprawidłowe lub nieprawidłowe pytanie, kliknij łącze w tytule wiadomości z pytaniem.",
+        "ko": "질문에 답변하려면 채널에 답변을 입력하세요. 가장 먼저 대답하는 사람이 점수를 얻습니다. 부정확하거나 잘못된 질문을 신고하려면 질문 메시지 제목의 링크를 클릭하십시오.",
+        "ja": "質問に答えるには、チャンネルに回答を入力してください。最初に答えるとポイントがもらえます。間違った質問または無効な質問を報告するには、質問のメッセージのタイトルにあるリンクをクリックします。"
     },
     "ALREADYRUN": {
         "en": "Buhhh... a round is already running here, **{0}**!",
@@ -1544,7 +1780,9 @@
         "sv": "Buhhh ... en runda pågår redan här, **{0}**!",
         "ru": "Ба ... раунд уже идет, **{0}**!",
         "it": "Buhhh ... un round è già in corso qui, **{0}**!",
-        "pl": "Ups ... runda już trwa, **{0}**!"
+        "pl": "Ups ... runda już trwa, **{0}**!",
+        "ko": "Buhhh ... 이미 라운드가 진행 중입니다. **{0}**!",
+        "ja": "うーん...ラウンドはすでにここで実行されています、**{0}**！"
     },
     "CANTSTOPMEIMTHEGINGERBREADMAN": {
         "en": "**{0}**, only moderators can stop trivia on this server!",
@@ -1557,7 +1795,9 @@
         "sv": "**{0}**, endast moderatorer kan stoppa trivia på den här servern!",
         "ru": "**{0}**, только модераторы могут останавливать мелочи на этом сервере!",
         "it": "**{0}**, solo i moderatori possono interrompere i quiz su questo server!",
-        "pl": "**{0}**, tylko moderatorzy mogą zatrzymać ciekawostki na tym serwerze!"
+        "pl": "**{0}**, tylko moderatorzy mogą zatrzymać ciekawostki na tym serwerze!",
+        "ko": "**{0}**, 운영자 만이 서버에서 퀴즈를 중지 할 수 있습니다.",
+        "ja": "**{0}**、このサーバーで雑学クイズを停止できるのはモデレーターのみです。"
     },
     "AREYOUSTARTINGSOMETHING": {
         "en": "**{0}**, only moderators can start trivia on this server!",
@@ -1570,7 +1810,9 @@
         "sv": "**{0}**, endast moderatorer kan starta trivia på denna server!",
         "ru": "**{0}**, запускать мелочи на этом сервере могут только модераторы!",
         "it": "**{0}**, solo i moderatori possono avviare quiz su questo server!",
-        "pl": "**{0}**, tylko moderatorzy mogą zaczynać ciekawostki na tym serwerze!"
+        "pl": "**{0}**, tylko moderatorzy mogą zaczynać ciekawostki na tym serwerze!",
+        "ko": "**{0}**, 운영자 만이 서버에서 퀴즈를 시작할 수 있습니다!",
+        "ja": "**{0}**、このサーバーで雑学クイズを開始できるのはモデレーターのみです。"
     },
     "STOPOK": {
         "en": "**{0}** has stopped the round of trivia!",
@@ -1583,7 +1825,9 @@
         "sv": "**{0}** har stoppat rundan av trivia!",
         "ru": "**{0}** остановил раунд пустяков!",
         "it": "**{0}** ha interrotto il giro di curiosità!",
-        "pl": "**{0}** zatrzymał rundę ciekawostek!"
+        "pl": "**{0}** zatrzymał rundę ciekawostek!",
+        "ko": "**{0}** 님이 퀴즈 라운드를 중단했습니다!",
+        "ja": "**{0}**は雑学クイズのラウンドを停止しました！"
     },
     "NOTRIVIA": {
         "en": "No trivia round is running here, **{0}**!",
@@ -1596,7 +1840,9 @@
         "sv": "Ingen trivia-runda körs här, **{0}**!",
         "ru": "Здесь нет викторин, **{0}**!",
         "it": "Nessun quiz è in corso qui, **{0}**!",
-        "pl": "Nie odbywa się tutaj żadna runda informacyjna **{0}**!"
+        "pl": "Nie odbywa się tutaj żadna runda informacyjna **{0}**!",
+        "ko": "여기서 진행되는 퀴즈 라운드가 없습니다. **{0}**!",
+        "ja": "ここでは雑学クイズは実行されていません、**{0}**！"
     },
     "VOTEAD": {
         "en": "[Vote for the bot every 12 hours](https:\/\/top.gg\/bot\/{0}\/vote) to get eight uses of the `{1}votehint` command, which gives you a personal hint via direct message!",
@@ -1609,7 +1855,9 @@
         "sv": "[Rösta på botten var 12: e timme](https:\/\/top.gg\/bot\/{0}\/vote) för att få åtta användningar av kommandot `{1}votehint`, vilket ger dig en personlig ledtråd via direkt meddelande!",
         "ru": "[Голосуйте за бота каждые 12 часов](https:\/\/top.gg\/bot\/{0}\/vote), чтобы получить восемь использований команды `{1}votehint`, которая дает вам личную подсказку через прямую сообщение!",
         "it": "[Vota per il bot ogni 12 ore](https:\/\/top.gg\/bot\/{0}\/vote) per ottenere otto usi del comando `{1} votehint`, che ti dà un suggerimento personale tramite messaggio diretto!",
-        "pl": "[Głosuj na bota co 12 godzin](https:\/\/top.gg\/bot\/{0}\/vote), aby uzyskać osiem zastosowań polecenia `{1} votehint`, które daje ci osobistą wskazówkę w bezpośredniej wiadomości!"
+        "pl": "[Głosuj na bota co 12 godzin](https:\/\/top.gg\/bot\/{0}\/vote), aby uzyskać osiem zastosowań polecenia `{1} votehint`, które daje ci osobistą wskazówkę w bezpośredniej wiadomości!",
+        "ko": "[12 시간마다 봇에 투표](https:\/\/top.gg\/bot\/{0}\/vote)하여 직접 메시지를 통해 개인적인 힌트를 제공하는`{1} votehint` 명령을 8 번 사용하세요!",
+        "ja": "[12時間ごとにボットに投票する](https:\/\/top.gg\/bot\/{0}\/vote) `{1} votehint`コマンドを8回使用すると、ダイレクトメッセージで個人的なヒントが得られます。"
     },
     "PRIVHINT": {
         "en": "**Get Private Hints by Voting!**\n",
@@ -1622,7 +1870,9 @@
         "sv": "**Få privata tips genom att rösta!**\n",
         "ru": "**Получайте частные подсказки, голосуя!**\n",
         "it": "** Ottieni suggerimenti privati ​​votando! **\n",
-        "pl": "** Uzyskaj prywatne wskazówki, głosując! **\n"
+        "pl": "** Uzyskaj prywatne wskazówki, głosując! **\n",
+        "ko": "** 투표하여 비공개 힌트를 받으세요! **\n",
+        "ja": "**投票してプライベートヒントを入手してください！**\n"
     },
     "NOTVOTED": {
         "en": "You haven't voted for the bot today!\n",
@@ -1635,7 +1885,9 @@
         "sv": "Du har inte röstat för bot idag!\n",
         "ru": "Вы сегодня не голосовали за бота!\n",
         "it": "Non hai votato per il bot oggi!\n",
-        "pl": "Nie głosowałeś dzisiaj na bota!\n"
+        "pl": "Nie głosowałeś dzisiaj na bota!\n",
+        "ko": "오늘 봇에 투표하지 않았습니다!\n",
+        "ja": "今日はボットに投票していません！\n"
     },
     "NOMOREHINTS": {
         "en": "You are out of voter hints, **{0}**!\n",
@@ -1648,7 +1900,9 @@
         "sv": "Du har slut på rösttips, **{0}**!\n",
         "ru": "Подсказки для избирателей закончились, **{0}**!\n",
         "it": "Hai esaurito i suggerimenti per gli elettori, **{0}**!\n",
-        "pl": "Nie masz już podpowiedzi wyborczych, **{0}**!\n"
+        "pl": "Nie masz już podpowiedzi wyborczych, **{0}**!\n",
+        "ko": "유권자 힌트가 없습니다. **{0}**!\n",
+        "ja": "投票者のヒントがありません、**{0}**！\n"
     },
     "VH1": {
         "en": "**{0}**, i've sent you a hint via DM!\nYou have **{1}** voter hint(s) remaining which expire in **{2} hours and {3} minutes**.",
@@ -1661,7 +1915,9 @@
         "sv": "**{0}**, jag har skickat en ledtråd via DM!\nDu har **{1}** rösttips kvar som löper ut om **{2} timmar och {3} minuter**.",
         "ru": "**{0}**, я отправил вам подсказку через DM!\nУ вас осталось **{1}** подсказок для избирателя, срок действия которых истекает через **{2} часов {3} минут**.",
         "it": "**{0}**, ti ho inviato un suggerimento tramite DM!\nHai a disposizione **{1}** suggerimenti per gli elettori che scadono tra **{2} ore e {3} minuti **.",
-        "pl": "**{0}**, wysłałem ci wskazówkę przez DM!\nPozostała Ci **{1}** wskazówka (y) dla wyborców, które wygasają za **{2} godz. I {3} min **."
+        "pl": "**{0}**, wysłałem ci wskazówkę przez DM!\nPozostała Ci **{1}** wskazówka (y) dla wyborców, które wygasają za **{2} godz. I {3} min **.",
+        "ko": "**{0}**, DM을 통해 힌트를 보냈습니다!\n** {2} 시간 {3} 분 ** 후에 만료되는 **{1}** 투표자 힌트가 남아 있습니다.",
+        "ja": "**{0}**、DM経由でヒントを送信しました。\n**{1}**投票者のヒントが残っています。これは** {2}時間{3}分**で期限切れになります。"
     },
     "VH2": {
         "en": "**{0}**, i've sent you a hint via DM!\nYou have **NO MORE** voter hints remaining and can vote again in **{1} hours and {2} minutes**.",
@@ -1674,7 +1930,9 @@
         "sv": "**{0}**, jag har skickat en ledtråd via DM!\nDu har **INTE MER** rösttips kvar och kan rösta igen om **{1} timmar och {2} minuter**.",
         "ru": "**{0}**, я отправил вам подсказку через DM!\nУ вас **БОЛЬШЕ НЕТ** подсказок для избирателей, и вы можете проголосовать снова через **{1} часов {2} минут**.",
         "it": "**{0}**, ti ho inviato un suggerimento tramite DM!\nHai ** NON PIÙ ** suggerimenti per gli elettori rimanenti e puoi votare di nuovo tra ** {1} ore e {2} minuti **.",
-        "pl": "**{0}**, wysłałem ci wskazówkę przez DM!\nPozostało Ci **NO MORE** podpowiedzi wyborców. Możesz głosować ponownie za **{1} godzin i {2} minut**."
+        "pl": "**{0}**, wysłałem ci wskazówkę przez DM!\nPozostało Ci **NO MORE** podpowiedzi wyborców. Możesz głosować ponownie za **{1} godzin i {2} minut**.",
+        "ko": "**{0}**, DM을 통해 힌트를 보냈습니다!\n남은 투표자 힌트가 ** 더 이상 ** 없습니다 **. ** {1} 시간 {2} 분 ** 후에 다시 투표 할 수 있습니다.",
+        "ja": "**{0}**、DM経由でヒントを送信しました。\n**これ以上**の投票者のヒントは残っておらず、** {1}時間と{2}分**で再度投票できます。"
     },
     "WAITABIT": {
         "en": "You should probaly wait until a non-insane round question is being asked, **{0}**!",
@@ -1687,7 +1945,9 @@
         "sv": "Du bör troligen vänta tills en icke-galen runda fråga ställs, **{0}**!",
         "ru": "Вам, вероятно, следует подождать, пока вам не зададут безумный круглый вопрос, **{0}**!",
         "it": "Probabilmente dovresti aspettare che ti venga fatta una domanda rotonda non folle, **{0}**!",
-        "pl": "Prawdopodobnie powinieneś poczekać, aż zadane zostanie nie szalone pytanie w rundzie, **{0}**!"
+        "pl": "Prawdopodobnie powinieneś poczekać, aż zadane zostanie nie szalone pytanie w rundzie, **{0}**!",
+        "ko": "비정상적인 질문이 나올 때까지 기다려야합니다. **{0}**!",
+        "ja": "非常識ではないラウンドの質問が行われるまで、おそらく待つ必要があります、**{0}**！"
     },
     "NOROUND": {
         "en": "No trivia round is running here, **{0}**!",
@@ -1700,7 +1960,9 @@
         "sv": "Ingen trivia-runda körs här, **{0}**!",
         "ru": "Здесь нет викторин, **{0}**!",
         "it": "Nessun quiz è in corso qui, **{0}**!",
-        "pl": "Nie odbywa się tutaj żadna runda informacyjna **{0}**!"
+        "pl": "Nie odbywa się tutaj żadna runda informacyjna **{0}**!",
+        "ko": "여기서 진행되는 퀴즈 라운드가 없습니다. **{0}**!",
+        "ja": "ここでは雑学クイズは実行されていません、**{0}**！"
     },
     "ACTIVEGAMES": {
         "en": "Active Games",
@@ -1713,7 +1975,9 @@
         "sv": "Aktiva spel",
         "ru": "Активные игры",
         "it": "Giochi attivi",
-        "pl": "Aktywne gry"
+        "pl": "Aktywne gry",
+        "ko": "활성 게임",
+        "ja": "アクティブなゲーム"
     },
     "TOTALSERVERS": {
         "en": "Total Servers",
@@ -1726,7 +1990,9 @@
         "sv": "Totalt antal servrar",
         "ru": "Всего серверов",
         "it": "Server totali",
-        "pl": "Wszystkich serwerów"
+        "pl": "Wszystkich serwerów",
+        "ko": "총 서버",
+        "ja": "合計サーバー"
     },
     "CONNSINCE": {
         "en": "Connected Since",
@@ -1739,7 +2005,9 @@
         "sv": "Ansluten sedan",
         "ru": "Подключено с",
         "it": "Connesso da",
-        "pl": "Połączony od"
+        "pl": "Połączony od",
+        "ko": "이후 연결",
+        "ja": "以来接続"
     },
     "ONLINEUSERS": {
         "en": "Online Users",
@@ -1752,7 +2020,9 @@
         "sv": "Online-användare",
         "ru": "Интернет-пользователи",
         "it": "Utenti online",
-        "pl": "Użytkownicy online"
+        "pl": "Użytkownicy online",
+        "ko": "온라인 사용자",
+        "ja": "オンラインユーザー"
     },
     "UPTIME": {
         "en": "Uptime",
@@ -1765,7 +2035,9 @@
         "sv": "Upptid",
         "ru": "Время безотказной работы",
         "it": "Uptime",
-        "pl": "Dostępność"
+        "pl": "Dostępność",
+        "ko": "가동 시간",
+        "ja": "稼働時間"
     },
     "SHARDS": {
         "en": "Shards",
@@ -1778,7 +2050,9 @@
         "sv": "Skärvor",
         "ru": "Осколки",
         "it": "Frammenti",
-        "pl": "Odłamki"
+        "pl": "Odłamki",
+        "ko": "샤드",
+        "ja": "破片"
     },
     "MEMBERINTENT": {
         "en": "Member Intent",
@@ -1791,7 +2065,9 @@
         "sv": "Medlemsåtgärd",
         "ru": "Намерение участника",
         "it": "Intento di membro",
-        "pl": "Zamiar członka"
+        "pl": "Zamiar członka",
+        "ko": "회원 의도",
+        "ja": "メンバーの意図"
     },
     "TESTMODE": {
         "en": "Test Mode",
@@ -1804,7 +2080,9 @@
         "sv": "Övningsläge",
         "ru": "Тестовый режим",
         "it": "Modalità di prova",
-        "pl": "Tryb testowy"
+        "pl": "Tryb testowy",
+        "ko": "시험 모드",
+        "ja": "テストモード"
     },
     "DEVMODE": {
         "en": "Developer Mode",
@@ -1817,7 +2095,9 @@
         "sv": "Utvecklarläge",
         "ru": "Режим разработчика",
         "it": "Modalità sviluppatore",
-        "pl": "Tryb dewelopera"
+        "pl": "Tryb dewelopera",
+        "ko": "개발자 모드",
+        "ja": "開発者モード"
     },
     "MYPREFIX": {
         "en": "Prefix",
@@ -1830,7 +2110,9 @@
         "sv": "Prefix",
         "ru": "Префикс",
         "it": "Prefisso",
-        "pl": "Prefiks"
+        "pl": "Prefiks",
+        "ko": "접두사",
+        "ja": "プレフィックス"
     },
     "BOTVER": {
         "en": "Bot Version",
@@ -1843,7 +2125,9 @@
         "sv": "Botversion",
         "ru": "Версия бота",
         "it": "Versione bot",
-        "pl": "Wersja bota"
+        "pl": "Wersja bota",
+        "ko": "봇 버전",
+        "ja": "ボットバージョン"
     },
     "LIBVER": {
         "en": "Library Version",
@@ -1856,7 +2140,9 @@
         "sv": "Biblioteksversion",
         "ru": "Версия библиотеки",
         "it": "Versione libreria",
-        "pl": "Wersja biblioteki"
+        "pl": "Wersja biblioteki",
+        "ko": "라이브러리 버전",
+        "ja": "ライブラリバージョン"
     },
     "INFO": {
         "en": "Information",
@@ -1869,7 +2155,9 @@
         "sv": "Information",
         "ru": "Информация",
         "it": "Informazione",
-        "pl": "Informacja"
+        "pl": "Informacja",
+        "ko": "정보",
+        "ja": "情報"
     },
     "TICKYES": {
         "en": ":white_check_mark: Yes",
@@ -1882,7 +2170,9 @@
         "sv": ":white_check_mark: Ja",
         "ru": ":white_check_mark: Да",
         "it": ":white_check_mark: Sì",
-        "pl": ":white_check_mark: Tak"
+        "pl": ":white_check_mark: Tak",
+        "ko": ":white_check_mark: 예",
+        "ja": ":white_check_mark: はい"
     },
     "CROSSNO": {
         "en": "<:wc_rs:667695516737470494> No",
@@ -1895,7 +2185,9 @@
         "sv": "<:wc_rs:667695516737470494> Nej",
         "ru": "<:wc_rs:667695516737470494> Нет",
         "it": "<:wc_rs:667695516737470494> No",
-        "pl": "<:wc_rs:667695516737470494> Nie"
+        "pl": "<:wc_rs:667695516737470494> Nie",
+        "ko": "<:wc_rs:667695516737470494> 아니요",
+        "ja": "<:wc_rs:667695516737470494>いいえ"
     },
     "YAYPREMIUM": {
         "en": ":star: This server has TriviaBot Premium! They rock! :star:",
@@ -1908,7 +2200,9 @@
         "sv": ":star: Denna server har TriviaBot Premium! De rockar! :star:",
         "ru": ":star: На этом сервере есть TriviaBot Premium! Они молодцы! :star:",
         "it": ":star: Questo server ha TriviaBot Premium! Suonano! :star:",
-        "pl": ":star: Ten serwer ma TriviaBot Premium! Oni rządzą! :star:"
+        "pl": ":star: Ten serwer ma TriviaBot Premium! Oni rządzą! :star:",
+        "ko": ":star: 이 서버에는 TriviaBot Premium이 있습니다! 그들은 흔들립니다! :star:",
+        "ja": ":star: このサーバーにはTriviaBotプレミアムがあります！彼らは揺れる！ :star:"
     },
     "JOINED": {
         "en": "You have successfully joined the team \"**{0}**\", **{1}**",
@@ -1921,7 +2215,9 @@
         "sv": "Du har gått med i teamet \"**{0}**\", **{1}**",
         "ru": "Вы успешно присоединились к команде \"**{0}**\", **{1}**",
         "it": "Ti sei unito con successo al team \"**{0}**\", **{1}**",
-        "pl": "Dołączyłeś do zespołu „**{0}**”, **{1}**"
+        "pl": "Dołączyłeś do zespołu „**{0}**”, **{1}**",
+        "ko": "\"**{0}**\", **{1}** 팀에 성공적으로 합류했습니다.",
+        "ja": "チーム \"**{0}**\"、**{1}**に正常に参加しました"
     },
     "CALLFORBACKUP": {
         "en": "Call for backup!",
@@ -1934,7 +2230,9 @@
         "sv": "Ring för säkerhetskopiering!",
         "ru": "Вызовите подмогу!",
         "it": "Chiama per rinforzi!",
-        "pl": "Zadzwoń po wsparcie!"
+        "pl": "Zadzwoń po wsparcie!",
+        "ko": "백업을 요청하십시오!",
+        "ja": "バックアップを求めてください！"
     },
     "CANTJOIN": {
         "en": "I cannot bring about world peace, make you a sandwich, or join that team, **{0}**",
@@ -1947,7 +2245,9 @@
         "sv": "Jag kan inte åstadkomma världsfred, skapa dig en smörgås eller gå med i teamet, **{0}**",
         "ru": "Я не могу добиться мира во всем мире, приготовить вам бутерброд или присоединиться к этой команде **{0}**",
         "it": "Non posso portare la pace nel mondo, prepararti un panino o unirmi a quella squadra, **{0}**",
-        "pl": "Nie mogę zaprowadzić pokoju na świecie, zrobić ci kanapki ani dołączyć do tego zespołu **{0}**"
+        "pl": "Nie mogę zaprowadzić pokoju na świecie, zrobić ci kanapki ani dołączyć do tego zespołu **{0}**",
+        "ko": "나는 세계 평화를 가져다 줄 수없고, 샌드위치를 ​​만들거나 그 팀에 합류 할 수 없습니다. **{0}**",
+        "ja": "私は世界平和をもたらしたり、サンドイッチを作ったり、そのチームに参加したりすることはできません**{0}**"
     },
     "CREATED": {
         "en": "You have successfully **created** and joined the team \"**{0}**\", **{1}**",
@@ -1960,7 +2260,9 @@
         "sv": "Du har framgångsrikt **skapat** och gått med i teamet \"**{0}**\", **{1}**",
         "ru": "Вы успешно **создали** и присоединились к команде \"**{0}**\", **{1}**",
         "it": "Hai **creato** con successo e sei entrato a far parte del team \"**{0}**\", **{1}**",
-        "pl": "Pomyślnie **utworzyłeś** i dołączyłeś do zespołu „**{0}**”, **{1}**"
+        "pl": "Pomyślnie **utworzyłeś** i dołączyłeś do zespołu „**{0}**”, **{1}**",
+        "ko": "성공적으로 ** 만들고 ** 팀 \"**{0}**\", **{1}**에 가입했습니다.",
+        "ja": "**作成**し、チーム \"**{0}**\"、**{1}**に参加しました。"
     },
     "CANTCREATE": {
         "en": "I couldn't create that team, **{0}**...",
@@ -1973,7 +2275,9 @@
         "sv": "Jag kunde inte skapa det teamet, **{0}** ...",
         "ru": "Мне не удалось создать эту команду, **{0}** ...",
         "it": "Non sono riuscito a creare quella squadra, **{0}** ...",
-        "pl": "Nie mogłem stworzyć tego zespołu, **{0}** ..."
+        "pl": "Nie mogłem stworzyć tego zespołu, **{0}** ...",
+        "ko": "그 팀을 만들 수 없습니다. **{0}** ...",
+        "ja": "そのチームを作成できませんでした、**{0}** .. .."
     },
     "ALREADYMEMBER": {
         "en": "**{0}**, you are already a member of team \"**{1}**\"!",
@@ -1986,7 +2290,9 @@
         "sv": "**{0}**, du är redan medlem i teamet \"**{1}**\"!",
         "ru": "**{0}**, вы уже являетесь участником команды \"**{1}**\"!",
         "it": "**{0}**, sei già un membro del team \"**{1}**\"!",
-        "pl": "**{0}**, jesteś już członkiem zespołu „**{1}**”!"
+        "pl": "**{0}**, jesteś już członkiem zespołu „**{1}**”!",
+        "ko": "**{0}**, 이미 \"**{1}**\"팀의 멤버입니다!",
+        "ja": "**{0}**、あなたはすでにチーム \"**{1}**\"のメンバーです！"
     },
     "ZELDAREFERENCE": {
         "en": "It's unsafe to go alone...",
@@ -1999,7 +2305,9 @@
         "sv": "Det är osäkert att gå ensam ...",
         "ru": "Идти одному небезопасно ...",
         "it": "Non è sicuro andare da soli ...",
-        "pl": "Nie można iść samemu ..."
+        "pl": "Nie można iść samemu ...",
+        "ko": "혼자가는 것은 안전하지 않습니다 ...",
+        "ja": "一人で行くのは危険です..."
     },
     "YOULONER": {
         "en": "**{0}**, you aren't a member of any team! Use **{1}join** to join a team!",
@@ -2012,7 +2320,9 @@
         "sv": "**{0}**, du är inte medlem i något lag! Använd **{1}join** för att gå med i ett team!",
         "ru": "**{0}**, вы не состоите ни в одной команде! Используйте ** {1}join**, чтобы присоединиться к команде!",
         "it": "**{0}**, non sei un membro di nessun team! Usa **{1}join** per entrare in una squadra!",
-        "pl": "**{0}**, nie jesteś członkiem żadnego zespołu! Użyj ** {1}join**, aby dołączyć do zespołu!"
+        "pl": "**{0}**, nie jesteś członkiem żadnego zespołu! Użyj ** {1}join**, aby dołączyć do zespołu!",
+        "ko": "**{0}**, 귀하는 어떤 팀에도 속해 있지 않습니다! ** {1} 가입 **을 사용하여 팀에 가입하세요!",
+        "ja": "**{0}**、あなたはどのチームのメンバーでもありません！ ** {1}参加**を使用してチームに参加してください！"
     },
     "LEFTTEAM": {
         "en": "**{0}** has left team **{1}**",
@@ -2025,7 +2335,9 @@
         "sv": "**{0}** har lämnat laget **{1}**",
         "ru": "**{0}** покинул команду **{1}**",
         "it": "**{0}** ha lasciato la squadra **{1}**",
-        "pl": "**{0}** opuścił zespół **{1}**"
+        "pl": "**{0}** opuścił zespół **{1}**",
+        "ko": "**{0}** 팀에서 탈퇴했습니다 **{1}**",
+        "ja": "**{0}**がチームを去りました**{1}**"
     },
     "COMEBACK": {
         "en": "Come back, we'll miss you! :cry:",
@@ -2038,7 +2350,9 @@
         "sv": "Kom tillbaka, vi kommer att sakna dig! :cry:",
         "ru": "Вернись, мы будем по тебе скучать! :cry:",
         "it": "Torna, ci mancherai! :cry:",
-        "pl": "Wróć, będziemy za tobą tęsknić! :cry:"
+        "pl": "Wróć, będziemy za tobą tęsknić! :cry:",
+        "ko": "돌아와, 우리는 당신이 그리울 것입니다! :울음 소리:",
+        "ja": "戻ってきて、あなたがいなくて寂しいです！ ：泣く："
     },
     "HERPDERP": {
         "en": "<@{0}>, herp derp, theres a malformed help file. Please contact a developer on the official support server: https:\/\/discord.gg\/brainbox",
@@ -2051,7 +2365,9 @@
         "sv": "<@{0}>, herp derp, det finns en felaktig hjälpfil. Kontakta en utvecklare på den officiella supportservern: https:\/\/discord.gg\/brainbox",
         "ru": "<@{0}>, herp derp, это искаженный файл справки. Обратитесь к разработчику на официальном сервере поддержки: https:\/\/discord.gg\/brainbox",
         "it": "<@{0}>, herp derp, c'è un file della guida non valido. Contatta uno sviluppatore sul server di supporto ufficiale: https:\/\/discord.gg\/brainbox",
-        "pl": "<@{0}>, herp derp, jest uszkodzony plik pomocy. Skontaktuj się z programistą na oficjalnym serwerze wsparcia: https:\/\/discord.gg\/brainbox"
+        "pl": "<@{0}>, herp derp, jest uszkodzony plik pomocy. Skontaktuj się z programistą na oficjalnym serwerze wsparcia: https:\/\/discord.gg\/brainbox",
+        "ko": "<@{0}>, herp derp, 형식이 잘못된 도움말 파일이 있습니다. 공식 지원 서버에서 개발자에게 문의하십시오 : https:\/\/discord.gg\/brainbox",
+        "ja": "<@{0}>、herp derp、不正な形式のヘルプファイルがあります。公式サポートサーバーの開発者に連絡してください：https：\/\/discord.gg\/brainbox"
     },
     "WOAHTHERE": {
         "en": "Whoa there!",
@@ -2064,7 +2380,9 @@
         "sv": "Woah där!",
         "ru": "Ух ты!",
         "it": "Woah lì!",
-        "pl": "Woah tam!"
+        "pl": "Woah tam!",
+        "ko": "우와!",
+        "ja": "おっと！"
     },
     "RATELIMITED": {
         "en": "Please wait {0} seconds before trying the **{1}** command again!",
@@ -2077,7 +2395,9 @@
         "sv": "Vänta {0} sekunder innan du försöker kommandot **{1}** igen!",
         "ru": "Подождите {0} секунд перед повторной попыткой выполнения команды **{1}**!",
         "it": "Attendi {0} secondi prima di provare di nuovo il comando **{1}**!",
-        "pl": "Poczekaj {0} sekund, zanim ponownie spróbujesz wykonać polecenie **{1}**!"
+        "pl": "Poczekaj {0} sekund, zanim ponownie spróbujesz wykonać polecenie **{1}**!",
+        "ko": "**{1}** 명령을 다시 시도하기 전에 {0} 초 동안 기다리십시오!",
+        "ja": "**{1}**コマンドを再試行する前に、{0}秒待ってください。"
     },
     "INVITEME": {
         "en": "Invite TriviaBot",
@@ -2090,7 +2410,9 @@
         "sv": "Bjud in TriviaBot",
         "ru": "Пригласить TriviaBot",
         "it": "Invita TriviaBot",
-        "pl": "Zaproś TriviaBot"
+        "pl": "Zaproś TriviaBot",
+        "ko": "TriviaBot 초대",
+        "ja": "TriviaBotを招待する"
     },
     "INVITEBLURB": {
         "en": "Does your server need some entertainment?\n\nTo invite TriviaBot to your own server, [click here](https:\/\/discord.com\/oauth2\/authorize?client_id=715906723982082139&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code)\n<:blank:667278047006949386>",
@@ -2102,8 +2424,10 @@
         "hi": "क्या आपके सर्वर को कुछ मनोरंजन की आवश्यकता है?\n\nअपने स्वयं के सर्वर पर ट्रिवियाबोट को आमंत्रित करने के लिए, [यहां क्लिक करें](https:\/\/discord.com\/oauth2\/authorize?client_id=715906723982082139&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code)\n<:blank:667278047006949386>",
         "sv": "Behöver din server underhållning?\n\nFör att bjuda in TriviaBot till din egen server, [klicka här](https:\/\/discord.com\/oauth2\/authorize?client_id=715906723982082139&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code)\n<:blank:667278047006949386>",
         "ru": "Вашему серверу нужны развлечения?\n\nЧтобы пригласить TriviaBot на свой собственный сервер, [нажмите здесь](https:\/\/discord.com\/oauth2\/authorize?client_id=715906723982082139&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code)\n<:blank:667278047006949386>",
-        "it": "Il tuo server ha bisogno di intrattenimento?\n\nPer invitare TriviaBot al tuo server, [fai clic qui](https:\/\/discord.com\/oauth2\/authorize?client_id=715906723982082139&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&respode )\n<:blank:667278047006949386>",
-        "pl": "Twój serwer potrzebuje rozrywki?\n\nAby zaprosić TriviaBot na swój własny serwer, [kliknij tutaj](https:\/\/discord.com\/oauth2\/authorize?client_id=715906723982082139&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%ty2F&response )\n<:blank:667278047006949386>"
+        "it": "Il tuo server ha bisogno di intrattenimento?\n\nPer invitare TriviaBot al tuo server, [fai clic qui](https:\/\/discord.com\/oauth2\/authorize?client_id=715906723982082139&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response=_typecode)\n<:blank:667278047006949386>",
+        "pl": "Twój serwer potrzebuje rozrywki?\n\nAby zaprosić TriviaBot na swój własny serwer, [kliknij tutaj](https:\/\/discord.com\/oauth2\/authorize?client_id=715906723982082139&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%ty2F&response_type=code)\n<:blank:667278047006949386>",
+        "ko": "서버에 엔터테인먼트가 필요합니까?\n\nTriviaBot을 자신의 서버에 초대하려면 [여기를 클릭](https:\/\/discord.com\/oauth2\/authorize?client_id=715906723982082139&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code)\n<:blank:667278047006949386>",
+        "ja": "サーバーには娯楽が必要ですか？\n\nTriviaBotを自分のサーバーに招待するには、[ここをクリック](https:\/\/discord.com\/oauth2\/authorize?client_id=715906723982082139&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code)\n<:blank:667278047006949386>"
     },
     "ONLINE": {
         "en": "Online",
@@ -2116,7 +2440,9 @@
         "sv": "Uppkopplad",
         "ru": "В сети",
         "it": "in linea",
-        "pl": "online"
+        "pl": "online",
+        "ko": "온라인",
+        "ja": "オンライン"
     },
     "OFFLINE": {
         "en": "Offline",
@@ -2129,7 +2455,9 @@
         "sv": "Off-line",
         "ru": "Не в сети",
         "it": "disconnesso",
-        "pl": "Offline"
+        "pl": "Offline",
+        "ko": "오프라인",
+        "ja": "オフライン"
     },
     "SHARD": {
         "en": "Shard",
@@ -2142,7 +2470,9 @@
         "sv": "Skärva",
         "ru": "Осколок",
         "it": "Coccio",
-        "pl": "Czerep"
+        "pl": "Czerep",
+        "ko": "사금파리",
+        "ja": "シャード"
     },
     "PONG": {
         "en": "Pong!",
@@ -2155,7 +2485,9 @@
         "sv": "Pong!",
         "ru": "Понг!",
         "it": "Pong!",
-        "pl": "Pong!"
+        "pl": "Pong!",
+        "ko": "탁구!",
+        "ja": "ポン！"
     },
     "DISCPING": {
         "en": "Discord API",
@@ -2168,7 +2500,9 @@
         "sv": "Discord API",
         "ru": "Discord API",
         "it": "API Discord",
-        "pl": "Discord API"
+        "pl": "Discord API",
+        "ko": "Discord API",
+        "ja": "Discord API"
     },
     "APIPING": {
         "en": "TriviaBot API",
@@ -2181,7 +2515,9 @@
         "sv": "TriviaBot API",
         "ru": "TriviaBot API",
         "it": "API TriviaBot",
-        "pl": "TriviaBot API"
+        "pl": "TriviaBot API",
+        "ko": "TriviaBot API",
+        "ja": "TriviaBot API"
     },
     "DBPING": {
         "en": "Database",
@@ -2194,7 +2530,9 @@
         "sv": "Databas",
         "ru": "База данных",
         "it": "Banca dati",
-        "pl": "Baza danych"
+        "pl": "Baza danych",
+        "ko": "데이터 베이스",
+        "ja": "データベース"
     },
     "OKPING": {
         "en": "These figures are within expected ranges!",
@@ -2207,7 +2545,9 @@
         "sv": "Dessa siffror ligger inom förväntade intervall!",
         "ru": "Эти цифры находятся в ожидаемых пределах!",
         "it": "Queste cifre rientrano negli intervalli previsti!",
-        "pl": "Te wartości mieszczą się w oczekiwanych zakresach!"
+        "pl": "Te wartości mieszczą się w oczekiwanych zakresach!",
+        "ko": "이 수치는 예상 범위 내에 있습니다!",
+        "ja": "これらの数値は予想範囲内です！"
     },
     "BADPING": {
         "en": "Something odd is happening. Please remain calm!",
@@ -2220,7 +2560,9 @@
         "sv": "Något konstigt händer. Var lugn!",
         "ru": "Происходит что-то странное. Сохраняйте спокойствие!",
         "it": "Sta succedendo qualcosa di strano. Per favore, mantieni la calma!",
-        "pl": "Dzieje się coś dziwnego. Proszę, zachowaj spokój!"
+        "pl": "Dzieje się coś dziwnego. Proszę, zachowaj spokój!",
+        "ko": "이상한 일이 일어나고 있습니다. 침착하십시오!",
+        "ja": "何か奇妙なことが起こっています。落ち着いてください！"
     },
     "TIME2": {
         "en": "%d hours, %d mins",
@@ -2233,7 +2575,9 @@
         "sv": "%d timmar, %d minuter",
         "ru": "%d часов, %d минут",
         "it": "%d ore, %d min",
-        "pl": "%d godzin, %d min"
+        "pl": "%d godzin, %d min",
+        "ko": "%d 시간, %d 분",
+        "ja": "%d 時間、%d 分"
     },
     "TIME3": {
         "en": "%d days, %d hours, %d mins",
@@ -2246,7 +2590,9 @@
         "sv": "%d dagar, %d timmar, %d minuter",
         "ru": "%d дней, %d часов, %d минут",
         "it": "%d giorni,%d ore, %d min",
-        "pl": "%d dni,%d godzin, %d min"
+        "pl": "%d dni,%d godzin, %d min",
+        "ko": "%d 일, %d 시간, %d 분",
+        "ja": "%d日、%d時間、%d分"
     },
     "PRIVACY": {
         "en": "Team Privacy",
@@ -2259,7 +2605,9 @@
         "sv": "Lagens integritet",
         "ru": "Конфиденциальность команды",
         "it": "Privacy del team",
-        "pl": "Prywatność zespołu"
+        "pl": "Prywatność zespołu",
+        "ko": "팀 프라이버시",
+        "ja": "チームのプライバシー"
     },
     "PRV_ON": {
         "en": "Your Team Privacy setting is set to: **ON**.\n\nYou will show as `[ Private Member ]` in team member lists.",
@@ -2272,7 +2620,9 @@
         "sv": "Din sekretessinställning för team är inställd på: ** PÅ **.\n\nDu kommer att visas som `[Private Member]` i teammedlemmar.",
         "ru": "Настройки конфиденциальности вашей группы: ** ВКЛ **.\n\nВы будете отображаться как `[Private Member]` в списках участников команды.",
         "it": "L'impostazione della privacy del team è impostata su: ** ON **.\n\nApparirai come `[Membro privato]` negli elenchi dei membri del team.",
-        "pl": "Twoje ustawienia prywatności zespołu to: ** WŁĄCZONE **.\n\nNa listach członków zespołu pojawi się jako `[Członek prywatny]`."
+        "pl": "Twoje ustawienia prywatności zespołu to: ** WŁĄCZONE **.\n\nNa listach członków zespołu pojawi się jako `[Członek prywatny]`.",
+        "ko": "팀 개인 정보 설정이 ** ON **으로 설정되어 있습니다.\n\n팀원 목록에`[Private Member]`로 표시됩니다.",
+        "ja": "チームのプライバシー設定は**オン**に設定されています。\n\nチームメンバーリストに「[プライベートメンバー]」と表示されます。"
     },
     "PRV_OFF": {
         "en": "Your Team Privacy setting is set to: **OFF**.\n\nYou will show as your username in team member lists.",
@@ -2285,7 +2635,9 @@
         "sv": "Din sekretessinställning för team är inställd på: ** AV **.\n\nDu kommer att visas som ditt användarnamn i teammedlemmar.",
         "ru": "Настройки конфиденциальности вашей команды: **ВЫКЛ**.\n\nВы будете отображаться как ваше имя пользователя в списках участников команды.",
         "it": "L'impostazione della privacy del team è impostata su: **OFF**.\n\nVerrà visualizzato come nome utente negli elenchi dei membri del team.",
-        "pl": "Twoje ustawienie prywatności zespołu to: **WYŁ**.\n\nBędziesz wyświetlać się jako Twoja nazwa użytkownika na listach członków zespołu."
+        "pl": "Twoje ustawienie prywatności zespołu to: **WYŁ**.\n\nBędziesz wyświetlać się jako Twoja nazwa użytkownika na listach członków zespołu.",
+        "ko": "팀 개인 정보 설정이 ** OFF **로 설정되어 있습니다.\n\n팀원 목록에 사용자 이름으로 표시됩니다.",
+        "ja": "チームのプライバシー設定は**オフ**に設定されています。\n\nチームメンバーリストにユーザー名として表示されます。"
     },
     "NOTQUITERIGHT": {
         "en": "That's not quite right...",
@@ -2298,7 +2650,9 @@
         "sv": "Det är inte helt rätt ...",
         "ru": "Это не совсем так ...",
         "it": "Non è del tutto corretto ...",
-        "pl": "To nie jest w porządku..."
+        "pl": "To nie jest w porządku...",
+        "ko": "정답이 아닙니다 ...",
+        "ja": "それは完全に正しくありません..."
     },
     "NOSUCHTEAM": {
         "en": "There is no team called `%s`",
@@ -2311,7 +2665,9 @@
         "sv": "Det finns inget lag som heter `%s`",
         "ru": "Нет команды под названием `%s`",
         "it": "Non esiste una squadra chiamata `%s`",
-        "pl": "Nie ma zespołu o nazwie `%s`"
+        "pl": "Nie ma zespołu o nazwie `%s`",
+        "ko": "`%s`라는 팀이 없습니다.",
+        "ja": "`%s`というチームはありません"
     },
     "TINFO": {
         "en": "Team Information",
@@ -2324,7 +2680,9 @@
         "sv": "Teaminformation",
         "ru": "Информация о команде",
         "it": "Informazioni sulla squadra",
-        "pl": "Informacje o zespole"
+        "pl": "Informacje o zespole",
+        "ko": "팀 정보",
+        "ja": "チーム情報"
     },
     "NAME": {
         "en": "Name",
@@ -2337,7 +2695,9 @@
         "sv": "namn",
         "ru": "название",
         "it": "Nome",
-        "pl": "Nazwa"
+        "pl": "Nazwa",
+        "ko": "이름",
+        "ja": "名前"
     },
     "FOUNDER": {
         "en": "Founder",
@@ -2350,7 +2710,9 @@
         "sv": "Grundare",
         "ru": "Основатель",
         "it": "Fondatore",
-        "pl": "Założyciel"
+        "pl": "Założyciel",
+        "ko": "설립자",
+        "ja": "創設者"
     },
     "MEMBERCOUNT": {
         "en": "Member Count",
@@ -2363,7 +2725,9 @@
         "sv": "medlemsantal",
         "ru": "Количество участников",
         "it": "Conte membro",
-        "pl": "Liczba członków"
+        "pl": "Liczba członków",
+        "ko": "회원 수",
+        "ja": "会員数"
     },
     "POINTSTOTAL": {
         "en": "Points Total",
@@ -2376,7 +2740,9 @@
         "sv": "Poäng totalt",
         "ru": "Всего очков",
         "it": "Punti totali",
-        "pl": "Suma punktów"
+        "pl": "Suma punktów",
+        "ko": "총점",
+        "ja": "合計ポイント"
     },
     "GLOBALRANK": {
         "en": "Global Rank",
@@ -2389,7 +2755,9 @@
         "sv": "Global rang",
         "ru": "Глобальный рейтинг",
         "it": "Classifica globale",
-        "pl": "Ranking globalny"
+        "pl": "Ranking globalny",
+        "ko": "세계 순위",
+        "ja": "世界ランク"
     },
     "DATEFOUNDED": {
         "en": "Date Founded",
@@ -2402,7 +2770,9 @@
         "sv": "Datum grundat",
         "ru": "Дата основания",
         "it": "Data di fondazione",
-        "pl": "Data założenia"
+        "pl": "Data założenia",
+        "ko": "설립일",
+        "ja": "設立日"
     },
     "TEAMHUB": {
         "en": "[View Team Hub Page](https:\/\/triviabot.co.uk\/team\/%s)",
@@ -2415,7 +2785,9 @@
         "sv": "[Visa Team Hub Page](https:\/\/triviabot.co.uk\/team\/%s)",
         "ru": "[Просмотреть страницу Team Hub](https:\/\/triviabot.co.uk\/team\/%s)",
         "it": "[Visualizza la pagina dell'hub del team](https:\/\/triviabot.co.uk\/team\/%s)",
-        "pl": "[Wyświetl stronę centrum zespołu](https:\/\/triviabot.co.uk\/team\/%s)"
+        "pl": "[Wyświetl stronę centrum zespołu](https:\/\/triviabot.co.uk\/team\/%s)",
+        "ko": "[팀 허브 페이지보기](https:\/\/triviabot.co.uk\/team\/%s)",
+        "ja": "[チームハブページを表示](https:\/\/triviabot.co.uk\/team\/%s)"
     },
     "TOP10TEAMS": {
         "en": "Top Ten Teams",
@@ -2428,7 +2800,9 @@
         "sv": "Topp tio lag",
         "ru": "Десять лучших команд",
         "it": "Le prime dieci squadre",
-        "pl": "Dziesięć najlepszych drużyn"
+        "pl": "Dziesięć najlepszych drużyn",
+        "ko": "상위 10 개 팀",
+        "ja": "トップ10チーム"
     },
     "MONTHLYNITRO": {
         "en": "Monthly Nitro Leaderboard",
@@ -2441,7 +2815,9 @@
         "sv": "Månatlig Leaderboard för nitro",
         "ru": "Ежемесячная таблица лидеров Nitro",
         "it": "Classifica mensile di Nitro",
-        "pl": "Miesięczna tablica wyników nitro"
+        "pl": "Miesięczna tablica wyników nitro",
+        "ko": "월간 Nitro 리더 보드",
+        "ja": "毎月のニトロリーダーボード"
     },
     "LANGCHANGE": {
         "en": "TriviaBot's language has been set to English (UK)",
@@ -2454,7 +2830,9 @@
         "sv": "TriviaBots språk har ställts in på Svenska",
         "ru": "Язык TriviaBot был установлен на русский",
         "it": "La lingua di TriviaBot è stata impostata sull'italiano",
-        "pl": "Język TriviaBota został ustawiony na Polski"
+        "pl": "Język TriviaBota został ustawiony na Polski",
+        "ko": "TriviaBot의 언어가 영어 (영국)로 설정되었습니다.",
+        "ja": "TriviaBotの言語は英語(UK)に設定されています"
     },
     "SUPPORTEDLANGS": {
         "en": "The supported languages for TriviaBot are:",
@@ -2467,7 +2845,9 @@
         "sv": "De språk som stöds för TriviaBot är:",
         "ru": "Поддерживаемые языки для TriviaBot:",
         "it": "Le lingue supportate per TriviaBot sono:",
-        "pl": "Obsługiwane języki dla TriviaBot to:"
+        "pl": "Obsługiwane języki dla TriviaBot to:",
+        "ko": "TriviaBot에 지원되는 언어는 다음과 같습니다.",
+        "ja": "TriviaBotでサポートされている言語は次のとおりです。"
     },
     "HOWTOCHANGE": {
         "en": "Use `!language <code>` (e.g. `!language en`) to change the bot's language",
@@ -2480,7 +2860,9 @@
         "sv": "Använd `!language <kod>` (t.ex. `!language en`) för att ändra botens språk",
         "ru": "Используйте `!language <код>` (например, `!language en`), чтобы изменить язык бота.",
         "it": "Usa `!language <code>` (es. `!language en`) per cambiare la lingua del bot",
-        "pl": "Użyj `!language <code>` (np. `!language en`), aby zmienić język bota"
+        "pl": "Użyj `!language <code>` (np. `!language en`), aby zmienić język bota",
+        "ko": "`!language <code>` (예:`!language en`)를 사용하여 봇의 언어를 변경합니다.",
+        "ja": "ボットの言語を変更するには、`!language <code>`(例： `!language en`)を使用します"
     },
     "PREFIXSET": {
         "en": "The bot's prefix is now: `%s`",
@@ -2493,7 +2875,9 @@
         "sv": "Botens prefix är nu: `%s`",
         "ru": "Префикс бота теперь: `%s`",
         "it": "Il prefisso del bot ora è: `%s`",
-        "pl": "Prefiks bota to teraz: `%s`"
+        "pl": "Prefiks bota to teraz: `%s`",
+        "ko": "봇의 접두사는 이제 `%s` 입니다.",
+        "ja": "ボットのプレフィックスは次のようになりました：`%s`"
     },
     "BADLANG": {
         "en": "No such language. Use `!language` without a parameter to see the valid language list.",
@@ -2506,7 +2890,9 @@
         "sv": "Inget sådant språk. Använd `!language` utan en parameter för att se giltig språklista.",
         "ru": "Нет такого языка. Используйте `!language` без параметра, чтобы увидеть список допустимых языков.",
         "it": "Nessun linguaggio del genere. Usa \"! Language\" senza un parametro per vedere l'elenco delle lingue valide.",
-        "pl": "Nie ma takiego języka. Użyj `! Language` bez parametru, aby zobaczyć prawidłową listę języków."
+        "pl": "Nie ma takiego języka. Użyj `!language` bez parametru, aby zobaczyć prawidłową listę języków.",
+        "ko": "그런 언어가 없습니다. 유효한 언어 목록을 보려면 매개 변수없이`!language`를 사용하십시오.",
+        "ja": "そのような言語はありません。有効な言語リストを表示するには、パラメータなしで `!language` を使用してください。"
     },
     "MODONLY": {
         "en": "Only roles specified in the dashboard, or the server owner, can execute this command.",
@@ -2519,7 +2905,9 @@
         "sv": "Endast roller som anges i instrumentpanelen eller serverägaren kan utföra detta kommando.",
         "ru": "Эту команду могут выполнять только роли, указанные на панели управления, или владелец сервера.",
         "it": "Solo i ruoli specificati nel dashboard o il proprietario del server possono eseguire questo comando.",
-        "pl": "To polecenie mogą być wykonywane tylko przez role określone w panelu kontrolnym lub właściciel serwera."
+        "pl": "To polecenie mogą być wykonywane tylko przez role określone w panelu kontrolnym lub właściciel serwera.",
+        "ko": "대시 보드에 지정된 역할 또는 서버 소유자 만이 명령을 실행할 수 있습니다.",
+        "ja": "このコマンドを実行できるのは、ダッシュボードまたはサーバー所有者で指定された役割のみです。"
     },
     "WELCOME": {
         "en": "Thank you for inviting **TriviaBot** to %s! To get started with the bot, simply type `!start` to start a slow game of trivia or `!quickfire` to start a fast-paced game.\n\nYou can quickly set the bot's prefix with the `!language` and `!prefix` commands or by using the [dashboard](https:\/\/triviabot.co.uk\/dashboard) where you can also remotely start and stop games, change who has access to the bot, and more!\n\nFor further help please join [the official support server](https:\/\/discord.gg\/brainbox).\n\nHave fun!",
@@ -2532,7 +2920,9 @@
         "sv": "Thank you for inviting **TriviaBot** to %s! To get started with the bot, simply type `!start` to start a slow game of trivia or `!quickfire` to start a fast-paced game.\n\nYou can quickly set the bot's prefix with the `!language` and `!prefix` commands or by using the [dashboard](https:\/\/triviabot.co.uk\/dashboard) where you can also remotely start and stop games, change who has access to the bot, and more!\n\nFor further help please join [the official support server](https:\/\/discord.gg\/brainbox).\n\nHave fun!",
         "ru": "Thank you for inviting **TriviaBot** to %s! To get started with the bot, simply type `!start` to start a slow game of trivia or `!quickfire` to start a fast-paced game.\n\nYou can quickly set the bot's prefix with the `!language` and `!prefix` commands or by using the [dashboard](https:\/\/triviabot.co.uk\/dashboard) where you can also remotely start and stop games, change who has access to the bot, and more!\n\nFor further help please join [the official support server](https:\/\/discord.gg\/brainbox).\n\nHave fun!",
         "it": "Grazie per aver invitato ** TriviaBot ** a%s! Per iniziare con il bot, digita semplicemente \"! Start\" per avviare un gioco lento di quiz o \"! Quickfire\" per avviare un gioco veloce.\n\nPuoi impostare rapidamente il prefisso del bot con i comandi `! Language` e`! Prefix` o usando il [dashboard](https:\/\/triviabot.co.uk\/dashboard) dove puoi anche avviare e interrompere i giochi da remoto, cambiare chi ha accesso al bot e altro ancora!\n\nPer ulteriore aiuto, unisciti a [il server di supporto ufficiale](https:\/\/discord.gg\/brainbox).\n\nDivertiti!",
-        "pl": "Dziękujemy za zaproszenie ** TriviaBot ** do%s! Aby rozpocząć pracę z botem, po prostu wpisz `! Start`, aby rozpocząć powolną grę z ciekawostkami lub`! Quickfire`, aby rozpocząć grę w szybkim tempie.\n\nMożesz szybko ustawić prefiks bota za pomocą poleceń `! Language` i`! Prefix` lub za pomocą [dashboardu](https:\/\/triviabot.co.uk\/dashboard), gdzie możesz również zdalnie uruchamiać i zatrzymywać gry, zmieniać kto ma dostęp do bota i nie tylko!\n\nAby uzyskać dalszą pomoc, dołącz do [oficjalnego serwera wsparcia](https:\/\/discord.gg\/brainbox).\n\nBaw się dobrze!"
+        "pl": "Dziękujemy za zaproszenie ** TriviaBot ** do%s! Aby rozpocząć pracę z botem, po prostu wpisz `! Start`, aby rozpocząć powolną grę z ciekawostkami lub`! Quickfire`, aby rozpocząć grę w szybkim tempie.\n\nMożesz szybko ustawić prefiks bota za pomocą poleceń `! Language` i`! Prefix` lub za pomocą [dashboardu](https:\/\/triviabot.co.uk\/dashboard), gdzie możesz również zdalnie uruchamiać i zatrzymywać gry, zmieniać kto ma dostęp do bota i nie tylko!\n\nAby uzyskać dalszą pomoc, dołącz do [oficjalnego serwera wsparcia](https:\/\/discord.gg\/brainbox).\n\nBaw się dobrze!",
+        "ko": "** TriviaBot **을 %s에 초대해 주셔서 감사합니다! 봇을 시작하려면`!start`를 입력하여 느린 퀴즈 게임을 시작하거나`!quickfire`를 입력하여 빠르게 진행되는 게임을 시작하세요.\n\n`!language` 및`!prefix` 명령을 사용하거나 원격으로 게임을 시작하고 중지 할 수도있는 [dashboard](https:\/\/triviabot.co.uk\/dashboard)를 사용하여 봇의 접두사를 빠르게 설정할 수 있습니다. 누가 봇에 액세스 할 수 있는지 등!\n\n추가 도움이 필요하면 [공식 지원 서버](https:\/\/discord.gg\/brainbox)에 가입하세요.\n\n즐기세요!",
+        "ja": "** TriviaBot **を％sに招待していただきありがとうございます。ボットの使用を開始するには、「!start」と入力して雑学クイズの遅いゲームを開始するか、「!quickfire」と入力してペースの速いゲームを開始します。\n\n`!language`コマンドと`！prefix`コマンドを使用するか、[ダッシュボード](https:\/\/triviabot.co.uk\/dashboard)を使用してボットのプレフィックスをすばやく設定できます。この場合、ゲームをリモートで開始および停止したり、変更したりすることもできます。ボットにアクセスできる人など！\n\nさらにヘルプが必要な場合は、[公式サポートサーバー](https:\/\/discord.gg\/brainbox)に参加してください。\n\n楽しんで！"
     },
     "SHARD_IS": {
         "en": "That server is on shard %d",
@@ -2545,7 +2935,9 @@
         "sv": "Servern är på skärva %d",
         "ru": "Этот сервер находится на шарде %d",
         "it": "Quel server è sullo shard%d",
-        "pl": "Ten serwer znajduje się na fragmencie%d"
+        "pl": "Ten serwer znajduje się na fragmencie%d",
+        "ko": "해당 서버는 샤드 %d 에 있습니다.",
+        "ja": "そのサーバーはシャード%dにあります"
     },
     "CLUSTER": {
         "en": "Cluster",
@@ -2558,7 +2950,9 @@
         "sv": "Klunga",
         "ru": "Кластер",
         "it": "Grappolo",
-        "pl": "Grupa"
+        "pl": "Grupa",
+        "ko": "클러스터",
+        "ja": "集まる"
     },
     "GLOBAL": {
         "en": "Global Leaderboards",
@@ -2571,7 +2965,9 @@
         "sv": "Globala leaderboards",
         "ru": "Глобальные таблицы лидеров",
         "it": "Classifiche globali",
-        "pl": "Globalne rankingi"
+        "pl": "Globalne rankingi",
+        "ko": "글로벌 리더 보드",
+        "ja": "グローバルリーダーボード"
     },
     "ACH": {
         "en": "Your Achievements",
@@ -2584,7 +2980,9 @@
         "sv": "Dina prestationer",
         "ru": "Ваши достижения",
         "it": "I tuoi successi",
-        "pl": "Twoje osiągnięcia"
+        "pl": "Twoje osiągnięcia",
+        "ko": "당신의 업적",
+        "ja": "あなたの成果"
     },
     "UNLOCK": {
         "en": "Achievement Unlocked!",
@@ -2597,7 +2995,9 @@
         "sv": "Prestation olåst!",
         "ru": "Достижение разблокировано!",
         "it": "Obiettivo sbloccato!",
-        "pl": "Osiągnięcie odblokowane!"
+        "pl": "Osiągnięcie odblokowane!",
+        "ko": "잠금 해제 업적!",
+        "ja": "実績のロックが解除されました！"
     },
     "ACH1": {
         "en": "Unlocked a 10 Question Streak",
@@ -2610,7 +3010,9 @@
         "sv": "Låst upp en 10-fråga-rad",
         "ru": "Разблокирована серия из 10 вопросов",
         "it": "Hai sbloccato una serie di 10 domande",
-        "pl": "Odblokowano serię 10 pytań"
+        "pl": "Odblokowano serię 10 pytań",
+        "ko": "연속 10 문항 잠금 해제",
+        "ja": "10の質問ストリークのロックを解除しました"
     },
     "ACH1N": {
         "en": "You cant stop me",
@@ -2623,7 +3025,9 @@
         "sv": "Du kan inte stoppa mig",
         "ru": "Ты не можешь меня остановить",
         "it": "Non puoi fermarmi",
-        "pl": "Nie możesz mnie powstrzymać"
+        "pl": "Nie możesz mnie powstrzymać",
+        "ko": "넌 날 막을 수 없어",
+        "ja": "あなたは私を止めることはできません"
     },
     "ACH2": {
         "en": "Answered a 20 Question Streak",
@@ -2636,7 +3040,9 @@
         "sv": "Besvarade en 20-fråga-rad",
         "ru": "Ответил на серию из 20 вопросов",
         "it": "Ha risposto a una serie di 20 domande",
-        "pl": "Odpowiedział na 20 pytań"
+        "pl": "Odpowiedział na 20 pytań",
+        "ko": "연속 20 개의 질문에 답변 함",
+        "ja": "20の質問ストリークに回答しました"
     },
     "ACH2N": {
         "en": "Streaking for fun and profit",
@@ -2649,7 +3055,9 @@
         "sv": "Streaking för skojs skull och vinst",
         "ru": "Полоса для развлечения и прибыли",
         "it": "Cercando divertimento e profitto",
-        "pl": "Pasja dla zabawy i zysku"
+        "pl": "Pasja dla zabawy i zysku",
+        "ko": "재미와 이익을위한 스트리킹",
+        "ja": "楽しさと利益のためのストリーク"
     },
     "ACH3": {
         "en": "Smashed a 50 Question Streak",
@@ -2662,7 +3070,9 @@
         "sv": "Smashed a 50 Question Streak",
         "ru": "Разбить серию из 50 вопросов",
         "it": "Hai distrutto una serie di 50 domande",
-        "pl": "Udało ci się rozbić serię 50 pytań"
+        "pl": "Udało ci się rozbić serię 50 pytań",
+        "ko": "연속 50 문항 박살",
+        "ja": "50の質問ストリークを壊した"
     },
     "ACH3N": {
         "en": "Streak Master",
@@ -2675,7 +3085,9 @@
         "sv": "Streak Master",
         "ru": "Мастер полосы",
         "it": "Streak Master",
-        "pl": "Mistrz smug"
+        "pl": "Mistrz smug",
+        "ko": "연속 마스터",
+        "ja": "ストリークマスター"
     },
     "ACH4": {
         "en": "Managed a 100 Question Streak",
@@ -2688,7 +3100,9 @@
         "sv": "Hanterade en 100 Frågeserie",
         "ru": "Провёл серию из 100 вопросов",
         "it": "Gestito una serie di 100 domande",
-        "pl": "Udało mi się zdobyć serię 100 pytań"
+        "pl": "Udało mi się zdobyć serię 100 pytań",
+        "ko": "연속 100 문항 관리",
+        "ja": "100の質問ストリークを管理しました"
     },
     "ACH4N": {
         "en": "Streak Legend",
@@ -2701,7 +3115,9 @@
         "sv": "Streak Legend",
         "ru": "Легенда серии",
         "it": "Streak Legend",
-        "pl": "Streak Legend"
+        "pl": "Streak Legend",
+        "ko": "행진 전설",
+        "ja": "ストリークレジェンド"
     },
     "ACH5": {
         "en": "Started a new trivia game every day for a week",
@@ -2714,7 +3130,9 @@
         "sv": "Startade ett nytt trivia-spel varje dag i en vecka",
         "ru": "Каждый день в течение недели запускал новую викторину",
         "it": "Ha iniziato un nuovo gioco a quiz ogni giorno per una settimana",
-        "pl": "Zacząłem nową grę z ciekawostkami codziennie przez tydzień"
+        "pl": "Zacząłem nową grę z ciekawostkami codziennie przez tydzień",
+        "ko": "일주일 동안 매일 새로운 퀴즈 게임 시작",
+        "ja": "1週間毎日新しい雑学クイズゲームを開始しました"
     },
     "ACH5N": {
         "en": "The daily grind",
@@ -2727,7 +3145,9 @@
         "sv": "Den dagliga malen",
         "ru": "Ежедневная работа",
         "it": "La routine quotidiana",
-        "pl": "Dzienne szlifowanie"
+        "pl": "Dzienne szlifowanie",
+        "ko": "매일 갈기",
+        "ja": "毎日のグラインド"
     },
     "ACH6": {
         "en": "Started a new trivia game every day for a month",
@@ -2740,7 +3160,9 @@
         "sv": "Startade ett nytt trivia-spel varje dag i en månad",
         "ru": "Каждый день в течение месяца запускал новую викторину",
         "it": "Ha iniziato un nuovo gioco a quiz ogni giorno per un mese",
-        "pl": "Zacząłem nową grę z ciekawostkami codziennie przez miesiąc"
+        "pl": "Zacząłem nową grę z ciekawostkami codziennie przez miesiąc",
+        "ko": "한 달 동안 매일 새로운 퀴즈 게임 시작",
+        "ja": "1か月間毎日新しい雑学クイズゲームを開始しました"
     },
     "ACH6N": {
         "en": "Mythical Man-Month",
@@ -2753,7 +3175,9 @@
         "sv": "Mytisk månadsmånad",
         "ru": "Мифический человеко-месяц",
         "it": "Mitico mese dell'uomo",
-        "pl": "Mityczny Miesiąc Człowieka"
+        "pl": "Mityczny Miesiąc Człowieka",
+        "ko": "신화 남자-월",
+        "ja": "人月の神話"
     },
     "ACH7": {
         "en": "Started a game on Christmas Day",
@@ -2766,7 +3190,9 @@
         "sv": "Startade ett spel på juldagen",
         "ru": "Начали игру в Рождество",
         "it": "Ha iniziato una partita il giorno di Natale",
-        "pl": "Zacząłem grę w Boże Narodzenie"
+        "pl": "Zacząłem grę w Boże Narodzenie",
+        "ko": "크리스마스에 게임 시작",
+        "ja": "クリスマスの日にゲームを開始しました"
     },
     "ACH7N": {
         "en": "Trivia > Family",
@@ -2779,7 +3205,9 @@
         "sv": "Trivia > Familj",
         "ru": "Интересные факты > Семья",
         "it": "Curiosità> Famiglia",
-        "pl": "Ciekawostki> Rodzina"
+        "pl": "Ciekawostki> Rodzina",
+        "ko": "퀴즈> 가족",
+        "ja": "雑学クイズ>家族"
     },
     "ACH8": {
         "en": "Won the day's trivia on any server",
@@ -2792,7 +3220,9 @@
         "sv": "Vann dagens trivia på vilken server som helst",
         "ru": "Выиграйте мелочи дня на любом сервере",
         "it": "Hai vinto il quiz del giorno su qualsiasi server",
-        "pl": "Wygrałeś ciekawostki dnia na dowolnym serwerze"
+        "pl": "Wygrałeś ciekawostki dnia na dowolnym serwerze",
+        "ko": "모든 서버에서 그날의 퀴즈를 획득했습니다.",
+        "ja": "任意のサーバーでその日の雑学クイズに勝ちました"
     },
     "ACH8N": {
         "en": "\"A winner is you!\"",
@@ -2805,7 +3235,9 @@
         "sv": "\"A winner is you!\"",
         "ru": "\"A winner is you!\"",
         "it": "\"Un vincitore sei tu!\"",
-        "pl": "\"Zwycięzcą jesteś ty!\""
+        "pl": "\"Zwycięzcą jesteś ty!\"",
+        "ko": "\"승자는 당신입니다!\"",
+        "ja": "「勝者はあなたです！」"
     },
     "ACH9": {
         "en": "Won the monthly nitro prize",
@@ -2818,7 +3250,9 @@
         "sv": "Vann det månatliga nitropriset",
         "ru": "Выиграл ежемесячный нитро-приз",
         "it": "Hai vinto il premio nitro mensile",
-        "pl": "Wygrał miesięczną nagrodę nitro"
+        "pl": "Wygrał miesięczną nagrodę nitro",
+        "ko": "월간 니트로 상 수상",
+        "ja": "毎月のニトロ賞を受賞"
     },
     "ACH9N": {
         "en": "Eyes on the prize",
@@ -2831,7 +3265,9 @@
         "sv": "Ögon på priset",
         "ru": "Глаза на приз",
         "it": "Occhi puntati sul premio",
-        "pl": "Oczy na nagrodzie"
+        "pl": "Oczy na nagrodzie",
+        "ko": "상금에 주목",
+        "ja": "賞の目"
     },
     "UNLOCK_DETAIL": {
         "en": "You have unlocked an achievement on **TriviaBot**!",
@@ -2843,8 +3279,10 @@
         "hi": "आपने **TriviaBot** पर एक उपलब्धि का खुलासा किया है!",
         "sv": "Du har låst upp en prestation på **TriviaBot**!",
         "ru": "Вы получили достижение на **TriviaBot**!",
-        "it": "Hai sbloccato un obiettivo su ** TriviaBot **!",
-        "pl": "Odblokowałeś osiągnięcie w ** TriviaBot **!"
+        "it": "Hai sbloccato un obiettivo su **TriviaBot**!",
+        "pl": "Odblokowałeś osiągnięcie w **TriviaBot**!",
+        "ko": "**TriviaBot** 에서 업적을 달성했습니다!",
+        "ja": "**TriviaBot** でアチーブメントのロックを解除しました！"
     },
     "EARNED": {
         "en": "You earned an achievement!",
@@ -2857,7 +3295,9 @@
         "sv": "Du fick en prestation!",
         "ru": "Вы получили достижение!",
         "it": "Hai guadagnato un risultato!",
-        "pl": "Zdobyłeś osiągnięcie!"
+        "pl": "Zdobyłeś osiągnięcie!",
+        "ko": "업적을 획득하셨습니다!",
+        "ja": "あなたは成果を獲得しました！"
     },
     "TROPHYCABINET": {
         "en": "Your Trophy Cabinet",
@@ -2870,7 +3310,9 @@
         "sv": "Ditt troféskåp",
         "ru": "Ваш трофейный шкаф",
         "it": "La tua bacheca dei trofei",
-        "pl": "Twoja szafka z trofeami"
+        "pl": "Twoja szafka z trofeami",
+        "ko": "트로피 캐비닛",
+        "ja": "あなたのトロフィーキャビネット"
     },
     "ACHCOUNT": {
         "en": "**%d** achievements unlocked, **%d** achievements still to unlock.",
@@ -2883,7 +3325,9 @@
         "sv": "**%d** prestationer olåsta, **%d** prestationer fortfarande att låsa upp.",
         "ru": "Разблокировано достижений: **%d**, еще предстоит разблокировать достижений: **%d**.",
         "it": "**%d** obiettivi sbloccati, **%d** obiettivi ancora da sbloccare.",
-        "pl": "**%d** osiągnięć odblokowanych, **%d** osiągnięć wciąż do odblokowania."
+        "pl": "**%d** osiągnięć odblokowanych, **%d** osiągnięć wciąż do odblokowania.",
+        "ko": "**%d** 개의 업적이 잠금 해제되었으며 **%d** 개의 업적이 아직 잠금 해제됩니다.",
+        "ja": "**%d** アチーブメントのロックが解除され、**%d** アチーブメントのロックが解除されます。"
     },
     "TOVIEWACH": {
         "en": "Use the !achievements command on any channel to view your trophy cabinet at any time.",
@@ -2895,8 +3339,10 @@
         "hi": "किसी भी समय अपने ट्रॉफी कैबिनेट को देखने के लिए किसी भी चैनल पर !achievements आदेश का उपयोग करें।",
         "sv": "Använd kommandot !achievements på valfri kanal för att se ditt troféskåp när som helst.",
         "ru": "Используйте команду !achievements на любом канале, чтобы просмотреть свой шкаф трофеев в любое время.",
-        "it": "Usa il comando! Obiettivi su qualsiasi canale per visualizzare la tua bacheca dei trofei in qualsiasi momento.",
-        "pl": "Użyj polecenia! Osiągnięć na dowolnym kanale, aby wyświetlić swoją szafkę z trofeami w dowolnym momencie."
+        "it": "Usa il comando `!achievements` su qualsiasi canale per visualizzare la tua bacheca dei trofei in qualsiasi momento.",
+        "pl": "Użyj polecenia `!achievements` na dowolnym kanale, aby wyświetlić swoją szafkę z trofeami w dowolnym momencie.",
+        "ko": "모든 채널에서 `!achievements` 명령을 사용하여 언제든지 트로피 캐비닛을 볼 수 있습니다.",
+        "ja": "任意のチャネルで `!achievements` コマンドを使用して、いつでもトロフィーキャビネットを表示できます。"
     },
     "CATDISABLED": {
         "en": "Category **'%s'** is now disabled on this guild. You will no longer see questions from this category from the next time you start a new game.",
@@ -2909,7 +3355,9 @@
         "sv": "Kategori **'%s'** är nu inaktiverad i denna guild. Du kommer inte längre se frågor från den här kategorin nästa gång du startar ett nytt spel.",
         "ru": "Категория **'%s'** теперь отключена в этой гильдии. Вы больше не будете видеть вопросы из этой категории, когда в следующий раз начнете новую игру.",
         "it": "La categoria **'%s'** è ora disabilitata in questa gilda. Non vedrai più le domande di questa categoria la prossima volta che avvii un nuovo gioco.",
-        "pl": "Kategoria **'%s'** jest teraz wyłączona w tej gildii. Nie będziesz już widzieć pytań z tej kategorii przy następnym uruchomieniu nowej gry."
+        "pl": "Kategoria **'%s'** jest teraz wyłączona w tej gildii. Nie będziesz już widzieć pytań z tej kategorii przy następnym uruchomieniu nowej gry.",
+        "ko": "이제이 길드에서 카테고리 **'%s'** 이 (가) 비활성화되었습니다. 다음에 새 게임을 시작할 때이 범주의 질문이 더 이상 표시되지 않습니다.",
+        "ja": "カテゴリ**'%s'** はこのギルドで無効になりました。次回新しいゲームを開始したときから、このカテゴリの質問は表示されなくなります。"
     },
     "CATENABLED": {
         "en": "Category **'%s'** is now enabled on this guild. You will see questions from this category from the next time you start a new game.",
@@ -2922,7 +3370,9 @@
         "sv": "Kategori **'%s'** är nu aktiverat i denna guild. Du kommer att se frågor från den här kategorin nästa gång du startar ett nytt spel.",
         "ru": "Категория **'%s'** теперь включена в эту гильдию. Вы увидите вопросы из этой категории, когда в следующий раз начнете новую игру.",
         "it": "La categoria **'%s'** è ora abilitata in questa gilda. Vedrai le domande di questa categoria la prossima volta che avvii un nuovo gioco.",
-        "pl": "Kategoria **'%s'** jest teraz włączona w tej gildii. Pytania z tej kategorii pojawią się przy następnym uruchomieniu nowej gry."
+        "pl": "Kategoria **'%s'** jest teraz włączona w tej gildii. Pytania z tej kategorii pojawią się przy następnym uruchomieniu nowej gry.",
+        "ko": "이제이 길드에서 카테고리 **'%s'** 이 (가) 활성화되었습니다. 다음에 새 게임을 시작할 때이 범주의 질문이 표시됩니다.",
+        "ja": "カテゴリ** '%s'** がこのギルドで有効になりました。次回新しいゲームを開始したときに、このカテゴリの質問が表示されます。"
     },
     "CATDONE": {
         "en": "As you wish...",
@@ -2935,7 +3385,9 @@
         "sv": "Som du önskar...",
         "ru": "Как хотите...",
         "it": "Come vuoi...",
-        "pl": "Jak sobie życzysz..."
+        "pl": "Jak sobie życzysz...",
+        "ko": "원하는대로 ...",
+        "ja": "あなたの好きなように..."
     },
     "CATLIST": {
         "en": "List of categories",
@@ -2948,7 +3400,9 @@
         "sv": "Lista över kategorier",
         "ru": "Список категорий",
         "it": "Elenco delle categorie",
-        "pl": "Lista kategorii"
+        "pl": "Lista kategorii",
+        "ko": "카테고리 목록",
+        "ja": "カテゴリのリスト"
     },
     "CATHINT": {
         "en": "Use `!enable` and `!disable` to disable a category for your guild.",
@@ -2961,7 +3415,9 @@
         "sv": "Använd `!enable` och `!disable` för att inaktivera en kategori för din guild.",
         "ru": "Используйте `!enable` и `!disable`, чтобы отключить категорию для вашей гильдии.",
         "it": "Usa `!enable` e `!disable` per disabilitare una categoria per la tua gilda.",
-        "pl": "Użyj `!enable` i `!disable`, aby wyłączyć kategorię dla swojej gildii."
+        "pl": "Użyj `!enable` i `!disable`, aby wyłączyć kategorię dla swojej gildii.",
+        "ko": "길드 카테고리를 비활성화하려면 `!enable` 및`! disable`을 사용하십시오.",
+        "ja": "ギルドのカテゴリを無効にするには、 `!enable` と`!disable` を使用します。"
     },
     "CATERROR": {
         "en": "I can't do that, Dave",
@@ -2974,7 +3430,9 @@
         "sv": "Jag kan inte göra det, Dave",
         "ru": "Я не могу этого сделать, Дэйв",
         "it": "Non posso farlo, Dave",
-        "pl": "Nie mogę tego zrobić, Dave"
+        "pl": "Nie mogę tego zrobić, Dave",
+        "ko": "난 못해, Dave",
+        "ja": "できない、デイブ"
     },
     "NOSUCHCAT": {
         "en": "There is no category named `%s`",
@@ -2986,8 +3444,10 @@
         "hi": "`%s` नाम की कोई श्रेणी नहीं है",
         "sv": "Det finns ingen kategori som heter `%s`",
         "ru": "Нет категории с названием `%s`",
-        "it": "Non esiste una categoria denominata \"%s\"",
-        "pl": "Nie ma kategorii o nazwie „%s”"
+        "it": "Non esiste una categoria denominata `%s`",
+        "pl": "Nie ma kategorii o nazwie „%s”",
+        "ko": "`%s` 라는 카테고리가 없습니다.",
+        "ja": "`%s` という名前のカテゴリはありません"
     },
     "TOOFEWCATS": {
         "en": "You cannot disable this category as this would mean less than %d percent of TriviaBot's questions remain to be asked in games. This would be unfair to other players competing on leaderboards or for nitro. Please enable some other categories if you want to disable this one.",
@@ -3000,7 +3460,9 @@
         "sv": "Du kan inte inaktivera den här kategorin eftersom det skulle betyda att mindre än %d procent av TriviaBots frågor återstår att ställa i spel. Detta skulle vara orättvist för andra spelare som tävlar på topplistor eller för nitro. Aktivera några andra kategorier om du vill inaktivera den här.",
         "ru": "Вы не можете отключить эту категорию, так как это будет означать, что в играх останется задавать менее %d процентов вопросов TriviaBot. Это было бы несправедливо по отношению к другим игрокам, участвующим в списках лидеров или за нитро. Пожалуйста, включите некоторые другие категории, если вы хотите отключить эту.",
         "it": "Non puoi disabilitare questa categoria in quanto ciò significherebbe che meno del%d percento delle domande di TriviaBot devono essere poste nei giochi. Ciò sarebbe ingiusto nei confronti di altri giocatori che competono nelle classifiche o per nitro. Abilita alcune altre categorie se desideri disabilitare questa.",
-        "pl": "Nie możesz wyłączyć tej kategorii, ponieważ oznaczałoby to, że mniej niż%d procent pytań TriviaBot pozostaje do zadawania w grach. Byłoby to niesprawiedliwe w stosunku do innych graczy rywalizujących w tabelach wyników lub o nitro. Włącz inne kategorie, jeśli chcesz wyłączyć tę."
+        "pl": "Nie możesz wyłączyć tej kategorii, ponieważ oznaczałoby to, że mniej niż%d procent pytań TriviaBot pozostaje do zadawania w grach. Byłoby to niesprawiedliwe w stosunku do innych graczy rywalizujących w tabelach wyników lub o nitro. Włącz inne kategorie, jeśli chcesz wyłączyć tę.",
+        "ko": "이 범주는 TriviaBot의 질문 중 %d % 미만이 게임에 남아 있음을 의미하므로 비활성화 할 수 없습니다. 이것은 순위표 또는 니트로에서 경쟁하는 다른 플레이어에게 불공평합니다. 이 범주를 비활성화하려면 다른 범주를 활성화하십시오.",
+        "ja": "このカテゴリを無効にすることはできません。これは、TriviaBotの質問の％dパーセント未満がゲームで尋ねられることになります。これは、リーダーボードやニトロを競う他のプレイヤーにとって不公平です。これを無効にする場合は、他のいくつかのカテゴリを有効にしてください。"
     },
     "INSANESTATS": {
         "en": "Insane Round Statistics",
@@ -3013,6 +3475,8 @@
         "sv": "Insane Round Statistics",
         "ru": "Статистика безумного раунда",
         "it": "Statistiche di round folli",
-        "pl": "Szalone statystyki rundy"
+        "pl": "Szalone statystyki rundy",
+        "ko": "Insane Round 통계",
+        "ja": "非常識なラウンド統計"
     }
 }

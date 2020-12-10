@@ -1,0 +1,52 @@
+{
+        "title": ":user: 助けて",
+        "color": :color:,
+        "url": "https://triviabot.co.uk",
+        "timestamp": ":ts:",
+        "thumbnail": {
+                "url": "https://triviabot.co.uk/images/triviabot_tl_icon.png"
+        },
+        "footer": {
+                "text": "TriviaBotを搭載 :author: からのヘルプリクエスト",
+                "icon_url": "https://triviabot.co.uk/images/triviabot_icon.png"
+        },
+        "fields": [
+                {
+                        "name": "ヘルプを見つけて、ダッシュボードから:user: を構成します",
+                        "value": "このボットのすべての設定と構成は、[TriviaBotダッシュボード](https://triviabot.co.uk/dashboard)を介して管理できます。 さらにサポートが必要な場合は、[公式brainbox.cc不和サーバー](https://discord.gg/brainbox)に参加してください。\n<:blank:667278047006949386>",
+                        "inline": false
+                },
+                {
+                        "name": "<:dice:722798416765255800> 雑学クイズのゲームを開始する",
+                        "value": "[不和またはダッシュボードを介して、雑学クイズのゲームを開始および停止する方法](https://triviabot.co.uk/help/#start)\n<:blank:667278047006949386>",
+                        "inline": false
+                },
+                {
+                        "name": ":gear: 構成",
+                        "value": "[サーバー用のTriviaBotの構成（ボットのプレフィックスの変更を含む）](https://triviabot.co.uk/help/#config)\n<:blank:667278047006949386>",
+                        "inline": false
+                },
+                {
+                        "name": "<:gift:722798417197268992> コミュニティリワード",
+                        "value": "[サーバーの役割報酬を設定して、ユーザーに勝利または参加するための役割を与えます](https://triviabot.co.uk/help/#rolerewards)\n<:blank:667278047006949386>",
+                        "inline": false
+                },
+		{
+                        "name": "<:nitro:750660974029176833> ニトロを獲得するためにプレイ",
+                        "value": "[毎月初めにナンバーワンのプレイヤーなら、Discord Nitroを獲得できます！ ニトロリーダーボードを表示するには、ここをクリックしてください。](https://triviabot.co.uk/monthly-nitro/)\n<:blank:667278047006949386>",
+                        "inline": false
+
+		},
+		{
+			"name": "<:crystalball:722798415045460008> TriviaBotに投票する",
+			"value": "[ダイレクトメッセージによる個人的なヒントについては、top.ggでTriviaBotに投票してください](https://top.gg/bot/715906723982082139/vote)\n<:blank:667278047006949386>",
+			"inline": false
+		},
+                {
+                        "name": ":money_with_wings: プレミアム",
+                        "value": "[スケジュールされたゲーム、より長いクイックファイアラウンド、カスタマイズされたリーダーボードページなど、TriviaBotプレミアムをさらに活用する方法をご覧ください](https://triviabot.co.uk/premium/)\n<:blank:667278047006949386>",
+                        "inline": false
+                }
+        ],
+        "description": ""
+}

@@ -1,0 +1,52 @@
+{
+        "title": ":user: 도움",
+        "color": :color:,
+        "url": "https://triviabot.co.uk",
+        "timestamp": ":ts:",
+        "thumbnail": {
+                "url": "https://triviabot.co.uk/images/triviabot_tl_icon.png"
+        },
+        "footer": {
+                "text": "TriviaBot 제공-요청 :author:",
+                "icon_url": "https://triviabot.co.uk/images/triviabot_icon.png"
+        },
+        "fields": [
+                {
+                        "name": "도움말 찾기 및 구성 :user: 대시 보드를 통해",
+                        "value": "이 봇의 모든 설정 및 구성은 [TriviaBot 대시 보드](https://triviabot.co.uk/dashboard)를 통해 관리 할 수 있습니다. 추가 지원이 필요하면 [공식 brainbox.cc discord 서버](https://discord.gg/brainbox)에 가입하세요.\n<:blank:667278047006949386>",
+                        "inline": false
+                },
+                {
+                        "name": "<:dice:722798416765255800> 퀴즈 게임 시작",
+                        "value": "[불일치 또는 대시 보드를 통해 퀴즈 게임을 시작하고 중지하는 방법](https://triviabot.co.uk/help/#start)\n<:blank:667278047006949386>",
+                        "inline": false
+                },
+                {
+                        "name": ":gear: 구성",
+                        "value": "[서버에 TriviaBot 구성 (봇의 접두사 변경 포함)](https://triviabot.co.uk/help/#config)\n<:blank:667278047006949386>",
+                        "inline": false
+                },
+                {
+                        "name": "<:gift:722798417197268992> 커뮤니티 보상",
+                        "value": "[서버에 대한 역할 보상을 설정하여 사용자에게 승리 또는 참여에 대한 역할을 부여합니다.](https://triviabot.co.uk/help/#rolerewards)\n<:blank:667278047006949386>",
+                        "inline": false
+                },
+		{
+                        "name": "<:nitro:750660974029176833> Discord Nitro에서 승리하기 위해 플레이하세요",
+                        "value": "[매월 초에 1 등 플레이어라면 Discord Nitro에서 우승 할 수 있습니다! 니트로 순위표를 보려면 여기를 클릭하십시오.](https://triviabot.co.uk/monthly-nitro/)\n<:blank:667278047006949386>",
+                        "inline": false
+
+		},
+		{
+			"name": "<:crystalball:722798415045460008> TriviaBot에 투표",
+			"value": "[직접 메시지를 통해 개인적인 힌트를 받으려면 top.gg에서 TriviaBot에 투표하세요.](https://top.gg/bot/715906723982082139/vote)\n<:blank:667278047006949386>",
+			"inline": false
+		},
+                {
+                        "name": ":money_with_wings: 프리미엄",
+                        "value": "[예정된 게임, 더 긴 퀵 파이어 라운드 및 맞춤형 리더 보드 페이지를 포함하여 TriviaBot Premium으로 더 많은 것을 얻는 방법을 알아보십시오.](https://triviabot.co.uk/premium/)\n<:blank:667278047006949386>",
+                        "inline": false
+                }
+        ],
+        "description": ""
+}
