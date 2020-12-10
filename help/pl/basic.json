@@ -1,0 +1,52 @@
+{
+        "title": ":user: pomoc",
+        "color": :color:,
+        "url": "https://triviabot.co.uk",
+        "timestamp": ":ts:",
+        "thumbnail": {
+                "url": "https://triviabot.co.uk/images/triviabot_tl_icon.png"
+        },
+        "footer": {
+                "text": "Powered by TriviaBot - o pomoc poprosił :author:",
+                "icon_url": "https://triviabot.co.uk/images/triviabot_icon.png"
+        },
+        "fields": [
+                {
+                        "name": "Znajdź pomoc i skonfiguruj :user: przez panel",
+                        "value": "Wszystkimi ustawieniami i konfiguracją tego bota można zarządzać przez [TriviaBot Dashboard](https://triviabot.co.uk/dashboard). Aby uzyskać dalszą pomoc, dołącz do [oficjalnego serwera discord brainbox.cc](https://discord.gg/brainbox).\n<:blank:667278047006949386>",
+                        "inline": false
+                },
+                {
+                        "name": "<:dice:722798416765255800> Rozpoczynanie ciekawostek",
+                        "value": "[Jak uruchamiać i zatrzymywać gry z ciekawostkami, na discordzie lub przez pulpit](https://triviabot.co.uk/help/#start)\n<:blank:667278047006949386>",
+                        "inline": false
+                },
+                {
+                        "name": ":gear: Konfiguracja",
+                        "value": "[Konfiguracja TriviaBot dla twojego serwera (w tym zmiana prefiksu bota)](https://triviabot.co.uk/help/#config)\n<:blank:667278047006949386>",
+                        "inline": false
+                },
+                {
+                        "name": "<:gift:722798417197268992> Nagrody społeczności",
+                        "value": "[Konfigurowanie nagród za role dla twojego serwera, aby dać użytkownikom role za wygrywanie lub wzięcie udziału](https://triviabot.co.uk/help/#rolerewards)\n<:blank:667278047006949386>",
+                        "inline": false
+                },
+                {
+                        "name": "<:nitro:750660974029176833> Graj, aby wygrać Nitro",
+                        "value": "[Jeśli jesteś graczem numer jeden na początku każdego miesiąca, możesz wygrać Discord Nitro! Kliknij tutaj, aby wyświetlić tabelę wyników nitro!](https://triviabot.co.uk/monthly-nitro/)\n<:blank:667278047006949386>",
+                        "inline": false
+
+                },
+                {
+                        "name": "<:crystalball:722798415045460008> Głosuj na TriviaBot",
+                        "value": "[Zagłosuj na TriviaBot na top.gg w celu uzyskania osobistych wskazówek przez bezpośrednią wiadomość](https://top.gg/bot/715906723982082139/vote)\n<:blank:667278047006949386>",
+                        "inline": false
+                },
+                {
+                        "name": ":money_with_wings: Premium",
+                        "value": "[Dowiedz się, jak uzyskać więcej dzięki TriviaBot Premium, w tym zaplanowanym grom, dłuższym rundom szybkiego strzelania i dostosowanym stronom tabel wyników](https://triviabot.co.uk/premium/)\n<:blank:667278047006949386>",
+                        "inline": false
+                }
+        ],
+        "description": ""
+}
