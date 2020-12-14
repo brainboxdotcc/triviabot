@@ -1,0 +1,53 @@
+{
+        "title": "Помощ за :user:",
+        "color": :color:,
+        "url": "https://triviabot.co.uk",
+        "timestamp": ":ts:",
+        "thumbnail": {
+                "url": "https://triviabot.co.uk/images/triviabot_tl_icon.png"
+        },
+        "footer": {
+                "text": "Осъществено от TriviaBot - помощ, поискана от :author:",
+                "icon_url": "https://triviabot.co.uk/images/triviabot_icon.png"
+        },
+        "fields": [
+                {
+                        "name": "Намерете помощ и конфигурирайте :user: чрез таблото за управление",
+                        "value": "Всички настройки и конфигурация за този бот могат да се управляват чрез [таблото за управление TriviaBot](https://triviabot.co.uk/dashboard). За допълнителна помощ, моля, присъединете се към [официалния сървър за раздори brainbox.cc](https://discord.gg/brainbox).\n<:blank:667278047006949386>",
+                        "inline": false
+                },
+                {
+                        "name": "<:dice:722798416765255800> Стартиране на любопитни факти",
+                        "value": "[Как да стартирате и спрете игри на любопитни факти, чрез раздори или чрез таблото](https://triviabot.co.uk/help/#start)\n<:blank:667278047006949386>",
+                        "inline": false
+                },
+                {
+                        "name": ":gear: Конфигурация",
+                        "value": "[Конфигуриране на TriviaBot за вашия сървър (включително промяна на префикса на бота)](https://triviabot.co.uk/help/#config)\n<:blank:667278047006949386>",
+                        "inline": false
+                },
+                {
+                        "name": "<:gift:722798417197268992> Награди на общността",
+                        "value": "[Създаване на награди за роли за вашия сървър, за да се дадат на потребителите роли за спечелване или участие](https://triviabot.co.uk/help/#rolerewards)\n<:blank:667278047006949386>",
+                        "inline": false
+                },
+                {
+                        "name": "<:nitro:750660974029176833> Играйте, за да спечелите Nitro",
+                        "value": "[Ако сте играч номер едно в началото на всеки месец, можете да спечелите Discord Nitro! Щракнете тук, за да видите нитро класацията!](https://triviabot.co.uk/monthly-nitro/)\n<:blank:667278047006949386>",
+                        "inline": false
+
+                },
+                {
+                        "name": "<:crystalball:722798415045460008> Гласувайте за TriviaBot",
+                        "value": "[Гласувайте за TriviaBot on top.gg за лични съвети чрез директно съобщение](https://top.gg/bot/715906723982082139/vote)\n<:blank:667278047006949386>",
+                        "inline": false
+                },
+                {
+                        "name": ":money_with_wings: Премиум",
+                        "value": "[Разберете как да получите повече с TriviaBot Premium, включително игри по разписание, по-дълги кръгове за бърз огън и персонализирани страници с класации](https://triviabot.co.uk/premium/)\n<:blank:667278047006949386>",
+                        "inline": false
+                }
+        ],
+        "description": ""
+}
+
