@@ -325,7 +325,7 @@ guild_settings_t TriviaModule::GetGuildSettings(int64_t guild_id)
 std::string TriviaModule::GetVersion()
 {
 	/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-	std::string version = "$ModVer 46$";
+	std::string version = "$ModVer 47$";
 	return "3.0." + version.substr(8,version.length() - 9);
 }
 
@@ -490,8 +490,8 @@ void TriviaModule::do_normal_round(state_t* state, bool silent)
 		if (state->curr_customhint1.empty()) {
 			/* No custom first hint, build one */
 			state->curr_customhint1 = "";
-			if (is_number(state->curr_customhint1)) {
-				state->curr_customhint1 = MakeFirstHint(state->curr_customhint1, settings);
+			if (is_number(state->curr_answer)) {
+				state->curr_customhint1 = MakeFirstHint(state->curr_answer, settings);
 			} else {
 				int32_t r = random(1, 12);
 				if (settings.language == "bg") {
@@ -516,9 +516,10 @@ void TriviaModule::do_normal_round(state_t* state, bool silent)
 		if (state->curr_customhint2.empty()) {
 			/* No custom second hint, build one */
 			state->curr_customhint2 = "";
-			if (is_number(state->curr_customhint2) || PCRE("^\\$(\\d+)$").Match(state->curr_customhint2)) {
+			if (is_number(state->curr_answer) || PCRE("^\\$(\\d+)$").Match(state->curr_answer)) {
 				std::string currency;
 				std::vector<std::string> matches;
+				state->curr_customhint2 = state->curr_answer;
 				if (PCRE("^\\$(\\d+)$").Match(state->curr_customhint2, matches)) {
 					state->curr_customhint2 = matches[1];
 					currency = "$";
