@@ -56,3 +56,30 @@ std::string utf8lower(const std::string &input, bool spanish_hack)
 	}
 	return converter.to_bytes(str);
 }
+
+/* Counts the vowels and length of a unicode utf8 string. Vowels valid for cyrillic and latin languages */
+std::pair<int, int> countvowel(const std::string &input)
+{
+	std::string i = utf8lower(input, true);
+	std::setlocale(LC_CTYPE, "en_US.UTF-8");
+	std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+	std::wstring str = converter.from_bytes(input.c_str());
+	int vowels = 0;
+	int len = 0;
+	for (std::wstring::iterator it = str.begin(); it != str.end(); ++it) {
+		*it = towlower(*it);
+		if (
+			/* Latin alphabet vowels (with and without accent characters) */
+			*it == L'á' || *it == L'é' || *it == L'ó' || *it == L'ú' || *it == L'ü' || *it == L'a' || *it == L'e' || *it == L'i' || *it == L'o' || *it == L'u'
+			/* Cyrillic alphabet vowels */
+			|| *it == L'е' || *it == L'о' || *it == L'а' || *it == L'э' || *it == L'ы' || *it == L'у' || *it == L'я' || *it == L'ё' || *it == L'ю' || *it == L'и'
+		) {
+			vowels++;
+		}
+		if (*it != L' ') {
+			len++;
+		}
+	}
+	return std::make_pair(vowels, len);
+}
+

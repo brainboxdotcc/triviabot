@@ -325,7 +325,7 @@ guild_settings_t TriviaModule::GetGuildSettings(int64_t guild_id)
 std::string TriviaModule::GetVersion()
 {
 	/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-	std::string version = "$ModVer 45$";
+	std::string version = "$ModVer 46$";
 	return "3.0." + version.substr(8,version.length() - 9);
 }
 
@@ -365,14 +365,15 @@ std::string TriviaModule::letterlong(std::string text, const guild_settings_t &s
 
 std::string TriviaModule::vowelcount(std::string text, const guild_settings_t &settings)
 {
-	text = ReplaceString(lowercase(text), " ", "");
+	/*text = ReplaceString(lowercase(text), " ", "");
 	int v = 0;
 	for (auto x = text.begin(); x != text.end(); ++x) {
 		if (isVowel(*x)) {
 			++v;
 		}
-	}
-	return fmt::format(_("HINT_VOWELCOUNT", settings), text.length(), v);
+	}*/
+	std::pair<int, int> counts = countvowel(text);
+	return fmt::format(_("HINT_VOWELCOUNT", settings), counts.second, counts.first);
 }
 
 void TriviaModule::do_insane_round(state_t* state, bool silent)
@@ -488,28 +489,33 @@ void TriviaModule::do_normal_round(state_t* state, bool silent)
 		/* Handle hints */
 		if (state->curr_customhint1.empty()) {
 			/* No custom first hint, build one */
-			state->curr_customhint1 = state->curr_answer;
+			state->curr_customhint1 = "";
 			if (is_number(state->curr_customhint1)) {
 				state->curr_customhint1 = MakeFirstHint(state->curr_customhint1, settings);
 			} else {
 				int32_t r = random(1, 12);
-				if (r <= 4) {
-					/* Leave only capital letters */
-					for (int x = 0; x < state->curr_customhint1.length(); ++x) {
-						if ((state->curr_customhint1[x] >= 'a' && state->curr_customhint1[x] <= 'z') || state->curr_customhint1[x] == '1' || state->curr_customhint1[x] == '3' || state->curr_customhint1[x] == '5' || state->curr_customhint1[x]  == '7' || state->curr_customhint1[x] == '9') {
-							state->curr_customhint1[x] = '#';
-						}
-					}
-				} else if (r >= 5 && r <= 8) {
-					state->curr_customhint1 = letterlong(state->curr_customhint1, settings);
-				} else {
+				if (settings.language == "bg") {
 					state->curr_customhint1 = fmt::format(_("SCRAMBLED_ANSWER", settings), state->shuffle1);
+				} else {
+					if (r <= 4) {
+						/* Leave only capital letters */
+						state->curr_customhint1 = state->curr_answer;
+						for (int x = 0; x < state->curr_customhint1.length(); ++x) {
+							if ((state->curr_customhint1[x] >= 'a' && state->curr_customhint1[x] <= 'z') || state->curr_customhint1[x] == '1' || state->curr_customhint1[x] == '3' || state->curr_customhint1[x] == '5' || state->curr_customhint1[x]  == '7' || state->curr_customhint1[x] == '9') {
+									state->curr_customhint1[x] = '#';
+							}
+						}
+					} else if (r >= 5 && r <= 8) {
+					state->curr_customhint1 = letterlong(state->curr_answer, settings);
+					} else {
+						state->curr_customhint1 = fmt::format(_("SCRAMBLED_ANSWER", settings), state->shuffle1);
+					}
 				}
 			}
 		}
 		if (state->curr_customhint2.empty()) {
 			/* No custom second hint, build one */
-			state->curr_customhint2 = state->curr_answer;
+			state->curr_customhint2 = "";
 			if (is_number(state->curr_customhint2) || PCRE("^\\$(\\d+)$").Match(state->curr_customhint2)) {
 				std::string currency;
 				std::vector<std::string> matches;
@@ -530,18 +536,19 @@ void TriviaModule::do_normal_round(state_t* state, bool silent)
 				}
 			} else {
 				int32_t r = random(1, 12);
-				if (r <= 4) {
+				if (r <= 4 && settings.language != "bg") {
 					/* Transpose only the vowels */
+					state->curr_customhint2 = state->curr_answer;
 					for (int x = 0; x < state->curr_customhint2.length(); ++x) {
 						if (toupper(state->curr_customhint2[x]) == 'A' || toupper(state->curr_customhint2[x]) == 'E' || toupper(state->curr_customhint2[x]) == 'I' || toupper(state->curr_customhint2[x]) == 'O' || toupper(state->curr_customhint2[x]) == 'U' || toupper(state->curr_customhint2[x]) == '2' || toupper(state->curr_customhint2[x]) == '4' || toupper(state->curr_customhint2[x]) == '6' || toupper(state->curr_customhint2[x]) == '8' || toupper(state->curr_customhint2[x]) == '0') {
 							state->curr_customhint2[x] = '#';
 						}
 					}
 				} else if ((r >= 5 && r <= 6) || settings.language != "en") {
-					state->curr_customhint2 = vowelcount(state->curr_customhint2, settings);
+					state->curr_customhint2 = vowelcount(state->curr_answer, settings);
 				} else {
 					/* settings.language check for en above, because piglatin only makes sense in english */
-					state->curr_customhint2 = piglatin(state->curr_customhint2);
+					state->curr_customhint2 = piglatin(state->curr_answer);
 				}
 
 			}
