@@ -40,12 +40,16 @@ void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 {
 	int32_t questions;
 	std::string str_q;
+	std::string category;
 	tokens >> str_q;
 	if (str_q.empty()) {
 		questions = 10;
 	} else {
 		questions = from_string<int32_t>(str_q, std::dec);
 	}
+
+	std::getline(tokens, category);
+
 	bool quickfire = (base_command == "quickfire" || base_command == "qf");
 	bool hintless = (base_command == "hardcore" || base_command == "hc");
 	bool resumed = false;
@@ -99,7 +103,15 @@ void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 			}
 			return;
 		}
-		std::vector<std::string> sl = fetch_shuffle_list(cmd.guild_id);
+		std::vector<std::string> sl = fetch_shuffle_list(cmd.guild_id, category);
+		if (sl.size() == 1) {
+			if (sl[0] == "*** No such category ***") {
+				creator->SimpleEmbed(":warning:", _("START_BAD_CATEGORY", settings), cmd.channel_id);
+			} else if (sl[0] == "*** Category too small ***") {
+				creator->SimpleEmbed(":warning:", _("START_TOO_SMALL", settings), cmd.channel_id);
+			}
+			return;
+		}
 		if (sl.size() < 50) {
 			creator->SimpleEmbed(":warning:", fmt::format(_("SPOOPY2", settings), username), c->get_id().get(), _("BROKED", settings));
 			return;
@@ -122,7 +134,7 @@ void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 				state->curr_answer = "";
 				state->hintless = hintless;
 				state->guild_id = cmd.guild_id;
-				creator->bot->core.log->info("Started game on guild {}, channel {}, {} questions [{}]", cmd.guild_id, cmd.channel_id, questions, quickfire ? "quickfire" : "normal");
+				creator->bot->core.log->info("Started game on guild {}, channel {}, {} questions [{}] [category: {}]", cmd.guild_id, cmd.channel_id, questions, quickfire ? "quickfire" : "normal", category);
 				creator->EmbedWithFields(fmt::format(_((state->hintless ? "NEWROUND_NH" : "NEWROUND"), settings), (state->hintless ? "**HARDCORE** " : (quickfire ? "**QUICKFIRE** " : "")), (resumed ? _("RESUMED", settings) : _("STARTED", settings)), (resumed ? _("ABOTADMIN", settings) : username)), {{_("QUESTION", settings), fmt::format("{}", questions), false}, {_("GETREADY", settings), _("FIRSTCOMING", settings), false}, {_("HOWPLAY", settings), _("INSTRUCTIONS", settings)}}, cmd.channel_id);
 				creator->states[cmd.channel_id] = state;
 				creator->GetBot()->core.log->debug("create new timer");

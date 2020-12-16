@@ -3697,5 +3697,11 @@
         "ko": "Insane Round 통계",
         "ja": "非常識なラウンド統計",
         "bg": "Безумна кръгла статистика"
+    },
+    "START_TOO_SMALL": {
+	"en": "This category is too small to play right now, so it wouldn't be much fun! If you want to play this category on its own, please submit more questions so that the category has at least 1000. You can do this by [clicking here](https://triviabot.co.uk/addq/)."
+    },
+    "START_BAD_CATEGORY": {
+	"en": "I can't find any category names that look like the one you specified. Please try again. You can use `!categories` to get a list of categories."
     }
 }

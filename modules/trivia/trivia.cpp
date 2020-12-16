@@ -325,7 +325,7 @@ guild_settings_t TriviaModule::GetGuildSettings(int64_t guild_id)
 std::string TriviaModule::GetVersion()
 {
 	/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-	std::string version = "$ModVer 47$";
+	std::string version = "$ModVer 48$";
 	return "3.0." + version.substr(8,version.length() - 9);
 }
 
@@ -822,14 +822,18 @@ void TriviaModule::CheckForQueuedStarts()
 		int64_t guild_id = from_string<int64_t>((*r)["guild_id"], std::dec);
 		/* Check that this guild is on this cluster, if so we can start this game */
 		if (bot->core.find_guild(guild_id)) {
+
 			int64_t channel_id = from_string<int64_t>((*r)["channel_id"], std::dec);
 			int64_t user_id = from_string<int64_t>((*r)["user_id"], std::dec);
 			int32_t questions = from_string<int32_t>((*r)["questions"], std::dec);
 			int32_t quickfire = from_string<int32_t>((*r)["quickfire"], std::dec);
 			int32_t hintless = from_string<int32_t>((*r)["hintless"], std::dec);
-			bot->core.log->info("Remote start, guild_id={} channel_id={} user_id={} questions={} type={}", guild_id, channel_id, user_id, questions, hintless ? "hardcore" : (quickfire ? "quickfire" : "normal"));
+			std::string category = (*r)["category"];
+
+			bot->core.log->info("Remote start, guild_id={} channel_id={} user_id={} questions={} type={} category='{}'", guild_id, channel_id, user_id, questions, hintless ? "hardcore" : (quickfire ? "quickfire" : "normal"), category);
 			guild_settings_t settings = GetGuildSettings(guild_id);
-			aegis::gateway::objects::message m(fmt::format("{}{} {}", settings.prefix, (hintless ? "hardcore" : (quickfire ? "quickfire" : "start")), questions), bot->core.find_channel(channel_id), bot->core.find_guild(guild_id));
+
+			aegis::gateway::objects::message m(fmt::format("{}{} {}{}", settings.prefix, (hintless ? "hardcore" : (quickfire ? "quickfire" : "start")), questions, (category.empty() ? "" : (std::string(" ") + category))), bot->core.find_channel(channel_id), bot->core.find_guild(guild_id));
 
 			struct modevent::message_create msg = {
 				*(bot->core.get_shard_mgr().get_shards()[0]),
@@ -840,7 +844,11 @@ void TriviaModule::CheckForQueuedStarts()
 
 			RealOnMessage(msg, msg.msg.get_content(), false, {}, user_id);
 	
+			/* Delete just this entry as we've processed it */
 			db::query("DELETE FROM start_queue WHERE channel_id = ?", {channel_id});
+		} else {
+			/* Guild doesnt exist, remove all associated entries from start queue (bot most likely kicked) */
+			db::query("DELETE FROM start_queue WHERE guild_id = ?", {guild_id});
 		}
 	}
 }

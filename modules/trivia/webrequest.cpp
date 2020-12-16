@@ -184,9 +184,13 @@ std::vector<std::string> get_api_command_names()
 	return to_list(fetch_page("?opt=listcommands"));
 }
 
-std::vector<std::string> fetch_shuffle_list(int64_t guild_id)
+std::vector<std::string> fetch_shuffle_list(int64_t guild_id, const std::string &category)
 {
-	return to_list(fetch_page(fmt::format("?opt=shuffle&guild_id={}",guild_id)));
+	if (category.empty()) {
+		return to_list(fetch_page(fmt::format("?opt=shuffle&guild_id={}",guild_id)));
+	} else {
+		return to_list(fetch_page(fmt::format("?opt=shuffle&guild_id={}&category={}",guild_id, url_encode(category))));
+	}
 }
 
 std::vector<std::string> get_disabled_list()
