@@ -49,6 +49,7 @@ void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 	}
 
 	std::getline(tokens, category);
+	category = trim(category);
 
 	bool quickfire = (base_command == "quickfire" || base_command == "qf");
 	bool hintless = (base_command == "hardcore" || base_command == "hc");
