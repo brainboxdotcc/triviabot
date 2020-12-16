@@ -3680,7 +3680,20 @@
         "bg": "Няма категория с име `%s`"
     },
     "TOOFEWCATS": {
-        "en": "You cannot disable this category as this would mean less than 1000 questions remain to be asked in games. This would be unfair to other players competing on leaderboards or for nitro, and would make for a boring game. Please enable some other categories if you want to disable this one."
+        "en": "You cannot disable this category as this would mean less than 1000 questions remain to be asked in games. This would be unfair to other players competing on leaderboards or for nitro, and would make for a boring game. Please enable some other categories if you want to disable this one.",
+        "fr": "Vous ne pouvez pas désactiver cette catégorie car cela signifierait qu'il reste moins de 1000 questions à poser dans les jeux. Ce serait injuste pour les autres joueurs en compétition dans les classements ou pour la nitro, et ferait un jeu ennuyeux. Veuillez activer d'autres catégories si vous souhaitez désactiver celle-ci.",
+        "pt": "Você não pode desabilitar esta categoria, pois isso significaria menos de 1000 perguntas a serem feitas nos jogos. Isso seria injusto com outros jogadores competindo em tabelas de classificação ou por nitro, e tornaria o jogo enfadonho. Habilite algumas outras categorias se quiser desabilitar esta.",
+        "tr": "Bu kategoriyi devre dışı bırakamazsınız çünkü bu, oyunlarda 1000'den az soru sorulacağı anlamına gelir. Bu, liderlik tablolarında veya nitro için rekabet eden diğer oyuncular için haksızlık olur ve sıkıcı bir oyun olur. Lütfen bunu devre dışı bırakmak istiyorsanız diğer bazı kategorileri etkinleştirin.",
+        "es": "No puede desactivar esta categoría, ya que esto significaría que quedan menos de 1000 preguntas por hacer en los juegos. Esto sería injusto para otros jugadores que compiten en tablas de clasificación o por nitro, y sería un juego aburrido. Habilite algunas otras categorías si desea deshabilitar esta.",
+        "de": "Sie können diese Kategorie nicht deaktivieren, da dies bedeuten würde, dass in Spielen noch weniger als 1000 Fragen zu stellen sind. Dies wäre unfair gegenüber anderen Spielern, die auf Bestenlisten oder um Nitro kämpfen, und würde zu einem langweiligen Spiel führen. Bitte aktivieren Sie einige andere Kategorien, wenn Sie diese deaktivieren möchten.",
+        "hi": "आप इस श्रेणी को अक्षम नहीं कर सकते क्योंकि इसका मतलब होगा कि 1000 से कम प्रश्न गेम में पूछे जाएंगे। यह लीडरबोर्ड पर या नाइट्रो के लिए प्रतिस्पर्धा करने वाले अन्य खिलाड़ियों के लिए अनुचित होगा, और एक उबाऊ खेल के लिए बनायेगा। यदि आप इसे अक्षम करना चाहते हैं तो कृपया कुछ अन्य श्रेणियां सक्षम करें।",
+        "sv": "Du kan inte inaktivera den här kategorin eftersom det skulle innebära att mindre än 1000 frågor återstår att ställa i spel. Detta skulle vara orättvist för andra spelare som tävlar på topplistor eller för nitro, och skulle ge ett tråkigt spel. Aktivera några andra kategorier om du vill inaktivera den här.",
+        "ru": "Вы не можете отключить эту категорию, так как это будет означать, что в играх останется задать менее 1000 вопросов. Это было бы несправедливо по отношению к другим игрокам, соревнующимся в таблице лидеров или за нитро, и сделало бы игру скучной. Пожалуйста, включите некоторые другие категории, если вы хотите отключить эту.",
+        "it": "Non è possibile disabilitare questa categoria in quanto ciò significherebbe che rimangono meno di 1000 domande da porre nei giochi. Questo sarebbe ingiusto nei confronti di altri giocatori che competono nelle classifiche o per nitro, e renderebbe un gioco noioso. Abilita alcune altre categorie se desideri disabilitare questa.",
+        "pl": "Nie możesz wyłączyć tej kategorii, ponieważ oznaczałoby to, że w grach pozostało mniej niż 1000 pytań. Byłoby to niesprawiedliwe dla innych graczy rywalizujących w tabelach liderów lub o nitro i byłoby nudną grą. Włącz inne kategorie, jeśli chcesz wyłączyć tę.",
+        "ko": "이 범주는 게임에서 묻는 질문이 1000 개 미만임을 의미하므로 비활성화 할 수 없습니다. 이것은 순위표 또는 니트로에서 경쟁하는 다른 플레이어에게 불공평하며 지루한 게임을 만듭니다. 이 범주를 비활성화하려면 다른 범주를 활성화하십시오.",
+        "ja": "このカテゴリを無効にすることはできません。これは、ゲームで質問される質問が1000未満になることを意味します。これは、リーダーボードやニトロを競う他のプレイヤーにとって不公平であり、退屈なゲームになります。これを無効にする場合は、他のいくつかのカテゴリを有効にしてください。",
+        "bg": "Не можете да деактивирате тази категория, тъй като това би означавало да останат по-малко от 1000 въпроса в игрите. Това би било несправедливо спрямо други играчи, които се състезават на класации или за нитро, и би довело до скучна игра. Моля, активирайте някои други категории, ако искате да деактивирате тази."
     },
     "INSANESTATS": {
         "en": "Insane Round Statistics",
@@ -3699,9 +3712,35 @@
         "bg": "Безумна кръгла статистика"
     },
     "START_TOO_SMALL": {
-	"en": "This category is too small to play right now, so it wouldn't be much fun! If you want to play this category on its own, please submit more questions so that the category has at least 1000. You can do this by [clicking here](https://triviabot.co.uk/addq/)."
+        "en": "This category is too small to play right now, so it wouldn't be much fun! If you want to play this category on its own, please submit more questions so that the category has at least 1000. You can do this by [clicking here](https:\/\/triviabot.co.uk\/addq\/).",
+        "fr": "Cette catégorie est trop petite pour jouer en ce moment, donc ce ne serait pas très amusant! Si vous voulez jouer à cette catégorie seul, veuillez soumettre plus de questions afin que la catégorie en ait au moins 1000. Vous pouvez le faire en [cliquant ici](https:\/\/triviabot.co.uk\/addq\/).",
+        "pt": "Esta categoria é muito pequena para jogar agora, então não seria muito divertido! Se você quiser jogar esta categoria sozinho, envie mais perguntas para que a categoria tenha pelo menos 1000. Você pode fazer isso [clicando aqui](https:\/\/triviabot.co.uk\/addq\/).",
+        "tr": "Bu kategori şu anda oynamak için çok küçük, bu yüzden çok eğlenceli olmayacak! Bu kategoriyi kendi başına oynamak istiyorsanız, lütfen kategoride en az 1000 olacak şekilde daha fazla soru gönderin. Bunu [buraya tıklayarak](https:\/\/triviabot.co.uk\/addq\/) yapabilirsiniz.",
+        "es": "Esta categoría es demasiado pequeña para jugar en este momento, ¡así que no sería muy divertido! Si desea jugar esta categoría por sí solo, envíe más preguntas para que la categoría tenga al menos 1000. Puede hacerlo haciendo clic aquí (https:\/\/triviabot.co.uk\/addq\/).",
+        "de": "Diese Kategorie ist zu klein, um sie gerade zu spielen, also würde es nicht viel Spaß machen! Wenn Sie diese Kategorie alleine spielen möchten, senden Sie bitte weitere Fragen, damit die Kategorie mindestens 1000 hat. Sie können dies tun, indem Sie [hier klicken](https:\/\/triviabot.co.uk\/addq\/).",
+        "hi": "यह श्रेणी अभी खेलने के लिए बहुत छोटी है, इसलिए यह बहुत मजेदार नहीं होगा! यदि आप इस श्रेणी को अपने दम पर खेलना चाहते हैं, तो कृपया अधिक प्रश्न प्रस्तुत करें ताकि श्रेणी में कम से कम 1000 हो। आप इसे [यहाँ क्लिक करके](https:\/\/triviabot.co.uk\/addq\/) कर सकते हैं।",
+        "sv": "Denna kategori är för liten för att spela just nu, så det skulle inte vara så kul! Om du vill spela denna kategori på egen hand, vänligen skicka fler frågor så att kategorin har minst 1000. Du kan göra detta genom att [klicka här](https:\/\/triviabot.co.uk\/addq\/).",
+        "ru": "Эта категория слишком мала, чтобы играть прямо сейчас, так что это будет не очень весело! Если вы хотите играть в эту категорию отдельно, отправьте больше вопросов, чтобы в категории было не менее 1000. Вы можете сделать это, [щелкнув здесь](https:\/\/triviabot.co.uk\/addq\/).",
+        "it": "Questa categoria è troppo piccola per giocare in questo momento, quindi non sarebbe molto divertente! Se vuoi giocare a questa categoria da solo, invia più domande in modo che la categoria ne contenga almeno 1000. Puoi farlo [facendo clic qui](https:\/\/triviabot.co.uk\/addq\/).",
+        "pl": "Ta kategoria jest teraz zbyt mała, aby grać w nią, więc nie byłoby to zbyt zabawne! Jeśli chcesz grać samodzielnie w tę kategorię, prześlij więcej pytań, aby kategoria miała co najmniej 1000. Możesz to zrobić, [klikając tutaj](https:\/\/triviabot.co.uk\/addq\/).",
+        "ko": "이 카테고리는 지금 플레이하기에는 너무 작아서별로 재미 있지 않을 것입니다! 이 카테고리를 단독으로 플레이하려면 카테고리가 1000 개 이상이되도록 더 많은 질문을 제출해주세요. [여기를 클릭](https:\/\/triviabot.co.uk\/addq\/)하면됩니다.",
+        "ja": "このカテゴリは小さすぎて今はプレイできないので、あまり面白くありません！このカテゴリを単独でプレイしたい場合は、カテゴリが少なくとも1000になるように、さらに質問を送信してください。[ここをクリック](https:\/\/triviabot.co.uk\/addq\/)でこれを行うことができます。",
+        "bg": "Тази категория е твърде малка, за да се играе в момента, така че не би било много забавно! Ако искате да играете тази категория самостоятелно, моля, изпратете още въпроси, така че категорията да има поне 1000. Можете да направите това, като [щракнете тук](https:\/\/triviabot.co.uk\/addq\/)."
     },
     "START_BAD_CATEGORY": {
-	"en": "I can't find any category names that look like the one you specified. Please try again. You can use `!categories` to get a list of categories."
+        "en": "I can't find any category names that look like the one you specified. Please try again. You can use `!categories` to get a list of categories.",
+        "fr": "Je ne trouve aucun nom de catégorie qui ressemble à celui que vous avez spécifié. Veuillez réessayer. Vous pouvez utiliser `!categories` pour obtenir une liste de catégories.",
+        "pt": "Não consigo encontrar nenhum nome de categoria que se pareça com o que você especificou. Por favor, tente novamente. Você pode usar `!categorias` para obter uma lista de categorias.",
+        "tr": "Belirttiğinize benzeyen herhangi bir kategori adı bulamıyorum. Lütfen tekrar deneyin. Kategori listesi almak için `!categories` i kullanabilirsiniz.",
+        "es": "No puedo encontrar ningún nombre de categoría que se parezca al que especificó. Inténtalo de nuevo. Puede utilizar `!categories` para obtener una lista de categorías.",
+        "de": "Ich kann keine Kategorienamen finden, die wie die von Ihnen angegebenen aussehen. Bitte versuche es erneut. Sie können `!categories` verwenden, um eine Liste der Kategorien zu erhalten.",
+        "hi": "मुझे आपके द्वारा निर्दिष्ट किसी भी श्रेणी के नाम नहीं मिल सकते हैं। कृपया पुन: प्रयास करें। आप श्रेणियों की एक सूची प्राप्त करने के लिए `!categories` का उपयोग कर सकते हैं।",
+        "sv": "Jag kan inte hitta några kategorinamn som ser ut som det du angav. Var god försök igen. Du kan använda `!categories` för att få en lista över kategorier.",
+        "ru": "Я не могу найти ни одной категории с названиями, похожими на указанное вами. Пожалуйста, попробуйте еще раз. Вы можете использовать `!categories`, чтобы получить список категорий.",
+        "it": "Non riesco a trovare nomi di categoria che assomigliano a quello che hai specificato. Per favore riprova. Puoi usare `!categories` per ottenere un elenco di categorie.",
+        "pl": "Nie mogę znaleźć żadnych nazw kategorii, które wyglądają jak ta, którą podałeś. Proszę spróbuj ponownie. Aby uzyskać listę kategorii, możesz użyć `!categories`.",
+        "ko": "지정한 것과 유사한 카테고리 이름을 찾을 수 없습니다. 다시 시도하십시오. `!categories` 를 사용하여 범주 목록을 가져올 수 있습니다.",
+        "ja": "指定したカテゴリ名が見つかりません。もう一度やり直してください。 `!categories` を使用して、カテゴリのリストを取得できます。",
+        "bg": "Не мога да намеря имена на категории, които да изглеждат като това, което сте посочили. Моля, опитайте отново. Можете да използвате `!categories`, за да получите списък с категории."
     }
 }
