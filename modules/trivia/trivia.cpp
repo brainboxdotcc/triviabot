@@ -325,7 +325,7 @@ guild_settings_t TriviaModule::GetGuildSettings(int64_t guild_id)
 std::string TriviaModule::GetVersion()
 {
 	/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-	std::string version = "$ModVer 49$";
+	std::string version = "$ModVer 50$";
 	return "3.0." + version.substr(8,version.length() - 9);
 }
 
@@ -846,10 +846,6 @@ void TriviaModule::CheckForQueuedStarts()
 	
 			/* Delete just this entry as we've processed it */
 			db::query("DELETE FROM start_queue WHERE channel_id = ?", {channel_id});
-		} else {
-			/* Guild doesnt exist, remove all associated entries from start queue (bot most likely kicked) */
-			db::query("DELETE FROM start_queue WHERE guild_id = ?", {guild_id});
-			bot->core.log->info("Remote start rejected for missing guild {}", guild_id);
 		}
 	}
 }

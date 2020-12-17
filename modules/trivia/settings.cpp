@@ -47,5 +47,5 @@ guild_settings_t::guild_settings_t(int64_t _guild_id,
 			role_reward_id(_role_reward_id),
 			custom_url(_custom_url),
 			language(_language),
-			question_interval(_question_interval < 20 || _question_interval > 120 ? 20 : _question_interval)
+			question_interval(_question_interval < 20 || _question_interval > 3600 ? 20 : _question_interval)
 { }
