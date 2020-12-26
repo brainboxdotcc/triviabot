@@ -95,6 +95,10 @@ void TriviaModule::handle_command(const in_cmd &cmd) {
 			if (user) {
 				username = user->get_username();
 			}
+			if (!c) {
+				/* Channel yoinked, can't proceed */
+				return;
+			}
 	
 			guild_settings_t settings = GetGuildSettings(cmd.guild_id);
 	
@@ -104,7 +108,7 @@ void TriviaModule::handle_command(const in_cmd &cmd) {
 			/* Now iterate the list of moderator roles from settings */
 			if (!moderator) {
 				for (auto x = settings.moderator_roles.begin(); x != settings.moderator_roles.end(); ++x) {
-					if (c->get_guild().member_has_role(cmd.author_id, *x)) {
+					if (g && g->member_has_role(cmd.author_id, *x)) {
 						moderator = true;
 						break;
 					}

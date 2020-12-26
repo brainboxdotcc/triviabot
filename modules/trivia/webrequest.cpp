@@ -267,7 +267,9 @@ bool log_question_index(int64_t guild_id, int64_t channel_id, int32_t index, uin
 	char hostname[1024];
 	hostname[1023] = '\0';
 	gethostname(hostname, 1023);
-	return from_string<int32_t>(fetch_page(fmt::format("?opt=gameindex&guild_id={}&channel_id={}&index={}&hostname={}&streak={}&lastanswered={}&state={}", guild_id, channel_id, index, url_encode(hostname), streak, lastanswered, state)), std::dec);
+	std::string r = trim(fetch_page(fmt::format("?opt=gameindex&guild_id={}&channel_id={}&index={}&hostname={}&streak={}&lastanswered={}&state={}", guild_id, channel_id, index, url_encode(hostname), streak, lastanswered, state)));
+	return r == "1";
+
 }
 
 int32_t update_score(int64_t snowflake_id, int64_t guild_id, time_t recordtime, int64_t id, int score)

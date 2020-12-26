@@ -325,7 +325,7 @@ guild_settings_t TriviaModule::GetGuildSettings(int64_t guild_id)
 std::string TriviaModule::GetVersion()
 {
 	/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-	std::string version = "$ModVer 50$";
+	std::string version = "$ModVer 52$";
 	return "3.0." + version.substr(8,version.length() - 9);
 }
 
@@ -336,9 +336,15 @@ std::string TriviaModule::GetDescription()
 
 void TriviaModule::UpdatePresenceLine()
 {
+	uint32_t ticks = 0;
+	int32_t questions = get_total_questions();
 	while (!terminating) {
 		sleep(20);
-		int32_t questions = get_total_questions();
+		ticks++;
+		if (ticks > 100) {
+			questions = get_total_questions();
+			ticks = 0;
+		}
 		bot->counters["activegames"] = GetActiveLocalGames();
 		std::string presence = fmt::format("Trivia! {} questions, {} active games on {} servers through {} shards, cluster {}", Comma(questions), Comma(GetActiveGames()), Comma(this->GetGuildTotal()), Comma(bot->core.shard_max_count), bot->GetClusterID());
 		bot->core.log->debug("PRESENCE: {}", presence);
