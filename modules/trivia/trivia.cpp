@@ -325,7 +325,7 @@ guild_settings_t TriviaModule::GetGuildSettings(int64_t guild_id)
 std::string TriviaModule::GetVersion()
 {
 	/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-	std::string version = "$ModVer 53$";
+	std::string version = "$ModVer 54$";
 	return "3.0." + version.substr(8,version.length() - 9);
 }
 
@@ -410,7 +410,7 @@ void TriviaModule::do_insane_round(state_t* state, bool silent)
 		}
 	} while (tries < 5);
 	// 5 or more tries stops the game
-	if (tries >= 5 || log_question_index(state->guild_id, state->channel_id, state->round, state->streak, state->last_to_answer, state->gamestate)) {
+	if (log_question_index(state->guild_id, state->channel_id, state->round, state->streak, state->last_to_answer, state->gamestate) || tries >= 5) {
 		StopGame(state, settings);
 		return;
 	}
