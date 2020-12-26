@@ -325,7 +325,7 @@ guild_settings_t TriviaModule::GetGuildSettings(int64_t guild_id)
 std::string TriviaModule::GetVersion()
 {
 	/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-	std::string version = "$ModVer 52$";
+	std::string version = "$ModVer 53$";
 	return "3.0." + version.substr(8,version.length() - 9);
 }
 
@@ -394,8 +394,23 @@ void TriviaModule::do_insane_round(state_t* state, bool silent)
 
 	guild_settings_t settings = GetGuildSettings(state->guild_id);
 
-	std::vector<std::string> answers = fetch_insane_round(state->curr_qid, state->guild_id);
-	if (log_question_index(state->guild_id, state->channel_id, state->round, state->streak, state->last_to_answer, state->gamestate)) {
+	// Attempt up to 5 times to fetch an insane round, with 3 second delay between tries
+	std::vector<std::string> answers;
+	uint32_t tries = 0;
+	do {
+		answers = fetch_insane_round(state->curr_qid, state->guild_id);
+		if (answers.size() >= 2) {
+			// Got a valid answer list, bail out
+			tries = 0;
+			break;
+		} else {
+			// Request error, try again
+			tries++;
+			sleep(3);
+		}
+	} while (tries < 5);
+	// 5 or more tries stops the game
+	if (tries >= 5 || log_question_index(state->guild_id, state->channel_id, state->round, state->streak, state->last_to_answer, state->gamestate)) {
 		StopGame(state, settings);
 		return;
 	}
