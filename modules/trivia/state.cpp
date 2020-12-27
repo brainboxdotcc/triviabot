@@ -191,10 +191,7 @@ void state_t::handle_message(const in_msg& m)
 				/* Update last person to answer */
 				this->last_to_answer = m.author_id;
 
-				aegis::channel* c = creator->GetBot()->core.find_channel(channel_id);
-				if (c) {
-					creator->SimpleEmbed(":thumbsup:", ans_message, c->get_id().get(), fmt::format(creator->_("CORRECT", settings), username));
-				}
+				creator->SimpleEmbed(":thumbsup:", ans_message, channel_id, fmt::format(creator->_("CORRECT", settings), username));
 
 				if (log_question_index(this->guild_id, this->channel_id, this->round, this->streak, this->last_to_answer, this->gamestate)) {
 					creator->StopGame(this, settings);
