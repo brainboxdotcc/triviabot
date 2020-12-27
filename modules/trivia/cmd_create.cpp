@@ -42,7 +42,7 @@ void command_create_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_
 	std::getline(tokens, newteamname);
 	newteamname = trim(newteamname);
 	std::string teamname = get_current_team(cmd.author_id);
-	if (teamname.empty() || teamname == "!NOTEAM") {
+	if (teamname.empty()) {
 		newteamname = create_new_team(newteamname);
 		if (newteamname != "__NO__") {
 			join_team(cmd.author_id, newteamname, cmd.channel_id);

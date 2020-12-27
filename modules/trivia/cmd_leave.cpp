@@ -39,7 +39,7 @@ command_leave_t::command_leave_t(class TriviaModule* _creator, const std::string
 void command_leave_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_settings_t &settings, const std::string &username, bool is_moderator, aegis::channel* c, aegis::user* user, state_t* state)
 {
 	std::string teamname = get_current_team(cmd.author_id);
-	if (teamname.empty() || teamname == "!NOTEAM") {
+	if (teamname.empty()) {
 		creator->SimpleEmbed(":warning:", fmt::format(_("YOULONER", settings), username, settings.prefix), cmd.channel_id);
 	} else {
 		leave_team(cmd.author_id);

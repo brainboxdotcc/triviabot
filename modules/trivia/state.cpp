@@ -124,7 +124,7 @@ void state_t::handle_message(const in_msg& m)
 						creator->SimpleEmbed(":thumbsup:", fmt::format(creator->_("INSANE_CORRECT", settings), username, m.msg, this->insane_left, this->insane_num), c->get_id().get());
 					}
 				}
-				update_score_only(m.author_id, this->guild_id, 1);
+				update_score_only(m.author_id, this->guild_id, 1, this->channel_id);
 				creator->CacheUser(m.author_id, this->channel_id);
 				if (done) {
 					/* Only save state if all answers have been found */
@@ -161,7 +161,7 @@ void state_t::handle_message(const in_msg& m)
 				ans_message.append(fmt::format(creator->_("SCORE_UPDATE", settings), username, newscore ? newscore : score));
 
 				std::string teamname = get_current_team(m.author_id);
-				if (!empty(teamname) && teamname != "!NOTEAM") {
+				if (!empty(teamname)) {
 					add_team_points(teamname, score, m.author_id);
 					int32_t newteamscore = get_team_points(teamname);
 					ans_message.append(fmt::format(creator->_("TEAM_SCORE", settings), teamname, score, pts, newteamscore));
