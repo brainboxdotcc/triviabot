@@ -45,7 +45,7 @@ TriviaModule::TriviaModule(Bot* instigator, ModuleLoader* ml) : Module(instigato
 	number_tidy_positive = new PCRE("^[\\d\\,]+$");
 	number_tidy_negative = new PCRE("^\\-[\\d\\,]+$");
 	prefix_match = new PCRE("prefix");
-	set_io_context(bot->io, Bot::GetConfig("apikey"));
+	set_io_context(bot->io, Bot::GetConfig("apikey"), bot, this);
 	presence_update = new std::thread(&TriviaModule::UpdatePresenceLine, this);
 	command_processor = new std::thread(&TriviaModule::ProcessCommands, this);
 	startup = time(NULL);
@@ -325,7 +325,7 @@ guild_settings_t TriviaModule::GetGuildSettings(int64_t guild_id)
 std::string TriviaModule::GetVersion()
 {
 	/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-	std::string version = "$ModVer 54$";
+	std::string version = "$ModVer 55$";
 	return "3.0." + version.substr(8,version.length() - 9);
 }
 
@@ -410,7 +410,7 @@ void TriviaModule::do_insane_round(state_t* state, bool silent)
 		}
 	} while (tries < 5);
 	// 5 or more tries stops the game
-	if (log_question_index(state->guild_id, state->channel_id, state->round, state->streak, state->last_to_answer, state->gamestate) || tries >= 5) {
+	if (log_question_index(state->guild_id, state->channel_id, state->round, state->streak, state->last_to_answer, state->gamestate, state->curr_qid) || tries >= 5) {
 		StopGame(state, settings);
 		return;
 	}
@@ -430,12 +430,7 @@ void TriviaModule::do_insane_round(state_t* state, bool silent)
 	state->gamestate = TRIV_FIRST_HINT;
 
 
-	aegis::channel* c = bot->core.find_channel(state->channel_id);
-	if (c) {
-		EmbedWithFields(fmt::format(_("QUESTION_COUNTER", settings), state->round, state->numquestions - 1), {{_("INSANE_ROUND", settings), fmt::format(_("INSANE_ANS_COUNT", settings), state->insane_num), false}, {_("QUESTION", settings), state->curr_question, false}}, c->get_id().get(), fmt::format("https://triviabot.co.uk/report/?c={}&g={}&insane={}", state->channel_id, state->guild_id, state->curr_qid + state->channel_id));
-	} else {
-		bot->core.log->warn("do_insane_round(): Channel {} was deleted", state->channel_id);
-	}
+	EmbedWithFields(fmt::format(_("QUESTION_COUNTER", settings), state->round, state->numquestions - 1), {{_("INSANE_ROUND", settings), fmt::format(_("INSANE_ANS_COUNT", settings), state->insane_num), false}, {_("QUESTION", settings), state->curr_question, false}}, state->channel_id, fmt::format("https://triviabot.co.uk/report/?c={}&g={}&insane={}", state->channel_id, state->guild_id, state->curr_qid + state->channel_id));
 }
 
 void TriviaModule::do_normal_round(state_t* state, bool silent)
@@ -603,7 +598,7 @@ void TriviaModule::do_normal_round(state_t* state, bool silent)
 	} else {
 		state->gamestate = TRIV_FIRST_HINT;
 	}
-	if (log_question_index(state->guild_id, state->channel_id, state->round, state->streak, state->last_to_answer, state->gamestate)) {
+	if (log_question_index(state->guild_id, state->channel_id, state->round, state->streak, state->last_to_answer, state->gamestate, state->curr_qid)) {
 		StopGame(state, settings);
 	}
 
@@ -627,7 +622,7 @@ void TriviaModule::do_first_hint(state_t* state)
 	}
 	state->gamestate = TRIV_SECOND_HINT;
 	state->score = (state->interval == TRIV_INTERVAL ? 2 : 4);
-	if (log_question_index(state->guild_id, state->channel_id, state->round, state->streak, state->last_to_answer, state->gamestate)) {
+	if (log_question_index(state->guild_id, state->channel_id, state->round, state->streak, state->last_to_answer, state->gamestate, state->curr_qid)) {
 		StopGame(state, settings);
 	}
 }
@@ -650,7 +645,7 @@ void TriviaModule::do_second_hint(state_t* state)
 	}
 	state->gamestate = TRIV_TIME_UP;
 	state->score = (state->interval == TRIV_INTERVAL ? 1 : 2);
-	if (log_question_index(state->guild_id, state->channel_id, state->round, state->streak, state->last_to_answer, state->gamestate)) {
+	if (log_question_index(state->guild_id, state->channel_id, state->round, state->streak, state->last_to_answer, state->gamestate, state->curr_qid)) {
 		StopGame(state, settings);
 	}
 }
@@ -692,7 +687,7 @@ void TriviaModule::do_time_up(state_t* state)
 	state->gamestate = (state->round > state->numquestions ? TRIV_END : TRIV_ASK_QUESTION);
 	state->round++;
 	state->score = 0;
-	if (log_question_index(state->guild_id, state->channel_id, state->round, state->streak, state->last_to_answer, state->gamestate)) {
+	if (log_question_index(state->guild_id, state->channel_id, state->round, state->streak, state->last_to_answer, state->gamestate, state->curr_qid)) {
 		StopGame(state, settings);
 	}
 }
@@ -715,7 +710,7 @@ void TriviaModule::do_answer_correct(state_t* state)
 		}
 	}
 	state->gamestate = TRIV_ASK_QUESTION;
-	if (log_question_index(state->guild_id, state->channel_id, state->round, state->streak, state->last_to_answer, state->gamestate)) {
+	if (log_question_index(state->guild_id, state->channel_id, state->round, state->streak, state->last_to_answer, state->gamestate, state->curr_qid)) {
 		StopGame(state, settings);
 	}
 }

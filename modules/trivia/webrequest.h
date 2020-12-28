@@ -22,6 +22,7 @@
 
 #pragma once
 #include <string>
+#include "state.h"
 
 #define BACKEND_HOST "triviabot.co.uk"
 
@@ -35,7 +36,7 @@ struct streak_t
 	int32_t bigstreak;
 };
 
-void set_io_context(class asio::io_context* ioc, const std::string &apikey);
+void set_io_context(class asio::io_context* ioc, const std::string &apikey, class Bot* _bot, class TriviaModule* _module);
 
 // These functions fetch questions via the REST API
 std::vector<std::string> fetch_question(int64_t id, int64_t guild_id);
@@ -65,7 +66,9 @@ void send_hint(int64_t snowflake_id, const std::string &hint, uint32_t remaining
 std::string custom_command(const std::string &command, const std::string &parameters, int64_t user_id, int64_t channel_id, int64_t guild_id);
 void log_game_start(int64_t guild_id, int64_t channel_id, int64_t number_questions, bool quickfire, const std::string &channel_name, int64_t user_id, const std::vector<std::string> &questions, bool hintless);
 void log_game_end(int64_t guild_id, int64_t channel_id);
-bool log_question_index(int64_t guild_id, int64_t channel_id, int32_t index, uint32_t streak, int64_t lastanswered, int32_t state);
+bool log_question_index(int64_t guild_id, int64_t channel_id, int32_t index, uint32_t streak, int64_t lastanswered, trivia_state_t state, int32_t qid);
 json get_active(const std::string &hostname, int64_t cluster_id);
 std::vector<std::string> get_api_command_names();
 json get_num_strs();
+void check_achievement(const std::string &when, uint64_t user_id, uint64_t guild_id);
+

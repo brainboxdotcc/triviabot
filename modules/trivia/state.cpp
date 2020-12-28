@@ -128,7 +128,7 @@ void state_t::handle_message(const in_msg& m)
 				creator->CacheUser(m.author_id, this->channel_id);
 				if (done) {
 					/* Only save state if all answers have been found */
-					if (log_question_index(this->guild_id, this->channel_id, this->round, this->streak, this->last_to_answer, this->gamestate)) {
+					if (log_question_index(this->guild_id, this->channel_id, this->round, this->streak, this->last_to_answer, this->gamestate, 0)) {
 						creator->StopGame(this, settings);
 						return;
 					}
@@ -193,7 +193,7 @@ void state_t::handle_message(const in_msg& m)
 
 				creator->SimpleEmbed(":thumbsup:", ans_message, channel_id, fmt::format(creator->_("CORRECT", settings), username));
 
-				if (log_question_index(this->guild_id, this->channel_id, this->round, this->streak, this->last_to_answer, this->gamestate)) {
+				if (log_question_index(this->guild_id, this->channel_id, this->round, this->streak, this->last_to_answer, this->gamestate, this->curr_qid)) {
 					creator->StopGame(this, settings);
 					return;
 				}

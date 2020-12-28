@@ -168,6 +168,10 @@ void Bot::onReady(aegis::gateway::events::ready ready) {
 	}
 }
 
+uint32_t Bot::GetMaxClusters() {
+	return maxclusters;
+}
+
 /**
  * Called on receipt of each message. We do our own cleanup of the message, sanitising any
  * mentions etc from the text before passing it along to modules. The bot's builtin ignore list

@@ -101,6 +101,7 @@ public:
 	bool HasMemberIntents();
 	uint32_t GetClusterID();
 	void SetClusterID(uint32_t c);
+	uint32_t GetMaxClusters();
 
 	ModuleLoader* Loader;
 
