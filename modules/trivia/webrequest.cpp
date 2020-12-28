@@ -341,8 +341,8 @@ bool log_question_index(int64_t guild_id, int64_t channel_id, int32_t index, uin
 		std::string desc;
 		uint32_t i = 1;
 		for (auto sc = insane_stats.begin(); sc != insane_stats.end(); ++sc) {
-			desc += fmt::format("**{0}** `{1}#{2:04}` (*{3i}*)\n",
-					i, (*sc)["username"], (*sc)["discriminator"], Comma(from_string<int32_t>((*sc)["score"], std::dec)));
+			desc += fmt::format("**#{0}** `{1}#{2:04d}` (*{3}*)\n",
+					i, (*sc)["username"], from_string<uint32_t>((*sc)["discriminator"], std::dec), Comma(from_string<int32_t>((*sc)["score"], std::dec)));
 			i++;
 		}
 		if (!desc.empty()) {
