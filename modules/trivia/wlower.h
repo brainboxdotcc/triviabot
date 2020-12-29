@@ -25,3 +25,5 @@
 
 std::string utf8lower(const std::string &input, bool spanish_hack);
 std::pair<int, int> countvowel(const std::string &input);
+std::string utf8shuffle(const std::string &input);
+std::string homoglyph(const std::string &input);

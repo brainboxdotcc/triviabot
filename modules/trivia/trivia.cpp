@@ -325,7 +325,7 @@ guild_settings_t TriviaModule::GetGuildSettings(int64_t guild_id)
 std::string TriviaModule::GetVersion()
 {
 	/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-	std::string version = "$ModVer 55$";
+	std::string version = "$ModVer 56$";
 	return "3.0." + version.substr(8,version.length() - 9);
 }
 
@@ -398,7 +398,7 @@ void TriviaModule::do_insane_round(state_t* state, bool silent)
 	std::vector<std::string> answers;
 	uint32_t tries = 0;
 	do {
-		answers = fetch_insane_round(state->curr_qid, state->guild_id);
+		answers = fetch_insane_round(state->curr_qid, state->guild_id, settings);
 		if (answers.size() >= 2) {
 			// Got a valid answer list, bail out
 			tries = 0;
@@ -451,7 +451,7 @@ void TriviaModule::do_normal_round(state_t* state, bool silent)
 	do {
 		state->curr_qid = 0;
 		bot->core.log->debug("do_normal_round: fetch_question: '{}'", state->shuffle_list[state->round - 1]);
-		std::vector<std::string> data = fetch_question(from_string<int64_t>(state->shuffle_list[state->round - 1], std::dec), state->guild_id);
+		std::vector<std::string> data = fetch_question(from_string<int64_t>(state->shuffle_list[state->round - 1], std::dec), state->guild_id, settings);
 		if (data.size() >= 12) {
 			state->curr_qid = from_string<int64_t>(data[0], std::dec);
 			state->curr_question = data[1];
@@ -486,9 +486,8 @@ void TriviaModule::do_normal_round(state_t* state, bool silent)
 		state->score = 0;
 		state->curr_answer = "";
 		bot->core.log->warn("do_normal_round(): Attempted to retrieve question id {} but got a malformed response. Round was aborted.", state->shuffle_list[state->round - 1]);
-		aegis::channel* c = bot->core.find_channel(state->channel_id);
-		if (c && !silent) {
-			EmbedWithFields(fmt::format(_("Q_FETCH_ERROR", settings)), {{_("Q_SPOOPY", settings), _("Q_CONTACT_DEVS", settings), false}, {_("ROUND_STOPPING", settings), _("ERROR_BROKE_IT", settings), false}}, c->get_id().get());
+		if (!silent) {
+			EmbedWithFields(fmt::format(_("Q_FETCH_ERROR", settings)), {{_("Q_SPOOPY", settings), _("Q_CONTACT_DEVS", settings), false}, {_("ROUND_STOPPING", settings), _("ERROR_BROKE_IT", settings), false}}, state->channel_id);
 		}
 		return;
 	}
@@ -571,23 +570,13 @@ void TriviaModule::do_normal_round(state_t* state, bool silent)
 			}
 		}
 
-		aegis::channel* c = bot->core.find_channel(state->channel_id);
-		if (c) {
-			if (!silent) {
-				EmbedWithFields(fmt::format(_("QUESTION_COUNTER", settings), state->round, state->numquestions - 1), {{_("CATEGORY", settings), state->curr_category, false}, {_("QUESTION", settings), state->curr_question, false}}, c->get_id().get(), fmt::format("https://triviabot.co.uk/report/?c={}&g={}&normal={}", state->channel_id, state->guild_id, state->curr_qid + state->channel_id));
-			}
-		} else {
-			bot->core.log->warn("do_normal_round(): Channel {} was deleted", state->channel_id);
+		if (!silent) {
+			EmbedWithFields(fmt::format(_("QUESTION_COUNTER", settings), state->round, state->numquestions - 1), {{_("CATEGORY", settings), state->curr_category, false}, {_("QUESTION", settings), state->curr_question, false}}, state->channel_id, fmt::format("https://triviabot.co.uk/report/?c={}&g={}&normal={}", state->channel_id, state->guild_id, state->curr_qid + state->channel_id));
 		}
 
 	} else {
-		aegis::channel* c = bot->core.find_channel(state->channel_id);
-		if (c) {
-			if (!silent) {
-				SimpleEmbed(":ghost:", _("BRAIN_BROKE_IT", settings), c->get_id().get(), _("FETCH_Q", settings));
-			}
-		} else {
-			bot->core.log->debug("do_normal_round: G:{} C:{} channel vanished! -- question with no text!", state->guild_id, state->channel_id);
+		if (!silent) {
+			SimpleEmbed(":ghost:", _("BRAIN_BROKE_IT", settings), state->channel_id, _("FETCH_Q", settings));
 		}
 	}
 

@@ -30,6 +30,7 @@
 #include "httplib.h"
 #include "trivia.h"
 #include "state.h"
+#include "wlower.h"
 
 asio::io_context * _io_context = nullptr;
 Bot* bot = nullptr;
@@ -213,11 +214,38 @@ void cache_user(const aegis::user *_user, const aegis::guild *_guild, const aegi
 	db::query("COMMIT", {});
 }
 
-/* Fetch a question by ID from the TriviaBot API */
-std::vector<std::string> fetch_question(int64_t id, int64_t guild_id)
+/* Fetch a question by ID from the database */
+std::vector<std::string> fetch_question(int64_t id, int64_t guild_id, const guild_settings_t &settings)
 {
 	/* Requires full unicode support for shuffled hints (currently only API-side). Can't move this to a direct query yet */
-	return to_list(fetch_page(fmt::format("?id={}&guild_id={}", id, guild_id)));
+	//return to_list(fetch_page(fmt::format("?id={}&guild_id={}", id, guild_id)));
+	//
+	// Replaced with direct db query for perforamance increase - 29Dec20
+	db::query("INSERT INTO stats (id, lastasked, timesasked, lastcorrect, record_time) VALUES('?',now(),1,NULL,60000) ON DUPLICATE KEY UPDATE lastasked = now(), timesasked = timesasked + 1 ", {id});
+	db::resultset question;
+	if (settings.language == "en") {
+		question = db::query("select questions.*, ans1.*, hin1.*, sta1.*, cat1.name as catname from questions left join hints as hin1 on questions.id=hin1.id left join answers as ans1 on questions.id=ans1.id left join stats as sta1 on questions.id=sta1.id left join categories as cat1 on questions.category=cat1.id where questions.id = ?", {id});
+	} else {
+		question = db::query("select questions.trans_" + settings.language + " as question, ans1.trans_" + settings.language + " as answer, hin1.trans1_" + settings.language + " as hint1, hin1.trans2_" + settings.language + " as hint2, sta1.*, cat1.trans_" + settings.language + " as catname from questions left join hints as hin1 on questions.id=hin1.id left join answers as ans1 on questions.id=ans1.id left join stats as sta1 on questions.id=sta1.id left join categories as cat1 on questions.category=cat1.id where questions.id = ?", {id});
+	}
+	if (question.size() > 0) {
+		db::query("UPDATE counters SET asked = asked + 1", {});
+		return {
+			question[0]["id"],
+			homoglyph(question[0]["question"]),
+			question[0]["answer"],
+			question[0]["hint1"],
+			question[0]["hint2"],
+			question[0]["catname"],
+			question[0]["lastasked"],
+			question[0]["timesasked"],
+			question[0]["lastcorrect"],
+			question[0]["record_time"],
+			utf8shuffle(question[0]["answer"]),
+			utf8shuffle(question[0]["answer"])
+		};
+	}
+	return {};
 }
 
 /* Get a list of command names entirely handled via REST */
@@ -237,16 +265,36 @@ std::vector<std::string> fetch_shuffle_list(int64_t guild_id, const std::string 
 }
 
 /* Fetch an insane round by ID from the API */
-std::vector<std::string> fetch_insane_round(int64_t &question_id, int64_t guild_id)
+std::vector<std::string> fetch_insane_round(int64_t &question_id, int64_t guild_id, const guild_settings_t &settings)
 {
-	std::vector<std::string> list = to_list(fetch_page(fmt::format("?opt=newinsane&guild_id={}", guild_id)));
+	/*std::vector<std::string> list = to_list(fetch_page(fmt::format("?opt=newinsane&guild_id={}", guild_id)));
 	if (list.size() >= 3) {
 		question_id = from_string<int64_t>(list[0], std::dec);
 		list.erase(list.begin());
 
 	} else {
 		question_id = 0;
+	}*/
+
+	std::vector<std::string> list;
+	db::resultset answers;
+	db::resultset question;
+	if (settings.language == "en") {
+		question = db::query("select id,question from insane where deleted is null order by rand() limit 0,1", {});
+		answers = db::query("select id,answer from insane_answers where question_id = ?", {question[0]["id"]});
+	} else {
+		question = db::query("select id,trans_" + settings.language + " AS question from insane where deleted is null order by rand() limit 0,1", {});
+		answers = db::query("select id, trans_" + settings.language + " answer from insane_answers where question_id = ?", {question[0]["id"]});
 	}
+
+	list.push_back(question[0]["id"]);
+	list.push_back(homoglyph(question[0]["question"]));
+
+	for (auto a = answers.begin(); a != answers.end(); ++a) {
+		list.push_back((*a)["answer"]);
+	}
+	list.push_back("***END***");
+
 	return list;
 }
 
@@ -359,7 +407,7 @@ bool log_question_index(int64_t guild_id, int64_t channel_id, int32_t index, uin
 int32_t update_score(int64_t snowflake_id, int64_t guild_id, time_t recordtime, int64_t id, int score)
 {
 	// Replaced with direct db query for perforamance increase - 27Dec20
-	db::query("UPDATE stats SET lastasked = now(), lastcorrect='?', record_time='?', timesasked = timesasked + 1 WHERE id = ?", {snowflake_id, recordtime, id});
+	db::query("UPDATE stats SET lastcorrect='?', record_time='?' WHERE id = ?", {snowflake_id, recordtime, id});
 	db::query("INSERT INTO scores (name, guild_id, score, dayscore, weekscore, monthscore) VALUES('?', '?', '?', '?', '?', '?') ON DUPLICATE KEY UPDATE score = score + ?, weekscore = weekscore + ?, monthscore = monthscore + ?, dayscore = dayscore + ?",
 			{snowflake_id, guild_id, score, score, score, score, score, score, score, score});
 	db::query("INSERT INTO scores_lastgame (guild_id, user_id, score) VALUES('?', '?', '?') ON DUPLICATE KEY UPDATE score = score + ?", {guild_id, snowflake_id, score, score});
