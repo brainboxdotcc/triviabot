@@ -84,18 +84,20 @@ std::pair<int, int> countvowel(const std::string &input)
 	return std::make_pair(vowels, len);
 }
 
-/* Shuffle contents of a utf8 string */
+/* Shuffle and lowercase the contents of a utf8 string for use in srambled answer hints */
 std::string utf8shuffle(const std::string &input)
 {
+	std::string i = utf8lower(input, false);
 	std::setlocale(LC_CTYPE, "en_US.UTF-8");
 	std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-	std::wstring str = converter.from_bytes(input.c_str());
+	std::wstring str = converter.from_bytes(i.c_str());
 	std::random_shuffle(str.begin(), str.end());
 	return converter.to_bytes(str);
 }
 
 /* Translates normal ascii text into a random jumble of cyrillic, runic, and other stuff that looks enough like english to be readable, but
- * can't be pasted into google, and will break selfbots that arent aware of it. Kind of like a captcha.
+ * can't be pasted into google, and will break selfbots that arent aware of it. Kind of like a captcha. Note that this won't protect against
+ * selfbots forever and is more an anti-googling mechanism.
  */
 std::string homoglyph(const std::string &input)
 {
@@ -104,129 +106,49 @@ std::string homoglyph(const std::string &input)
 	std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
 	std::wstring str = converter.from_bytes(input.c_str());
 	for (std::wstring::iterator it = str.begin(); it != str.end(); ++it) {
-		wchar_t n = *it;
-		switch (n) {
-			case L'1':
-				o += L'1';
-			break;
-			case L'2':
-				o += L'2';
-			break;
-			case L'3':
-				o += L'3';
-			break;
-			case L'4':
-				o += L'4';
-			break;
-			case L'5':
-				o += L'5';
-			break;
-			case L'7':
-				o += L'7';
-			break;
-			case L'8':
-				o += L'8';
-			break;
-			case L'9':
-				o += L'9';
-			break;
-			case L'-':
-				o += L'‐';
-			break;
-			case L',':
-				o += L',';
-			break;
-			case L'H':
-				o += L'Η';
-			break;
-			case L'K':
-				o += L'ᛕ';
-			case L'M':
-				o += L'ᛖ';
-			break;
-			case L'Y':
-				o += L'ʏ';
-			break;
-			case L'A':
-				o += L'Ꭺ';
-			break;
-			case L'_':
-				o += L'_';
-			break;
-			case L'a':
-				o += L'а';
-			break;
-			case L'b':
-				o += L'Ь';
-			break;
-			case L'f':
-				o += L'f';
-			break;
-			case L'g':
-				o += L'g';
-			break;
-			case L'G':
-				o += L'Ԍ';
-			break;
-			case L'e':
-				o += L'е';
-			break;
-			case L'E':
-				o += L'Ε';
-			break;
-			case L'x':
-				o += L'х';
-			break;
-			case L'i':
-				o += L'Ꭵ';
-			break;
-			case L'I':
-				o += L'Ⅰ';
-			break;
-			case L'l':
-				o += L'l';
-			break;
-			case L'z':
-				o += L'z';
-			break;
-			case L'р':
-				o += L'р';
-			case L'v':
-				o += L'ѵ';
-			break;
-			case L'w':
-				o += L'ѡ';
-			break;
-			case L'y':
-				o += L'у';
-			break;
-			case L'o':
-				o += L'ο';
-			break;
-			case L'P':
-				o += L'Ρ';
-			break;
-			case L'u':
-				o += L'υ';
-			break;
-			case L'U':
-				o += L'Ս';
-			break;
-			case L'h':
-				o += L'h';
-			break;
-			case L'r':
-				o += L'r';
-			break;
-			case L'd':
-				o += L'ⅾ';
-			break;
-			default:
-				o += n;
-			break;
+		switch (*it) {
+			case L'1':	o += L'1';	break;
+			case L'2':	o += L'2';	break;
+			case L'3':	o += L'3';	break;
+			case L'4':	o += L'4';	break;
+			case L'5':	o += L'5';	break;
+			case L'7':	o += L'7';	break;
+			case L'8':	o += L'8';	break;
+			case L'9':	o += L'9';	break;
+			case L'-':	o += L'‐';	break;
+			case L',':	o += L',';	break;
+			case L'H':	o += L'Η';	break;
+			case L'K':	o += L'ᛕ';	break;
+			case L'M':	o += L'ᛖ';	break;
+			case L'Y':	o += L'ʏ';	break;
+			case L'A':	o += L'Ꭺ';	break;
+			case L'_':	o += L'_';	break;
+			case L'a':	o += L'а';	break;
+			case L'b':	o += L'Ь';	break;
+			case L'f':	o += L'f';	break;
+			case L'g':	o += L'g';	break;
+			case L'G':	o += L'Ԍ';	break;
+			case L'e':	o += L'е';	break;
+			case L'E':	o += L'Ε';	break;
+			case L'x':	o += L'х';	break;
+			case L'i':	o += L'Ꭵ';	break;
+			case L'I':	o += L'Ⅰ';	break;
+			case L'l':	o += L'l';	break;
+			case L'z':	o += L'z';	break;
+			case L'р':	o += L'р';	break;
+			case L'v':	o += L'ѵ';	break;
+			case L'w':	o += L'ѡ';	break;
+			case L'y':	o += L'у';	break;
+			case L'o':	o += L'ο';	break;
+			case L'P':	o += L'Ρ';	break;
+			case L'u':	o += L'υ';	break;
+			case L'U':	o += L'Ս';	break;
+			case L'h':	o += L'h';	break;
+			case L'r':	o += L'r';	break;
+			case L'd':	o += L'ⅾ';	break;
+			default:	o += *it;	break;
 		}
 	}
-
 	return converter.to_bytes(o);
 }
 

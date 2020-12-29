@@ -325,7 +325,7 @@ guild_settings_t TriviaModule::GetGuildSettings(int64_t guild_id)
 std::string TriviaModule::GetVersion()
 {
 	/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-	std::string version = "$ModVer 56$";
+	std::string version = "$ModVer 57$";
 	return "3.0." + version.substr(8,version.length() - 9);
 }
 
@@ -371,13 +371,6 @@ std::string TriviaModule::letterlong(std::string text, const guild_settings_t &s
 
 std::string TriviaModule::vowelcount(std::string text, const guild_settings_t &settings)
 {
-	/*text = ReplaceString(lowercase(text), " ", "");
-	int v = 0;
-	for (auto x = text.begin(); x != text.end(); ++x) {
-		if (isVowel(*x)) {
-			++v;
-		}
-	}*/
 	std::pair<int, int> counts = countvowel(text);
 	return fmt::format(_("HINT_VOWELCOUNT", settings), counts.second, counts.first);
 }

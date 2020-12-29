@@ -264,18 +264,9 @@ std::vector<std::string> fetch_shuffle_list(int64_t guild_id, const std::string 
 	}
 }
 
-/* Fetch an insane round by ID from the API */
+/* Fetch a random insane round from the database, setting the question_id parameter and returning the question and all answers in a vector */
 std::vector<std::string> fetch_insane_round(int64_t &question_id, int64_t guild_id, const guild_settings_t &settings)
 {
-	/*std::vector<std::string> list = to_list(fetch_page(fmt::format("?opt=newinsane&guild_id={}", guild_id)));
-	if (list.size() >= 3) {
-		question_id = from_string<int64_t>(list[0], std::dec);
-		list.erase(list.begin());
-
-	} else {
-		question_id = 0;
-	}*/
-
 	std::vector<std::string> list;
 	db::resultset answers;
 	db::resultset question;
@@ -287,7 +278,7 @@ std::vector<std::string> fetch_insane_round(int64_t &question_id, int64_t guild_
 		answers = db::query("select id, trans_" + settings.language + " answer from insane_answers where question_id = ?", {question[0]["id"]});
 	}
 
-	list.push_back(question[0]["id"]);
+	question_id = from_string<int64_t>(question[0]["id"], std::dec);
 	list.push_back(homoglyph(question[0]["question"]));
 
 	for (auto a = answers.begin(); a != answers.end(); ++a) {
@@ -353,7 +344,24 @@ void log_game_end(int64_t guild_id, int64_t channel_id)
 	char hostname[1024];
 	hostname[1023] = '\0';
 	gethostname(hostname, 1023);
-	later(fmt::format("?opt=gameend&guild_id={}&channel_id={}&hostname={}", guild_id, channel_id, url_encode(hostname)), "");
+	
+	/* Obtain and delete the active game entry */
+	db::resultset gameinfo = db::query("SELECT * FROM active_games WHERE guild_id = '?' AND channel_id = '?' AND hostname = '?'", {guild_id, channel_id, std::string(hostname)});
+	db::query("DELETE FROM active_games WHERE guild_id = '?' AND channel_id = '?' AND hostname = '?'", {guild_id, channel_id, std::string(hostname)});
+
+	/* Collate the last game's scores into JSON for storage in the database for the stats pages */
+	db::resultset lastgame = db::query("SELECT * FROM scores_lastgame WHERE guild_id = '?'",{guild_id});
+	std::string scores = "[";
+	for (auto r = lastgame.begin(); r != lastgame.end(); ++r) {
+		scores += "{\"user_id\":\"" + (*r)["user_id"] + "\",\"score\":\"" + (*r)["score"] + "\"},";
+	}
+	scores = scores.substr(0, scores.length() - 1) + "]";
+	if (gameinfo.size() > 0 && !scores.empty()) {
+		db::query("INSERT INTO game_score_history (guild_id, timestarted, timefinished, scores) VALUES('?', '?', now(), '?')", {guild_id, gameinfo[0]["started"], scores});
+	}
+
+	/* Safeguard */
+	db::query("DELETE FROM insane_round_statistics WHERE channel_id = '?'", {channel_id});
 }
 
 /* Update current question of a game, used for resuming games on crash or restart, plus the dashboard active games list */
@@ -366,8 +374,11 @@ bool log_question_index(int64_t guild_id, int64_t channel_id, int32_t index, uin
 	uint32_t cluster_id = bot->GetClusterID();
 	bool should_stop = false;
 
+	/* Update game details */
 	db::query("UPDATE active_games SET cluster_id = '?', question_index = '?', streak = '?', lastanswered = '?', state = '?' WHERE guild_id = '?' AND channel_id = '?' AND hostname = '?'",
 			{cluster_id, index, streak, lastanswered, state, guild_id, channel_id, std::string(hostname)});
+
+	/* Check if the dashboard has stopped this game */
 	db::resultset st = db::query("SELECT stop FROM active_games WHERE guild_id = '?' AND channel_id = '?' AND hostname = '?' AND stop = 1", {guild_id, channel_id, std::string(hostname)});
 	should_stop = (st.size() > 0);
 
