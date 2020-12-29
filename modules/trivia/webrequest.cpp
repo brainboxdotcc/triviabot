@@ -356,7 +356,7 @@ void log_game_end(int64_t guild_id, int64_t channel_id)
 		scores += "{\"user_id\":\"" + (*r)["user_id"] + "\",\"score\":\"" + (*r)["score"] + "\"},";
 	}
 	scores = scores.substr(0, scores.length() - 1) + "]";
-	if (gameinfo.size() > 0 && !scores.empty()) {
+	if (gameinfo.size() > 0 && scores != "]") {
 		db::query("INSERT INTO game_score_history (guild_id, timestarted, timefinished, scores) VALUES('?', '?', now(), '?')", {guild_id, gameinfo[0]["started"], scores});
 	}
 
