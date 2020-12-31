@@ -109,7 +109,7 @@ void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 			if (sl[0] == "*** No such category ***") {
 				creator->SimpleEmbed(":warning:", _("START_BAD_CATEGORY", settings), cmd.channel_id);
 			} else if (sl[0] == "*** Category too small ***") {
-				creator->SimpleEmbed(":warning:", _("START_TOO_SMALL", settings), cmd.channel_id);
+				creator->SimpleEmbed(":warning:", _((settings.premium ? "START_TOO_SMALL_PREM" : "START_TOO_SMALL"), settings), cmd.channel_id);
 			}
 			return;
 		}
