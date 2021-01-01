@@ -290,10 +290,6 @@ std::vector<std::string> fetch_insane_round(int64_t &question_id, int64_t guild_
 }
 
 /* Return a list of number to text strings, e.g. "2 = number of teeth goofy has". Returns all language variants. */
-json get_num_strs()
-{
-	return json::parse(fetch_page("?opt=numstrs"));
-}
 
 /* Send a DM hint to a user. Because of promise crashing issues in aegis, we don't do this in-bot and we farm it out to API */
 void send_hint(int64_t snowflake_id, const std::string &hint, uint32_t remaining)

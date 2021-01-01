@@ -54,9 +54,6 @@ TriviaModule::TriviaModule(Bot* instigator, ModuleLoader* ml) : Module(instigato
 		api_commands = get_api_command_names();
 		bot->core.log->info("Initial API command count: {}", api_commands.size());
 	}
-	numstrs = get_num_strs();
-	bot->core.log->info("Numstrs count: {}", numstrs.size());
-
 	std::ifstream langfile("../lang.json");
 	lang = new json();
 	langfile >> *lang;
@@ -325,7 +322,7 @@ guild_settings_t TriviaModule::GetGuildSettings(int64_t guild_id)
 std::string TriviaModule::GetVersion()
 {
 	/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-	std::string version = "$ModVer 57$";
+	std::string version = "$ModVer 58$";
 	return "3.0." + version.substr(8,version.length() - 9);
 }
 

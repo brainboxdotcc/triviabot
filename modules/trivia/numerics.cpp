@@ -25,6 +25,7 @@
 #include <fstream>
 #include <streambuf>
 #include <sporks/stringops.h>
+#include <sporks/database.h>
 #include "trivia.h"
 
 int TriviaModule::random(int min, int max)
@@ -154,40 +155,31 @@ std::string TriviaModule::conv_num(std::string datain, const guild_settings_t &s
 
 std::string TriviaModule::numbertoname(int64_t number, const guild_settings_t& settings)
 {
-
-	for (auto x = numstrs.begin(); x != numstrs.end(); ++x) {
-		uint64_t value = (*x)["value"].get<uint64_t>();
-		if (value == number) {
-			if (settings.language == "en")
-				return (*x)["description"].get<std::string>();
-			else
-				return (*x)[fmt::format("trans_{}", settings.language)].get<std::string>();
-		}
+	/* If there are multiple names for this number, this will randomly pick one */
+	db::resultset rs = db::query("SELECT * FROM numstrs WHERE value = ? ORDER BY rand() LIMIT 1", {number});
+	if (rs.size()) {
+		if (settings.language == "en")
+			return rs[0]["description"];
+		else
+			return rs[0][fmt::format("trans_{}", settings.language)];
 	}
 	return std::to_string(number);
 }
 
 std::string TriviaModule::GetNearestNumber(int64_t number, const guild_settings_t& settings)
 {
-	for (auto x = numstrs.begin(); x != numstrs.end(); ++x) {
-		uint64_t value = (*x)["value"].get<uint64_t>();
-		if (value <= number) {
-			if (settings.language == "en")
-				return (*x)["description"].get<std::string>();
-			else
-				return (*x)[fmt::format("trans_{}", settings.language)].get<std::string>();
-		}
+	db::resultset rs = db::query("SELECT * FROM numstrs WHERE value <= ? ORDER BY value DESC LIMIT 1", {number});
+	if (rs.size()) {
+		return numbertoname(from_string<int64_t>(rs[0]["value"], std::dec), settings);
 	}
 	return "0";
 }
 
 int64_t TriviaModule::GetNearestNumberVal(int64_t number, const guild_settings_t& settings)
 {
-	for (auto x = numstrs.begin(); x != numstrs.end(); ++x) {
-		uint64_t value = (*x)["value"].get<uint64_t>();
-		if (value <= number) {
-			return value;
-		}
+	db::resultset rs = db::query("SELECT value FROM numstrs WHERE value <= ? ORDER BY value DESC LIMIT 1", {number});
+	if (rs.size()) {
+		return from_string<int64_t>(rs[0]["value"], std::dec);
 	}
 	return 0;
 }

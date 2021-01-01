@@ -43,7 +43,6 @@
 #define PER_CHANNEL_RATE_LIMIT 4
 
 typedef std::map<int64_t, int64_t> teamlist_t;
-typedef std::map<int64_t, std::string> numstrs_t;
 
 struct field_t
 {
@@ -70,7 +69,6 @@ class TriviaModule : public Module
 	std::thread* presence_update;
 	bool terminating;
 	std::mutex cmds_mutex;
-	json numstrs;
 	std::mutex cmdmutex;
 	std::deque<in_cmd> commandqueue;
 	std::deque<in_cmd> to_process;

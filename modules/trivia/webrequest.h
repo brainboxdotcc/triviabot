@@ -69,6 +69,5 @@ void send_hint(int64_t snowflake_id, const std::string &hint, uint32_t remaining
 std::string custom_command(const std::string &command, const std::string &parameters, int64_t user_id, int64_t channel_id, int64_t guild_id);
 json get_active(const std::string &hostname, int64_t cluster_id);
 std::vector<std::string> get_api_command_names();
-json get_num_strs();
 void check_achievement(const std::string &when, uint64_t user_id, uint64_t guild_id);
 
