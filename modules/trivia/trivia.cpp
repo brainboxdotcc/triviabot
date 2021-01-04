@@ -322,7 +322,7 @@ guild_settings_t TriviaModule::GetGuildSettings(int64_t guild_id)
 std::string TriviaModule::GetVersion()
 {
 	/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-	std::string version = "$ModVer 58$";
+	std::string version = "$ModVer 59$";
 	return "3.0." + version.substr(8,version.length() - 9);
 }
 
@@ -927,8 +927,8 @@ bool TriviaModule::RealOnMessage(const modevent::message_create &message, const 
 		return false;
 	}
 
+	// Commamds
 	if (lowercase(clean_message.substr(0, settings.prefix.length())) == lowercase(settings.prefix)) {
-		/* Command */
 
 		std::string command = clean_message.substr(settings.prefix.length(), clean_message.length() - settings.prefix.length());
 		if (user != nullptr) {
@@ -939,7 +939,10 @@ bool TriviaModule::RealOnMessage(const modevent::message_create &message, const 
 			bot->core.log->debug("User is null when handling command. C:{} A:{}", channel_id, author_id);
 		}
 
-	} else if (state) {
+	}
+	
+	// Answers for active games
+	if (state) {
 		/* The state_t class handles potential answers, but only when a game is running on this guild */
 		state->queue_message(trivia_message, author_id, mentioned);
 		bot->core.log->debug("Processed potential answer message from A:{} on C:{}", author_id, channel_id);
