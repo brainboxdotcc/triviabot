@@ -1,0 +1,52 @@
+{
+        "title": ":user: صفحة المساعدة",
+        "color": :color:,
+        "url": "https://triviabot.co.uk",
+        "timestamp": ":ts:",
+        "thumbnail": {
+                "url": "https://triviabot.co.uk/images/triviabot_tl_icon.png"
+        },
+        "footer": {
+                "text": ":author: مدعوم من TriviaBot - المساعدة التي طلبتها",
+                "icon_url": "https://triviabot.co.uk/images/triviabot_icon.png"
+        },
+        "fields": [
+                {
+                        "name": "ابحث عن المساعدة وقم بتكوين TriviaBot عبر لوحة القيادة",
+                        "value": "[يمكن إدارة جميع الإعدادات والتكوين لهذا الروبوت عبر TriviaBot Dashboard](https://triviabot.co.uk/dashboard). [لمزيد من المساعدة ، يرجى الانضمام إلى خادم brainbox.cc الرسمي](https://discord.gg/brainbox).\n<:blank:667278047006949386>",
+                        "inline": false
+                },
+                {
+                        "name": "<:dice:722798416765255800> بدء التوافه",
+                        "value": "[كيفية بدء وإيقاف ألعاب التوافه ، عبر الفتنة أو عبر لوحة القيادة](https://triviabot.co.uk/help/#start)\n<:blank:667278047006949386>",
+                        "inline": false
+                },
+                {
+                        "name": ":gear: ترتيب",
+                        "value": "[تكوين TriviaBot لخادمك (بما في ذلك تغيير بادئة الروبوت)](https://triviabot.co.uk/help/#config)\n<:blank:667278047006949386>",
+                        "inline": false
+                },
+                {
+                        "name": "<:gift:722798417197268992> مكافآت المجتمع",
+                        "value": "[إعداد مكافآت الأدوار لخادمك ، لمنح المستخدمين أدوارًا للفوز أو المشاركة](https://triviabot.co.uk/help/#rolerewards)\n<:blank:667278047006949386>",
+                        "inline": false
+                },
+		{
+                        "name": "<:nitro:750660974029176833> العب لتفوز بـ Nitro",
+                        "value": "[إذا كنت اللاعب الأول في بداية كل شهر ، يمكنك الفوز على Discord Nitro! انقر هنا لعرض لوحة المتصدرين نيترو!](https://triviabot.co.uk/monthly-nitro/)\n<:blank:667278047006949386>",
+                        "inline": false
+
+		},
+		{
+			"name": "<:crystalball:722798415045460008> التصويت ل TriviaBot",
+			"value": "[قم بالتصويت لـ TriviaBot على top.gg للحصول على تلميحات شخصية عبر رسالة مباشرة](https://top.gg/bot/715906723982082139/vote)\n<:blank:667278047006949386>",
+			"inline": false
+		},
+                {
+                        "name": ":money_with_wings: قسط",
+                        "value": "[تعرف على كيفية تحقيق المزيد مع TriviaBot Premium ، بما في ذلك الألعاب المجدولة والألعاب السريعة الأطول وصفحات المتصدرين المخصصة](https://triviabot.co.uk/premium/)\n<:blank:667278047006949386>",
+                        "inline": false
+                }
+        ],
+        "description": ""
+}

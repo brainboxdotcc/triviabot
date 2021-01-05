@@ -1,0 +1,52 @@
+{
+        "title": ":user: 帮助页面",
+        "color": :color:,
+        "url": "https://triviabot.co.uk",
+        "timestamp": ":ts:",
+        "thumbnail": {
+                "url": "https://triviabot.co.uk/images/triviabot_tl_icon.png"
+        },
+        "footer": {
+                "text": "由TriviaBot提供支持-：author:请求帮助",
+                "icon_url": "https://triviabot.co.uk/images/triviabot_icon.png"
+        },
+        "fields": [
+                {
+                        "name": "查找帮助并通过仪表板配置 :user:",
+                        "value": "该机器人的所有设置和配置都可以通过 [TriviaBot仪表板](https://triviabot.co.uk/dashboard). 如需更多帮助，请加入 [官方brainbox.cc不和谐服务器](https://discord.gg/brainbox).\n<:blank:667278047006949386>",
+                        "inline": false
+                },
+                {
+                        "name": "<:dice:722798416765255800> 开始琐事",
+                        "value": "[如何通过不和谐或通过仪表板启动和停止琐事游戏](https://triviabot.co.uk/help/#start)\n<:blank:667278047006949386>",
+                        "inline": false
+                },
+                {
+                        "name": ":gear: 组态",
+                        "value": "[为您的服务器配置TriviaBot（包括更改bot的前缀）](https://triviabot.co.uk/help/#config)\n<:blank:667278047006949386>",
+                        "inline": false
+                },
+                {
+                        "name": "<:gift:722798417197268992> 社区奖励",
+                        "value": "[为您的服务器设置角色奖励，为用户提供赢得或参与的角色](https://triviabot.co.uk/help/#rolerewards)\n<:blank:667278047006949386>",
+                        "inline": false
+                },
+		{
+                        "name": "<:nitro:750660974029176833> 玩赢Discord Nitro",
+                        "value": "[如果您是每个月初的头号玩家，那么您可以赢Discord Nitro！单击此处查看硝基排行榜！](https://triviabot.co.uk/monthly-nitro/)\n<:blank:667278047006949386>",
+                        "inline": false
+
+		},
+		{
+			"name": "<:crystalball:722798415045460008> 投票给TriviaBot",
+			"value": "[在top.gg上投票给TriviaBot以通过直接消息获得个人提示](https://top.gg/bot/715906723982082139/vote)\n<:blank:667278047006949386>",
+			"inline": false
+		},
+                {
+                        "name": ":money_with_wings: 保费",
+                        "value": "[了解如何通过TriviaBot Premium从机器人中获得更多收益，包括预定游戏，更长的快速游戏和自定义排行榜页面](https://triviabot.co.uk/premium/)\n<:blank:667278047006949386>",
+                        "inline": false
+                }
+        ],
+        "description": ""
+}
