@@ -317,7 +317,7 @@ guild_settings_t TriviaModule::GetGuildSettings(int64_t guild_id)
 std::string TriviaModule::GetVersion()
 {
 	/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-	std::string version = "$ModVer 61$";
+	std::string version = "$ModVer 62$";
 	return "3.0." + version.substr(8,version.length() - 9);
 }
 
@@ -661,7 +661,7 @@ void TriviaModule::do_time_up(state_t* state)
 
 	state->gamestate = (state->round > state->numquestions ? TRIV_END : TRIV_ASK_QUESTION);
 	state->round++;
-	state->score = 0;
+	//state->score = 0;
 	if (log_question_index(state->guild_id, state->channel_id, state->round, state->streak, state->last_to_answer, state->gamestate, state->curr_qid)) {
 		StopGame(state, settings);
 	}
@@ -677,7 +677,8 @@ void TriviaModule::do_answer_correct(state_t* state)
 	guild_settings_t settings = GetGuildSettings(state->guild_id);
 
 	state->round++;
-	state->score = 0;
+	//state->score = 0;
+	state->curr_answer = "";
 
 	if (state->round <= state->numquestions - 2) {
 		SimpleEmbed(settings, "<a:loading:658667224067735562>", fmt::format(_("COMING_UP", settings), state->interval), state->channel_id, _("REST", settings));
