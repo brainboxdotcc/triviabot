@@ -34,7 +34,7 @@
 #include "webrequest.h"
 #include "wlower.h"
 
-in_msg::in_msg(const std::string &m, int64_t author, bool mention) : msg(m), author_id(author), mentions_bot(mention)
+in_msg::in_msg(const std::string &m, int64_t author, bool mention, const std::string &_username) : msg(m), author_id(author), mentions_bot(mention), username(_username)
 {
 }
 
@@ -74,13 +74,13 @@ state_t::state_t(TriviaModule* _creator)
 	hintless = false;
 }
 
-void state_t::queue_message(const std::string &message, int64_t author_id, bool mentions_bot)
+void state_t::queue_message(const std::string &message, int64_t author_id, const std::string &username, bool mentions_bot)
 {
 	//std::lock_guard<std::mutex> q_lock(queuemutex);
-	//messagequeue.push_back(in_msg(message, author_id, mentions_bot));
+	//messagequeue.push_back(in_msg(message, author_id, mentions_bot, username));
 
 	// Skip queue
-	handle_message(in_msg(message, author_id, mentions_bot));
+	handle_message(in_msg(message, author_id, mentions_bot, username));
 }
 
 state_t::~state_t()
@@ -128,16 +128,16 @@ void state_t::handle_message(const in_msg& m)
 			}
 		} else {
 			/* Normal round */
-			std::string trivia_message = m.message;
-			int x = from_string<int>(conv_num(m.message, settings), std::dec);
+			std::string trivia_message = m.msg;
+			int x = from_string<int>(creator->conv_num(m.msg, settings), std::dec);
 			if (x > 0) {
-				trivia_message = conv_num(m.message, settings);
+				trivia_message = creator->conv_num(m.msg, settings);
 			}
-			m.message = tidy_num(trivia_message);
+			trivia_message = creator->tidy_num(trivia_message);
 			bool needs_spanish_hack = (settings.language == "es");
 
 			/* Answer on channel is an exact match for the current answer and/or it is numeric, OR, it's non-numeric and has a levenstein distance near enough to the current answer (account for misspellings) */
-			if (!this->curr_answer.empty() && ((m.msg.length() >= this->curr_answer.length() && utf8lower(this->curr_answer, needs_spanish_hack) == utf8lower(m.msg, needs_spanish_hack)) || (!PCRE("^\\$(\\d+)$").Match(this->curr_answer) && !PCRE("^(\\d+)$").Match(this->curr_answer) && (this->curr_answer.length() > 5 && (utf8lower(this->curr_answer, needs_spanish_hack) == utf8lower(m.msg, needs_spanish_hack) || creator->levenstein(m.msg, this->curr_answer) < 2))))) {
+			if (!this->curr_answer.empty() && ((trivia_message.length() >= this->curr_answer.length() && utf8lower(this->curr_answer, needs_spanish_hack) == utf8lower(trivia_message, needs_spanish_hack)) || (!PCRE("^\\$(\\d+)$").Match(this->curr_answer) && !PCRE("^(\\d+)$").Match(this->curr_answer) && (this->curr_answer.length() > 5 && (utf8lower(this->curr_answer, needs_spanish_hack) == utf8lower(trivia_message, needs_spanish_hack) || creator->levenstein(trivia_message, this->curr_answer) < 2))))) {
 				/* Correct answer */
 				this->gamestate = TRIV_ANSWER_CORRECT;
 				creator->CacheUser(m.author_id, this->channel_id);

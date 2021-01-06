@@ -90,7 +90,8 @@ void TriviaModule::handle_command(const in_cmd &cmd) {
 			tokens >> base_command;
 	
 			aegis::channel* c = bot->core.find_channel(cmd.channel_id);
-			if (!c) {
+			aegis::user* user = bot->core.find_user(cmd.author_id);
+			if (!c || !user) {
 				return;
 			}
 	

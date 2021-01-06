@@ -145,6 +145,12 @@ void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 				state->timer = new std::thread(&state_t::tick, state);
 			}
 
+			std::vector<field_t> fields = {{_("QUESTION", settings), fmt::format("{}", questions), false}};
+			if (!category.empty()) {
+				fields.push_back({_("CATEGORY", settings), category, false});
+			}
+			fields.push_back({_("GETREADY", settings), _("FIRSTCOMING", settings), false});
+			fields.push_back({_("HOWPLAY", settings), _("INSTRUCTIONS", settings), false});
 			creator->EmbedWithFields(settings, fmt::format(_((state->hintless ? "NEWROUND_NH" : "NEWROUND"), settings), (state->hintless ? "**HARDCORE** " : (quickfire ? "**QUICKFIRE** " : "")), (resumed ? _("RESUMED", settings) : _("STARTED", settings)), (resumed ? _("ABOTADMIN", settings) : username)), fields, cmd.channel_id);
 
 			creator->CacheUser(cmd.author_id, cmd.channel_id);
