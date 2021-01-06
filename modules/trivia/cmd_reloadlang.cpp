@@ -51,9 +51,9 @@ void command_reloadlang_t::call(const in_cmd &cmd, std::stringstream &tokens, gu
 		delete oldlang;
 
 		creator->bot->core.log->info("Language strings count: {}", creator->lang->size());
-		creator->SimpleEmbed(":flags:", fmt::format("Reloaded lang.json, **{}** containing language strings.", creator->lang->size()), cmd.channel_id);
+		creator->SimpleEmbed(settings, ":flags:", fmt::format("Reloaded lang.json, **{}** containing language strings.", creator->lang->size()), cmd.channel_id);
 	} else {
-		creator->SimpleEmbed(":warning:", _("STAFF_ONLY", settings), cmd.channel_id);
+		creator->SimpleEmbed(settings, ":warning:", _("STAFF_ONLY", settings), cmd.channel_id);
 	}
 }
 

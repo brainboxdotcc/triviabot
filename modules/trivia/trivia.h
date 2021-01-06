@@ -83,7 +83,7 @@ public:
 	Bot* GetBot();
 	virtual ~TriviaModule();
 	void SetupCommands();
-	void queue_command(const std::string &message, int64_t author, int64_t channel, int64_t guild, bool mention);
+	void queue_command(const std::string &message, int64_t author, int64_t channel, int64_t guild, bool mention, const std::string &username);
 	void handle_command(const in_cmd &cmd);
 	void ProcessCommands();
 	virtual bool OnPresenceUpdate();
@@ -103,9 +103,9 @@ public:
 
 	guild_settings_t GetGuildSettings(int64_t guild_id);
 	std::string escape_json(const std::string &s);
-	void ProcessEmbed(const std::string &embed_json, int64_t channelID);
-	void SimpleEmbed(const std::string &emoji, const std::string &text, int64_t channelID, const std::string &title = "");
-	void EmbedWithFields(const std::string &title, std::vector<field_t> fields, int64_t channelID, const std::string &url = "");
+	void ProcessEmbed(const class guild_settings_t& settings, const std::string &embed_json, int64_t channelID);
+	void SimpleEmbed(const class guild_settings_t& settings, const std::string &emoji, const std::string &text, int64_t channelID, const std::string &title = "");
+	void EmbedWithFields(const class guild_settings_t& settings, const std::string &title, std::vector<field_t> fields, int64_t channelID, const std::string &url = "");
 	virtual std::string GetVersion();
 	virtual std::string GetDescription();
 	int random(int min, int max);

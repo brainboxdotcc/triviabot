@@ -61,10 +61,10 @@ TriviaModule::TriviaModule(Bot* instigator, ModuleLoader* ml) : Module(instigato
 	SetupCommands();
 }
 
-void TriviaModule::queue_command(const std::string &message, int64_t author, int64_t channel, int64_t guild, bool mention)
+void TriviaModule::queue_command(const std::string &message, int64_t author, int64_t channel, int64_t guild, bool mention, const std::string &username)
 {
 	std::lock_guard<std::mutex> cmd_lock(cmdmutex);
-	commandqueue.push_back(in_cmd(message, author, channel, guild, mention));
+	commandqueue.push_back(in_cmd(message, author, channel, guild, mention, username));
 }
 
 void TriviaModule::ProcessCommands()
@@ -181,47 +181,47 @@ bool TriviaModule::OnAllShardsReady()
 		/* XXX: Note: The mutex here is VITAL to thread safety of the state list! DO NOT move it! */
 		{
 			std::lock_guard<std::mutex> user_cache_lock(states_mutex);
-			state_t* state = new state_t(this);
-			state->start_time = time(NULL);
 
-			/* Get shuffle list from state */
-			if (!(*game)["qlist"].get<std::string>().empty()) {
-				json shuffle = json::parse((*game)["qlist"].get<std::string>());
+			/* Check that impatient user didn't (re)start the round while bot was synching guilds! */
+			if (states.find(from_string<int64_t>((*game)["channel_id"].get<std::string>(), std::dec)) == states.end()) {
+
+				state_t* state = new state_t(this);
+				state->start_time = time(NULL);
 	
-				for (auto s = shuffle.begin(); s != shuffle.end(); ++s) {
-					state->shuffle_list.push_back(s->get<std::string>());
+				/* Get shuffle list from state */
+				if (!(*game)["qlist"].get<std::string>().empty()) {
+					json shuffle = json::parse((*game)["qlist"].get<std::string>());
+		
+					for (auto s = shuffle.begin(); s != shuffle.end(); ++s) {
+						state->shuffle_list.push_back(s->get<std::string>());
+					}
+					bot->core.log->debug("Resume shuffle list length: {}", state->shuffle_list.size());
+					state->gamestate = (trivia_state_t)from_string<uint32_t>((*game)["state"].get<std::string>(), std::dec);
+				} else {
+					/* No shuffle list to resume from, create a new one */
+					state->shuffle_list = fetch_shuffle_list(from_string<int64_t>((*game)["guild_id"].get<std::string>(), std::dec));
+					state->gamestate = TRIV_ASK_QUESTION;
 				}
-				bot->core.log->debug("Resume shuffle list length: {}", state->shuffle_list.size());
-				state->gamestate = (trivia_state_t)from_string<uint32_t>((*game)["state"].get<std::string>(), std::dec);
-			} else {
-				/* No shuffle list to resume from, create a new one */
-				state->shuffle_list = fetch_shuffle_list(from_string<int64_t>((*game)["guild_id"].get<std::string>(), std::dec));
-				state->gamestate = TRIV_ASK_QUESTION;
-			}
-	
-			state->numquestions = from_string<uint32_t>((*game)["questions"].get<std::string>(), std::dec) + 1;
-			state->streak = from_string<uint32_t>((*game)["streak"].get<std::string>(), std::dec);
-			state->last_to_answer = from_string<int64_t>((*game)["lastanswered"].get<std::string>(), std::dec);
-			state->round = from_string<uint32_t>((*game)["question_index"].get<std::string>(), std::dec);
-			state->interval = (quickfire ? (TRIV_INTERVAL / 4) : TRIV_INTERVAL);
-			state->channel_id = from_string<int64_t>((*game)["channel_id"].get<std::string>(), std::dec);
-			state->hintless = ((*game)["hintless"].get<std::string>()) == "1";
-			state->guild_id = guild_id;
-			state->curr_qid = 0;
-			state->curr_answer = "";
-			/* Force fetching of question */
-			if (state->round % 10 == 0) {
-				do_insane_round(state, true);
-			} else {
-				do_normal_round(state, true);
-			}
-			aegis::channel* c = bot->core.find_channel(state->channel_id);
-			states[state->channel_id] = state;
-			if (c) {
+			
+				state->numquestions = from_string<uint32_t>((*game)["questions"].get<std::string>(), std::dec) + 1;
+				state->streak = from_string<uint32_t>((*game)["streak"].get<std::string>(), std::dec);
+				state->last_to_answer = from_string<int64_t>((*game)["lastanswered"].get<std::string>(), std::dec);
+				state->round = from_string<uint32_t>((*game)["question_index"].get<std::string>(), std::dec);
+				state->interval = (quickfire ? (TRIV_INTERVAL / 4) : TRIV_INTERVAL);
+				state->channel_id = from_string<int64_t>((*game)["channel_id"].get<std::string>(), std::dec);
+				state->hintless = ((*game)["hintless"].get<std::string>()) == "1";
+				state->guild_id = guild_id;
+				state->curr_qid = 0;
+				state->curr_answer = "";
+				/* Force fetching of question */
+				if (state->round % 10 == 0) {
+					do_insane_round(state, true);
+				} else {
+					do_normal_round(state, true);
+				}
+				states[state->channel_id] = state;
 				bot->core.log->info("Resumed game on guild {}, channel {}, {} questions [{}]", state->guild_id, state->channel_id, state->numquestions, quickfire ? "quickfire" : "normal");
 				state->timer = new std::thread(&state_t::tick, state);
-			} else {
-				state->terminating = true;
 			}
 		}
 	}
@@ -299,30 +299,25 @@ int64_t TriviaModule::GetChannelTotal()
 
 guild_settings_t TriviaModule::GetGuildSettings(int64_t guild_id)
 {
-	aegis::guild* guild = bot->core.find_guild(guild_id);
-	if (guild == nullptr) {
-		return guild_settings_t(guild_id, "!", {}, 3238819, false, false, false, false, 0, "", "en", 20);
-	} else {
-		db::resultset r = db::query("SELECT * FROM bot_guild_settings WHERE snowflake_id = ?", {guild_id});
-		if (!r.empty()) {
-			std::stringstream s(r[0]["moderator_roles"]);
-			int64_t role_id;
-			std::vector<int64_t> role_list;
-			while ((s >> role_id)) {
-				role_list.push_back(role_id);
-			}
-			return guild_settings_t(from_string<int64_t>(r[0]["snowflake_id"], std::dec), r[0]["prefix"], role_list, from_string<uint32_t>(r[0]["embedcolour"], std::dec), (r[0]["premium"] == "1"), (r[0]["only_mods_stop"] == "1"), (r[0]["only_mods_start"] == "1"), (r[0]["role_reward_enabled"] == "1"), from_string<int64_t>(r[0]["role_reward_id"], std::dec), r[0]["custom_url"], r[0]["language"], from_string<uint32_t>(r[0]["question_interval"], std::dec));
-		} else {
-			db::query("INSERT INTO bot_guild_settings (snowflake_id) VALUES('?')", {guild_id});
-			return guild_settings_t(guild_id, "!", {}, 3238819, false, false, false, false, 0, "", "en", 20);
+	db::resultset r = db::query("SELECT * FROM bot_guild_settings WHERE snowflake_id = ?", {guild_id});
+	if (!r.empty()) {
+		std::stringstream s(r[0]["moderator_roles"]);
+		int64_t role_id;
+		std::vector<int64_t> role_list;
+		while ((s >> role_id)) {
+			role_list.push_back(role_id);
 		}
+		return guild_settings_t(from_string<int64_t>(r[0]["snowflake_id"], std::dec), r[0]["prefix"], role_list, from_string<uint32_t>(r[0]["embedcolour"], std::dec), (r[0]["premium"] == "1"), (r[0]["only_mods_stop"] == "1"), (r[0]["only_mods_start"] == "1"), (r[0]["role_reward_enabled"] == "1"), from_string<int64_t>(r[0]["role_reward_id"], std::dec), r[0]["custom_url"], r[0]["language"], from_string<uint32_t>(r[0]["question_interval"], std::dec));
+	} else {
+		db::query("INSERT INTO bot_guild_settings (snowflake_id) VALUES('?')", {guild_id});
+		return guild_settings_t(guild_id, "!", {}, 3238819, false, false, false, false, 0, "", "en", 20);
 	}
 }
 
 std::string TriviaModule::GetVersion()
 {
 	/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-	std::string version = "$ModVer 59$";
+	std::string version = "$ModVer 60$";
 	return "3.0." + version.substr(8,version.length() - 9);
 }
 
@@ -420,7 +415,7 @@ void TriviaModule::do_insane_round(state_t* state, bool silent)
 	state->gamestate = TRIV_FIRST_HINT;
 
 
-	EmbedWithFields(fmt::format(_("QUESTION_COUNTER", settings), state->round, state->numquestions - 1), {{_("INSANE_ROUND", settings), fmt::format(_("INSANE_ANS_COUNT", settings), state->insane_num), false}, {_("QUESTION", settings), state->curr_question, false}}, state->channel_id, fmt::format("https://triviabot.co.uk/report/?c={}&g={}&insane={}", state->channel_id, state->guild_id, state->curr_qid + state->channel_id));
+	EmbedWithFields(settings, fmt::format(_("QUESTION_COUNTER", settings), state->round, state->numquestions - 1), {{_("INSANE_ROUND", settings), fmt::format(_("INSANE_ANS_COUNT", settings), state->insane_num), false}, {_("QUESTION", settings), state->curr_question, false}}, state->channel_id, fmt::format("https://triviabot.co.uk/report/?c={}&g={}&insane={}", state->channel_id, state->guild_id, state->curr_qid + state->channel_id));
 }
 
 void TriviaModule::do_normal_round(state_t* state, bool silent)
@@ -477,7 +472,7 @@ void TriviaModule::do_normal_round(state_t* state, bool silent)
 		state->curr_answer = "";
 		bot->core.log->warn("do_normal_round(): Attempted to retrieve question id {} but got a malformed response. Round was aborted.", state->shuffle_list[state->round - 1]);
 		if (!silent) {
-			EmbedWithFields(fmt::format(_("Q_FETCH_ERROR", settings)), {{_("Q_SPOOPY", settings), _("Q_CONTACT_DEVS", settings), false}, {_("ROUND_STOPPING", settings), _("ERROR_BROKE_IT", settings), false}}, state->channel_id);
+			EmbedWithFields(settings, fmt::format(_("Q_FETCH_ERROR", settings)), {{_("Q_SPOOPY", settings), _("Q_CONTACT_DEVS", settings), false}, {_("ROUND_STOPPING", settings), _("ERROR_BROKE_IT", settings), false}}, state->channel_id);
 		}
 		return;
 	}
@@ -561,12 +556,12 @@ void TriviaModule::do_normal_round(state_t* state, bool silent)
 		}
 
 		if (!silent) {
-			EmbedWithFields(fmt::format(_("QUESTION_COUNTER", settings), state->round, state->numquestions - 1), {{_("CATEGORY", settings), state->curr_category, false}, {_("QUESTION", settings), state->curr_question, false}}, state->channel_id, fmt::format("https://triviabot.co.uk/report/?c={}&g={}&normal={}", state->channel_id, state->guild_id, state->curr_qid + state->channel_id));
+			EmbedWithFields(settings, fmt::format(_("QUESTION_COUNTER", settings), state->round, state->numquestions - 1), {{_("CATEGORY", settings), state->curr_category, false}, {_("QUESTION", settings), state->curr_question, false}}, state->channel_id, fmt::format("https://triviabot.co.uk/report/?c={}&g={}&normal={}", state->channel_id, state->guild_id, state->curr_qid + state->channel_id));
 		}
 
 	} else {
 		if (!silent) {
-			SimpleEmbed(":ghost:", _("BRAIN_BROKE_IT", settings), state->channel_id, _("FETCH_Q", settings));
+			SimpleEmbed(settings, ":ghost:", _("BRAIN_BROKE_IT", settings), state->channel_id, _("FETCH_Q", settings));
 		}
 	}
 
@@ -586,18 +581,13 @@ void TriviaModule::do_normal_round(state_t* state, bool silent)
 void TriviaModule::do_first_hint(state_t* state)
 {
 	bot->core.log->debug("do_first_hint: G:{} C:{}", state->guild_id, state->channel_id);
-	aegis::channel* c = bot->core.find_channel(state->channel_id);
 	guild_settings_t settings = GetGuildSettings(state->guild_id);
-	if (c) {
-		if (state->round % 10 == 0) {
-			/* Insane round countdown */
-			SimpleEmbed(":clock10:", fmt::format(_("SECS_LEFT", settings), state->interval * 2), c->get_id().get());
-		} else {
-			/* First hint, not insane round */
-			SimpleEmbed(":clock10:", state->curr_customhint1, c->get_id().get(), _("FIRST_HINT", settings));
-		}
+	if (state->round % 10 == 0) {
+		/* Insane round countdown */
+		SimpleEmbed(settings, ":clock10:", fmt::format(_("SECS_LEFT", settings), state->interval * 2), state->channel_id);
 	} else {
-		 bot->core.log->warn("do_first_hint(): Channel {} was deleted", state->channel_id);
+		/* First hint, not insane round */
+		SimpleEmbed(settings, ":clock10:", state->curr_customhint1, state->channel_id, _("FIRST_HINT", settings));
 	}
 	state->gamestate = TRIV_SECOND_HINT;
 	state->score = (state->interval == TRIV_INTERVAL ? 2 : 4);
@@ -609,18 +599,13 @@ void TriviaModule::do_first_hint(state_t* state)
 void TriviaModule::do_second_hint(state_t* state)
 {
 	bot->core.log->debug("do_second_hint: G:{} C:{}", state->guild_id, state->channel_id);
-	aegis::channel* c = bot->core.find_channel(state->channel_id);
 	guild_settings_t settings = GetGuildSettings(state->guild_id);
-	if (c) {
-		if (state->round % 10 == 0) {
-			/* Insane round countdown */
-			SimpleEmbed(":clock1030:", fmt::format(_("SECS_LEFT", settings), state->interval), c->get_id().get());
-		} else {
-			/* Second hint, not insane round */
-			SimpleEmbed(":clock1030:", state->curr_customhint2, c->get_id().get(), _("SECOND_HINT", settings));
-		}
+	if (state->round % 10 == 0) {
+		/* Insane round countdown */
+		SimpleEmbed(settings, ":clock1030:", fmt::format(_("SECS_LEFT", settings), state->interval), state->channel_id);
 	} else {
-		 bot->core.log->warn("do_second_hint: Channel {} was deleted", state->channel_id);
+		/* Second hint, not insane round */
+		SimpleEmbed(settings, ":clock1030:", state->curr_customhint2, state->channel_id, _("SECOND_HINT", settings));
 	}
 	state->gamestate = TRIV_TIME_UP;
 	state->score = (state->interval == TRIV_INTERVAL ? 1 : 2);
@@ -632,23 +617,17 @@ void TriviaModule::do_second_hint(state_t* state)
 void TriviaModule::do_time_up(state_t* state)
 {
 	bot->core.log->debug("do_time_up: G:{} C:{}", state->guild_id, state->channel_id);
-	aegis::channel* c = bot->core.find_channel(state->channel_id);
 	guild_settings_t settings = GetGuildSettings(state->guild_id);
 
-	if (c) {
-		if (state->round % 10 == 0) {
-			int32_t found = state->insane_num - state->insane_left;
-			SimpleEmbed(":alarm_clock:", fmt::format(_("INSANE_FOUND", settings), found), c->get_id().get(), _("TIME_UP", settings));
-		} else if (state->curr_answer != "") {
-			SimpleEmbed(":alarm_clock:", fmt::format(_("ANS_WAS", settings), state->curr_answer), c->get_id().get(), _("OUT_OF_TIME", settings));
-		}
+	if (state->round % 10 == 0) {
+		int32_t found = state->insane_num - state->insane_left;
+		SimpleEmbed(settings, ":alarm_clock:", fmt::format(_("INSANE_FOUND", settings), found), state->channel_id, _("TIME_UP", settings));
+	} else if (state->curr_answer != "") {
+		SimpleEmbed(settings, ":alarm_clock:", fmt::format(_("ANS_WAS", settings), state->curr_answer), state->channel_id, _("OUT_OF_TIME", settings));
 	}
 	/* FIX: You can only lose your streak on a non-insane round */
 	if (state->curr_answer != "" && state->round % 10 != 0 && state->streak > 1 && state->last_to_answer) {
-		aegis::user* u = bot->core.find_user(state->last_to_answer);
-		if (u) {
-			SimpleEmbed(":octagonal_sign:", fmt::format(_("STREAK_SMASHED", settings), u->get_username(), state->streak), c->get_id().get());
-		}
+		SimpleEmbed(settings, ":octagonal_sign:", fmt::format(_("STREAK_SMASHED", settings), fmt::format("<@{}>", state->last_to_answer), state->streak), state->channel_id);
 	}
 
 	if (state->curr_answer != "") {
@@ -659,8 +638,8 @@ void TriviaModule::do_time_up(state_t* state)
 		}
 	}
 
-	if (c && state->round <= state->numquestions - 2) {
-		SimpleEmbed("<a:loading:658667224067735562>", fmt::format(_("COMING_UP", settings), state->interval == TRIV_INTERVAL ? settings.question_interval : state->interval), c->get_id().get(), _("REST", settings));
+	if (state->round <= state->numquestions - 2) {
+		SimpleEmbed(settings, "<a:loading:658667224067735562>", fmt::format(_("COMING_UP", settings), state->interval == TRIV_INTERVAL ? settings.question_interval : state->interval), state->channel_id, _("REST", settings));
 	}
 
 	state->gamestate = (state->round > state->numquestions ? TRIV_END : TRIV_ASK_QUESTION);
@@ -675,18 +654,13 @@ void TriviaModule::do_answer_correct(state_t* state)
 {
 	bot->core.log->debug("do_answer_correct: G:{} C:{}", state->guild_id, state->channel_id);
 
-	aegis::channel* c = bot->core.find_channel(state->channel_id);
 	guild_settings_t settings = GetGuildSettings(state->guild_id);
 
 	state->round++;
 	state->score = 0;
 
 	if (state->round <= state->numquestions - 2) {
-		if (c) {
-			SimpleEmbed("<a:loading:658667224067735562>", fmt::format(_("COMING_UP", settings), state->interval), c->get_id().get(), _("REST", settings));
-		} else {
-			bot->core.log->warn("do_answer_correct(): Channel {} was deleted", state->channel_id);
-		}
+		SimpleEmbed(settings, "<a:loading:658667224067735562>", fmt::format(_("COMING_UP", settings), state->interval), state->channel_id, _("REST", settings));
 	}
 	state->gamestate = TRIV_ASK_QUESTION;
 	if (log_question_index(state->guild_id, state->channel_id, state->round, state->streak, state->last_to_answer, state->gamestate, state->curr_qid)) {
@@ -700,15 +674,11 @@ void TriviaModule::do_end_game(state_t* state)
 
 	log_game_end(state->guild_id, state->channel_id);
 
-	aegis::channel* c = bot->core.find_channel(state->channel_id);
-	if (c) {
-		guild_settings_t settings = GetGuildSettings(state->guild_id);
-		bot->core.log->info("End of game on guild {}, channel {} after {} seconds", state->guild_id, state->channel_id, time(NULL) - state->start_time);
-		SimpleEmbed(":stop_button:", fmt::format(_("END1", settings), state->numquestions - 1), c->get_id().get(), _("END_TITLE", settings));
-		show_stats(c->get_guild().get_id(), state->channel_id);
-	} else {
-		bot->core.log->warn("do_end_game(): Channel {} was deleted", state->channel_id);
-	}
+	guild_settings_t settings = GetGuildSettings(state->guild_id);
+	bot->core.log->info("End of game on guild {}, channel {} after {} seconds", state->guild_id, state->channel_id, time(NULL) - state->start_time);
+	SimpleEmbed(settings, ":stop_button:", fmt::format(_("END1", settings), state->numquestions - 1), state->channel_id, _("END_TITLE", settings));
+	show_stats(state->guild_id, state->channel_id);
+
 	state->terminating = true;
 }
 
@@ -724,45 +694,26 @@ void TriviaModule::show_stats(int64_t guild_id, int64_t channel_id)
 		int64_t snowflake_id;
 		score >> points;
 		score >> snowflake_id;
-		aegis::user* u = bot->core.find_user(snowflake_id);
-		if (u) {
-			msg.append(fmt::format("{}. `{}` ({})\n", count++, u->get_full_name(), points));
+		db::resultset rs = db::query("SELECT * FROM trivia_user_cache WHERE snowflake_id = ?", {snowflake_id});
+		if (rs.size() > 0) {
+			msg.append(fmt::format("{0}. `{1}#{2:04d}` ({3})\n", count++, rs[0]["username"], from_string<uint32_t>(rs[0]["discriminator"], std::dec), points));
 		} else {
-			msg.append(fmt::format("{}. `Deleted User#0000` ({})\n", count++, points));
+			msg.append(fmt::format("{}. <@{}> ({})\n", count++, snowflake_id, points));
 		}
 	}
 	if (msg.empty()) {
 		msg = "Nobody has played here today! :cry:";
 	}
-	aegis::channel* c = bot->core.find_channel(channel_id);
-	if (c) {
-		guild_settings_t settings = GetGuildSettings(guild_id);
-		if (settings.premium && !settings.custom_url.empty()) {
-			EmbedWithFields(_("LEADERBOARD", settings), {{_("TOP_TEN", settings), msg, false}, {_("MORE_INFO", settings), fmt::format(_("LEADER_LINK", settings), settings.custom_url), false}}, c->get_id().get());
-		} else {
-			EmbedWithFields(_("LEADERBOARD", settings), {{_("TOP_TEN", settings), msg, false}, {_("MORE_INFO", settings), fmt::format(_("LEADER_LINK", settings), guild_id), false}}, c->get_id().get());
-		}
+	guild_settings_t settings = GetGuildSettings(guild_id);
+	if (settings.premium && !settings.custom_url.empty()) {
+		EmbedWithFields(settings, _("LEADERBOARD", settings), {{_("TOP_TEN", settings), msg, false}, {_("MORE_INFO", settings), fmt::format(_("LEADER_LINK", settings), settings.custom_url), false}}, channel_id);
+	} else {
+		EmbedWithFields(settings, _("LEADERBOARD", settings), {{_("TOP_TEN", settings), msg, false}, {_("MORE_INFO", settings), fmt::format(_("LEADER_LINK", settings), guild_id), false}}, channel_id);
 	}
 }
 
 void TriviaModule::Tick(state_t* state)
 {
-	if (state->terminating) {
-		return;
-	}
-
-	uint32_t waits = 0;
-	while ((bot->core.find_guild(state->guild_id) == nullptr || bot->core.find_channel(state->channel_id) == nullptr) && !state->terminating) {
-		bot->core.log->warn("Guild or channel are missing!!! Waiting 5 seconds for connection to re-establish to guild/channel: G:{} C:{}", state->guild_id, state->channel_id);
-		sleep(5);
-		if (waits++ > 30) {
-			bot->core.log->warn("Waited too long for re-connection of G:{} C:{}, ending round.", state->guild_id, state->channel_id);
-			state->gamestate = TRIV_END;
-			state->terminating = true;
-		}
-	}
-	
-
 	if (!state->terminating) {
 		switch (state->gamestate) {
 			case TRIV_ASK_QUESTION:
@@ -804,7 +755,7 @@ void TriviaModule::DisposeThread(std::thread* t)
 void TriviaModule::StopGame(state_t* state, const guild_settings_t &settings)
 {
 	if (state->gamestate != TRIV_END) {
-		SimpleEmbed(":octagonal_sign:", _("DASH_STOP", settings), state->channel_id, _("STOPPING", settings));
+		SimpleEmbed(settings, ":octagonal_sign:", _("DASH_STOP", settings), state->channel_id, _("STOPPING", settings));
 		state->gamestate = TRIV_END;
 		state->terminating = false;
 	}
@@ -816,7 +767,8 @@ void TriviaModule::CheckForQueuedStarts()
 	for (auto r = rs.begin(); r != rs.end(); ++r) {
 		uint64_t guild_id = from_string<uint64_t>((*r)["guild_id"], std::dec);
 		/* Check that this guild is on this cluster, if so we can start this game */
-		if (bot->core.find_guild(guild_id)) {
+		aegis::guild* g = bot->core.find_guild(guild_id);
+		if (g) {
 
 			uint64_t channel_id = from_string<uint64_t>((*r)["channel_id"], std::dec);
 			uint64_t user_id = from_string<uint64_t>((*r)["user_id"], std::dec);
@@ -827,13 +779,14 @@ void TriviaModule::CheckForQueuedStarts()
 
 			bot->core.log->info("Remote start, guild_id={} channel_id={} user_id={} questions={} type={} category='{}'", guild_id, channel_id, user_id, questions, hintless ? "hardcore" : (quickfire ? "quickfire" : "normal"), category);
 			guild_settings_t settings = GetGuildSettings(guild_id);
+			aegis::channel* channel = bot->core.find_channel(channel_id);
 
-			aegis::gateway::objects::message m(fmt::format("{}{} {}{}", settings.prefix, (hintless ? "hardcore" : (quickfire ? "quickfire" : "start")), questions, (category.empty() ? "" : (std::string(" ") + category))), bot->core.find_channel(channel_id), bot->core.find_guild(guild_id));
+			aegis::gateway::objects::message m(fmt::format("{}{} {}{}", settings.prefix, (hintless ? "hardcore" : (quickfire ? "quickfire" : "start")), questions, (category.empty() ? "" : (std::string(" ") + category))), channel, g);
 
 			struct modevent::message_create msg = {
 				*(bot->core.get_shard_mgr().get_shards()[0]),
 				*(bot->core.find_user(user_id)),
-				*(bot->core.find_channel(channel_id)),
+				*(channel),
 				m
 			};
 
@@ -889,6 +842,7 @@ bool TriviaModule::RealOnMessage(const modevent::message_create &message, const 
 	/* Retrieve current state for channel, if there is no state object, no game is in progress */
 	state_t* state = nullptr;
 	int64_t guild_id = 0;
+	int64_t channel_id = 0;
 	aegis::channel* c = nullptr;
 
 	if (msg.has_channel()) {
@@ -909,30 +863,25 @@ bool TriviaModule::RealOnMessage(const modevent::message_create &message, const 
 		return true;
 	}
 
-	int64_t channel_id = c->get_id().get();
+	if (c) {
+		channel_id = c->get_id().get();
+	}
 
 	guild_settings_t settings = GetGuildSettings(guild_id);
-
-	std::string trivia_message = clean_message;
-	int x = from_string<int>(conv_num(clean_message, settings), std::dec);
-	if (x > 0) {
-		trivia_message = conv_num(clean_message, settings);
-	}
-	trivia_message = tidy_num(trivia_message);
 	state = GetState(channel_id);
 
 	if (mentioned && prefix_match->Match(clean_message)) {
-		c->create_message(fmt::format(_("PREFIX", settings), settings.prefix, settings.prefix));
+		bot->core.create_message(channel_id, fmt::format(_("PREFIX", settings), settings.prefix, settings.prefix));
 		bot->core.log->debug("Respond to prefix request on channel C:{} A:{}", channel_id, author_id);
 		return false;
 	}
 
-	// Commamds
+	// Commands
 	if (lowercase(clean_message.substr(0, settings.prefix.length())) == lowercase(settings.prefix)) {
 
 		std::string command = clean_message.substr(settings.prefix.length(), clean_message.length() - settings.prefix.length());
 		if (user != nullptr) {
-			queue_command(command, author_id, channel_id, guild_id, mentioned);
+			queue_command(command, author_id, channel_id, guild_id, mentioned, username);
 			bot->core.log->info("CMD (USER={}, GUILD={}): <{}> {}", author_id, guild_id, username, clean_message);
 			return false;
 		} else {
@@ -944,7 +893,7 @@ bool TriviaModule::RealOnMessage(const modevent::message_create &message, const 
 	// Answers for active games
 	if (state) {
 		/* The state_t class handles potential answers, but only when a game is running on this guild */
-		state->queue_message(trivia_message, author_id, mentioned);
+		state->queue_message(clean_message, author_id, username, mentioned);
 		bot->core.log->debug("Processed potential answer message from A:{} on C:{}", author_id, channel_id);
 	}
 

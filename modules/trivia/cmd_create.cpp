@@ -46,12 +46,12 @@ void command_create_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_
 		newteamname = create_new_team(newteamname);
 		if (newteamname != "__NO__") {
 			join_team(cmd.author_id, newteamname, cmd.channel_id);
-			creator->SimpleEmbed(":busts_in_silhouette:", fmt::format(_("CREATED", settings), newteamname, username), c->get_id().get(), _("ZELDAREFERENCE", settings));
+			creator->SimpleEmbed(settings, ":busts_in_silhouette:", fmt::format(_("CREATED", settings), newteamname, username), c->get_id().get(), _("ZELDAREFERENCE", settings));
 		} else {
-			creator->SimpleEmbed(":warning:", fmt::format(_("CANTCREATE", settings), username), cmd.channel_id);
+			creator->SimpleEmbed(settings, ":warning:", fmt::format(_("CANTCREATE", settings), username), cmd.channel_id);
 		}
 	} else {
-		creator->SimpleEmbed(":warning:", fmt::format(_("ALREADYMEMBER", settings), username, teamname), cmd.channel_id);
+		creator->SimpleEmbed(settings, ":warning:", fmt::format(_("ALREADYMEMBER", settings), username, teamname), cmd.channel_id);
 	}
 	creator->CacheUser(cmd.author_id, cmd.channel_id);
 }

@@ -10,11 +10,12 @@ class in_cmd
 {
  public:
 	std::string msg;
+	std::string username;
 	int64_t author_id;
 	int64_t channel_id;
 	int64_t guild_id;
 	bool mentions_bot;
-	in_cmd(const std::string &m, int64_t author, int64_t channel, int64_t guild, bool mention);
+	in_cmd(const std::string &m, int64_t author, int64_t channel, int64_t guild, bool mention, const std::string &username);
 };
 
 class command_t 

@@ -40,7 +40,7 @@ void command_vote_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_se
 {
 	std::string a = fmt::format(_("VOTEAD", settings), creator->bot->user.id.get(), settings.prefix);
 	std::string b = _("PRIVHINT", settings);
-	creator->SimpleEmbed(":white_check_mark:", b + "\n" + a, cmd.channel_id);
+	creator->SimpleEmbed(settings, ":white_check_mark:", b + "\n" + a, cmd.channel_id);
 	creator->CacheUser(cmd.author_id, cmd.channel_id);
 }
 

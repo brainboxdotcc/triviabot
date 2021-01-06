@@ -42,9 +42,9 @@ void command_join_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_se
 	std::getline(tokens, teamname);
 	teamname = trim(teamname);
 	if (join_team(cmd.author_id, teamname, cmd.channel_id)) {
-		creator->SimpleEmbed(":busts_in_silhouette:", fmt::format(_("JOINED", settings), teamname, username), cmd.channel_id, _("CALLFORBACKUP", settings));
+		creator->SimpleEmbed(settings, ":busts_in_silhouette:", fmt::format(_("JOINED", settings), teamname, username), cmd.channel_id, _("CALLFORBACKUP", settings));
 	} else {
-		creator->SimpleEmbed(":warning:", fmt::format(_("CANTJOIN", settings), username), cmd.channel_id);
+		creator->SimpleEmbed(settings, ":warning:", fmt::format(_("CANTJOIN", settings), username), cmd.channel_id);
 	}
 	creator->CacheUser(cmd.author_id, cmd.channel_id);
 }

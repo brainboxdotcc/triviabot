@@ -402,7 +402,7 @@ bool log_question_index(int64_t guild_id, int64_t channel_id, int32_t index, uin
 		}
 		if (!desc.empty()) {
 			guild_settings_t settings = module->GetGuildSettings(guild_id);
-			module->SimpleEmbed("", desc, channel_id, module->_("INSANESTATS", settings));
+			module->SimpleEmbed(settings, "", desc, channel_id, module->_("INSANESTATS", settings));
 		}
 		db::query("DELETE FROM insane_round_statistics WHERE channel_id = '?'", {channel_id});
 	}

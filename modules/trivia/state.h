@@ -21,9 +21,10 @@ class in_msg
 {
  public:
 	std::string msg;
+	std::string username;
 	int64_t author_id;
 	bool mentions_bot;
-	in_msg(const std::string &m, int64_t author, bool mention);
+	in_msg(const std::string &m, int64_t author, bool mention, const std::string &username);
 };
 
 class state_t
@@ -71,7 +72,7 @@ class state_t
 	state_t(class TriviaModule* _creator);
 	~state_t();
 	void tick();
-	void queue_message(const std::string &message, int64_t author_id, bool mentions_bot = false);
+	void queue_message(const std::string &message, int64_t author_id, const std::string &username, bool mentions_bot = false);
 	void handle_message(const in_msg& m);
 };
 

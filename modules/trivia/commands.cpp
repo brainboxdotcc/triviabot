@@ -35,7 +35,7 @@
 #include "piglatin.h"
 #include "commands.h"
 
-in_cmd::in_cmd(const std::string &m, int64_t author, int64_t channel, int64_t guild, bool mention) : msg(m), author_id(author), channel_id(channel), guild_id(guild), mentions_bot(mention)
+in_cmd::in_cmd(const std::string &m, int64_t author, int64_t channel, int64_t guild, bool mention, const std::string &user) : msg(m), author_id(author), channel_id(channel), guild_id(guild), mentions_bot(mention), username(user)
 {
 }
 
@@ -87,16 +87,10 @@ void TriviaModule::handle_command(const in_cmd &cmd) {
 	
 			std::stringstream tokens(cmd.msg);
 			std::string base_command;
-			std::string username;
 			tokens >> base_command;
 	
 			aegis::channel* c = bot->core.find_channel(cmd.channel_id);
-			aegis::user* user = bot->core.find_user(cmd.author_id);
-			if (user) {
-				username = user->get_username();
-			}
 			if (!c) {
-				/* Channel yoinked, can't proceed */
 				return;
 			}
 	
@@ -137,7 +131,7 @@ void TriviaModule::handle_command(const in_cmd &cmd) {
 				}
 				if (can_execute) {
 					bot->core.log->debug("command_t '{}' routed to handler", base_command);
-					command->second->call(cmd, tokens, settings, username, moderator, c, user, state);
+					command->second->call(cmd, tokens, settings, cmd.username, moderator, c, user, state);
 				} else {
 					/* Display rate limit message, but only one per rate limit period */
 					bool emit_rl_warning = false;
@@ -150,7 +144,7 @@ void TriviaModule::handle_command(const in_cmd &cmd) {
 						last_rl_warning[cmd.channel_id] = time(NULL) + PER_CHANNEL_RATE_LIMIT;
 					}
 					if (emit_rl_warning) {
-						SimpleEmbed(":snail:", fmt::format(_("RATELIMITED", settings), PER_CHANNEL_RATE_LIMIT, base_command), cmd.channel_id, _("WOAHTHERE", settings));
+						SimpleEmbed(settings, ":snail:", fmt::format(_("RATELIMITED", settings), PER_CHANNEL_RATE_LIMIT, base_command), cmd.channel_id, _("WOAHTHERE", settings));
 					}
 					bot->core.log->debug("command_t '{}' NOT routed to handler on channel {}, limiting", base_command, cmd.channel_id);
 				}
@@ -178,7 +172,7 @@ void TriviaModule::handle_command(const in_cmd &cmd) {
 						CacheUser(cmd.author_id, cmd.channel_id);
 						std::string reply = trim(custom_command(base_command, trim(rest), cmd.author_id, cmd.channel_id, cmd.guild_id));
 						if (!reply.empty()) {
-							ProcessEmbed(reply, cmd.channel_id);
+							ProcessEmbed(settings, reply, cmd.channel_id);
 						}
 					} else {
 						/* Display rate limit message, but only one per rate limit period */
@@ -192,7 +186,7 @@ void TriviaModule::handle_command(const in_cmd &cmd) {
 							last_rl_warning[cmd.channel_id] = time(NULL) + PER_CHANNEL_RATE_LIMIT;
 						}
 						if (emit_rl_warning) {
-							SimpleEmbed(":snail:", fmt::format(_("RATELIMITED", settings), PER_CHANNEL_RATE_LIMIT, base_command), cmd.channel_id, _("WOAHTHERE", settings));
+							SimpleEmbed(settings, ":snail:", fmt::format(_("RATELIMITED", settings), PER_CHANNEL_RATE_LIMIT, base_command), cmd.channel_id, _("WOAHTHERE", settings));
 						}
 
 						bot->core.log->debug("Command '{}' not sent to API, rate limited", trim(lowercase(base_command)));
@@ -221,13 +215,7 @@ void TriviaModule::GetHelp(const std::string &section, int64_t channelID, const 
 	json embed_json;
 	char timestamp[256];
 	time_t timeval = time(NULL);
-	aegis::channel* channel = bot->core.find_channel(channelID);
 	int32_t colour = settings.embedcolour;
-
-	if (!channel) {
-		bot->core.log->error("Can't find channel {}!", channelID);
-		return;
-	}
 
 	std::ifstream t("../help/" + settings.language + "/" + (section.empty() ? "basic" : section) + ".json");
 	if (!t) {
@@ -250,16 +238,16 @@ void TriviaModule::GetHelp(const std::string &section, int64_t channelID, const 
 		embed_json = json::parse(json);
 	}
 	catch (const std::exception &e) {
-		if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == channel->get_guild().get_id()) {
-			channel->create_message(fmt::format(_("HERPDERP", settings), authorid));
+		if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == channelID) {
+			bot->core.create_message(channelID, fmt::format(_("HERPDERP", settings), authorid));
 			bot->sent_messages++;
 		}
 		bot->core.log->error("Malformed help file {}.json!", section);
 		return;
 	}
 
-	if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == channel->get_guild().get_id()) {
-		channel->create_message_embed("", embed_json);
+	if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == channelID) {
+		bot->core.create_message_embed(channelID, "", embed_json);
 		bot->sent_messages++;
 	}
 }
