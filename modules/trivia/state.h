@@ -74,5 +74,6 @@ class state_t
 	void tick();
 	void queue_message(const std::string &message, int64_t author_id, const std::string &username, bool mentions_bot = false);
 	void handle_message(const in_msg& m);
+	bool is_valid();
 };
 

@@ -317,7 +317,7 @@ guild_settings_t TriviaModule::GetGuildSettings(int64_t guild_id)
 std::string TriviaModule::GetVersion()
 {
 	/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-	std::string version = "$ModVer 60$";
+	std::string version = "$ModVer 61$";
 	return "3.0." + version.substr(8,version.length() - 9);
 }
 
@@ -369,6 +369,10 @@ std::string TriviaModule::vowelcount(std::string text, const guild_settings_t &s
 
 void TriviaModule::do_insane_round(state_t* state, bool silent)
 {
+	if (!state->is_valid()) {
+		return;
+	}
+
 	bot->core.log->debug("do_insane_round: G:{} C:{}", state->guild_id, state->channel_id);
 
 	if (state->round >= state->numquestions) {
@@ -420,6 +424,10 @@ void TriviaModule::do_insane_round(state_t* state, bool silent)
 
 void TriviaModule::do_normal_round(state_t* state, bool silent)
 {
+	if (!state->is_valid()) {
+		return;
+	}
+
 	bot->core.log->debug("do_normal_round: G:{} C:{}", state->guild_id, state->channel_id);
 
 	if (state->round >= state->numquestions) {
@@ -580,6 +588,9 @@ void TriviaModule::do_normal_round(state_t* state, bool silent)
 
 void TriviaModule::do_first_hint(state_t* state)
 {
+	if (!state->is_valid()) {
+		return;
+	}
 	bot->core.log->debug("do_first_hint: G:{} C:{}", state->guild_id, state->channel_id);
 	guild_settings_t settings = GetGuildSettings(state->guild_id);
 	if (state->round % 10 == 0) {
@@ -598,6 +609,9 @@ void TriviaModule::do_first_hint(state_t* state)
 
 void TriviaModule::do_second_hint(state_t* state)
 {
+	if (!state->is_valid()) {
+		return;
+	}
 	bot->core.log->debug("do_second_hint: G:{} C:{}", state->guild_id, state->channel_id);
 	guild_settings_t settings = GetGuildSettings(state->guild_id);
 	if (state->round % 10 == 0) {
@@ -616,6 +630,9 @@ void TriviaModule::do_second_hint(state_t* state)
 
 void TriviaModule::do_time_up(state_t* state)
 {
+	if (!state->is_valid()) {
+		return;
+	}
 	bot->core.log->debug("do_time_up: G:{} C:{}", state->guild_id, state->channel_id);
 	guild_settings_t settings = GetGuildSettings(state->guild_id);
 
@@ -652,6 +669,9 @@ void TriviaModule::do_time_up(state_t* state)
 
 void TriviaModule::do_answer_correct(state_t* state)
 {
+	if (!state->is_valid()) {
+		return;
+	}
 	bot->core.log->debug("do_answer_correct: G:{} C:{}", state->guild_id, state->channel_id);
 
 	guild_settings_t settings = GetGuildSettings(state->guild_id);
@@ -670,6 +690,9 @@ void TriviaModule::do_answer_correct(state_t* state)
 
 void TriviaModule::do_end_game(state_t* state)
 {
+	if (!state->is_valid()) {
+		return;
+	}
 	bot->core.log->debug("do_end_game: G:{} C:{}", state->guild_id, state->channel_id);
 
 	log_game_end(state->guild_id, state->channel_id);
@@ -871,7 +894,9 @@ bool TriviaModule::RealOnMessage(const modevent::message_create &message, const 
 	state = GetState(channel_id);
 
 	if (mentioned && prefix_match->Match(clean_message)) {
-		bot->core.create_message(channel_id, fmt::format(_("PREFIX", settings), settings.prefix, settings.prefix));
+		if (c) {
+			c->create_message(fmt::format(_("PREFIX", settings), settings.prefix, settings.prefix));
+		}
 		bot->core.log->debug("Respond to prefix request on channel C:{} A:{}", channel_id, author_id);
 		return false;
 	}

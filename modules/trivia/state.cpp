@@ -92,6 +92,11 @@ state_t::~state_t()
 	creator->DisposeThread(timer);
 }
 
+bool state_t::is_valid()
+{
+	return creator->GetBot()->core.find_guild(guild_id) && creator->GetBot()->core.find_channel(channel_id);
+}
+
 void state_t::handle_message(const in_msg& m)
 {
 	if (this->gamestate == TRIV_ASK_QUESTION || this->gamestate == TRIV_FIRST_HINT || this->gamestate == TRIV_SECOND_HINT || this->gamestate == TRIV_TIME_UP) {
@@ -235,14 +240,7 @@ void state_t::tick()
 				}
 			}
 
-			if (!terminating && !creator->GetBot()->core.find_guild(guild_id)) {
-				creator->GetBot()->core.log->error("Guild {} deleted (bot kicked?), removing active game states", guild_id);
-				log_game_end(guild_id, channel_id);
-				terminating = true;
-				gamestate = TRIV_END;
-			}
-			if (!terminating && !creator->GetBot()->core.find_channel(channel_id)) {
-				creator->GetBot()->core.log->error("Channel {} cannot be found, removing active game states", channel_id);
+			if (!terminating && !is_valid()) {
 				log_game_end(guild_id, channel_id);
 				terminating = true;
 				gamestate = TRIV_END;
