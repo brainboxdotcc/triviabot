@@ -57,30 +57,32 @@ std::string TriviaModule::escape_json(const std::string &s) {
 /* Create an embed from a JSON string and send it to a channel */
 void TriviaModule::ProcessEmbed(const guild_settings_t& settings, const std::string &embed_json, int64_t channelID)
 {
-	json embed;
-	std::string cleaned_json = embed_json;
-	/* Put unicode zero-width spaces in @everyone and @here */
-	cleaned_json = ReplaceString(cleaned_json, "@everyone", "@‎everyone");
-	cleaned_json = ReplaceString(cleaned_json, "@here", "@‎here");
-	try {
-		/* Tabs to spaces */
-		cleaned_json = ReplaceString(cleaned_json, "\t", " ");
-		embed = json::parse(cleaned_json);
-	}
-	catch (const std::exception &e) {
+	if (bot->core.find_channel(channelID)) {
+		json embed;
+		std::string cleaned_json = embed_json;
+		/* Put unicode zero-width spaces in @everyone and @here */
+		cleaned_json = ReplaceString(cleaned_json, "@everyone", "@‎everyone");
+		cleaned_json = ReplaceString(cleaned_json, "@here", "@‎here");
+		try {
+			/* Tabs to spaces */
+			cleaned_json = ReplaceString(cleaned_json, "\t", " ");
+			embed = json::parse(cleaned_json);
+		}
+		catch (const std::exception &e) {
+			if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == channelID) {
+					try {
+					bot->core.create_message(channelID, fmt::format(_("EMBED_ERROR_1", settings), cleaned_json, e.what()));
+				}
+				catch (const std::exception &e) {
+					bot->core.log->error("MALFORMED UNICODE: {}", e.what());
+				}
+				bot->sent_messages++;
+			}
+		}
 		if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == channelID) {
-			try {
-				bot->core.create_message(channelID, fmt::format(_("EMBED_ERROR_1", settings), cleaned_json, e.what()));
-			}
-			catch (const std::exception &e) {
-				bot->core.log->error("MALFORMED UNICODE: {}", e.what());
-			}
+			bot->core.create_message_embed(channelID, "", embed);
 			bot->sent_messages++;
 		}
-	}
-	if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == channelID) {
-		bot->core.create_message_embed(channelID, "", embed);
-		bot->sent_messages++;
 	}
 }
 

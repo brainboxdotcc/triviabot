@@ -240,16 +240,20 @@ void TriviaModule::GetHelp(const std::string &section, int64_t channelID, const 
 	}
 	catch (const std::exception &e) {
 		if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == channelID) {
-			bot->core.create_message(channelID, fmt::format(_("HERPDERP", settings), authorid));
-			bot->sent_messages++;
+			if (bot->core.find_channel(channelID)) {
+				bot->core.create_message(channelID, fmt::format(_("HERPDERP", settings), authorid));
+				bot->sent_messages++;
+			}
 		}
 		bot->core.log->error("Malformed help file {}.json!", section);
 		return;
 	}
 
 	if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == channelID) {
-		bot->core.create_message_embed(channelID, "", embed_json);
-		bot->sent_messages++;
+		if (bot->core.find_channel(channelID)) {
+			bot->core.create_message_embed(channelID, "", embed_json);
+			bot->sent_messages++;
+		}
 	}
 }
 
