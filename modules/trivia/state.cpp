@@ -151,6 +151,11 @@ void state_t::handle_message(const in_msg& m)
 				time_t submit_time = this->recordtime;
 				int32_t score = this->score;
 
+				if (!score) {
+					/* Caused by race condition. Quick hack here. */
+					score = (this->hintless ? 6 : (this->interval == TRIV_INTERVAL ? 4 : 8));
+				}
+
 				/* Clear the answer here or there is a race condition where two may answer at the same time during the web requests below */
 				std::string saved_answer = this->curr_answer;
 				this->curr_answer = "";
