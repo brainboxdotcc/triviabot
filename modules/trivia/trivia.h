@@ -104,8 +104,8 @@ public:
 	guild_settings_t GetGuildSettings(int64_t guild_id);
 	std::string escape_json(const std::string &s);
 	void ProcessEmbed(const class guild_settings_t& settings, const std::string &embed_json, int64_t channelID);
-	void SimpleEmbed(const class guild_settings_t& settings, const std::string &emoji, const std::string &text, int64_t channelID, const std::string &title = "");
-	void EmbedWithFields(const class guild_settings_t& settings, const std::string &title, std::vector<field_t> fields, int64_t channelID, const std::string &url = "");
+	void SimpleEmbed(const class guild_settings_t& settings, const std::string &emoji, const std::string &text, int64_t channelID, const std::string &title = "", const std::string &image = "");
+	void EmbedWithFields(const class guild_settings_t& settings, const std::string &title, std::vector<field_t> fields, int64_t channelID, const std::string &url = "", const std::string &image = "");
 	virtual std::string GetVersion();
 	virtual std::string GetDescription();
 	int random(int min, int max);

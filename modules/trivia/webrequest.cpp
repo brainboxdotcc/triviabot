@@ -226,7 +226,7 @@ std::vector<std::string> fetch_question(int64_t id, int64_t guild_id, const guil
 	if (settings.language == "en") {
 		question = db::query("select questions.*, ans1.*, hin1.*, sta1.*, cat1.name as catname from questions left join hints as hin1 on questions.id=hin1.id left join answers as ans1 on questions.id=ans1.id left join stats as sta1 on questions.id=sta1.id left join categories as cat1 on questions.category=cat1.id where questions.id = ?", {id});
 	} else {
-		question = db::query("select questions.trans_" + settings.language + " as question, ans1.trans_" + settings.language + " as answer, hin1.trans1_" + settings.language + " as hint1, hin1.trans2_" + settings.language + " as hint2, sta1.*, cat1.trans_" + settings.language + " as catname from questions left join hints as hin1 on questions.id=hin1.id left join answers as ans1 on questions.id=ans1.id left join stats as sta1 on questions.id=sta1.id left join categories as cat1 on questions.category=cat1.id where questions.id = ?", {id});
+		question = db::query("select questions.trans_" + settings.language + " as question, ans1.trans_" + settings.language + " as answer, hin1.trans1_" + settings.language + " as hint1, hin1.trans2_" + settings.language + " as hint2, question_img_url, answer_img_url, sta1.*, cat1.trans_" + settings.language + " as catname from questions left join hints as hin1 on questions.id=hin1.id left join answers as ans1 on questions.id=ans1.id left join stats as sta1 on questions.id=sta1.id left join categories as cat1 on questions.category=cat1.id where questions.id = ?", {id});
 	}
 	if (question.size() > 0) {
 		db::query("UPDATE counters SET asked = asked + 1", {});
@@ -242,7 +242,9 @@ std::vector<std::string> fetch_question(int64_t id, int64_t guild_id, const guil
 			question[0]["lastcorrect"],
 			question[0]["record_time"],
 			utf8shuffle(question[0]["answer"]),
-			utf8shuffle(question[0]["answer"])
+			utf8shuffle(question[0]["answer"]),
+			question[0]["question_img_url"],
+			question[0]["answer_img_url"]
 		};
 	}
 	return {};

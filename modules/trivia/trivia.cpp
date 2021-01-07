@@ -317,7 +317,7 @@ guild_settings_t TriviaModule::GetGuildSettings(int64_t guild_id)
 std::string TriviaModule::GetVersion()
 {
 	/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-	std::string version = "$ModVer 62$";
+	std::string version = "$ModVer 63$";
 	return "3.0." + version.substr(8,version.length() - 9);
 }
 
@@ -445,7 +445,7 @@ void TriviaModule::do_normal_round(state_t* state, bool silent)
 		state->curr_qid = 0;
 		bot->core.log->debug("do_normal_round: fetch_question: '{}'", state->shuffle_list[state->round - 1]);
 		std::vector<std::string> data = fetch_question(from_string<int64_t>(state->shuffle_list[state->round - 1], std::dec), state->guild_id, settings);
-		if (data.size() >= 12) {
+		if (data.size() >= 14) {
 			state->curr_qid = from_string<int64_t>(data[0], std::dec);
 			state->curr_question = data[1];
 			state->curr_answer = data[2];
@@ -458,6 +458,8 @@ void TriviaModule::do_normal_round(state_t* state, bool silent)
 			state->recordtime = from_string<time_t>(data[9],std::dec);
 			state->shuffle1 = data[10];
 			state->shuffle2 = data[11];
+			state->question_image = data[12];
+			state->answer_image = data[13];
 			valid = !state->curr_question.empty();
 			if (!valid) {
 				state->curr_qid = 0;
@@ -489,6 +491,7 @@ void TriviaModule::do_normal_round(state_t* state, bool silent)
 		state->asktime = time(NULL);
 		guild_settings_t settings = GetGuildSettings(state->guild_id);
 		state->curr_answer = trim(state->curr_answer);
+		state->original_answer = state->curr_answer;
 		std::string t = conv_num(state->curr_answer, settings);
 		if (is_number(t) && t != "0") {
 			state->curr_answer = t;
@@ -564,7 +567,7 @@ void TriviaModule::do_normal_round(state_t* state, bool silent)
 		}
 
 		if (!silent) {
-			EmbedWithFields(settings, fmt::format(_("QUESTION_COUNTER", settings), state->round, state->numquestions - 1), {{_("CATEGORY", settings), state->curr_category, false}, {_("QUESTION", settings), state->curr_question, false}}, state->channel_id, fmt::format("https://triviabot.co.uk/report/?c={}&g={}&normal={}", state->channel_id, state->guild_id, state->curr_qid + state->channel_id));
+			EmbedWithFields(settings, fmt::format(_("QUESTION_COUNTER", settings), state->round, state->numquestions - 1), {{_("CATEGORY", settings), state->curr_category, false}, {_("QUESTION", settings), state->curr_question, false}}, state->channel_id, fmt::format("https://triviabot.co.uk/report/?c={}&g={}&normal={}", state->channel_id, state->guild_id, state->curr_qid + state->channel_id), state->question_image);
 		}
 
 	} else {
@@ -640,7 +643,7 @@ void TriviaModule::do_time_up(state_t* state)
 		int32_t found = state->insane_num - state->insane_left;
 		SimpleEmbed(settings, ":alarm_clock:", fmt::format(_("INSANE_FOUND", settings), found), state->channel_id, _("TIME_UP", settings));
 	} else if (state->curr_answer != "") {
-		SimpleEmbed(settings, ":alarm_clock:", fmt::format(_("ANS_WAS", settings), state->curr_answer), state->channel_id, _("OUT_OF_TIME", settings));
+		SimpleEmbed(settings, ":alarm_clock:", fmt::format(_("ANS_WAS", settings), state->curr_answer), state->channel_id, _("OUT_OF_TIME", settings), state->answer_image);
 	}
 	/* FIX: You can only lose your streak on a non-insane round */
 	if (state->curr_answer != "" && state->round % 10 != 0 && state->streak > 1 && state->last_to_answer) {

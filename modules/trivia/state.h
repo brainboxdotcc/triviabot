@@ -46,6 +46,9 @@ class state_t
 	int64_t curr_qid;
 	time_t recordtime;
 	std::string curr_question;
+	std::string original_answer;
+	std::string question_image;
+	std::string answer_image;
 	std::string curr_answer;
 	std::string curr_customhint1;
 	std::string curr_customhint2;

@@ -152,11 +152,10 @@ void state_t::handle_message(const in_msg& m)
 				int32_t score = this->score;
 
 				/* Clear the answer here or there is a race condition where two may answer at the same time during the web requests below */
-				std::string saved_answer = this->curr_answer;
 				this->curr_answer = "";
 
 				std::string ans_message;
-				ans_message.append(fmt::format(creator->_("NORM_CORRECT", settings), saved_answer, score, pts, time_to_answer));
+				ans_message.append(fmt::format(creator->_("NORM_CORRECT", settings), this->original_answer, score, pts, time_to_answer));
 				if (time_to_answer < this->recordtime) {
 					ans_message.append(fmt::format(creator->_("RECORD_TIME", settings), m.username));
 					submit_time = time_to_answer;
@@ -195,7 +194,7 @@ void state_t::handle_message(const in_msg& m)
 				/* Update last person to answer */
 				this->last_to_answer = m.author_id;
 
-				creator->SimpleEmbed(settings, ":thumbsup:", ans_message, channel_id, fmt::format(creator->_("CORRECT", settings), m.username));
+				creator->SimpleEmbed(settings, ":thumbsup:", ans_message, channel_id, fmt::format(creator->_("CORRECT", settings), m.username), this->answer_image);
 
 				if (log_question_index(this->guild_id, this->channel_id, this->round, this->streak, this->last_to_answer, this->gamestate, this->curr_qid)) {
 					creator->StopGame(this, settings);
