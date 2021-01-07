@@ -41,6 +41,8 @@ Questions should not depend on the person being asked the question. Questions sh
 `What was <random YouTuber with less than 100K subs>' first/last/original video/post/channel name/creation date/etc?`
 Tiny YouTubers, Twitch streamers, and random companies with a small following are not notable enough.
 
+_If you are submitting images alongside your question or answer_, you should also follow the [image submission guidelines](https://github.com/brainboxdotcc/triviabot/blob/master/TriviaBot-Image-Submission-Guidelines.md) to ensure your question is reviewed and approved swiftly.
+
 _Here are some examples of high quality questions._
 
 `What is the first name of first gaming youtuber to reach 50 million subscribers`:
