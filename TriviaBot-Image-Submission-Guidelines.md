@@ -1,4 +1,4 @@
-# Question Submission Guidelines for TriviaBot
+# Image Submission Guidelines for TriviaBot
 
 * All question/answer images must be hosted on [imgur](https://imgur.com), for example web addresses of images must look like this: https://i.imgur.com/hhj3fFl.jpeg. Any images not matching this pattern will be rejected.
 * Images must be of a reasonable resolution (at least 800 pixels wide is recommended)
