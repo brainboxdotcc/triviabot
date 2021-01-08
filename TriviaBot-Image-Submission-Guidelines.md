@@ -1,6 +1,7 @@
 # Image Submission Guidelines for TriviaBot
 
 * "Glitched" or "broken" images that crash Discord are **prohibited**.
+* Pay attention to **copyright**. if you are not sure about the ownership of an image you are submitting, source images that are creative commons licensed from Wikipedia or similar.
 * All question/answer images must be hosted on [imgur](https://imgur.com), for example web addresses of images must look like this: https://i.imgur.com/hhj3fFl.jpeg. Any images not matching this pattern will be rejected.
 * Images must be of a reasonable resolution (at least 800 pixels wide is recommended)
 * Images may be portrait, landscape or square
