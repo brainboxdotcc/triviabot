@@ -1,6 +1,18 @@
-<H1>How to submit good questions to TriviaBot</H1>
+# How to submit good questions to TriviaBot
+
+This guide will help you understand what type of questions we approve and which we reject for the database in TriviaBot. In general we approve about half of the questions we are sent, so don't be discouraged, submit your questions!
+
+Please note that if you submit hints with your question we will remove any hints that look like they mimic our automatic hints, e.g. scrambled answers, pig latin, etc. This is because your own hint made this way may not translate to the other languages TriviaBot supports and cannot change dynamically. Custom hints are for hints such as, if the question was "what fruit is yellow, usually curved and has a thick skin which is peeled", a good hint would be "actually grows in a bush not on a tree" and not for example "Scrambled: ananab".
+
+**If you are submitting images alongside your question or answer_, you should also follow the [image submission guidelines](https://github.com/brainboxdotcc/triviabot/blob/master/TriviaBot-Image-Submission-Guidelines.md) to ensure your question is reviewed and approved swiftly.**
+
+Questions should be submitted in English, unless you don't speak fluent English in which case feel free to submit questions in your native tongue and we will attempt to translate it.
+
+Duplicate questions will be rejected, but do not be disheartened if your question is rejected on these grounds, this means it was a **good question**, we just already know it. Try something else about the same subject that we may not have in the bot yet!
 
 _We will not accept any questions which clearly have a small amount of time or research put into them (a.k.a. `spam questions`) and/or are hard for moderators to verify. Here are some examples of low quality questions that will get denied and possibly a submission ban or warn for the submitter._
+
+## Examples of bad questions, and why they are bad questions
 
 `what is 1 + 1`:
 This question is of low quality because it incorporates something that almost everyone knows and isn't trivia. We will deny this question.
@@ -41,9 +53,7 @@ Questions should not depend on the person being asked the question. Questions sh
 `What was <random YouTuber with less than 100K subs>' first/last/original video/post/channel name/creation date/etc?`
 Tiny YouTubers, Twitch streamers, and random companies with a small following are not notable enough.
 
-_If you are submitting images alongside your question or answer_, you should also follow the [image submission guidelines](https://github.com/brainboxdotcc/triviabot/blob/master/TriviaBot-Image-Submission-Guidelines.md) to ensure your question is reviewed and approved swiftly.
-
-_Here are some examples of high quality questions._
+## Here are some examples of high quality questions
 
 `What is the first name of first gaming youtuber to reach 50 million subscribers`:
 This question is of **high** quality since it specifies what the answer is (first name) and is easily fact check-able.
