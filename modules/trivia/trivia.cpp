@@ -150,11 +150,7 @@ std::string TriviaModule::_(const std::string &k, const guild_settings_t& settin
 		auto v = o->find(settings.language);
 		if (v != o->end()) {
 			return v->get<std::string>();
-		} else {
-			bot->core.log->debug("Missing language '{}' in string '{}'!", settings.language, k);
 		}
-	} else {
-		bot->core.log->debug("Missing language string '{}'", k);
 	}
 	return k;
 }
@@ -317,7 +313,7 @@ guild_settings_t TriviaModule::GetGuildSettings(int64_t guild_id)
 std::string TriviaModule::GetVersion()
 {
 	/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-	std::string version = "$ModVer 63$";
+	std::string version = "$ModVer 64$";
 	return "3.0." + version.substr(8,version.length() - 9);
 }
 
@@ -895,7 +891,6 @@ bool TriviaModule::RealOnMessage(const modevent::message_create &message, const 
 	}
 
 	guild_settings_t settings = GetGuildSettings(guild_id);
-	state = GetState(channel_id);
 
 	if (mentioned && prefix_match->Match(clean_message)) {
 		if (c) {
@@ -920,6 +915,8 @@ bool TriviaModule::RealOnMessage(const modevent::message_create &message, const 
 	}
 	
 	// Answers for active games
+	// NOTE: GetState() must be as close to the if() as possible to avoid race conditions!
+	state = GetState(channel_id);
 	if (state) {
 		/* The state_t class handles potential answers, but only when a game is running on this guild */
 		state->queue_message(clean_message, author_id, username, mentioned);

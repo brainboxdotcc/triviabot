@@ -79,8 +79,11 @@ void state_t::queue_message(const std::string &message, int64_t author_id, const
 	//std::lock_guard<std::mutex> q_lock(queuemutex);
 	//messagequeue.push_back(in_msg(message, author_id, mentions_bot, username));
 
-	// Skip queue
-	handle_message(in_msg(message, author_id, mentions_bot, username));
+	// Skip queue.
+	// FIX: Check termination atomic flag to avoid race where object is deleted but its handle_message gets called
+	if (!terminating) {
+		handle_message(in_msg(message, author_id, mentions_bot, username));
+	}
 }
 
 state_t::~state_t()
@@ -90,15 +93,20 @@ state_t::~state_t()
 	/* XXX DANGER WILL ROBINSON!
 	 * This is the ONLY place allowed to delete the timer!!! */
 	creator->DisposeThread(timer);
+	/* XXX: These are safety values, so that if we access a deleted state at any point, it crashes sooner and can be identified easily in the debugger */
+	creator = timer = nullptr;
 }
 
 bool state_t::is_valid()
 {
-	return creator->GetBot()->core.find_guild(guild_id) && creator->GetBot()->core.find_channel(channel_id);
+	return creator && timer && creator->GetBot()->core.find_guild(guild_id) && creator->GetBot()->core.find_channel(channel_id);
 }
 
 void state_t::handle_message(const in_msg& m)
 {
+	if (this->terminating || !creator || !timer)
+		return;
+
 	if (this->gamestate == TRIV_ASK_QUESTION || this->gamestate == TRIV_FIRST_HINT || this->gamestate == TRIV_SECOND_HINT || this->gamestate == TRIV_TIME_UP) {
 		guild_settings_t settings = creator->GetGuildSettings(guild_id);
 
@@ -207,16 +215,16 @@ void state_t::handle_message(const in_msg& m)
 
 void state_t::tick()
 {
-	while (!terminating) {
+	guild_settings_t settings = creator->GetGuildSettings(guild_id);
+	while (!terminating && creator) {
 		try {
 			int32_t _interval = this->interval * 10;
 			if (gamestate == TRIV_ASK_QUESTION && this->interval == TRIV_INTERVAL) {
-				guild_settings_t settings = creator->GetGuildSettings(guild_id);
 				_interval = settings.question_interval * 10;
 			}
 
 			for (int j = 0; j < _interval; j++) {
-				{
+				/*{
 					std::lock_guard<std::mutex> q_lock(queuemutex);
 					if (!messagequeue.empty()) {
 						to_process.clear();
@@ -231,10 +239,9 @@ void state_t::tick()
 						handle_message(*m);
 					}
 					to_process.clear();
-				}
+				}*/
 				std::this_thread::sleep_for(std::chrono::milliseconds(100));
 				if (terminating) {
-					creator->GetBot()->core.log->debug("state thread terminating");
 					break;
 				}
 			}
@@ -245,24 +252,28 @@ void state_t::tick()
 				gamestate = TRIV_END;
 			}
 		
-			creator->Tick(this);
+			if (creator) {
+				creator->Tick(this);
+			}
 
 			int64_t game_length = time(NULL) - start_time;
 			if (game_length >= GAME_REAP_SECS) {
 				terminating = true;
 				gamestate = TRIV_END;
-				creator->GetBot()->core.log->debug("state_t::tick(): G:{} C:{} reaped game of length {} seconds", guild_id, channel_id, game_length);
 				log_game_end(guild_id, channel_id);
 			}
 		}
 		catch (std::exception &e) {
-			creator->GetBot()->core.log->debug("state_t exception! - {}", e.what());
+			if (creator) {
+				creator->GetBot()->core.log->debug("state_t exception! - {}", e.what());
+			}
 		}
 		catch (...) {
-			creator->GetBot()->core.log->debug("state_t exception! - non-object");
+			if (creator) {
+				creator->GetBot()->core.log->debug("state_t exception! - non-object");
+			}
 		}
 	}
-	creator->GetBot()->core.log->debug("state ended");
 }
 
 
