@@ -6,7 +6,7 @@
 * Images may be portrait, landscape or square
 * Supported image formats are: GIF, JPEG, PNG.
 * Animated GIFs are allowed, remember that an animated GIF must load promptly to ensure people can answer the question within the time limit allowed, so don't upload any animed GIFs that are so big they take Discord an age to download them.
-* The max length for animated GIFs is 50 seconds.
+* The max length for animated GIFs is 5 seconds (the length of time before the first hint in quickfire mode).
 * Animated GIFs, if submitted, should not contain imagery which can induce [photosensitive seizures](https://epilepsysociety.org.uk/photosensitive-epilepsy) or [motion sickness](https://balanceanddizziness.org/disorders/vestibular-disorders/motion-and-cyber-sickness/).
 * As with questions they relate to, images must relate to [notable subjects](https://en.wikipedia.org/wiki/Wikipedia:Notability)
 * Besides small watermarks, images **should not** contain any text, unless unavoidable. Remember images must be suitable for all languages the bot supports!
