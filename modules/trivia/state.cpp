@@ -94,7 +94,8 @@ state_t::~state_t()
 	 * This is the ONLY place allowed to delete the timer!!! */
 	creator->DisposeThread(timer);
 	/* XXX: These are safety values, so that if we access a deleted state at any point, it crashes sooner and can be identified easily in the debugger */
-	creator = timer = nullptr;
+	creator = nullptr;
+	timer = nullptr;
 }
 
 bool state_t::is_valid()
