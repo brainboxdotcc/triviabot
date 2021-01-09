@@ -15,7 +15,7 @@
         "ja": "<:sporks_error:664735896251269130> これから**埋め込み**を作成できません： ```js\n{0}\n``` **エラー:** `{1}`",
         "bg": "<:sporks_error:664735896251269130> Не мога да направя ** вграждане ** от това: ```js\n{0}\n``` ** Грешка: ** `{1}`",
         "ar": "<:sporks_error:664735896251269130> لا يمكنني عمل **embed** من هذا: `` js\n{0}\n\"\" **خطأ:** `{1}`",
-        "zh": "<：sporks_error：664735896251269130> 我无法从这里进行**嵌入**：\n{0}\n```**错误：**`{1}`"
+        "zh": "<:sporks_error:664735896251269130> 我无法从这里进行**嵌入**：\n{0}\n```**错误：**`{1}`"
     },
     "MALFORMED_UNICODE": {
         "en": "Malformed unicode in embed: {0}",
@@ -4246,5 +4246,41 @@
         "bg": "Страница %d от %d",
         "ar": "الصفحة %d من %d",
         "zh": "第%d页，共%d页"
+    },
+    "DASHBOARDLINK": {
+        "en": "[Click here to access the TriviaBot dashboard](https:\/\/triviabot.co.uk\/dashboard)",
+        "fr": "[Cliquez ici pour accéder au tableau de bord TriviaBot](https:\/\/triviabot.co.uk\/dashboard)",
+        "pt": "[Clique aqui para acessar o painel do TriviaBot](https:\/\/triviabot.co.uk\/dashboard)",
+        "tr": "[TriviaBot kontrol paneline erişmek için burayı tıklayın](https:\/\/triviabot.co.uk\/dashboard)",
+        "es": "[Haga clic aquí para acceder al panel de TriviaBot](https:\/\/triviabot.co.uk\/dashboard)",
+        "de": "[Klicken Sie hier, um auf das TriviaBot-Dashboard zuzugreifen](https:\/\/triviabot.co.uk\/dashboard)",
+        "hi": "[TriviaBot डैशबोर्ड तक पहुंचने के लिए यहां क्लिक करें] (htps:\/\/triviabot.co.uk\/dashboard)",
+        "sv": "[Klicka här för att komma åt TriviaBot-instrumentpanelen](https:\/\/triviabot.co.uk\/dashboard)",
+        "ru": "[Щелкните здесь, чтобы получить доступ к панели управления TriviaBot](https:\/\/triviabot.co.uk\/dashboard)",
+        "it": "[Fare clic qui per accedere alla dashboard di TriviaBot](https:\/\/triviabot.co.uk\/dashboard)",
+        "pl": "[Kliknij tutaj, aby uzyskać dostęp do panelu TriviaBot](https:\/\/triviabot.co.uk\/dashboard)",
+        "ko": "[TriviaBot 대시 보드에 액세스하려면 여기를 클릭하세요](https:\/\/triviabot.co.uk\/dashboard)",
+        "ja": "[TriviaBotダッシュボードにアクセスするには、ここをクリックしてください](https:\/\/triviabot.co.uk\/dashboard)",
+        "bg": "[Щракнете тук за достъп до таблото за управление TriviaBot](https:\/\/triviabot.co.uk\/dashboard)",
+        "ar": "[انقر هنا للوصول إلى لوحة تحكم TriviaBot] (https:\/\/triviabot.co.uk\/dashboard)",
+        "zh": "[单击此处访问TriviaBot仪表板](https:\/\/triviabot.co.uk\/dashboard)"
+    },
+    "LEADERBOARDLINK": {
+        "en": "[Click here to access the TriviaBot global leaderboards](https:\/\/triviabot.co.uk\/leaderboard\/)",
+        "fr": "[Cliquez ici pour accéder aux classements mondiaux de TriviaBot](https:\/\/triviabot.co.uk\/leaderboard\/)",
+        "pt": "[Clique aqui para acessar as tabelas de classificação globais do TriviaBot](https:\/\/triviabot.co.uk\/leaderboard\/)",
+        "tr": "[TriviaBot küresel liderlik tablolarına erişmek için burayı tıklayın](https:\/\/triviabot.co.uk\/leaderboard\/)",
+        "es": "[Haga clic aquí para acceder a las tablas de clasificación globales de TriviaBot](https:\/\/triviabot.co.uk\/leaderboard\/)",
+        "de": "[Klicken Sie hier, um auf die globalen TriviaBot-Bestenlisten zuzugreifen] (https:\/\/triviabot.co.uk\/leaderboard\/)",
+        "hi": "[TriviaBot वैश्विक लीडरबोर्ड का उपयोग करने के लिए यहां क्लिक करें] (https:/\/triviabot.co.uk\/leaderboard\/)",
+        "sv": "[Klicka här för att komma åt TriviaBots globala topplistor](https:\/\/triviabot.co.uk\/leaderboard\/)",
+        "ru": "[Щелкните здесь, чтобы получить доступ к глобальной таблице лидеров TriviaBot](https:\/\/triviabot.co.uk\/leaderboard\/)",
+        "it": "[Fare clic qui per accedere alle classifiche globali di TriviaBot](https:\/\/triviabot.co.uk\/leaderboard\/)",
+        "pl": "[Kliknij tutaj, aby uzyskać dostęp do globalnych rankingów TriviaBot](https:\/\/triviabot.co.uk\/leaderboard\/)",
+        "ko": "[TriviaBot 글로벌 리더 보드에 액세스하려면 여기를 클릭하세요](https:\/\/triviabot.co.uk\/leaderboard\/)",
+        "ja": "[TriviaBotグローバルリーダーボードにアクセスするには、ここをクリックしてください](https:\/\/triviabot.co.uk\/leaderboard\/)",
+        "bg": "[Щракнете тук, за да получите достъп до глобалните класации на TriviaBot](https:\/\/triviabot.co.uk\/leaderboard\/)",
+        "ar": "[انقر هنا للوصول إلى لوحات الصدارة العالمية لـ TriviaBot](https:\/\/triviabot.co.uk\/leaderboard\/)",
+        "zh": "[单击此处访问TriviaBot全球排行榜](https:\/\/triviabot.co.uk\/leaderboard\/)"
     }
 }

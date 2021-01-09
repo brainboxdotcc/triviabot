@@ -182,13 +182,15 @@ void cache_user(const aegis::user *_user, const aegis::guild *_guild, const aegi
 {
 	// Replaced with direct db query for perforamance increase - 27Dec20
 
+	int64_t user_id = _user->get_id().get();
+	int64_t guild_id = _guild->get_id().get();
 	db::query("START TRANSACTION", {});
 
 	db::query("INSERT INTO trivia_user_cache (snowflake_id, username, discriminator, icon) VALUES('?', '?', '?', '?') ON DUPLICATE KEY UPDATE username = '?', discriminator = '?', icon = '?'",
-			{_user->get_id().get(), _user->get_username(), _user->get_discriminator(), _user->get_avatar(), _user->get_username(), _user->get_discriminator(), _user->get_avatar()});
+			{user_id, _user->get_username(), _user->get_discriminator(), _user->get_avatar(), _user->get_username(), _user->get_discriminator(), _user->get_avatar()});
 
 	db::query("INSERT INTO trivia_guild_cache (snowflake_id, name, icon, owner_id) VALUES('?', '?', '?', '?') ON DUPLICATE KEY UPDATE name = '?', icon = '?', owner_id = '?', kicked = 0",
-			{_guild->get_id().get(), _guild->get_name(), _guild->get_icon(),  _guild->get_owner().get(), _guild->get_name(), _guild->get_icon(),  _guild->get_owner().get()});
+			{guild_id, _guild->get_name(), _guild->get_icon(),  _guild->get_owner().get(), _guild->get_name(), _guild->get_icon(),  _guild->get_owner().get()});
 
 	std::string member_roles;
 	std::string comma_roles;
@@ -197,20 +199,20 @@ void cache_user(const aegis::user *_user, const aegis::guild *_guild, const aegi
 	}
 	member_roles = trim(member_roles);
 	db::query("INSERT INTO trivia_guild_membership (guild_id, user_id, roles) VALUES('?', '?', '?') ON DUPLICATE KEY UPDATE roles = '?'",
-			{_guild->get_id().get(), _user->get_id().get(), member_roles, member_roles});
+			{guild_id, user_id, member_roles, member_roles});
 
 	std::unordered_map<aegis::snowflake, aegis::gateway::objects::role> roles = _guild->get_roles();
 	for (auto n = roles.begin(); n != roles.end(); ++n) {
 		comma_roles.append(std::to_string(n->second.id)).append(",");
 		db::query("INSERT INTO trivia_role_cache (id, guild_id, colour, permissions, position, hoist, managed, mentionable, name) VALUES('?', '?', '?', '?', '?', '?', '?', '?', '?') ON DUPLICATE KEY UPDATE colour = '?', permissions = '?', position = '?', hoist = '?', managed = '?', mentionable = '?', name = '?'",
 			   {
-				   n->second.id, _guild->get_id().get(), n->second.color, n->second._permission, n->second.position, (n->second.hoist ? 1 : 0), (n->second.managed ? 1 : 0), (n->second.mentionable ? 1 : 0), n->second.name,
+				   n->second.id, guild_id, n->second.color, n->second._permission, n->second.position, (n->second.hoist ? 1 : 0), (n->second.managed ? 1 : 0), (n->second.mentionable ? 1 : 0), n->second.name,
 				   n->second.color, n->second._permission, n->second.position, (n->second.hoist ? 1 : 0), (n->second.managed ? 1 : 0), (n->second.mentionable ? 1 : 0), n->second.name,
 			   });
 	}
 	comma_roles = trim(comma_roles.substr(0, comma_roles.length() - 1));
 	/* Delete any that have been deleted from discord */
-	db::query("DELETE FROM trivia_role_cache WHERE guild_id = ? AND id NOT IN (" + comma_roles + ")", {_guild->get_id().get()});
+	db::query("DELETE FROM trivia_role_cache WHERE guild_id = ? AND id NOT IN (" + comma_roles + ")", {guild_id});
 	db::query("COMMIT", {});
 }
 
