@@ -313,7 +313,7 @@ guild_settings_t TriviaModule::GetGuildSettings(int64_t guild_id)
 std::string TriviaModule::GetVersion()
 {
 	/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-	std::string version = "$ModVer 64$";
+	std::string version = "$ModVer 65$";
 	return "3.0." + version.substr(8,version.length() - 9);
 }
 
@@ -907,7 +907,6 @@ bool TriviaModule::RealOnMessage(const modevent::message_create &message, const 
 		if (user != nullptr) {
 			queue_command(command, author_id, channel_id, guild_id, mentioned, username);
 			bot->core.log->info("CMD (USER={}, GUILD={}): <{}> {}", author_id, guild_id, username, clean_message);
-			return false;
 		} else {
 			bot->core.log->debug("User is null when handling command. C:{} A:{}", channel_id, author_id);
 		}
