@@ -30,8 +30,10 @@ class in_msg
 class state_t
 {
 	class TriviaModule* creator;
+	std::string _(const std::string &k, const class guild_settings_t& settings);
  public:
 	std::mutex queuemutex;
+	std::mutex answermutex;
 	std::deque<in_msg> messagequeue;
 	std::deque<in_msg> to_process;
 	bool terminating;

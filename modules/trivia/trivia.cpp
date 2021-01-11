@@ -313,7 +313,7 @@ guild_settings_t TriviaModule::GetGuildSettings(int64_t guild_id)
 std::string TriviaModule::GetVersion()
 {
 	/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-	std::string version = "$ModVer 65$";
+	std::string version = "$ModVer 66$";
 	return "3.0." + version.substr(8,version.length() - 9);
 }
 
@@ -328,26 +328,32 @@ void TriviaModule::UpdatePresenceLine()
 	int32_t questions = get_total_questions();
 	while (!terminating) {
 		sleep(20);
-		ticks++;
-		if (ticks > 100) {
-			questions = get_total_questions();
-			ticks = 0;
+		try {
+			ticks++;
+			if (ticks > 100) {
+				questions = get_total_questions();
+				ticks = 0;
+			}
+			bot->counters["activegames"] = GetActiveLocalGames();
+			std::string presence = fmt::format("Trivia! {} questions, {} active games on {} servers through {} shards, cluster {}", Comma(questions), Comma(GetActiveGames()), Comma(this->GetGuildTotal()), Comma(bot->core.shard_max_count), bot->GetClusterID());
+			bot->core.log->debug("PRESENCE: {}", presence);
+			/* Can't translate this, it's per-shard! */
+			bot->core.update_presence(presence, aegis::gateway::objects::activity::Game);
+	
+			if (!bot->IsTestMode()) {
+				/* Don't handle shard reconnects or queued starts in test mode */
+				CheckForQueuedStarts();
+				CheckReconnects();
+			}
+	
+			/* Garbage collection of state pointers */
+			DeleteOldStates();
 		}
-		bot->counters["activegames"] = GetActiveLocalGames();
-		std::string presence = fmt::format("Trivia! {} questions, {} active games on {} servers through {} shards, cluster {}", Comma(questions), Comma(GetActiveGames()), Comma(this->GetGuildTotal()), Comma(bot->core.shard_max_count), bot->GetClusterID());
-		bot->core.log->debug("PRESENCE: {}", presence);
-		/* Can't translate this, it's per-shard! */
-		bot->core.update_presence(presence, aegis::gateway::objects::activity::Game);
-
-		if (!bot->IsTestMode()) {
-			/* Don't handle shard reconnects or queued starts in test mode */
-			CheckForQueuedStarts();
-			CheckReconnects();
+		catch (std::exception &e) {
+			bot->core.log->error("Exception in UpdatePresenceLine: {}", e.what());
 		}
-
-		/* Garbage collection of state pointers */
-		DeleteOldStates();
 	}
+	bot->core.log->debug("Presence thread exited.");
 }
 
 std::string TriviaModule::letterlong(std::string text, const guild_settings_t &settings)
@@ -934,8 +940,8 @@ void TriviaModule::DeleteOldStates() {
 	time_t now = time(NULL);
 
 	for (auto& s : queued_for_deletion) {
-		if (s.second > now) {
-			bot->core.log->debug("Deleting state 0x{0:x}, queued for deletion %d seconds ago", (int64_t)s.first, now - s.second);
+		if (now > s.second) {
+			bot->core.log->debug("Deleting state 0x{0:x}, queued for deletion {} seconds ago", (int64_t)s.first, now - s.second);
 			delete s.first;
 			removals.push_back(s.first);
 		}
