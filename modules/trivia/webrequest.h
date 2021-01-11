@@ -29,8 +29,8 @@
 #define BACKEND_PATH_LIVE	"/api/{0}"
 
 /* Development API endpoint URL */
-#define BACKEND_HOST_DEV	"10.0.0.1"
-#define BACKEND_PATH_DEV	"/triviabot/api/{0}"
+#define BACKEND_HOST_DEV	"beta.brainbox.cc"
+#define BACKEND_PATH_DEV	"/api/{0}"
 
 using json = nlohmann::json;
 
