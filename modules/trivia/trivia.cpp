@@ -313,7 +313,7 @@ guild_settings_t TriviaModule::GetGuildSettings(int64_t guild_id)
 std::string TriviaModule::GetVersion()
 {
 	/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-	std::string version = "$ModVer 66$";
+	std::string version = "$ModVer 67$";
 	return "3.0." + version.substr(8,version.length() - 9);
 }
 
@@ -644,22 +644,26 @@ void TriviaModule::do_time_up(state_t* state)
 	bot->core.log->debug("do_time_up: G:{} C:{}", state->guild_id, state->channel_id);
 	guild_settings_t settings = GetGuildSettings(state->guild_id);
 
-	if (state->round % 10 == 0) {
-		int32_t found = state->insane_num - state->insane_left;
-		SimpleEmbed(settings, ":alarm_clock:", fmt::format(_("INSANE_FOUND", settings), found), state->channel_id, _("TIME_UP", settings));
-	} else if (state->curr_answer != "") {
-		SimpleEmbed(settings, ":alarm_clock:", fmt::format(_("ANS_WAS", settings), state->curr_answer), state->channel_id, _("OUT_OF_TIME", settings), state->answer_image);
-	}
-	/* FIX: You can only lose your streak on a non-insane round */
-	if (state->curr_answer != "" && state->round % 10 != 0 && state->streak > 1 && state->last_to_answer) {
-		SimpleEmbed(settings, ":octagonal_sign:", fmt::format(_("STREAK_SMASHED", settings), fmt::format("<@{}>", state->last_to_answer), state->streak), state->channel_id);
-	}
+	{
+		std::lock_guard<std::mutex> answerlock(state->answermutex);
 
-	if (state->curr_answer != "") {
-		state->curr_answer = "";
-		if (state->round % 10 != 0) {
-			state->last_to_answer = 0;
-			state->streak = 1;
+		if (state->round % 10 == 0) {
+			int32_t found = state->insane_num - state->insane_left;
+			SimpleEmbed(settings, ":alarm_clock:", fmt::format(_("INSANE_FOUND", settings), found), state->channel_id, _("TIME_UP", settings));
+		} else if (state->curr_answer != "") {
+			SimpleEmbed(settings, ":alarm_clock:", fmt::format(_("ANS_WAS", settings), state->curr_answer), state->channel_id, _("OUT_OF_TIME", settings), state->answer_image);
+		}
+		/* FIX: You can only lose your streak on a non-insane round */
+		if (state->curr_answer != "" && state->round % 10 != 0 && state->streak > 1 && state->last_to_answer) {
+			SimpleEmbed(settings, ":octagonal_sign:", fmt::format(_("STREAK_SMASHED", settings), fmt::format("<@{}>", state->last_to_answer), state->streak), state->channel_id);
+		}
+	
+		if (state->curr_answer != "") {
+			state->curr_answer = "";
+			if (state->round % 10 != 0) {
+				state->last_to_answer = 0;
+				state->streak = 1;
+			}
 		}
 	}
 
@@ -684,13 +688,17 @@ void TriviaModule::do_answer_correct(state_t* state)
 
 	guild_settings_t settings = GetGuildSettings(state->guild_id);
 
-	state->round++;
-	//state->score = 0;
-	state->curr_answer = "";
+	{
+		std::lock_guard<std::mutex> answerlock(state->answermutex);
 
-	if (state->round <= state->numquestions - 2) {
-		SimpleEmbed(settings, "<a:loading:658667224067735562>", fmt::format(_("COMING_UP", settings), state->interval), state->channel_id, _("REST", settings));
+		state->round++;
+		//state->score = 0;
+		state->curr_answer = "";
+		if (state->round <= state->numquestions - 2) {
+			SimpleEmbed(settings, "<a:loading:658667224067735562>", fmt::format(_("COMING_UP", settings), state->interval), state->channel_id, _("REST", settings));
+		}
 	}
+
 	state->gamestate = TRIV_ASK_QUESTION;
 	if (log_question_index(state->guild_id, state->channel_id, state->round, state->streak, state->last_to_answer, state->gamestate, state->curr_qid)) {
 		StopGame(state, settings);
@@ -941,7 +949,7 @@ void TriviaModule::DeleteOldStates() {
 
 	for (auto& s : queued_for_deletion) {
 		if (now > s.second) {
-			bot->core.log->debug("Deleting state 0x{0:x}, queued for deletion {} seconds ago", (int64_t)s.first, now - s.second);
+			bot->core.log->debug("Deleting state 0x{0:x}, due for deletion {1} seconds ago", (int64_t)s.first, now - s.second);
 			delete s.first;
 			removals.push_back(s.first);
 		}

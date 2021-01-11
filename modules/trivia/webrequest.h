@@ -24,7 +24,13 @@
 #include <string>
 #include "state.h"
 
-#define BACKEND_HOST "triviabot.co.uk"
+/* Live API endpoint URL */
+#define BACKEND_HOST_LIVE	"triviabot.co.uk"
+#define BACKEND_PATH_LIVE	"/api/{0}"
+
+/* Development API endpoint URL */
+#define BACKEND_HOST_DEV	"10.0.0.1"
+#define BACKEND_PATH_DEV	"/triviabot/api/{0}"
 
 using json = nlohmann::json;
 

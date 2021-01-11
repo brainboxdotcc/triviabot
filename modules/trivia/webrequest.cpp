@@ -156,13 +156,21 @@ std::string web_request(const std::string &_host, const std::string &_path, cons
 void later(const std::string &_path, const std::string &_body)
 {
 	std::lock_guard<std::mutex> fafguard(faflock);
-	faf.push({BACKEND_HOST, fmt::format("/api/{}", _path), _body});
+	if (bot->IsDevMode()) {
+		faf.push({BACKEND_HOST_DEV, fmt::format(BACKEND_PATH_DEV, _path), _body});
+	} else {
+		faf.push({BACKEND_HOST_LIVE, fmt::format(BACKEND_PATH_LIVE, _path), _body});
+	}
 }
 
 /* Fetch the contents of a page from the TriviaBot API immediately */
 std::string fetch_page(const std::string &_endpoint, const std::string &body)
 {
-	return web_request(BACKEND_HOST, fmt::format("/api/{}", _endpoint), body);
+	if (bot->IsDevMode()) {
+		return web_request(BACKEND_HOST_DEV, fmt::format(BACKEND_PATH_DEV, _endpoint), body);
+	} else {
+		return web_request(BACKEND_HOST_LIVE, fmt::format(BACKEND_PATH_LIVE, _endpoint), body);
+	}
 }
 
 /* Convert a newline separated list to a vector of strings */
