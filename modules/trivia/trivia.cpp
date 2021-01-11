@@ -313,7 +313,7 @@ guild_settings_t TriviaModule::GetGuildSettings(int64_t guild_id)
 std::string TriviaModule::GetVersion()
 {
 	/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-	std::string version = "$ModVer 64$";
+	std::string version = "$ModVer 65$";
 	return "3.0." + version.substr(8,version.length() - 9);
 }
 
@@ -344,6 +344,9 @@ void TriviaModule::UpdatePresenceLine()
 			CheckForQueuedStarts();
 			CheckReconnects();
 		}
+
+		/* Garbage collection of state pointers */
+		DeleteOldStates();
 	}
 }
 
@@ -907,7 +910,6 @@ bool TriviaModule::RealOnMessage(const modevent::message_create &message, const 
 		if (user != nullptr) {
 			queue_command(command, author_id, channel_id, guild_id, mentioned, username);
 			bot->core.log->info("CMD (USER={}, GUILD={}): <{}> {}", author_id, guild_id, username, clean_message);
-			return false;
 		} else {
 			bot->core.log->debug("User is null when handling command. C:{} A:{}", channel_id, author_id);
 		}
@@ -926,6 +928,23 @@ bool TriviaModule::RealOnMessage(const modevent::message_create &message, const 
 	return true;
 }
 
+void TriviaModule::DeleteOldStates() {
+	std::lock_guard<std::mutex> user_cache_lock(states_mutex);
+	std::vector<state_t*> removals;
+	time_t now = time(NULL);
+
+	for (auto& s : queued_for_deletion) {
+		if (s.second > now) {
+			bot->core.log->debug("Deleting state 0x{0:x}, queued for deletion %d seconds ago", (int64_t)s.first, now - s.second);
+			delete s.first;
+			removals.push_back(s.first);
+		}
+	}
+	for (auto r : removals) {
+		queued_for_deletion.erase(r);
+	}
+}
+
 
 state_t* TriviaModule::GetState(int64_t channel_id) {
 	std::lock_guard<std::mutex> user_cache_lock(states_mutex);
@@ -935,7 +954,7 @@ state_t* TriviaModule::GetState(int64_t channel_id) {
 	for (auto& s : states) {
 		if (s.second && s.second->terminating) {
 			removals.push_back(s.first);
-			delete s.second;
+			queued_for_deletion[s.second] = time(NULL) + 120;
 		} else if (!s.second) {
 			removals.push_back(s.first);
 		}

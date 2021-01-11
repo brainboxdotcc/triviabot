@@ -74,11 +74,14 @@ class TriviaModule : public Module
 	std::deque<in_cmd> to_process;
 	std::thread* command_processor;
 	command_list_t commands;
+
+	void DeleteOldStates();
 public:
 	time_t startup;
 	json* lang;
 	std::mutex states_mutex;
 	std::map<int64_t, class state_t*> states;
+	std::map<class state_t*, time_t> queued_for_deletion;
 	TriviaModule(Bot* instigator, ModuleLoader* ml);
 	Bot* GetBot();
 	virtual ~TriviaModule();

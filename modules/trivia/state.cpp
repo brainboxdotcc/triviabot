@@ -152,6 +152,9 @@ void state_t::handle_message(const in_msg& m)
 
 			/* Answer on channel is an exact match for the current answer and/or it is numeric, OR, it's non-numeric and has a levenstein distance near enough to the current answer (account for misspellings) */
 			if (!this->curr_answer.empty() && ((trivia_message.length() >= this->curr_answer.length() && utf8lower(this->curr_answer, needs_spanish_hack) == utf8lower(trivia_message, needs_spanish_hack)) || (!PCRE("^\\$(\\d+)$").Match(this->curr_answer) && !PCRE("^(\\d+)$").Match(this->curr_answer) && (this->curr_answer.length() > 5 && (utf8lower(this->curr_answer, needs_spanish_hack) == utf8lower(trivia_message, needs_spanish_hack) || creator->levenstein(trivia_message, this->curr_answer) < 2))))) {
+
+				this->curr_answer = "";
+
 				/* Correct answer */
 				this->gamestate = TRIV_ANSWER_CORRECT;
 				creator->CacheUser(m.author_id, this->channel_id);
@@ -159,9 +162,6 @@ void state_t::handle_message(const in_msg& m)
 				std::string pts = (this->score > 1 ? creator->_("POINTS", settings) : creator->_("POINT", settings));
 				time_t submit_time = this->recordtime;
 				int32_t score = this->score;
-
-				/* Clear the answer here or there is a race condition where two may answer at the same time during the web requests below */
-				this->curr_answer = "";
 
 				std::string ans_message;
 				ans_message.append(fmt::format(creator->_("NORM_CORRECT", settings), this->original_answer, score, pts, time_to_answer));
