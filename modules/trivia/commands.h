@@ -4,7 +4,7 @@
 #include "settings.h"
 #include <aegis.hpp>
 
-#define DECLARE_COMMAND_CLASS(__command_name__) class __command_name__ : public command_t { public: __command_name__(class TriviaModule* _creator, const std::string &_base_command); virtual void call(const in_cmd &cmd, std::stringstream &tokens, guild_settings_t &settings, const std::string &username, bool is_moderator, aegis::channel* c, aegis::user* user, class state_t* state); };
+#define DECLARE_COMMAND_CLASS(__command_name__) class __command_name__ : public command_t { public: __command_name__(class TriviaModule* _creator, const std::string &_base_command); virtual void call(const in_cmd &cmd, std::stringstream &tokens, guild_settings_t &settings, const std::string &username, bool is_moderator, aegis::channel* c, aegis::user* user); };
 
 class in_cmd
 {
@@ -26,7 +26,7 @@ class command_t
 	std::string _(const std::string &str, const guild_settings_t &settings);
  public:
 	command_t(class TriviaModule* _creator, const std::string &_base_command);
-	virtual void call(const in_cmd &cmd, std::stringstream &tokens, guild_settings_t &settings, const std::string &username, bool is_moderator, aegis::channel* c, aegis::user* user, class state_t* state) = 0;
+	virtual void call(const in_cmd &cmd, std::stringstream &tokens, guild_settings_t &settings, const std::string &username, bool is_moderator, aegis::channel* c, aegis::user* user) = 0;
 	virtual ~command_t();
 };
 
@@ -43,4 +43,3 @@ DECLARE_COMMAND_CLASS(command_help_t);
 DECLARE_COMMAND_CLASS(command_reloadlang_t);
 
 typedef std::map<std::string, command_t*> command_list_t;
-

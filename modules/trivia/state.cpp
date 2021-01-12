@@ -38,16 +38,24 @@ in_msg::in_msg(const std::string &m, int64_t author, bool mention, const std::st
 {
 }
 
-state_t::state_t(TriviaModule* _creator)
+state_t::state_t()
 {
+}
+
+state_t::state_t(TriviaModule* _creator, uint32_t questions, uint32_t currstreak, int64_t lastanswered, uint32_t question_index, uint32_t _interval, int64_t _channel_id, bool _hintless, const std::vector<std::string> &_shuffle_list, trivia_state_t startstate,  int64_t _guild_id)
+{
+	next_tick = time(NULL);
 	creator = _creator;
-	creator->GetBot()->core.log->debug("state_t::state()");
+	creator->GetBot()->core.log->debug("state_t::state_t()");
 	terminating = false;
-	channel_id = guild_id = 0;
-	numquestions = round = score = 0;
-	start_time = 0;
-	shuffle_list.clear();
-	gamestate = TRIV_ASK_QUESTION;
+	channel_id = _channel_id;
+	guild_id = _guild_id;
+	numquestions = questions;
+       	round = question_index;
+	score = 0;
+	start_time = time(NULL);
+	shuffle_list = _shuffle_list;
+	gamestate = startstate;
 	curr_qid = 0;
 	recordtime = 0;
 	curr_question = "";
@@ -58,20 +66,19 @@ state_t::state_t(TriviaModule* _creator)
        	curr_lastasked = 0;
 	curr_recordtime = 0;
 	curr_lastcorrect = "";
-	last_to_answer = 0;
-	streak = 0;
+	last_to_answer = lastanswered;
+	streak = currstreak;
 	asktime = 0;
 	found = false;
-	interval = TRIV_INTERVAL;
+	interval = _interval;
 	insane_num = 0;
 	insane_left = 0;
 	curr_timesasked = 0;
 	next_quickfire = 0;
 	insane.clear();
-	timer = nullptr;
 	shuffle1 = "";
 	shuffle2 = "";
-	hintless = false;
+	hintless = _hintless;
 }
 
 std::string state_t::_(const std::string &k, const guild_settings_t& settings)
@@ -81,10 +88,6 @@ std::string state_t::_(const std::string &k, const guild_settings_t& settings)
 
 void state_t::queue_message(const std::string &message, int64_t author_id, const std::string &username, bool mentions_bot)
 {
-	//std::lock_guard<std::mutex> q_lock(queuemutex);
-	//messagequeue.push_back(in_msg(message, author_id, mentions_bot, username));
-
-	// Skip queue.
 	// FIX: Check termination atomic flag to avoid race where object is deleted but its handle_message gets called
 	if (!terminating) {
 		handle_message(in_msg(message, author_id, mentions_bot, username));
@@ -95,22 +98,18 @@ state_t::~state_t()
 {
 	terminating = true;
 	gamestate = TRIV_END;
-	/* XXX DANGER WILL ROBINSON!
-	 * This is the ONLY place allowed to delete the timer!!! */
-	creator->DisposeThread(timer);
 	/* XXX: These are safety values, so that if we access a deleted state at any point, it crashes sooner and can be identified easily in the debugger */
 	creator = nullptr;
-	timer = nullptr;
 }
 
 bool state_t::is_valid()
 {
-	return creator && timer && creator->GetBot()->core.find_guild(guild_id) && creator->GetBot()->core.find_channel(channel_id);
+	return creator && creator->GetBot()->core.find_guild(guild_id) && creator->GetBot()->core.find_channel(channel_id);
 }
 
 void state_t::handle_message(const in_msg& m)
 {
-	if (this->terminating || !creator || !timer)
+	if (this->terminating || !creator)
 		return;
 
 	if (this->gamestate == TRIV_ASK_QUESTION || this->gamestate == TRIV_FIRST_HINT || this->gamestate == TRIV_SECOND_HINT || this->gamestate == TRIV_TIME_UP) {
@@ -120,8 +119,6 @@ void state_t::handle_message(const in_msg& m)
 
 			/* NOTE: This is mutexed to stop two people answering at the same time. Each game has its own answer mutex. */
 			{
-				std::lock_guard<std::mutex> answerlock(answermutex);
-
 				/* Insane round */
 				bool done = false;
 				auto i = this->insane.find(utf8lower(m.msg, settings.language == "es"));
@@ -145,7 +142,7 @@ void state_t::handle_message(const in_msg& m)
 					if (done) {
 						/* Only save state if all answers have been found */
 						if (log_question_index(this->guild_id, this->channel_id, this->round, this->streak, this->last_to_answer, this->gamestate, 0)) {
-							creator->StopGame(this, settings);
+							StopGame(settings);
 							return;
 						}
 					}
@@ -164,7 +161,6 @@ void state_t::handle_message(const in_msg& m)
 
 			/* NOTE: This is mutexed to stop two people answering at the same time. Each game has its own answer mutex. */
 			{
-				std::lock_guard<std::mutex> answerlock(answermutex);
 
 				/* Answer on channel is an exact match for the current answer and/or it is numeric, OR, it's non-numeric and has a levenstein distance near enough to the current answer (account for misspellings) */
 				if (!this->curr_answer.empty() && ((trivia_message.length() >= this->curr_answer.length() && utf8lower(this->curr_answer, needs_spanish_hack) == utf8lower(trivia_message, needs_spanish_hack)) || (!PCRE("^\\$(\\d+)$").Match(this->curr_answer) && !PCRE("^(\\d+)$").Match(this->curr_answer) && (this->curr_answer.length() > 5 && (utf8lower(this->curr_answer, needs_spanish_hack) == utf8lower(trivia_message, needs_spanish_hack) || creator->levenstein(trivia_message, this->curr_answer) < 2))))) {
@@ -222,7 +218,7 @@ void state_t::handle_message(const in_msg& m)
 						creator->SimpleEmbed(settings, ":thumbsup:", ans_message, channel_id, fmt::format(_("CORRECT", settings), m.username), this->answer_image);
 
 					if (log_question_index(this->guild_id, this->channel_id, this->round, this->streak, this->last_to_answer, this->gamestate, this->curr_qid)) {
-						creator->StopGame(this, settings);
+						StopGame(settings);
 						return;
 					}
 				}
@@ -234,63 +230,70 @@ void state_t::handle_message(const in_msg& m)
 void state_t::tick()
 {
 	guild_settings_t settings = creator->GetGuildSettings(guild_id);
-	while (!terminating && creator) {
-		try {
-			int32_t _interval = this->interval * 10;
+	if (!is_valid()) {
+		creator->GetBot()->core.log->warn("Invalid state (missing channel or guild), ending round.");
+		log_game_end(guild_id, channel_id);
+		terminating = true;
+		gamestate = TRIV_END;
+		return;
+	}
+	try {
+		switch (gamestate) {
+			case TRIV_ASK_QUESTION:
+				if (!terminating) {
+					if (round % 10 == 0) {
+						do_insane_round(false);
+					} else {
+						do_normal_round(false);
+					}
+				}
+			break;
+			case TRIV_FIRST_HINT:
+				if (!terminating) {
+					do_first_hint();
+				}
+			break;
+			case TRIV_SECOND_HINT:
+				if (!terminating) {
+					do_second_hint();
+				}
+			break;
+			case TRIV_TIME_UP:
+				if (!terminating) {
+					do_time_up();
+				}
+			break;
+			case TRIV_ANSWER_CORRECT:
+				if (!terminating) {
+					do_answer_correct();
+				}
+			break;
+			case TRIV_END:
+				do_end_game();
+			break;
+			default:
+				creator->GetBot()->core.log->warn("Invalid state '{}', ending round.", gamestate);
+				gamestate = TRIV_END;
+				terminating = true;
+			break;
+		}
+
+		if (gamestate == TRIV_ANSWER_CORRECT) {
+			/* Correct answer shortcuts the timer */
+			this->next_tick = time(NULL) + 5;
+		} else {
 			if (gamestate == TRIV_ASK_QUESTION && this->interval == TRIV_INTERVAL) {
-				_interval = settings.question_interval * 10;
-			}
-
-			for (int j = 0; j < _interval; j++) {
-				/*{
-					std::lock_guard<std::mutex> q_lock(queuemutex);
-					if (!messagequeue.empty()) {
-						to_process.clear();
-						for (auto m = messagequeue.begin(); m != messagequeue.end(); ++m) {
-							to_process.push_back(*m);
-						}
-						messagequeue.clear();
-					}
-				}
-				if (!to_process.empty()) {
-					for (auto m = to_process.begin(); m != to_process.end(); ++m) {
-						handle_message(*m);
-					}
-					to_process.clear();
-				}*/
-				std::this_thread::sleep_for(std::chrono::milliseconds(100));
-				if (terminating) {
-					break;
-				}
-			}
-
-			if (!terminating && !is_valid()) {
-				log_game_end(guild_id, channel_id);
-				terminating = true;
-				gamestate = TRIV_END;
-			}
-		
-			if (creator) {
-				creator->Tick(this);
-			}
-
-			int64_t game_length = time(NULL) - start_time;
-			if (game_length >= GAME_REAP_SECS) {
-				terminating = true;
-				gamestate = TRIV_END;
-				log_game_end(guild_id, channel_id);
+				this->next_tick = time(NULL) + settings.question_interval;
+			} else {
+				this->next_tick = time(NULL) + this->interval;
 			}
 		}
-		catch (std::exception &e) {
-			if (creator) {
-				creator->GetBot()->core.log->debug("state_t exception! - {}", e.what());
-			}
-		}
-		catch (...) {
-			if (creator) {
-				creator->GetBot()->core.log->debug("state_t exception! - non-object");
-			}
-		}
+	}
+	catch (std::exception &e) {
+		creator->GetBot()->core.log->debug("state_t exception! - {}", e.what());
+	}
+	catch (...) {
+		creator->GetBot()->core.log->debug("state_t exception! - non-object");
 	}
 }
 

@@ -36,7 +36,7 @@
 
 command_start_t::command_start_t(class TriviaModule* _creator, const std::string &_base_command) : command_t(_creator, _base_command) { }
 
-void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_settings_t &settings, const std::string &username, bool is_moderator, aegis::channel* c, aegis::user* user, state_t* state)
+void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_settings_t &settings, const std::string &username, bool is_moderator, aegis::channel* c, aegis::user* user)
 {
 	int32_t questions;
 	std::string str_q;
@@ -76,9 +76,9 @@ void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 
 
 	if (!settings.premium) {
-		std::lock_guard<std::mutex> user_cache_lock(creator->states_mutex);
+		std::lock_guard<std::mutex> states_lock(creator->states_mutex);
 		for (auto j = creator->states.begin(); j != creator->states.end(); ++j) {
-			if (j->second->guild_id == cmd.guild_id && j->second->gamestate != TRIV_END) {
+			if (j->second.guild_id == cmd.guild_id && j->second.gamestate != TRIV_END) {
 				creator->EmbedWithFields(settings, _("NOWAY", settings), {
 					{_("ALREADYACTIVE", settings), fmt::format(_("CHANNELREF", settings), j->first), false},
 					{_("GETPREMIUM", settings), _("PREMDETAIL1", settings), false}
@@ -88,7 +88,13 @@ void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 		}
 	}
 
-	if (!state) {
+	bool already_running = false;
+	{
+		std::lock_guard<std::mutex> states_lock(creator->states_mutex);
+		already_running = (creator->states.find(cmd.channel_id) != creator->states.end());
+	}
+
+	if (!already_running) {
 		creator->GetBot()->core.log->debug("start game, no existing state");
 		int32_t max_quickfire = (settings.premium ? 200 : 15);
 		if ((!quickfire && (questions < 5 || questions > 200)) || (quickfire && (questions < 5 || questions > max_quickfire))) {
@@ -117,21 +123,22 @@ void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 			return;
 		} else  {
 			{
-				std::lock_guard<std::mutex> user_cache_lock(creator->states_mutex);
-				state = new state_t(creator);
-				state->start_time = time(NULL);
-				state->shuffle_list = sl;
-				state->gamestate = TRIV_ASK_QUESTION;
-				state->numquestions = questions + 1;
-				state->streak = 1;
-				state->last_to_answer = 0;
-				state->round = 1;
-				state->interval = (quickfire ? (TRIV_INTERVAL / 4) : TRIV_INTERVAL);
-				state->channel_id = cmd.channel_id;
-				state->curr_qid = 0;
-				state->curr_answer = "";
-				state->hintless = hintless;
-				state->guild_id = cmd.guild_id;
+				std::lock_guard<std::mutex> states_lock(creator->states_mutex);
+
+				creator->states[cmd.channel_id] = state_t(
+					creator,
+					questions+1,
+					1,
+					0,
+					1,
+					(quickfire ? (TRIV_INTERVAL / 4) : TRIV_INTERVAL),
+					cmd.channel_id,
+					hintless,
+					sl,
+					TRIV_ASK_QUESTION,
+					cmd.guild_id
+				);
+
 				creator->bot->core.log->info("Started game on guild {}, channel {}, {} questions [{}] [category: {}]", cmd.guild_id, cmd.channel_id, questions, quickfire ? "quickfire" : "normal", (category.empty() ? "<ALL>" : category));
 
 				std::vector<field_t> fields = {{_("QUESTION", settings), fmt::format("{}", questions), false}};
@@ -140,9 +147,6 @@ void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 				}
 				fields.push_back({_("GETREADY", settings), _("FIRSTCOMING", settings), false});
 				fields.push_back({_("HOWPLAY", settings), _("INSTRUCTIONS", settings), false});
-				
-				creator->states[cmd.channel_id] = state;
-				state->timer = new std::thread(&state_t::tick, state);
 			}
 
 			std::vector<field_t> fields = {{_("QUESTION", settings), fmt::format("{}", questions), false}};
@@ -151,10 +155,10 @@ void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 			}
 			fields.push_back({_("GETREADY", settings), _("FIRSTCOMING", settings), false});
 			fields.push_back({_("HOWPLAY", settings), _("INSTRUCTIONS", settings), false});
-			creator->EmbedWithFields(settings, fmt::format(_((state->hintless ? "NEWROUND_NH" : "NEWROUND"), settings), (state->hintless ? "**HARDCORE** " : (quickfire ? "**QUICKFIRE** " : "")), (resumed ? _("RESUMED", settings) : _("STARTED", settings)), (resumed ? _("ABOTADMIN", settings) : username)), fields, cmd.channel_id);
+			creator->EmbedWithFields(settings, fmt::format(_((hintless ? "NEWROUND_NH" : "NEWROUND"), settings), (hintless ? "**HARDCORE** " : (quickfire ? "**QUICKFIRE** " : "")), (resumed ? _("RESUMED", settings) : _("STARTED", settings)), (resumed ? _("ABOTADMIN", settings) : username)), fields, cmd.channel_id);
 
 			creator->CacheUser(cmd.author_id, cmd.channel_id);
-			log_game_start(state->guild_id, state->channel_id, questions, quickfire, c->get_name(), cmd.author_id, state->shuffle_list, state->hintless);
+			log_game_start(cmd.guild_id, cmd.channel_id, questions, quickfire, c->get_name(), cmd.author_id, sl, hintless);
 			creator->GetBot()->core.log->debug("returning from start game");
 			return;
 		}

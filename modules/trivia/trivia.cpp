@@ -37,27 +37,48 @@
 
 TriviaModule::TriviaModule(Bot* instigator, ModuleLoader* ml) : Module(instigator, ml), terminating(false)
 {
+	/* TODO: Move to something better like mt-rand */
 	srand(time(NULL) * time(NULL));
+
+	/* Attach aegis events to module */
 	ml->Attach({ I_OnMessage, I_OnPresenceUpdate, I_OnChannelDelete, I_OnGuildDelete, I_OnAllShardsReady }, this);
+
+	/* Various regular expressions */
 	notvowel = new PCRE("/[^aeiou_]/", true);
 	number_tidy_dollars = new PCRE("^([\\d\\,]+)\\s+dollars$");
 	number_tidy_nodollars = new PCRE("^([\\d\\,]+)\\s+(.+?)$");
 	number_tidy_positive = new PCRE("^[\\d\\,]+$");
 	number_tidy_negative = new PCRE("^\\-[\\d\\,]+$");
 	prefix_match = new PCRE("prefix");
+
+	startup = time(NULL);
+
+	/* Check for and store API key */
+	if (Bot::GetConfig("apikey") == "") {
+		throw std::exception("TriviaBot API key missing");
+		return;
+	}
 	set_io_context(bot->io, Bot::GetConfig("apikey"), bot, this);
+
+	/* Create threads */
 	presence_update = new std::thread(&TriviaModule::UpdatePresenceLine, this);
 	command_processor = new std::thread(&TriviaModule::ProcessCommands, this);
-	startup = time(NULL);
+	game_tick_thread = new std::thread(&TriviaModule::Tick, this);
+
+	/* Get command list from API */
 	{
 		std::lock_guard<std::mutex> cmd_list_lock(cmds_mutex);
 		api_commands = get_api_command_names();
 		bot->core.log->info("Initial API command count: {}", api_commands.size());
 	}
+
+	/* Read language strings */
 	std::ifstream langfile("../lang.json");
 	lang = new json();
 	langfile >> *lang;
 	bot->core.log->info("Language strings count: {}", lang->size());
+
+	/* Setup built in commands */
 	SetupCommands();
 }
 
@@ -97,10 +118,16 @@ Bot* TriviaModule::GetBot()
 
 TriviaModule::~TriviaModule()
 {
+	/* We don't just delete threads, they must go through Bot::DisposeThread which joins them first */
+	DisposeThread(game_tick_thread);
 	DisposeThread(presence_update);
 	DisposeThread(command_processor);
+
+	/* This explicitly calls the destructor on all states */
 	std::lock_guard<std::mutex> user_cache_lock(states_mutex);
 	states.clear();
+
+	/* Delete these misc pointers, mostly regexps */
 	delete notvowel;
 	delete number_tidy_dollars;
 	delete number_tidy_nodollars;
@@ -136,6 +163,7 @@ bool TriviaModule::OnPresenceUpdate()
 			}
 		);
 	}
+	/* Curly brace scope is for readability, this call is mutexed */
 	{
 		std::lock_guard<std::mutex> cmd_list_lock(cmds_mutex);
 		api_commands = get_api_command_names();
@@ -145,6 +173,7 @@ bool TriviaModule::OnPresenceUpdate()
 
 std::string TriviaModule::_(const std::string &k, const guild_settings_t& settings)
 {
+	/* Find language string 'k' in lang.json for the language specified in 'settings' */
 	auto o = lang->find(k);
 	if (o != lang->end()) {
 		auto v = o->find(settings.language);
@@ -157,6 +186,7 @@ std::string TriviaModule::_(const std::string &k, const guild_settings_t& settin
 
 bool TriviaModule::OnAllShardsReady()
 {
+	/* Called when the framework indicates all shards are connected */
 	char hostname[1024];
 	hostname[1023] = '\0';
 	gethostname(hostname, 1023);
@@ -166,58 +196,62 @@ bool TriviaModule::OnAllShardsReady()
 		/* Don't resume games in test mode */
 		bot->core.log->debug("Not resuming games in test mode");
 		return true;
+	} else {
+		bot->core.log->debug("Resuming {} games...", active.size());
 	}
 
+	/* Iterate all active games for this cluster id */
 	for (auto game = active.begin(); game != active.end(); ++game) {
 
 		int64_t guild_id = from_string<int64_t>((*game)["guild_id"].get<std::string>(), std::dec);
-
 		bool quickfire = (*game)["quickfire"].get<std::string>() == "1";
+		int64_t channel_id = from_string<int64_t>((*game)["channel_id"].get<std::string>(), std::dec);
+
+		bot->core.log->info("Resuming id {}", channel_id);
 
 		/* XXX: Note: The mutex here is VITAL to thread safety of the state list! DO NOT move it! */
 		{
-			std::lock_guard<std::mutex> user_cache_lock(states_mutex);
+			std::lock_guard<std::mutex> states_lock(states_mutex);
 
 			/* Check that impatient user didn't (re)start the round while bot was synching guilds! */
-			if (states.find(from_string<int64_t>((*game)["channel_id"].get<std::string>(), std::dec)) == states.end()) {
+			if (states.find(channel_id) == states.end()) {
 
-				state_t* state = new state_t(this);
-				state->start_time = time(NULL);
-	
-				/* Get shuffle list from state */
+				std::vector<std::string> shuffle_list;
+
+				/* Get shuffle list from state in db */
 				if (!(*game)["qlist"].get<std::string>().empty()) {
 					json shuffle = json::parse((*game)["qlist"].get<std::string>());
-		
 					for (auto s = shuffle.begin(); s != shuffle.end(); ++s) {
-						state->shuffle_list.push_back(s->get<std::string>());
+						shuffle_list.push_back(s->get<std::string>());
 					}
-					bot->core.log->debug("Resume shuffle list length: {}", state->shuffle_list.size());
-					state->gamestate = (trivia_state_t)from_string<uint32_t>((*game)["state"].get<std::string>(), std::dec);
 				} else {
 					/* No shuffle list to resume from, create a new one */
-					state->shuffle_list = fetch_shuffle_list(from_string<int64_t>((*game)["guild_id"].get<std::string>(), std::dec));
-					state->gamestate = TRIV_ASK_QUESTION;
+					shuffle_list = fetch_shuffle_list(from_string<int64_t>((*game)["guild_id"].get<std::string>(), std::dec));
 				}
-			
-				state->numquestions = from_string<uint32_t>((*game)["questions"].get<std::string>(), std::dec) + 1;
-				state->streak = from_string<uint32_t>((*game)["streak"].get<std::string>(), std::dec);
-				state->last_to_answer = from_string<int64_t>((*game)["lastanswered"].get<std::string>(), std::dec);
-				state->round = from_string<uint32_t>((*game)["question_index"].get<std::string>(), std::dec);
-				state->interval = (quickfire ? (TRIV_INTERVAL / 4) : TRIV_INTERVAL);
-				state->channel_id = from_string<int64_t>((*game)["channel_id"].get<std::string>(), std::dec);
-				state->hintless = ((*game)["hintless"].get<std::string>()) == "1";
-				state->guild_id = guild_id;
-				state->curr_qid = 0;
-				state->curr_answer = "";
+				int32_t round = from_string<uint32_t>((*game)["question_index"].get<std::string>(), std::dec);
+
+				states[channel_id] = state_t(
+					this,
+					from_string<uint32_t>((*game)["questions"].get<std::string>(), std::dec) + 1,
+					from_string<uint32_t>((*game)["streak"].get<std::string>(), std::dec),
+					from_string<int64_t>((*game)["lastanswered"].get<std::string>(), std::dec),
+					round,
+					(quickfire ? (TRIV_INTERVAL / 4) : TRIV_INTERVAL),
+					channel_id,
+					((*game)["hintless"].get<std::string>()) == "1",
+					shuffle_list,
+					(trivia_state_t)from_string<uint32_t>((*game)["state"].get<std::string>(), std::dec),
+					guild_id
+				);
+
 				/* Force fetching of question */
-				if (state->round % 10 == 0) {
-					do_insane_round(state, true);
+				if (round % 10 == 0) {
+					states[channel_id].do_insane_round(true);
 				} else {
-					do_normal_round(state, true);
+					states[channel_id].do_normal_round(true);
 				}
-				states[state->channel_id] = state;
-				bot->core.log->info("Resumed game on guild {}, channel {}, {} questions [{}]", state->guild_id, state->channel_id, state->numquestions, quickfire ? "quickfire" : "normal");
-				state->timer = new std::thread(&state_t::tick, state);
+
+				bot->core.log->info("Resumed game on guild {}, channel {}, {} questions [{}]", guild_id, channel_id, states[channel_id].numquestions, quickfire ? "quickfire" : "normal");
 			}
 		}
 	}
@@ -240,7 +274,7 @@ int64_t TriviaModule::GetActiveLocalGames()
 	int64_t a = 0;
 	std::lock_guard<std::mutex> user_cache_lock(states_mutex);
 	for (auto state = states.begin(); state != states.end(); ++state) {
-		if (state->second && state->second->gamestate != TRIV_END && !state->second->terminating) {
+		if (state->second.gamestate != TRIV_END && !state->second.terminating) {
 			++a;
 		}
 	}
@@ -313,7 +347,7 @@ guild_settings_t TriviaModule::GetGuildSettings(int64_t guild_id)
 std::string TriviaModule::GetVersion()
 {
 	/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-	std::string version = "$ModVer 67$";
+	std::string version = "$ModVer 68$";
 	return "3.0." + version.substr(8,version.length() - 9);
 }
 
@@ -345,9 +379,6 @@ void TriviaModule::UpdatePresenceLine()
 				CheckForQueuedStarts();
 				CheckReconnects();
 			}
-	
-			/* Garbage collection of state pointers */
-			DeleteOldStates();
 		}
 		catch (std::exception &e) {
 			bot->core.log->error("Exception in UpdatePresenceLine: {}", e.what());
@@ -372,27 +403,23 @@ std::string TriviaModule::vowelcount(std::string text, const guild_settings_t &s
 	return fmt::format(_("HINT_VOWELCOUNT", settings), counts.second, counts.first);
 }
 
-void TriviaModule::do_insane_round(state_t* state, bool silent)
+void state_t::do_insane_round(bool silent)
 {
-	if (!state->is_valid()) {
+	creator->GetBot()->core.log->debug("do_insane_round: G:{} C:{}", guild_id, channel_id);
+
+	if (round >= numquestions) {
+		gamestate = TRIV_END;
+		score = 0;
 		return;
 	}
 
-	bot->core.log->debug("do_insane_round: G:{} C:{}", state->guild_id, state->channel_id);
-
-	if (state->round >= state->numquestions) {
-		state->gamestate = TRIV_END;
-		state->score = 0;
-		return;
-	}
-
-	guild_settings_t settings = GetGuildSettings(state->guild_id);
+	guild_settings_t settings = creator->GetGuildSettings(guild_id);
 
 	// Attempt up to 5 times to fetch an insane round, with 3 second delay between tries
 	std::vector<std::string> answers;
 	uint32_t tries = 0;
 	do {
-		answers = fetch_insane_round(state->curr_qid, state->guild_id, settings);
+		answers = fetch_insane_round(curr_qid, guild_id, settings);
 		if (answers.size() >= 2) {
 			// Got a valid answer list, bail out
 			tries = 0;
@@ -404,322 +431,298 @@ void TriviaModule::do_insane_round(state_t* state, bool silent)
 		}
 	} while (tries < 5);
 	// 5 or more tries stops the game
-	if (log_question_index(state->guild_id, state->channel_id, state->round, state->streak, state->last_to_answer, state->gamestate, state->curr_qid) || tries >= 5) {
-		StopGame(state, settings);
+	if (log_question_index(guild_id, channel_id, round, streak, last_to_answer, gamestate, curr_qid) || tries >= 5) {
+		StopGame(settings);
 		return;
 	}
 
-	state->insane = {};
+	insane = {};
 	for (auto n = answers.begin(); n != answers.end(); ++n) {
 		if (n == answers.begin()) {
-			state->curr_question = trim(*n);
+			curr_question = trim(*n);
 		} else {
 			if (*n != "***END***") {
-				state->insane[utf8lower(trim(*n), settings.language == "es")] = true;
+				insane[utf8lower(trim(*n), settings.language == "es")] = true;
 			}
 		}
 	}
-	state->insane_left = state->insane.size();
-	state->insane_num = state->insane.size();
-	state->gamestate = TRIV_FIRST_HINT;
+	insane_left = insane.size();
+	insane_num = insane.size();
+	gamestate = TRIV_FIRST_HINT;
 
 
-	EmbedWithFields(settings, fmt::format(_("QUESTION_COUNTER", settings), state->round, state->numquestions - 1), {{_("INSANE_ROUND", settings), fmt::format(_("INSANE_ANS_COUNT", settings), state->insane_num), false}, {_("QUESTION", settings), state->curr_question, false}}, state->channel_id, fmt::format("https://triviabot.co.uk/report/?c={}&g={}&insane={}", state->channel_id, state->guild_id, state->curr_qid + state->channel_id));
+	creator->EmbedWithFields(settings, fmt::format(_("QUESTION_COUNTER", settings), round, numquestions - 1), {{_("INSANE_ROUND", settings), fmt::format(_("INSANE_ANS_COUNT", settings), insane_num), false}, {_("QUESTION", settings), curr_question, false}}, channel_id, fmt::format("https://triviabot.co.uk/report/?c={}&g={}&insane={}", channel_id, guild_id, curr_qid + channel_id));
 }
 
-void TriviaModule::do_normal_round(state_t* state, bool silent)
+void state_t::do_normal_round(bool silent)
 {
-	if (!state->is_valid()) {
-		return;
-	}
+	creator->GetBot()->core.log->debug("do_normal_round: G:{} C:{}", guild_id, channel_id);
 
-	bot->core.log->debug("do_normal_round: G:{} C:{}", state->guild_id, state->channel_id);
-
-	if (state->round >= state->numquestions) {
-		state->gamestate = TRIV_END;
-		state->score = 0;
+	if (round >= numquestions) {
+		gamestate = TRIV_END;
+		score = 0;
 		return;
 	}
 
 	bool valid = false;
 	int32_t tries = 0;
 
-	guild_settings_t settings = GetGuildSettings(state->guild_id);
+	guild_settings_t settings = creator->GetGuildSettings(guild_id);
 
 	do {
-		state->curr_qid = 0;
-		bot->core.log->debug("do_normal_round: fetch_question: '{}'", state->shuffle_list[state->round - 1]);
-		std::vector<std::string> data = fetch_question(from_string<int64_t>(state->shuffle_list[state->round - 1], std::dec), state->guild_id, settings);
+		curr_qid = 0;
+		creator->GetBot()->core.log->debug("do_normal_round: fetch_question: '{}'", shuffle_list[round - 1]);
+		std::vector<std::string> data = fetch_question(from_string<int64_t>(shuffle_list[round - 1], std::dec), guild_id, settings);
 		if (data.size() >= 14) {
-			state->curr_qid = from_string<int64_t>(data[0], std::dec);
-			state->curr_question = data[1];
-			state->curr_answer = data[2];
-			state->curr_customhint1 = data[3];
-			state->curr_customhint2 = data[4];
-			state->curr_category = data[5];
-			state->curr_lastasked = from_string<time_t>(data[6],std::dec);
-			state->curr_timesasked = from_string<int32_t>(data[7], std::dec);
-			state->curr_lastcorrect = data[8];
-			state->recordtime = from_string<time_t>(data[9],std::dec);
-			state->shuffle1 = data[10];
-			state->shuffle2 = data[11];
-			state->question_image = data[12];
-			state->answer_image = data[13];
-			valid = !state->curr_question.empty();
+			curr_qid = from_string<int64_t>(data[0], std::dec);
+			curr_question = data[1];
+			curr_answer = data[2];
+			curr_customhint1 = data[3];
+			curr_customhint2 = data[4];
+			curr_category = data[5];
+			curr_lastasked = from_string<time_t>(data[6],std::dec);
+			curr_timesasked = from_string<int32_t>(data[7], std::dec);
+			curr_lastcorrect = data[8];
+			recordtime = from_string<time_t>(data[9],std::dec);
+			shuffle1 = data[10];
+			shuffle2 = data[11];
+			question_image = data[12];
+			answer_image = data[13];
+			valid = !curr_question.empty();
 			if (!valid) {
-				state->curr_qid = 0;
-				bot->core.log->debug("do_normal_round: Invalid question response size {} with empty question retrieving question {}, round {} shuffle size {}", data.size(), state->shuffle_list[state->round - 1], state->round - 1, state->shuffle_list.size());
+				curr_qid = 0;
+				creator->GetBot()->core.log->debug("do_normal_round: Invalid question response size {} with empty question retrieving question {}, round {} shuffle size {}", data.size(), shuffle_list[round - 1], round - 1, shuffle_list.size());
 				sleep(2);
 				tries++;
 			}
 		} else {
-			bot->core.log->debug("do_normal_round: Invalid question response size {} retrieving question {}, round {} shuffle size {}", data.size(), state->shuffle_list[state->round - 1], state->round - 1, state->shuffle_list.size());
+			creator->GetBot()->core.log->debug("do_normal_round: Invalid question response size {} retrieving question {}, round {} shuffle size {}", data.size(), shuffle_list[round - 1], round - 1, shuffle_list.size());
 			sleep(2);
-			state->curr_qid = 0;
+			curr_qid = 0;
 			tries++;
 			valid = false;
 		}
 	} while (!valid && tries <= 3);
 
-	if (state->curr_qid == 0) {
-		state->gamestate = TRIV_END;
-		state->score = 0;
-		state->curr_answer = "";
-		bot->core.log->warn("do_normal_round(): Attempted to retrieve question id {} but got a malformed response. Round was aborted.", state->shuffle_list[state->round - 1]);
+	if (curr_qid == 0) {
+		gamestate = TRIV_END;
+		score = 0;
+		curr_answer = "";
+		creator->GetBot()->core.log->warn("do_normal_round(): Attempted to retrieve question id {} but got a malformed response. Round was aborted.", shuffle_list[round - 1]);
 		if (!silent) {
-			EmbedWithFields(settings, fmt::format(_("Q_FETCH_ERROR", settings)), {{_("Q_SPOOPY", settings), _("Q_CONTACT_DEVS", settings), false}, {_("ROUND_STOPPING", settings), _("ERROR_BROKE_IT", settings), false}}, state->channel_id);
+			creator->EmbedWithFields(settings, fmt::format(_("Q_FETCH_ERROR", settings)), {{_("Q_SPOOPY", settings), _("Q_CONTACT_DEVS", settings), false}, {_("ROUND_STOPPING", settings), _("ERROR_BROKE_IT", settings), false}}, channel_id);
 		}
 		return;
 	}
 
-	if (state->curr_question != "") {
-		state->asktime = time(NULL);
-		guild_settings_t settings = GetGuildSettings(state->guild_id);
-		state->curr_answer = trim(state->curr_answer);
-		state->original_answer = state->curr_answer;
-		std::string t = conv_num(state->curr_answer, settings);
-		if (is_number(t) && t != "0") {
-			state->curr_answer = t;
+	if (curr_question != "") {
+		asktime = time(NULL);
+		curr_answer = trim(curr_answer);
+		original_answer = curr_answer;
+		std::string t = creator->conv_num(curr_answer, settings);
+		if (creator->is_number(t) && t != "0") {
+			curr_answer = t;
 		}
-		state->curr_answer = tidy_num(state->curr_answer);
+		curr_answer = creator->tidy_num(curr_answer);
 		/* Handle hints */
-		if (state->curr_customhint1.empty()) {
+		if (curr_customhint1.empty()) {
 			/* No custom first hint, build one */
-			state->curr_customhint1 = "";
-			if (is_number(state->curr_answer)) {
-				state->curr_customhint1 = MakeFirstHint(state->curr_answer, settings);
+			curr_customhint1 = "";
+			if (creator->is_number(curr_answer)) {
+				curr_customhint1 = creator->MakeFirstHint(curr_answer, settings);
 			} else {
-				int32_t r = random(1, 12);
+				int32_t r = creator->random(1, 12);
 				if (settings.language == "bg") {
-					state->curr_customhint1 = fmt::format(_("SCRAMBLED_ANSWER", settings), state->shuffle1);
+					curr_customhint1 = fmt::format(_("SCRAMBLED_ANSWER", settings), shuffle1);
 				} else {
 					if (r <= 4) {
 						/* Leave only capital letters */
-						state->curr_customhint1 = state->curr_answer;
-						for (int x = 0; x < state->curr_customhint1.length(); ++x) {
-							if ((state->curr_customhint1[x] >= 'a' && state->curr_customhint1[x] <= 'z') || state->curr_customhint1[x] == '1' || state->curr_customhint1[x] == '3' || state->curr_customhint1[x] == '5' || state->curr_customhint1[x]  == '7' || state->curr_customhint1[x] == '9') {
-									state->curr_customhint1[x] = '#';
+						curr_customhint1 = curr_answer;
+						for (int x = 0; x < curr_customhint1.length(); ++x) {
+							if ((curr_customhint1[x] >= 'a' && curr_customhint1[x] <= 'z') || curr_customhint1[x] == '1' || curr_customhint1[x] == '3' || curr_customhint1[x] == '5' || curr_customhint1[x]  == '7' || curr_customhint1[x] == '9') {
+									curr_customhint1[x] = '#';
 							}
 						}
 					} else if (r >= 5 && r <= 8) {
-					state->curr_customhint1 = letterlong(state->curr_answer, settings);
+					curr_customhint1 = creator->letterlong(curr_answer, settings);
 					} else {
-						state->curr_customhint1 = fmt::format(_("SCRAMBLED_ANSWER", settings), state->shuffle1);
+						curr_customhint1 = fmt::format(_("SCRAMBLED_ANSWER", settings), shuffle1);
 					}
 				}
 			}
 		}
-		if (state->curr_customhint2.empty()) {
+		if (curr_customhint2.empty()) {
 			/* No custom second hint, build one */
-			state->curr_customhint2 = "";
-			if (is_number(state->curr_answer) || PCRE("^\\$(\\d+)$").Match(state->curr_answer)) {
+			curr_customhint2 = "";
+			if (creator->is_number(curr_answer) || PCRE("^\\$(\\d+)$").Match(curr_answer)) {
 				std::string currency;
 				std::vector<std::string> matches;
-				state->curr_customhint2 = state->curr_answer;
-				if (PCRE("^\\$(\\d+)$").Match(state->curr_customhint2, matches)) {
-					state->curr_customhint2 = matches[1];
+				curr_customhint2 = curr_answer;
+				if (PCRE("^\\$(\\d+)$").Match(curr_customhint2, matches)) {
+					curr_customhint2 = matches[1];
 					currency = "$";
 				}
-				state->curr_customhint2 = currency + state->curr_customhint2;
-				int32_t r = random(1, 13);
-				if ((r < 3 && from_string<int32_t>(state->curr_customhint2, std::dec) <= 10000)) {
-					state->curr_customhint2 = dec_to_roman(from_string<unsigned int>(state->curr_customhint2, std::dec), settings);
-				} else if ((r >= 3 && r < 6) || from_string<int32_t>(state->curr_customhint2, std::dec) > 10000) {
-					state->curr_customhint2 = fmt::format(_("HEX", settings), from_string<int32_t>(state->curr_customhint2, std::dec));
+				curr_customhint2 = currency + curr_customhint2;
+				int32_t r = creator->random(1, 13);
+				if ((r < 3 && from_string<int32_t>(curr_customhint2, std::dec) <= 10000)) {
+					curr_customhint2 = creator->dec_to_roman(from_string<unsigned int>(curr_customhint2, std::dec), settings);
+				} else if ((r >= 3 && r < 6) || from_string<int32_t>(curr_customhint2, std::dec) > 10000) {
+					curr_customhint2 = fmt::format(_("HEX", settings), from_string<int32_t>(curr_customhint2, std::dec));
 				} else if (r >= 6 && r <= 10) {
-					state->curr_customhint2 = fmt::format(_("OCT", settings), from_string<int32_t>(state->curr_customhint2, std::dec));
+					curr_customhint2 = fmt::format(_("OCT", settings), from_string<int32_t>(curr_customhint2, std::dec));
 				} else {
-					state->curr_customhint2 = fmt::format(_("BIN", settings), from_string<int32_t>(state->curr_customhint2, std::dec));
+					curr_customhint2 = fmt::format(_("BIN", settings), from_string<int32_t>(curr_customhint2, std::dec));
 				}
 			} else {
-				int32_t r = random(1, 12);
+				int32_t r = creator->random(1, 12);
 				if (r <= 4 && settings.language != "bg") {
 					/* Transpose only the vowels */
-					state->curr_customhint2 = state->curr_answer;
-					for (int x = 0; x < state->curr_customhint2.length(); ++x) {
-						if (toupper(state->curr_customhint2[x]) == 'A' || toupper(state->curr_customhint2[x]) == 'E' || toupper(state->curr_customhint2[x]) == 'I' || toupper(state->curr_customhint2[x]) == 'O' || toupper(state->curr_customhint2[x]) == 'U' || toupper(state->curr_customhint2[x]) == '2' || toupper(state->curr_customhint2[x]) == '4' || toupper(state->curr_customhint2[x]) == '6' || toupper(state->curr_customhint2[x]) == '8' || toupper(state->curr_customhint2[x]) == '0') {
-							state->curr_customhint2[x] = '#';
+					curr_customhint2 = curr_answer;
+					for (int x = 0; x < curr_customhint2.length(); ++x) {
+						if (toupper(curr_customhint2[x]) == 'A' || toupper(curr_customhint2[x]) == 'E' || toupper(curr_customhint2[x]) == 'I' || toupper(curr_customhint2[x]) == 'O' || toupper(curr_customhint2[x]) == 'U' || toupper(curr_customhint2[x]) == '2' || toupper(curr_customhint2[x]) == '4' || toupper(curr_customhint2[x]) == '6' || toupper(curr_customhint2[x]) == '8' || toupper(curr_customhint2[x]) == '0') {
+							curr_customhint2[x] = '#';
 						}
 					}
 				} else if ((r >= 5 && r <= 6) || settings.language != "en") {
-					state->curr_customhint2 = vowelcount(state->curr_answer, settings);
+					curr_customhint2 = creator->vowelcount(curr_answer, settings);
 				} else {
 					/* settings.language check for en above, because piglatin only makes sense in english */
-					state->curr_customhint2 = piglatin(state->curr_answer);
+					curr_customhint2 = piglatin(curr_answer);
 				}
 
 			}
 		}
 
 		if (!silent) {
-			EmbedWithFields(settings, fmt::format(_("QUESTION_COUNTER", settings), state->round, state->numquestions - 1), {{_("CATEGORY", settings), state->curr_category, false}, {_("QUESTION", settings), state->curr_question, false}}, state->channel_id, fmt::format("https://triviabot.co.uk/report/?c={}&g={}&normal={}", state->channel_id, state->guild_id, state->curr_qid + state->channel_id), state->question_image);
+			creator->EmbedWithFields(settings, fmt::format(_("QUESTION_COUNTER", settings), round, numquestions - 1), {{_("CATEGORY", settings), curr_category, false}, {_("QUESTION", settings), curr_question, false}}, channel_id, fmt::format("https://triviabot.co.uk/report/?c={}&g={}&normal={}", channel_id, guild_id, curr_qid + channel_id), question_image);
 		}
 
 	} else {
 		if (!silent) {
-			SimpleEmbed(settings, ":ghost:", _("BRAIN_BROKE_IT", settings), state->channel_id, _("FETCH_Q", settings));
+			creator->SimpleEmbed(settings, ":ghost:", _("BRAIN_BROKE_IT", settings), channel_id, _("FETCH_Q", settings));
 		}
 	}
 
-	state->score = (state->hintless ? 6 : (state->interval == TRIV_INTERVAL ? 4 : 8));
+	score = (hintless ? 6 : (interval == TRIV_INTERVAL ? 4 : 8));
 	/* Advance state to first hint, if hints are enabled, otherwise go straight to time up */
-	if (state->hintless) {
-		state->gamestate = TRIV_TIME_UP;
+	if (hintless) {
+		gamestate = TRIV_TIME_UP;
 	} else {
-		state->gamestate = TRIV_FIRST_HINT;
+		gamestate = TRIV_FIRST_HINT;
 	}
-	if (log_question_index(state->guild_id, state->channel_id, state->round, state->streak, state->last_to_answer, state->gamestate, state->curr_qid)) {
-		StopGame(state, settings);
+	if (log_question_index(guild_id, channel_id, round, streak, last_to_answer, gamestate, curr_qid)) {
+		StopGame(settings);
 	}
 
 }
 
-void TriviaModule::do_first_hint(state_t* state)
+void state_t::do_first_hint()
 {
-	if (!state->is_valid()) {
-		return;
-	}
-	bot->core.log->debug("do_first_hint: G:{} C:{}", state->guild_id, state->channel_id);
-	guild_settings_t settings = GetGuildSettings(state->guild_id);
-	if (state->round % 10 == 0) {
+	creator->GetBot()->core.log->debug("do_first_hint: G:{} C:{}", guild_id, channel_id);
+	guild_settings_t settings = creator->GetGuildSettings(guild_id);
+	if (round % 10 == 0) {
 		/* Insane round countdown */
-		SimpleEmbed(settings, ":clock10:", fmt::format(_("SECS_LEFT", settings), state->interval * 2), state->channel_id);
+		creator->SimpleEmbed(settings, ":clock10:", fmt::format(_("SECS_LEFT", settings), interval * 2), channel_id);
 	} else {
 		/* First hint, not insane round */
-		SimpleEmbed(settings, ":clock10:", state->curr_customhint1, state->channel_id, _("FIRST_HINT", settings));
+		creator->SimpleEmbed(settings, ":clock10:", curr_customhint1, channel_id, _("FIRST_HINT", settings));
 	}
-	state->gamestate = TRIV_SECOND_HINT;
-	state->score = (state->interval == TRIV_INTERVAL ? 2 : 4);
-	if (log_question_index(state->guild_id, state->channel_id, state->round, state->streak, state->last_to_answer, state->gamestate, state->curr_qid)) {
-		StopGame(state, settings);
+	gamestate = TRIV_SECOND_HINT;
+	score = (interval == TRIV_INTERVAL ? 2 : 4);
+	if (log_question_index(guild_id, channel_id, round, streak, last_to_answer, gamestate, curr_qid)) {
+		StopGame(settings);
 	}
 }
 
-void TriviaModule::do_second_hint(state_t* state)
+void state_t::do_second_hint()
 {
-	if (!state->is_valid()) {
-		return;
-	}
-	bot->core.log->debug("do_second_hint: G:{} C:{}", state->guild_id, state->channel_id);
-	guild_settings_t settings = GetGuildSettings(state->guild_id);
-	if (state->round % 10 == 0) {
+	creator->GetBot()->core.log->debug("do_second_hint: G:{} C:{}", guild_id, channel_id);
+	guild_settings_t settings = creator->GetGuildSettings(guild_id);
+	if (round % 10 == 0) {
 		/* Insane round countdown */
-		SimpleEmbed(settings, ":clock1030:", fmt::format(_("SECS_LEFT", settings), state->interval), state->channel_id);
+		creator->SimpleEmbed(settings, ":clock1030:", fmt::format(_("SECS_LEFT", settings), interval), channel_id);
 	} else {
 		/* Second hint, not insane round */
-		SimpleEmbed(settings, ":clock1030:", state->curr_customhint2, state->channel_id, _("SECOND_HINT", settings));
+		creator->SimpleEmbed(settings, ":clock1030:", curr_customhint2, channel_id, _("SECOND_HINT", settings));
 	}
-	state->gamestate = TRIV_TIME_UP;
-	state->score = (state->interval == TRIV_INTERVAL ? 1 : 2);
-	if (log_question_index(state->guild_id, state->channel_id, state->round, state->streak, state->last_to_answer, state->gamestate, state->curr_qid)) {
-		StopGame(state, settings);
+	gamestate = TRIV_TIME_UP;
+	score = (interval == TRIV_INTERVAL ? 1 : 2);
+	if (log_question_index(guild_id, channel_id, round, streak, last_to_answer, gamestate, curr_qid)) {
+		StopGame(settings);
 	}
 }
 
-void TriviaModule::do_time_up(state_t* state)
+void state_t::do_time_up()
 {
-	if (!state->is_valid()) {
-		return;
-	}
-	bot->core.log->debug("do_time_up: G:{} C:{}", state->guild_id, state->channel_id);
-	guild_settings_t settings = GetGuildSettings(state->guild_id);
+	creator->GetBot()->core.log->debug("do_time_up: G:{} C:{}", guild_id, channel_id);
+	guild_settings_t settings = creator->GetGuildSettings(guild_id);
 
 	{
-		std::lock_guard<std::mutex> answerlock(state->answermutex);
-
-		if (state->round % 10 == 0) {
-			int32_t found = state->insane_num - state->insane_left;
-			SimpleEmbed(settings, ":alarm_clock:", fmt::format(_("INSANE_FOUND", settings), found), state->channel_id, _("TIME_UP", settings));
-		} else if (state->curr_answer != "") {
-			SimpleEmbed(settings, ":alarm_clock:", fmt::format(_("ANS_WAS", settings), state->curr_answer), state->channel_id, _("OUT_OF_TIME", settings), state->answer_image);
+		if (round % 10 == 0) {
+			int32_t found = insane_num - insane_left;
+			creator->SimpleEmbed(settings, ":alarm_clock:", fmt::format(_("INSANE_FOUND", settings), found), channel_id, _("TIME_UP", settings));
+		} else if (curr_answer != "") {
+			creator->SimpleEmbed(settings, ":alarm_clock:", fmt::format(_("ANS_WAS", settings), curr_answer), channel_id, _("OUT_OF_TIME", settings), answer_image);
 		}
 		/* FIX: You can only lose your streak on a non-insane round */
-		if (state->curr_answer != "" && state->round % 10 != 0 && state->streak > 1 && state->last_to_answer) {
-			SimpleEmbed(settings, ":octagonal_sign:", fmt::format(_("STREAK_SMASHED", settings), fmt::format("<@{}>", state->last_to_answer), state->streak), state->channel_id);
+		if (curr_answer != "" && round % 10 != 0 && streak > 1 && last_to_answer) {
+			creator->SimpleEmbed(settings, ":octagonal_sign:", fmt::format(_("STREAK_SMASHED", settings), fmt::format("<@{}>", last_to_answer), streak), channel_id);
 		}
 	
-		if (state->curr_answer != "") {
-			state->curr_answer = "";
-			if (state->round % 10 != 0) {
-				state->last_to_answer = 0;
-				state->streak = 1;
+		if (curr_answer != "") {
+			curr_answer = "";
+			if (round % 10 != 0) {
+				last_to_answer = 0;
+				streak = 1;
 			}
 		}
 	}
 
-	if (state->round <= state->numquestions - 2) {
-		SimpleEmbed(settings, "<a:loading:658667224067735562>", fmt::format(_("COMING_UP", settings), state->interval == TRIV_INTERVAL ? settings.question_interval : state->interval), state->channel_id, _("REST", settings));
+	if (round <= numquestions - 2) {
+		creator->SimpleEmbed(settings, "<a:loading:658667224067735562>", fmt::format(_("COMING_UP", settings), interval == TRIV_INTERVAL ? settings.question_interval : interval), channel_id, _("REST", settings));
 	}
 
-	state->gamestate = (state->round > state->numquestions ? TRIV_END : TRIV_ASK_QUESTION);
-	state->round++;
-	//state->score = 0;
-	if (log_question_index(state->guild_id, state->channel_id, state->round, state->streak, state->last_to_answer, state->gamestate, state->curr_qid)) {
-		StopGame(state, settings);
+	gamestate = (round > numquestions ? TRIV_END : TRIV_ASK_QUESTION);
+	round++;
+	//score = 0;
+	if (log_question_index(guild_id, channel_id, round, streak, last_to_answer, gamestate, curr_qid)) {
+		StopGame(settings);
 	}
 }
 
-void TriviaModule::do_answer_correct(state_t* state)
+void state_t::do_answer_correct()
 {
-	if (!state->is_valid()) {
-		return;
-	}
-	bot->core.log->debug("do_answer_correct: G:{} C:{}", state->guild_id, state->channel_id);
+	creator->GetBot()->core.log->debug("do_answer_correct: G:{} C:{}", guild_id, channel_id);
 
-	guild_settings_t settings = GetGuildSettings(state->guild_id);
+	guild_settings_t settings = creator->GetGuildSettings(guild_id);
 
 	{
-		std::lock_guard<std::mutex> answerlock(state->answermutex);
-
-		state->round++;
-		//state->score = 0;
-		state->curr_answer = "";
-		if (state->round <= state->numquestions - 2) {
-			SimpleEmbed(settings, "<a:loading:658667224067735562>", fmt::format(_("COMING_UP", settings), state->interval), state->channel_id, _("REST", settings));
+		round++;
+		//score = 0;
+		curr_answer = "";
+		if (round <= numquestions - 2) {
+			creator->SimpleEmbed(settings, "<a:loading:658667224067735562>", fmt::format(_("COMING_UP", settings), interval), channel_id, _("REST", settings));
 		}
 	}
 
-	state->gamestate = TRIV_ASK_QUESTION;
-	if (log_question_index(state->guild_id, state->channel_id, state->round, state->streak, state->last_to_answer, state->gamestate, state->curr_qid)) {
-		StopGame(state, settings);
+	gamestate = TRIV_ASK_QUESTION;
+	if (log_question_index(guild_id, channel_id, round, streak, last_to_answer, gamestate, curr_qid)) {
+		StopGame(settings);
 	}
 }
 
-void TriviaModule::do_end_game(state_t* state)
+void state_t::do_end_game()
 {
-	if (!state->is_valid()) {
-		return;
-	}
-	bot->core.log->debug("do_end_game: G:{} C:{}", state->guild_id, state->channel_id);
+	creator->GetBot()->core.log->debug("do_end_game: G:{} C:{}", guild_id, channel_id);
 
-	log_game_end(state->guild_id, state->channel_id);
+	log_game_end(guild_id, channel_id);
 
-	guild_settings_t settings = GetGuildSettings(state->guild_id);
-	bot->core.log->info("End of game on guild {}, channel {} after {} seconds", state->guild_id, state->channel_id, time(NULL) - state->start_time);
-	SimpleEmbed(settings, ":stop_button:", fmt::format(_("END1", settings), state->numquestions - 1), state->channel_id, _("END_TITLE", settings));
-	show_stats(state->guild_id, state->channel_id);
+	guild_settings_t settings = creator->GetGuildSettings(guild_id);
+	creator->GetBot()->core.log->info("End of game on guild {}, channel {} after {} seconds", guild_id, channel_id, time(NULL) - start_time);
+	creator->SimpleEmbed(settings, ":stop_button:", fmt::format(_("END1", settings), numquestions - 1), channel_id, _("END_TITLE", settings));
+	creator->show_stats(guild_id, channel_id);
 
-	state->terminating = true;
+	terminating = true;
 }
 
 void TriviaModule::show_stats(int64_t guild_id, int64_t channel_id)
@@ -752,37 +755,33 @@ void TriviaModule::show_stats(int64_t guild_id, int64_t channel_id)
 	}
 }
 
-void TriviaModule::Tick(state_t* state)
+void TriviaModule::Tick()
 {
-	if (!state->terminating) {
-		switch (state->gamestate) {
-			case TRIV_ASK_QUESTION:
-				if (state->round % 10 == 0) {
-					do_insane_round(state, false);
-				} else {
-					do_normal_round(state, false);
+	while (!terminating) {
+		std::this_thread::sleep_for(std::chrono::seconds(1));
+		try
+		{
+			std::lock_guard<std::mutex> states_lock(states_mutex);
+			std::vector<int64_t> expired;
+			time_t now = time(NULL);
+
+			for (auto & s : states) {
+				if (now >= s.second.next_tick) {
+					bot->core.log->trace("Ticking state id {} (now={}, next_tick={})", s.first, now, s.second.next_tick);
+					s.second.tick();
+					if (s.second.terminating) {
+						expired.push_back(s.first);
+					}
 				}
-			break;
-			case TRIV_FIRST_HINT:
-				do_first_hint(state);
-			break;
-			case TRIV_SECOND_HINT:
-				do_second_hint(state);
-			break;
-			case TRIV_TIME_UP:
-				do_time_up(state);
-			break;
-			case TRIV_ANSWER_CORRECT:
-				do_answer_correct(state);
-			break;
-				case TRIV_END:
-				do_end_game(state);
-			break;
-			default:
-				bot->core.log->warn("Invalid state '{}', ending round.", state->gamestate);
-				state->gamestate = TRIV_END;
-				state->terminating = true;
-			break;
+			}
+
+			for (auto e : expired) {
+				bot->core.log->debug("Terminating state id {}", e);
+				states.erase(e);
+			}
+		}
+		catch (const std::exception &e) {
+			bot->core.log->warn("Uncaught std::exception in TriviaModule::Tick(): {}", e.what());
 		}
 	}
 }
@@ -792,12 +791,12 @@ void TriviaModule::DisposeThread(std::thread* t)
 	bot->DisposeThread(t);
 }
 
-void TriviaModule::StopGame(state_t* state, const guild_settings_t &settings)
+void state_t::StopGame(const guild_settings_t &settings)
 {
-	if (state->gamestate != TRIV_END) {
-		SimpleEmbed(settings, ":octagonal_sign:", _("DASH_STOP", settings), state->channel_id, _("STOPPING", settings));
-		state->gamestate = TRIV_END;
-		state->terminating = false;
+	if (gamestate != TRIV_END) {
+		creator->SimpleEmbed(settings, ":octagonal_sign:", _("DASH_STOP", settings), channel_id, _("STOPPING", settings));
+		gamestate = TRIV_END;
+		terminating = false;
 	}
 }
 
@@ -879,8 +878,6 @@ bool TriviaModule::RealOnMessage(const modevent::message_create &message, const 
 		}
 	}
 	
-	/* Retrieve current state for channel, if there is no state object, no game is in progress */
-	state_t* state = nullptr;
 	int64_t guild_id = 0;
 	int64_t channel_id = 0;
 	aegis::channel* c = nullptr;
@@ -931,58 +928,26 @@ bool TriviaModule::RealOnMessage(const modevent::message_create &message, const 
 	}
 	
 	// Answers for active games
-	// NOTE: GetState() must be as close to the if() as possible to avoid race conditions!
-	state = GetState(channel_id);
-	if (state) {
-		/* The state_t class handles potential answers, but only when a game is running on this guild */
-		state->queue_message(clean_message, author_id, username, mentioned);
-		bot->core.log->debug("Processed potential answer message from A:{} on C:{}", author_id, channel_id);
+	{
+		std::lock_guard<std::mutex> states_lock(states_mutex);
+		state_t* state = GetState(channel_id);
+		if (state) {
+			/* The state_t class handles potential answers, but only when a game is running on this guild */
+			state->queue_message(clean_message, author_id, username, mentioned);
+			bot->core.log->debug("Processed potential answer message from A:{} on C:{}", author_id, channel_id);
+		}
 	}
 
 	return true;
 }
 
-void TriviaModule::DeleteOldStates() {
-	std::lock_guard<std::mutex> user_cache_lock(states_mutex);
-	std::vector<state_t*> removals;
-	time_t now = time(NULL);
-
-	for (auto& s : queued_for_deletion) {
-		if (now > s.second) {
-			bot->core.log->debug("Deleting state 0x{0:x}, due for deletion {1} seconds ago", (int64_t)s.first, now - s.second);
-			delete s.first;
-			removals.push_back(s.first);
-		}
-	}
-	for (auto r : removals) {
-		queued_for_deletion.erase(r);
-	}
-}
-
-
 state_t* TriviaModule::GetState(int64_t channel_id) {
-	std::lock_guard<std::mutex> user_cache_lock(states_mutex);
-	state_t* state = nullptr;
-
-	std::vector<int64_t> removals;
-	for (auto& s : states) {
-		if (s.second && s.second->terminating) {
-			removals.push_back(s.first);
-			queued_for_deletion[s.second] = time(NULL) + 120;
-		} else if (!s.second) {
-			removals.push_back(s.first);
-		}
-	}
-	for (auto r : removals) {
-		states.erase(r);
-	}
 
 	auto state_iter = states.find(channel_id);
 	if (state_iter != states.end()) {
-		state = state_iter->second;
+		return &state_iter->second;
 	}
-
-	return state;
+	return nullptr;
 }
 
 ENTRYPOINT(TriviaModule);

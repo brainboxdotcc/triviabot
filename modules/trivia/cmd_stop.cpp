@@ -36,8 +36,11 @@
 
 command_stop_t::command_stop_t(class TriviaModule* _creator, const std::string &_base_command) : command_t(_creator, _base_command) { }
 
-void command_stop_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_settings_t &settings, const std::string &username, bool is_moderator, aegis::channel* c, aegis::user* user, state_t* state)
+void command_stop_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_settings_t &settings, const std::string &username, bool is_moderator, aegis::channel* c, aegis::user* user)
 {
+	std::lock_guard<std::mutex> states_lock(creator->states_mutex);
+	state_t* state = creator->GetState(cmd.channel_id);
+
 	if (state) {
 		if (settings.only_mods_stop) {
 			if (!is_moderator) {
@@ -47,12 +50,10 @@ void command_stop_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_se
 		}
 		creator->SimpleEmbed(settings, ":octagonal_sign:", fmt::format(_("STOPOK", settings), username), cmd.channel_id);
 		{
-			std::lock_guard<std::mutex> user_cache_lock(creator->states_mutex);
 			auto i = creator->states.find(cmd.channel_id);
 			if (i != creator->states.end()) {
-				i->second->terminating = true;
-			} else {
-				creator->bot->core.log->error("Channel deleted while game stopping on this channel, cid={}", cmd.channel_id);
+				i->second.terminating = true;
+				i->second.next_tick = time(NULL);
 			}
 			state = nullptr;
 		}

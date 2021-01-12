@@ -32,10 +32,7 @@ class state_t
 	class TriviaModule* creator;
 	std::string _(const std::string &k, const class guild_settings_t& settings);
  public:
-	std::mutex queuemutex;
-	std::mutex answermutex;
-	std::deque<in_msg> messagequeue;
-	std::deque<in_msg> to_process;
+	time_t next_tick;
 	bool terminating;
 	uint64_t channel_id;
 	uint64_t guild_id;
@@ -71,14 +68,22 @@ class state_t
 	time_t next_quickfire;
 	bool hintless;
 	std::map<std::string, bool> insane;
-	std::mutex timer_mutex;
-	std::thread* timer;
 
-	state_t(class TriviaModule* _creator);
+	state_t(const state_t &) = default;
+	state_t();
+	state_t(class TriviaModule* _creator, uint32_t questions, uint32_t currstreak, int64_t lastanswered, uint32_t question_index, uint32_t _interval, int64_t channel_id, bool hintless, const std::vector<std::string> &shuffle_list, trivia_state_t startstate,  int64_t guild_id);
 	~state_t();
 	void tick();
 	void queue_message(const std::string &message, int64_t author_id, const std::string &username, bool mentions_bot = false);
 	void handle_message(const in_msg& m);
 	bool is_valid();
+        void do_insane_round(bool silent);
+        void do_normal_round(bool silent);
+        void do_first_hint();
+        void do_second_hint();
+        void do_time_up();
+        void do_answer_correct();
+        void do_end_game();
+	void StopGame(const guild_settings_t &settings);
 };
 

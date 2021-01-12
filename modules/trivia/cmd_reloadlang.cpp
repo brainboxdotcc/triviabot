@@ -36,7 +36,7 @@
 
 command_reloadlang_t::command_reloadlang_t(class TriviaModule* _creator, const std::string &_base_command) : command_t(_creator, _base_command) { }
 
-void command_reloadlang_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_settings_t &settings, const std::string &username, bool is_moderator, aegis::channel* c, aegis::user* user, state_t* state)
+void command_reloadlang_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_settings_t &settings, const std::string &username, bool is_moderator, aegis::channel* c, aegis::user* user)
 {
        db::resultset rs = db::query("SELECT * FROM trivia_access WHERE user_id = ? AND enabled = 1", {cmd.author_id});
 	if (rs.size() > 0) {

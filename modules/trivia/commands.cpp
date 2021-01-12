@@ -79,10 +79,6 @@ void TriviaModule::SetupCommands()
 void TriviaModule::handle_command(const in_cmd &cmd) {
 
 	try {
-		state_t* state = GetState(cmd.channel_id);
-
-
-	
 		if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == cmd.channel_id) {
 	
 			std::stringstream tokens(cmd.msg);
@@ -132,7 +128,7 @@ void TriviaModule::handle_command(const in_cmd &cmd) {
 				}
 				if (can_execute) {
 					bot->core.log->debug("command_t '{}' routed to handler", base_command);
-					command->second->call(cmd, tokens, settings, cmd.username, moderator, c, user, state);
+					command->second->call(cmd, tokens, settings, cmd.username, moderator, c, user);
 				} else {
 					/* Display rate limit message, but only one per rate limit period */
 					bool emit_rl_warning = false;

@@ -36,7 +36,7 @@
 
 command_vote_t::command_vote_t(class TriviaModule* _creator, const std::string &_base_command) : command_t(_creator, _base_command) { }
 
-void command_vote_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_settings_t &settings, const std::string &username, bool is_moderator, aegis::channel* c, aegis::user* user, state_t* state)
+void command_vote_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_settings_t &settings, const std::string &username, bool is_moderator, aegis::channel* c, aegis::user* user)
 {
 	std::string a = fmt::format(_("VOTEAD", settings), creator->bot->user.id.get(), settings.prefix);
 	std::string b = _("PRIVHINT", settings);

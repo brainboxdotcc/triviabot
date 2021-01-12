@@ -31,6 +31,7 @@
 #include <deque>
 #include "settings.h"
 #include "commands.h"
+#include "state.h"
 
 // Number of seconds after which a game is considered hung and its thread exits.
 // This can happen if a game gets lost in a discord gateway outage (!)
@@ -73,15 +74,13 @@ class TriviaModule : public Module
 	std::deque<in_cmd> commandqueue;
 	std::deque<in_cmd> to_process;
 	std::thread* command_processor;
+	std::thread* game_tick_thread;
 	command_list_t commands;
-
-	void DeleteOldStates();
 public:
 	time_t startup;
 	json* lang;
 	std::mutex states_mutex;
-	std::map<int64_t, class state_t*> states;
-	std::map<class state_t*, time_t> queued_for_deletion;
+	std::map<int64_t, state_t> states;
 	TriviaModule(Bot* instigator, ModuleLoader* ml);
 	Bot* GetBot();
 	virtual ~TriviaModule();
@@ -125,23 +124,23 @@ public:
 	int levenstein(std::string str1, std::string str2);
 	bool is_number(const std::string &s);
 	std::string MakeFirstHint(const std::string &s, const guild_settings_t &settings,  bool indollars = false);
-	void do_insane_round(class state_t* state, bool silent);
-	void do_normal_round(class state_t* state, bool silent);
-	void do_first_hint(class state_t* state);
-	void do_second_hint(class state_t* state);
-	void do_time_up(class state_t* state);
-	void do_answer_correct(class state_t* state);
-	void do_end_game(class state_t* state);
 	void show_stats(int64_t guild_id, int64_t channel_id);
-	void Tick(class state_t* state);
+	void Tick();
 	void DisposeThread(std::thread* t);
-	void StopGame(class state_t* state, const guild_settings_t &settings);
 	void CheckForQueuedStarts();
 	virtual bool OnMessage(const modevent::message_create &message, const std::string& clean_message, bool mentioned, const std::vector<std::string> &stringmentions);
 	bool RealOnMessage(const modevent::message_create &message, const std::string& clean_message, bool mentioned, const std::vector<std::string> &stringmentions, int64_t author_id = 0);
 	void GetHelp(const std::string &section, int64_t channelID, const std::string &botusername, int64_t botid, const std::string &author, int64_t authorid, const guild_settings_t &settings);
 	void CacheUser(int64_t user, int64_t channel_id);
 	void CheckReconnects();
+
+	/** DO NOT CALL THIS METHOD without wrapping it with the states_mutex.
+	 *
+	 * This is important for thread safety and to prevent race conditions!
+	 * Keep hold of the states_mutex until you're done with the object even if all you do is read from it!
+	 *
+	 * Returns nullptr if there is no active game on the given channel id.
+	 */
 	state_t* GetState(int64_t channel_id);
 };
 

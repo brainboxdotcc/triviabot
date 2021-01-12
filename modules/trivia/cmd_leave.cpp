@@ -36,7 +36,7 @@
 
 command_leave_t::command_leave_t(class TriviaModule* _creator, const std::string &_base_command) : command_t(_creator, _base_command) { }
 
-void command_leave_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_settings_t &settings, const std::string &username, bool is_moderator, aegis::channel* c, aegis::user* user, state_t* state)
+void command_leave_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_settings_t &settings, const std::string &username, bool is_moderator, aegis::channel* c, aegis::user* user)
 {
 	std::string teamname = get_current_team(cmd.author_id);
 	if (teamname.empty()) {
