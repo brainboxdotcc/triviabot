@@ -18,6 +18,7 @@
 
 cmake_minimum_required (VERSION 3.6)
 project(bot)
+
 aux_source_directory("src" coresrc)
 add_executable(bot ${coresrc})
 
@@ -40,6 +41,7 @@ set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -pthread -g -O2 -fPIC -rdyna
 set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O2")
 
 target_link_libraries(bot)
+
 
 set (modules_dir "modules")
 file(GLOB subdirlist ${modules_dir}/*)
