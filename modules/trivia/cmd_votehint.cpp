@@ -43,7 +43,7 @@ void command_votehint_t::call(const in_cmd &cmd, std::stringstream &tokens, guil
 	state_t* state = creator->GetState(cmd.channel_id);
 
 	if (state) {
-		if ((state->gamestate == TRIV_FIRST_HINT || state->gamestate == TRIV_SECOND_HINT || state->gamestate == TRIV_TIME_UP) && (state->round % 10) != 0 && state->curr_answer != "") {
+		if ((state->gamestate == TRIV_FIRST_HINT || state->gamestate == TRIV_SECOND_HINT || state->gamestate == TRIV_TIME_UP) && (!state->is_insane_round()) != 0 && state->question.answer != "") {
 			db::resultset rs = db::query("SELECT *,(unix_timestamp(vote_time) + 43200 - unix_timestamp()) as remaining FROM infobot_votes WHERE snowflake_id = ? AND now() < vote_time + interval 12 hour", {cmd.author_id});
 			if (rs.size() == 0) {
 				std::string a = fmt::format(_("VOTEAD", settings), creator->bot->user.id.get(), settings.prefix);
@@ -65,7 +65,7 @@ void command_votehint_t::call(const in_cmd &cmd, std::stringstream &tokens, guil
 					} else {
 						creator->SimpleEmbed(settings, ":white_check_mark:", fmt::format(_("VH2", settings), username, hours, mins), cmd.channel_id);
 					}
-					std::string personal_hint = state->curr_answer;
+					std::string personal_hint = state->question.answer;
 					personal_hint = lowercase(personal_hint);
 					personal_hint[0] = '#';
 					personal_hint[personal_hint.length() - 1] = '#';

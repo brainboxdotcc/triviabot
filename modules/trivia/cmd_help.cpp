@@ -29,7 +29,6 @@
 #include <sporks/stringops.h>
 #include <sporks/statusfield.h>
 #include <sporks/database.h>
-#include "state.h"
 #include "trivia.h"
 #include "webrequest.h"
 #include "commands.h"

@@ -29,7 +29,6 @@
 #include <sporks/database.h>
 #include "httplib.h"
 #include "trivia.h"
-#include "state.h"
 #include "wlower.h"
 
 asio::io_context * _io_context = nullptr;
@@ -42,6 +41,18 @@ std::thread* ft = nullptr;
 
 std::string web_request(const std::string &_host, const std::string &_path, const std::string &_body = "");
 std::string fetch_page(const std::string &_endpoint, const std::string &body = "");
+
+
+question_t::question_t(int64_t _id, const std::string &_question, const std::string &_answer, const std::string &_hint1, const std::string &_hint2, const std::string &_catname, time_t _lastasked, int32_t _timesasked,
+	const std::string &_lastcorrect, time_t _record_time, const std::string &_shuffle1, const std::string &_shuffle2, const std::string &_question_image, const std::string &_answer_image) :
+	id(_id), question(_question), answer(_answer), customhint1(_hint1), customhint2(_hint2), catname(_catname), lastasked(_lastasked), timesasked(_timesasked), lastcorrect(_lastcorrect), recordtime(_record_time),
+	shuffle1(_shuffle1), shuffle2(_shuffle2), question_image(_question_image), answer_image(_answer_image)
+{
+}
+
+question_t::question_t() : id(0), lastasked(0), timesasked(0), recordtime(0)
+{
+}
 
 /* Represents a fire-and-forget REST request. A fire-and-forget request can be executed in the future
  * and expects no result. It goes into a queue and will be executed in at least 100ms time. They can be
@@ -225,7 +236,7 @@ void cache_user(const aegis::user *_user, const aegis::guild *_guild, const aegi
 }
 
 /* Fetch a question by ID from the database */
-std::vector<std::string> fetch_question(int64_t id, int64_t guild_id, const guild_settings_t &settings)
+question_t question_t::fetch(int64_t id, int64_t guild_id, const guild_settings_t &settings)
 {
 	/* Requires full unicode support for shuffled hints (currently only API-side). Can't move this to a direct query yet */
 	//return to_list(fetch_page(fmt::format("?id={}&guild_id={}", id, guild_id)));
@@ -240,24 +251,24 @@ std::vector<std::string> fetch_question(int64_t id, int64_t guild_id, const guil
 	}
 	if (question.size() > 0) {
 		db::query("UPDATE counters SET asked = asked + 1", {});
-		return {
-			question[0]["id"],
+		return question_t(
+			from_string<int64_t>(question[0]["id"], std::dec),
 			homoglyph(question[0]["question"]),
 			question[0]["answer"],
 			question[0]["hint1"],
 			question[0]["hint2"],
 			question[0]["catname"],
-			question[0]["lastasked"],
-			question[0]["timesasked"],
+			from_string<time_t>(question[0]["lastasked"], std::dec),
+			from_string<int32_t>(question[0]["timesasked"], std::dec),
 			question[0]["lastcorrect"],
-			question[0]["record_time"],
+			from_string<time_t>(question[0]["record_time"], std::dec),
 			utf8shuffle(question[0]["answer"]),
 			utf8shuffle(question[0]["answer"]),
 			question[0]["question_img_url"],
 			question[0]["answer_img_url"]
-		};
+		);
 	}
-	return {};
+	return question_t();
 }
 
 /* Get a list of command names entirely handled via REST */
@@ -373,7 +384,7 @@ void log_game_end(int64_t guild_id, int64_t channel_id)
 }
 
 /* Update current question of a game, used for resuming games on crash or restart, plus the dashboard active games list */
-bool log_question_index(int64_t guild_id, int64_t channel_id, int32_t index, uint32_t streak, int64_t lastanswered, trivia_state_t state, int32_t qid)
+bool log_question_index(int64_t guild_id, int64_t channel_id, int32_t index, uint32_t streak, int64_t lastanswered, uint32_t state, int32_t qid)
 {
 	char hostname[1024];
 	hostname[1023] = '\0';

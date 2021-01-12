@@ -8,14 +8,13 @@
 
 enum trivia_state_t
 {
-        TRIV_ASK_QUESTION = 1,
-        TRIV_FIRST_HINT = 2,
-        TRIV_SECOND_HINT = 3,
-        TRIV_TIME_UP = 4,
-        TRIV_ANSWER_CORRECT = 5,
-        TRIV_END = 6
+	TRIV_ASK_QUESTION = 1,
+	TRIV_FIRST_HINT = 2,
+	TRIV_SECOND_HINT = 3,
+	TRIV_TIME_UP = 4,
+	TRIV_ANSWER_CORRECT = 5,
+	TRIV_END = 6
 };
-
 
 class in_msg
 {
@@ -25,6 +24,30 @@ class in_msg
 	int64_t author_id;
 	bool mentions_bot;
 	in_msg(const std::string &m, int64_t author, bool mention, const std::string &username);
+};
+
+struct question_t
+{
+	int64_t id;
+	std::string question;
+	std::string answer;
+	std::string customhint1;
+	std::string customhint2;
+	std::string catname;
+	time_t lastasked;
+	int32_t timesasked;
+	std::string lastcorrect;
+	time_t recordtime;
+	std::string shuffle1;
+	std::string shuffle2;
+	std::string question_image;
+	std::string answer_image;
+
+	question_t();
+	question_t(int64_t _id, const std::string &_question, const std::string &_answer, const std::string &_hint1, const std::string &_hint2, const std::string &_catname, time_t _lastasked, int32_t _timesasked,
+		const std::string &_lastcorrect, time_t _record_time, const std::string &_shuffle1, const std::string &_shuffle2, const std::string &_question_image, const std::string &_answer_image);
+
+	static question_t fetch(int64_t id, int64_t guild_id, const class guild_settings_t &settings);
 };
 
 class state_t
@@ -42,29 +65,15 @@ class state_t
 	time_t start_time;
 	std::vector<std::string> shuffle_list;
 	trivia_state_t gamestate;
-	int64_t curr_qid;
-	time_t recordtime;
-	std::string curr_question;
+	question_t question;
 	std::string original_answer;
-	std::string question_image;
-	std::string answer_image;
-	std::string curr_answer;
-	std::string curr_customhint1;
-	std::string curr_customhint2;
-	std::string curr_category;
-	std::string shuffle1;
-	std::string shuffle2;
-	time_t curr_lastasked;
-	time_t curr_recordtime;
-	std::string curr_lastcorrect;
-	int64_t last_to_answer;
+	uint64_t last_to_answer;
 	uint32_t streak;
 	time_t asktime;
 	bool found;
 	time_t interval;
 	uint32_t insane_num;
 	uint32_t insane_left;
-	uint32_t curr_timesasked;
 	time_t next_quickfire;
 	bool hintless;
 	std::map<std::string, bool> insane;
@@ -77,13 +86,14 @@ class state_t
 	void queue_message(const std::string &message, int64_t author_id, const std::string &username, bool mentions_bot = false);
 	void handle_message(const in_msg& m);
 	bool is_valid();
-        void do_insane_round(bool silent);
-        void do_normal_round(bool silent);
-        void do_first_hint();
-        void do_second_hint();
-        void do_time_up();
-        void do_answer_correct();
-        void do_end_game();
+	void do_insane_round(bool silent);
+	void do_normal_round(bool silent);
+	void do_first_hint();
+	void do_second_hint();
+	void do_time_up();
+	void do_answer_correct();
+	void do_end_game();
 	void StopGame(const guild_settings_t &settings);
+	bool is_insane_round();
 };
 
