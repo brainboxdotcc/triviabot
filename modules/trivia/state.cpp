@@ -108,7 +108,7 @@ void state_t::handle_message(const in_msg& m)
 
 			/* Insane round */
 			bool done = false;
-			auto i = this->insane.find(utf8lower(m.msg, settings.language == "es"));
+			auto i = this->insane.find(utf8lower(removepunct(m.msg), settings.language == "es"));
 			if (i != this->insane.end()) {
 				this->insane.erase(i);
 
@@ -136,7 +136,9 @@ void state_t::handle_message(const in_msg& m)
 			}
 		} else {
 			/* Normal round */
-			std::string trivia_message = m.msg;
+			std::string trivia_message = removepunct(m.msg);
+			std::string answer = removepunct(question.answer);
+
 			int x = from_string<int>(creator->conv_num(m.msg, settings), std::dec);
 			if (x > 0) {
 				trivia_message = creator->conv_num(m.msg, settings);
@@ -145,7 +147,7 @@ void state_t::handle_message(const in_msg& m)
 			bool needs_spanish_hack = (settings.language == "es");
 
 			/* Answer on channel is an exact match for the current answer and/or it is numeric, OR, it's non-numeric and has a levenstein distance near enough to the current answer (account for misspellings) */
-			if (!question.answer.empty() && ((trivia_message.length() >= question.answer.length() && utf8lower(question.answer, needs_spanish_hack) == utf8lower(trivia_message, needs_spanish_hack)) || (!PCRE("^\\$(\\d+)$").Match(question.answer) && !PCRE("^(\\d+)$").Match(question.answer) && (question.answer.length() > 5 && (utf8lower(question.answer, needs_spanish_hack) == utf8lower(trivia_message, needs_spanish_hack) || creator->levenstein(trivia_message, question.answer) < 2))))) {
+			if (!answer.empty() && ((trivia_message.length() >= answer.length() && utf8lower(answer, needs_spanish_hack) == utf8lower(trivia_message, needs_spanish_hack)) || (!PCRE("^\\$(\\d+)$").Match(answer) && !PCRE("^(\\d+)$").Match(answer) && (answer.length() > 5 && (utf8lower(answer, needs_spanish_hack) == utf8lower(trivia_message, needs_spanish_hack) || creator->levenstein(trivia_message, answer) < 2))))) {
 
 				question.answer = "";
 
@@ -323,7 +325,7 @@ void state_t::do_insane_round(bool silent)
 			question.question = trim(*n);
 		} else {
 			if (*n != "***END***") {
-				insane[utf8lower(trim(*n), settings.language == "es")] = true;
+				insane[utf8lower(removepunct(*n), settings.language == "es")] = true;
 			}
 		}
 	}

@@ -23,7 +23,17 @@
 #pragma once
 #include <string>
 
+/* Make a utf8 string lower case, with a special adjustment for spanish accented vowels */
 std::string utf8lower(const std::string &input, bool spanish_hack);
+
+/* Return the number of vowels and words in a string */
 std::pair<int, int> countvowel(const std::string &input);
+
+/* Shuffle a utf8 string */
 std::string utf8shuffle(const std::string &input);
+
+/* Replace letters in a string with homoglyphs */
 std::string homoglyph(const std::string &input);
+
+/* Remove punctuation and spaces from a string */
+std::string removepunct(const std::string &input);

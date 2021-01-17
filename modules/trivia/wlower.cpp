@@ -150,3 +150,16 @@ std::string homoglyph(const std::string &input)
 	return converter.to_bytes(o);
 }
 
+std::string removepunct(const std::string &input)
+{
+	std::setlocale(LC_CTYPE, "en_US.UTF-8"); // the locale will be the UTF-8 enabled English
+	std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+	std::wstring str = converter.from_bytes(input.c_str());
+	std::wstring out;
+	for (std::wstring::const_iterator c = str.begin(); c != str.end(); ++c) {
+		if (!(*c == L',' || *c == L'.' || *c == L' ' || *c == L':' || *c == L';' || *c == L'!' || *c == L'?' || *c == L'(' || *c == L')' || *c == L'-' || *c == L'"' || *c == L'\'')) {
+			out += *c;
+		}
+	}
+	return converter.to_bytes(out);
+}
