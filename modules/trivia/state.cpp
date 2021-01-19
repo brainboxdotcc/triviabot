@@ -108,7 +108,8 @@ void state_t::handle_message(const in_msg& m)
 
 			/* Insane round */
 			bool done = false;
-			auto i = this->insane.find(utf8lower(removepunct(m.msg), settings.language == "es"));
+			std::string answered = utf8lower(removepunct(m.msg), settings.language == "es");
+			auto i = this->insane.find(answered);
 			if (i != this->insane.end()) {
 				this->insane.erase(i);
 
@@ -325,7 +326,8 @@ void state_t::do_insane_round(bool silent)
 			question.question = trim(*n);
 		} else {
 			if (*n != "***END***") {
-				insane[utf8lower(removepunct(*n), settings.language == "es")] = true;
+				std::string a = utf8lower(removepunct(*n), settings.language == "es");
+				insane[a] = true;
 			}
 		}
 	}
