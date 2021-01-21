@@ -24,6 +24,16 @@
 #include <string>
 #include <sstream>
 #include <queue>
+#include <cstdio>
+#include <iostream>
+#include <memory>
+#include <stdexcept>
+#include <array>
+#include <locale>
+#include <iostream>
+#include <algorithm>
+#include <stdio.h>
+#include <stdlib.h>
 #include "webrequest.h"
 #include <sporks/stringops.h>
 #include <sporks/database.h>
@@ -320,10 +330,31 @@ void send_hint(int64_t snowflake_id, const std::string &hint, uint32_t remaining
 	later(fmt::format("?opt=customhint&user_id={}&hint={}&remaining={}", snowflake_id, url_encode(hint), remaining), "");
 }
 
-/* Farm out a custom command to the API to be handled completely via a REST call. Some things are better done this way as the code is cleaner and more stable, e.g. the !rank/!globalrank command */
+std::string runcli(const std::string &command, uint64_t guild_id, uint64_t user_id, uint64_t channel_id, const std::string &parameters)
+{
+	std::array<char, 128> buffer;
+	std::string result;
+	std::string safe_parameters = ReplaceString(parameters, "\\", "\\\\");
+	safe_parameters = ReplaceString(safe_parameters, "\"", "\\\"");
+	std::string home(getenv("HOME"));
+	std::string safe_command(fmt::format("/usr/bin/php \"{}/www/cli-run.php\" \"{}\" {} {} {} \"{}\"", home, command, guild_id, user_id, channel_id, safe_parameters));
+	std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(safe_command.c_str(), "r"), pclose);
+	if (!pipe) {
+		throw std::runtime_error("popen() failed!");
+	}
+	while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
+		result += buffer.data();
+	}
+	return result;
+}
+
+/* Farm out a custom command to the API to be handled completely via a PHP script. Some things are better done this way as the code is cleaner and more stable, e.g. the !rank/!globalrank command
+ * Note: These are now directly executed via commandline NOT via a REST reqeust, bypassing apache as this is a ton faster.
+ */
 std::string custom_command(const std::string &command, const std::string &parameters, int64_t user_id, int64_t channel_id, int64_t guild_id)
 {
-	return fetch_page(fmt::format("?opt=command&user_id={}&channel_id={}&command={}&guild_id={}&parameters={}", user_id, channel_id, guild_id, url_encode(command), url_encode(parameters)));
+	//return fetch_page(fmt::format("?opt=command&user_id={}&channel_id={}&command={}&guild_id={}&parameters={}", user_id, channel_id, guild_id, url_encode(command), url_encode(parameters)));
+	return runcli(command, guild_id, user_id, channel_id, parameters);
 }
 
 /* Update the score only, for a user during insane round */

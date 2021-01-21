@@ -4272,7 +4272,7 @@
         "tr": "[TriviaBot küresel liderlik tablolarına erişmek için burayı tıklayın](https:\/\/triviabot.co.uk\/leaderboard\/)",
         "es": "[Haga clic aquí para acceder a las tablas de clasificación globales de TriviaBot](https:\/\/triviabot.co.uk\/leaderboard\/)",
         "de": "[Klicken Sie hier, um auf die globalen TriviaBot-Bestenlisten zuzugreifen] (https:\/\/triviabot.co.uk\/leaderboard\/)",
-        "hi": "[TriviaBot वैश्विक लीडरबोर्ड का उपयोग करने के लिए यहां क्लिक करें] (https:/\/triviabot.co.uk\/leaderboard\/)",
+        "hi": "[TriviaBot वैश्विक लीडरबोर्ड का उपयोग करने के लिए यहां क्लिक करें] (https:\/\/triviabot.co.uk\/leaderboard\/)",
         "sv": "[Klicka här för att komma åt TriviaBots globala topplistor](https:\/\/triviabot.co.uk\/leaderboard\/)",
         "ru": "[Щелкните здесь, чтобы получить доступ к глобальной таблице лидеров TriviaBot](https:\/\/triviabot.co.uk\/leaderboard\/)",
         "it": "[Fare clic qui per accedere alle classifiche globali di TriviaBot](https:\/\/triviabot.co.uk\/leaderboard\/)",
@@ -4282,5 +4282,23 @@
         "bg": "[Щракнете тук, за да получите достъп до глобалните класации на TriviaBot](https:\/\/triviabot.co.uk\/leaderboard\/)",
         "ar": "[انقر هنا للوصول إلى لوحات الصدارة العالمية لـ TriviaBot](https:\/\/triviabot.co.uk\/leaderboard\/)",
         "zh": "[单击此处访问TriviaBot全球排行榜](https:\/\/triviabot.co.uk\/leaderboard\/)"
+    },
+    "PINGKEY": {
+        "en": ":green_circle: Up :red_circle: Down <:wrench:546395191892901909> Maintenance",
+        "fr": ":green_circle: Up :red_circle: Down <:wrench:546395191892901909> Maintenance",
+        "pt": ":green_circle: Up :red_circle: Down <:wrench:546395191892901909> Manutenção",
+        "tr": ":green_circle: Yukarı :red_circle: Aşağı <:wrench:546395191892901909> Bakım",
+        "es": ":green_circle: Up :red_circle: Abajo <:wrench:546395191892901909> Mantenimiento",
+        "de": ":green_circle: Up :red_circle: Down <:wrench:546395191892901909> Wartung",
+        "hi": ":green_circle: ऊपर :red_circle: नीचे <:wrench:546395191892901909> रखरखाव",
+        "sv": ":green_circle: Upp :red_circle: Down <:wrench:546395191892901909> Underhåll",
+        "ru": ":green_circle: вверх :red_circle: вниз <:wrench:546395191892901909> Техническое обслуживание",
+        "it": ":green_circle: Up :red_circle: Down <:wrench:546395191892901909> Manutenzione",
+        "pl": ":green_circle: W górę :red_circle: W dół <:wrench:546395191892901909> Konserwacja",
+        "ko": ":green_circle: Up :red_circle: Down <:wrench:546395191892901909> 유지 관리",
+        "ja": ":green_circle: 上 :red_circle: 下 <:wrench:546395191892901909> メンテナンス",
+        "bg": ":green_circle: Нагоре: red_circle: Надолу <:wrench:546395191892901909> Поддръжка",
+        "ar": ":green_circle: Up: red_circle: Down <:wrench:546395191892901909> الصيانة",
+        "zh": ":green_circle: 向上 :red_circle: 向下 <:wrench:546395191892901909> 维护"
     }
 }
