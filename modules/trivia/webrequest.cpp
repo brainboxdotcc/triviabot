@@ -249,9 +249,6 @@ void cache_user(const aegis::user *_user, const aegis::guild *_guild, const aegi
 /* Fetch a question by ID from the database */
 question_t question_t::fetch(int64_t id, int64_t guild_id, const guild_settings_t &settings)
 {
-	/* Requires full unicode support for shuffled hints (currently only API-side). Can't move this to a direct query yet */
-	//return to_list(fetch_page(fmt::format("?id={}&guild_id={}", id, guild_id)));
-	//
 	// Replaced with direct db query for perforamance increase - 29Dec20
 	db::query("INSERT INTO stats (id, lastasked, timesasked, lastcorrect, record_time) VALUES('?',now(),1,NULL,60000) ON DUPLICATE KEY UPDATE lastasked = now(), timesasked = timesasked + 1 ", {id});
 	db::resultset question;
@@ -308,7 +305,6 @@ std::vector<std::string> EnumCommandsDir()
 /* Get a list of command names entirely handled via REST */
 std::vector<std::string> get_api_command_names()
 {
-	//return to_list(fetch_page("?opt=listcommands"));
 	return EnumCommandsDir();
 }
 
@@ -347,8 +343,6 @@ std::vector<std::string> fetch_insane_round(int64_t &question_id, int64_t guild_
 	return list;
 }
 
-/* Return a list of number to text strings, e.g. "2 = number of teeth goofy has". Returns all language variants. */
-
 /* Send a DM hint to a user. Because of promise crashing issues in aegis, we don't do this in-bot and we farm it out to API */
 void send_hint(int64_t snowflake_id, const std::string &hint, uint32_t remaining)
 {
@@ -378,7 +372,6 @@ std::string runcli(const std::string &command, uint64_t guild_id, uint64_t user_
  */
 std::string custom_command(const std::string &command, const std::string &parameters, int64_t user_id, int64_t channel_id, int64_t guild_id)
 {
-	//return fetch_page(fmt::format("?opt=command&user_id={}&channel_id={}&command={}&guild_id={}&parameters={}", user_id, channel_id, guild_id, url_encode(command), url_encode(parameters)));
 	return runcli(command, guild_id, user_id, channel_id, parameters);
 }
 
@@ -394,7 +387,7 @@ void update_score_only(int64_t snowflake_id, int64_t guild_id, int score, int64_
 
 void check_achievement(const std::string &when, uint64_t user_id, uint64_t guild_id)
 {
-	fetch_page(fmt::format("?opt=ach&user_id={}&guild_id={}&when={}", user_id, guild_id, url_encode(when)));
+	later(fmt::format("?opt=ach&user_id={}&guild_id={}&when={}", user_id, guild_id, url_encode(when)), "");
 }
 
 /* Log the start of a game to the database via the API, used for resuming of games on crash or restart, plus the dashboard active games list */
@@ -403,7 +396,6 @@ void log_game_start(int64_t guild_id, int64_t channel_id, int64_t number_questio
 	char hostname[1024];
 	hostname[1023] = '\0';
 	gethostname(hostname, 1023);
-	//fetch_page(fmt::format("?opt=gamestart&guild_id={}&channel_id={}&questions={}&quickfire={}&user_id={}&channel_name={}&hostname={}&hintless={}", guild_id, channel_id, number_questions, quickfire, user_id, url_encode(channel_name), url_encode(hostname), hintless ? 1 : 0), json(questions).dump());
 
 	check_achievement("start", user_id, guild_id);
 	uint32_t cluster_id = bot->GetClusterID();
@@ -570,8 +562,14 @@ bool join_team(int64_t snowflake_id, const std::string &team, int64_t channel_id
 /* Update the streak for a player on a guild */
 void change_streak(int64_t snowflake_id, int64_t guild_id, int score)
 {
-	// achievement check is here, can't make this direct db query yet
-	later(fmt::format("?opt=changestreak&nick={}&score={}&guild_id={}", snowflake_id, score, guild_id), "");
+	// first, get their current best...
+	db::resultset streak = db::query("SELECT streak FROM streaks WHERE nick='?' AND guild_id = '?'",{snowflake_id, guild_id});
+	uint64_t current = (streak.size() ? from_string<uint64_t>(streak[0]["streak"], std::dec) : 0);
+	if (current) {
+		// they beat their personal best, update.
+		db::query("INSERT INTO streaks (nick, guild_id, streak) VALUES('?','?','?') ON DUPLICATE KEY UPDATE streaks SET streak='?' WHERE nick='?' AND guild_id = '?'", {snowflake_id, guild_id, score, score, snowflake_id, guild_id});
+		check_achievement("streak", snowflake_id, guild_id);
+	}
 }
 
 /* Get the current streak details for a player on a guild, and the best streak for the guild at present */

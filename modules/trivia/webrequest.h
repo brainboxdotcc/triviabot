@@ -62,6 +62,8 @@ void cache_user(const class aegis::user *_user, const class aegis::guild *_guild
 bool log_question_index(int64_t guild_id, int64_t channel_id, int32_t index, uint32_t streak, int64_t lastanswered, uint32_t state, int32_t qid);
 void log_game_start(int64_t guild_id, int64_t channel_id, int64_t number_questions, bool quickfire, const std::string &channel_name, int64_t user_id, const std::vector<std::string> &questions, bool hintless);
 void log_game_end(int64_t guild_id, int64_t channel_id);
+void change_streak(int64_t snowflake_id, int64_t guild_id, int score);
+std::vector<std::string> get_api_command_names();
 
 // These execute external PHP scripts, through a special handler. They bypass REST.
 std::string custom_command(const std::string &command, const std::string &parameters, int64_t user_id, int64_t channel_id, int64_t guild_id);
@@ -70,10 +72,8 @@ std::string custom_command(const std::string &command, const std::string &parame
 // currently be rewritten as direct queries, as they use external apis like neutrino, or are hooked into the
 // achievement system, or are REST by design such as those that use graphics APIs.
 bool join_team(int64_t snowflake_id, const std::string &team, int64_t channel_id);
-void change_streak(int64_t snowflake_id, int64_t guild_id, int score);
 std::string create_new_team(const std::string &teamname);
 void send_hint(int64_t snowflake_id, const std::string &hint, uint32_t remaining);
 json get_active(const std::string &hostname, int64_t cluster_id);
-std::vector<std::string> get_api_command_names();
 void check_achievement(const std::string &when, uint64_t user_id, uint64_t guild_id);
 
