@@ -37,6 +37,7 @@
 #include "webrequest.h"
 #include <sporks/stringops.h>
 #include <sporks/database.h>
+#include <dirent.h>
 #include "httplib.h"
 #include "trivia.h"
 #include "wlower.h"
@@ -281,10 +282,34 @@ question_t question_t::fetch(int64_t id, int64_t guild_id, const guild_settings_
 	return question_t();
 }
 
+
+std::vector<std::string> EnumCommandsDir()
+{
+	std::string path(getenv("HOME"));
+	path += "/www/api/commands";
+	std::vector<std::string> list;
+
+	DIR *dir;
+	struct dirent *ent;
+	if ((dir = opendir (path.c_str())) != NULL) {
+		while ((ent = readdir (dir)) != NULL) {
+			std::string f = ent->d_name;
+			f = ReplaceString(f, ".php", "");
+			if (f != "." && f != "..") {
+				list.push_back(f);
+			}
+		}
+		closedir(dir);
+	}
+	return list;
+}
+
+
 /* Get a list of command names entirely handled via REST */
 std::vector<std::string> get_api_command_names()
 {
-	return to_list(fetch_page("?opt=listcommands"));
+	//return to_list(fetch_page("?opt=listcommands"));
+	return EnumCommandsDir();
 }
 
 /* Fetch a shuffled list of question IDs from the API, which is dependant upon some statistics for the guild and the category selected. */
