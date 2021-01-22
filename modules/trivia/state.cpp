@@ -148,7 +148,16 @@ void state_t::handle_message(const in_msg& m)
 			bool needs_spanish_hack = (settings.language == "es");
 
 			/* Answer on channel is an exact match for the current answer and/or it is numeric, OR, it's non-numeric and has a levenstein distance near enough to the current answer (account for misspellings) */
-			if (!answer.empty() && ((trivia_message.length() >= answer.length() && utf8lower(answer, needs_spanish_hack) == utf8lower(trivia_message, needs_spanish_hack)) || (!PCRE("^\\$(\\d+)$").Match(answer) && !PCRE("^(\\d+)$").Match(answer) && (answer.length() > 5 && (utf8lower(answer, needs_spanish_hack) == utf8lower(trivia_message, needs_spanish_hack) || creator->levenstein(trivia_message, answer) < 2))))) {
+			if (!answer.empty() && 
+					(
+					 /* Answer is a direct match */
+					 (trivia_message.length() >= answer.length() && utf8lower(answer, needs_spanish_hack) == utf8lower(trivia_message, needs_spanish_hack))
+					 ||
+					 
+					 (!PCRE("^\\$(\\d+)$").Match(answer) && !PCRE("^(\\d+)$").Match(answer) && (answer.length() > 5 &&
+					(utf8lower(answer, needs_spanish_hack) == utf8lower(trivia_message, needs_spanish_hack) ||
+					(trivia_message.length() >= answer.length() && creator->levenstein(trivia_message, answer) < 2))))
+					 )) {
 
 				question.answer = "";
 
