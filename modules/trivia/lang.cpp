@@ -33,13 +33,23 @@
 #include "trivia.h"
 #include "webrequest.h"
 #include "commands.h"
+#include <sys/stat.h>
+#include <sys/types.h>
 
-command_reloadlang_t::command_reloadlang_t(class TriviaModule* _creator, const std::string &_base_command) : command_t(_creator, _base_command) { }
-
-void command_reloadlang_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_settings_t &settings, const std::string &username, bool is_moderator, aegis::channel* c, aegis::user* user)
+time_t get_mtime(const char *path)
 {
-       db::resultset rs = db::query("SELECT * FROM trivia_access WHERE user_id = ? AND enabled = 1", {cmd.author_id});
-	if (rs.size() > 0) {
+    struct stat statbuf;
+    if (stat(path, &statbuf) == -1) {
+	return 0;
+    }
+    return statbuf.st_mtime;
+}
+
+void TriviaModule::CheckLangReload()
+{
+	if (get_mtime("../lang.json") > lastlang) {
+		std::lock_guard<std::mutex> cmd_list_lock(lang_mutex);
+		lastlang = get_mtime("../lang.json");
 		std::ifstream langfile("../lang.json");
 		json* newlang = new json();
 		json* oldlang = creator->lang;
@@ -47,13 +57,7 @@ void command_reloadlang_t::call(const in_cmd &cmd, std::stringstream &tokens, gu
 		langfile >> *newlang;
 
 		creator->lang = newlang;
-		sleep(1);
 		delete oldlang;
-
-		creator->bot->core.log->info("Language strings count: {}", creator->lang->size());
-		creator->SimpleEmbed(settings, ":flags:", fmt::format("Reloaded lang.json, **{}** containing language strings.", creator->lang->size()), cmd.channel_id);
-	} else {
-		creator->SimpleEmbed(settings, ":warning:", _("STAFF_ONLY", settings), cmd.channel_id);
 	}
 }
 

@@ -51,7 +51,7 @@ TriviaModule::TriviaModule(Bot* instigator, ModuleLoader* ml) : Module(instigato
 	number_tidy_negative = new PCRE("^\\-[\\d\\,]+$");
 	prefix_match = new PCRE("prefix");
 
-	startup = time(NULL);
+	startup = lastlang = time(NULL);
 
 	/* Check for and store API key */
 	if (Bot::GetConfig("apikey") == "") {
@@ -71,12 +71,14 @@ TriviaModule::TriviaModule(Bot* instigator, ModuleLoader* ml) : Module(instigato
 		api_commands = get_api_command_names();
 		bot->core.log->info("Initial API command count: {}", api_commands.size());
 	}
-
-	/* Read language strings */
-	std::ifstream langfile("../lang.json");
-	lang = new json();
-	langfile >> *lang;
-	bot->core.log->info("Language strings count: {}", lang->size());
+	{
+		std::lock_guard<std::mutex> cmd_list_lock(lang_mutex);
+		/* Read language strings */
+		std::ifstream langfile("../lang.json");
+		lang = new json();
+		langfile >> *lang;
+		bot->core.log->info("Language strings count: {}", lang->size());
+	}
 
 	/* Setup built in commands */
 	SetupCommands();
@@ -168,12 +170,14 @@ bool TriviaModule::OnPresenceUpdate()
 		std::lock_guard<std::mutex> cmd_list_lock(cmds_mutex);
 		api_commands = get_api_command_names();
 	}
+	CheckLangReload();
 	return true;
 }
 
 std::string TriviaModule::_(const std::string &k, const guild_settings_t& settings)
 {
 	/* Find language string 'k' in lang.json for the language specified in 'settings' */
+	std::lock_guard<std::mutex> cmd_list_lock(lang_mutex);
 	auto o = lang->find(k);
 	if (o != lang->end()) {
 		auto v = o->find(settings.language);
@@ -347,7 +351,7 @@ guild_settings_t TriviaModule::GetGuildSettings(int64_t guild_id)
 std::string TriviaModule::GetVersion()
 {
 	/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-	std::string version = "$ModVer 69$";
+	std::string version = "$ModVer 70$";
 	return "3.0." + version.substr(8,version.length() - 9);
 }
 

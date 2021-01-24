@@ -71,8 +71,7 @@ void TriviaModule::SetupCommands()
 		{"join", new command_join_t(this, "join")},
 		{"create", new command_create_t(this, "create")},
 		{"leave", new command_leave_t(this, "leave")},
-		{"help", new command_help_t(this, "help")},
-		{"reloadlang", new command_reloadlang_t(this, "reloadlang")}
+		{"help", new command_help_t(this, "help")}
 	};
 }
 

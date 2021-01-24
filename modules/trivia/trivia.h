@@ -75,7 +75,10 @@ class TriviaModule : public Module
 	std::deque<in_cmd> to_process;
 	std::thread* command_processor;
 	std::thread* game_tick_thread;
+	std::mutex lang_mutex;
+	time_t lastlang;
 	command_list_t commands;
+	void CheckLangReload();
 public:
 	time_t startup;
 	json* lang;
