@@ -1,4 +1,4 @@
-# TriviaBot, the discord bot with over 90,000 questions!
+# TriviaBot, the discord bot with over 100,000 questions!
 This project contains the source code for the Brainbox.cc TriviaBot. Written in C++17 using Aegis.cpp and ASIO.
 
 It was originally FruitLoopy Trivia on irc.chatspike.net and i've been running this bot in some form since 2004.
