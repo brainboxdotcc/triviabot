@@ -38,11 +38,11 @@
 
 time_t get_mtime(const char *path)
 {
-    struct stat statbuf;
-    if (stat(path, &statbuf) == -1) {
-	return 0;
-    }
-    return statbuf.st_mtime;
+	struct stat statbuf;
+	if (stat(path, &statbuf) == -1) {
+		return 0;
+	}
+	return statbuf.st_mtime;
 }
 
 void TriviaModule::CheckLangReload()
@@ -52,11 +52,11 @@ void TriviaModule::CheckLangReload()
 		lastlang = get_mtime("../lang.json");
 		std::ifstream langfile("../lang.json");
 		json* newlang = new json();
-		json* oldlang = creator->lang;
+		json* oldlang = this->lang;
 
 		langfile >> *newlang;
 
-		creator->lang = newlang;
+		this->lang = newlang;
 		delete oldlang;
 	}
 }
