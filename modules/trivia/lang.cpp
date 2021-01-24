@@ -21,18 +21,12 @@
  ************************************************************************************/
 
 #include <sporks/modules.h>
-#include <sporks/regex.h>
 #include <string>
 #include <cstdint>
 #include <fstream>
 #include <streambuf>
 #include <sporks/stringops.h>
-#include <sporks/statusfield.h>
-#include <sporks/database.h>
-#include "state.h"
 #include "trivia.h"
-#include "webrequest.h"
-#include "commands.h"
 #include <sys/stat.h>
 #include <sys/types.h>
 
@@ -45,6 +39,8 @@ time_t get_mtime(const char *path)
 	return statbuf.st_mtime;
 }
 
+// Check for updated lang.json and attempt to reload it. if reloading fails, dont try again until its 
+// modified a second time. Log errors to log file.
 void TriviaModule::CheckLangReload()
 {
 	if (get_mtime("../lang.json") > lastlang) {
@@ -52,12 +48,21 @@ void TriviaModule::CheckLangReload()
 		lastlang = get_mtime("../lang.json");
 		std::ifstream langfile("../lang.json");
 		json* newlang = new json();
-		json* oldlang = this->lang;
+		try {
+			json* oldlang = this->lang;
+	
+			// Parse updated contents
+			langfile >> *newlang;
+	
+			this->lang = newlang;
+			delete oldlang;
+		}
+		catch (const std::exception &e) {
+			bot->core.log->error("Error in lang.json: ", e.what());
+			// Delete attempted new language file to prevent memory leaks
+			delete newlang;
+		}
 
-		langfile >> *newlang;
-
-		this->lang = newlang;
-		delete oldlang;
 	}
 }
 
