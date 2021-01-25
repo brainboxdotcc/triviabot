@@ -269,6 +269,13 @@ bool TriviaModule::OnChannelDelete(const modevent::channel_delete &cd)
 
 bool TriviaModule::OnGuildDelete(const modevent::guild_delete &gd)
 {
+	/* Unavailable guilds means an outage. We don't remove them if it's just an outage */
+	if (!gd.unavailable) {
+		db::query("UPDATE trivia_guild_cache SET kicked = 1 WHERE snowflake_id = ?", {gd.guild_id.get()});
+		bot->core.log->info("Kicked from guild id {}", gd.guild_id.get());
+	} else {
+		bot->core.log->info("Outage on guild id {}", gd.guild_id.get());
+	}
 	return true;
 }
 
@@ -351,7 +358,7 @@ guild_settings_t TriviaModule::GetGuildSettings(int64_t guild_id)
 std::string TriviaModule::GetVersion()
 {
 	/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-	std::string version = "$ModVer 70$";
+	std::string version = "$ModVer 71$";
 	return "3.0." + version.substr(8,version.length() - 9);
 }
 
