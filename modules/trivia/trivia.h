@@ -52,6 +52,14 @@ struct field_t
 	bool _inline;
 };
 
+struct guild_cache_queued_t
+{
+	uint64_t guild_id;
+	std::string name;
+	std::string icon;
+	uint64_t owner_id;
+};
+
 /**
  * Module class for trivia system
  */
@@ -71,14 +79,18 @@ class TriviaModule : public Module
 	bool terminating;
 	std::mutex cmds_mutex;
 	std::mutex cmdmutex;
+	std::mutex guildqueuemutex;
 	std::deque<in_cmd> commandqueue;
 	std::deque<in_cmd> to_process;
+	std::vector<guild_cache_queued_t> guilds_to_update;
 	std::thread* command_processor;
 	std::thread* game_tick_thread;
+	std::thread* guild_queue_thread;
 	std::mutex lang_mutex;
 	time_t lastlang;
 	command_list_t commands;
 	void CheckLangReload();
+	bool booted;
 public:
 	time_t startup;
 	json* lang;
@@ -91,6 +103,7 @@ public:
 	void queue_command(const std::string &message, int64_t author, int64_t channel, int64_t guild, bool mention, const std::string &username);
 	void handle_command(const in_cmd &cmd);
 	void ProcessCommands();
+	void ProcessGuildQueue();
 	virtual bool OnPresenceUpdate();
 	std::string _(const std::string &k, const guild_settings_t& settings);
 	virtual bool OnAllShardsReady();
@@ -132,6 +145,7 @@ public:
 	void DisposeThread(std::thread* t);
 	void CheckForQueuedStarts();
 	virtual bool OnMessage(const modevent::message_create &message, const std::string& clean_message, bool mentioned, const std::vector<std::string> &stringmentions);
+	virtual bool OnGuildCreate(const modevent::guild_create &guild);
 	bool RealOnMessage(const modevent::message_create &message, const std::string& clean_message, bool mentioned, const std::vector<std::string> &stringmentions, int64_t author_id = 0);
 	void GetHelp(const std::string &section, int64_t channelID, const std::string &botusername, int64_t botid, const std::string &author, int64_t authorid, const guild_settings_t &settings);
 	void CacheUser(int64_t user, int64_t channel_id);
