@@ -35,13 +35,13 @@
 #include "piglatin.h"
 #include "wlower.h"
 
-TriviaModule::TriviaModule(Bot* instigator, ModuleLoader* ml) : Module(instigator, ml), terminating(false)
+TriviaModule::TriviaModule(Bot* instigator, ModuleLoader* ml) : Module(instigator, ml), terminating(false), booted(false)
 {
 	/* TODO: Move to something better like mt-rand */
 	srand(time(NULL) * time(NULL));
 
 	/* Attach aegis events to module */
-	ml->Attach({ I_OnMessage, I_OnPresenceUpdate, I_OnChannelDelete, I_OnGuildDelete, I_OnAllShardsReady }, this);
+	ml->Attach({ I_OnMessage, I_OnPresenceUpdate, I_OnChannelDelete, I_OnGuildDelete, I_OnAllShardsReady, I_OnGuildCreate }, this);
 
 	/* Various regular expressions */
 	notvowel = new PCRE("/[^aeiou_]/", true);
@@ -64,6 +64,7 @@ TriviaModule::TriviaModule(Bot* instigator, ModuleLoader* ml) : Module(instigato
 	presence_update = new std::thread(&TriviaModule::UpdatePresenceLine, this);
 	command_processor = new std::thread(&TriviaModule::ProcessCommands, this);
 	game_tick_thread = new std::thread(&TriviaModule::Tick, this);
+	guild_queue_thread = new std::thread(&TriviaModule::ProcessGuildQueue, this);
 
 	/* Get command list from API */
 	{
@@ -188,6 +189,20 @@ std::string TriviaModule::_(const std::string &k, const guild_settings_t& settin
 	return k;
 }
 
+bool TriviaModule::OnGuildCreate(const modevent::guild_create &guild)
+{
+	guild_cache_queued_t gq;
+	gq.guild_id = guild.guild.id.get();
+	gq.name = guild.guild.name;
+	gq.icon = guild.guild.icon;
+	gq.owner_id = guild.guild.owner_id.get();
+	{
+		std::lock_guard<std::mutex> guild_queue_lock(guildqueuemutex);
+		guilds_to_update.push_back(gq);
+	}
+	return true;
+}
+
 bool TriviaModule::OnAllShardsReady()
 {
 	/* Called when the framework indicates all shards are connected */
@@ -195,6 +210,8 @@ bool TriviaModule::OnAllShardsReady()
 	hostname[1023] = '\0';
 	gethostname(hostname, 1023);
 	json active = get_active(hostname, bot->GetClusterID());
+
+	this->booted = true;
 
 	if (bot->IsTestMode()) {
 		/* Don't resume games in test mode */
@@ -358,7 +375,7 @@ guild_settings_t TriviaModule::GetGuildSettings(int64_t guild_id)
 std::string TriviaModule::GetVersion()
 {
 	/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-	std::string version = "$ModVer 71$";
+	std::string version = "$ModVer 72$";
 	return "3.0." + version.substr(8,version.length() - 9);
 }
 
