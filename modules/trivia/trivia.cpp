@@ -125,6 +125,7 @@ TriviaModule::~TriviaModule()
 	DisposeThread(game_tick_thread);
 	DisposeThread(presence_update);
 	DisposeThread(command_processor);
+	DisposeThread(guild_queue_thread);
 
 	/* This explicitly calls the destructor on all states */
 	std::lock_guard<std::mutex> user_cache_lock(states_mutex);
@@ -191,7 +192,7 @@ std::string TriviaModule::_(const std::string &k, const guild_settings_t& settin
 
 bool TriviaModule::OnGuildCreate(const modevent::guild_create &guild)
 {
-	guild_cache_queued_t gq;
+	/*guild_cache_queued_t gq;
 	gq.guild_id = guild.guild.id.get();
 	gq.name = guild.guild.name;
 	gq.icon = guild.guild.icon;
@@ -199,7 +200,7 @@ bool TriviaModule::OnGuildCreate(const modevent::guild_create &guild)
 	{
 		std::lock_guard<std::mutex> guild_queue_lock(guildqueuemutex);
 		guilds_to_update.push_back(gq);
-	}
+	}*/
 	return true;
 }
 
@@ -375,7 +376,7 @@ guild_settings_t TriviaModule::GetGuildSettings(int64_t guild_id)
 std::string TriviaModule::GetVersion()
 {
 	/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-	std::string version = "$ModVer 72$";
+	std::string version = "$ModVer 73$";
 	return "3.0." + version.substr(8,version.length() - 9);
 }
 
