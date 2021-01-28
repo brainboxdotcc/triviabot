@@ -567,7 +567,7 @@ void change_streak(int64_t snowflake_id, int64_t guild_id, int score)
 	uint64_t current = (streak.size() ? from_string<uint64_t>(streak[0]["streak"], std::dec) : 0);
 	if (current) {
 		// they beat their personal best, update.
-		db::query("INSERT INTO streaks (nick, guild_id, streak) VALUES('?','?','?') ON DUPLICATE KEY UPDATE streaks SET streak='?' WHERE nick='?' AND guild_id = '?'", {snowflake_id, guild_id, score, score, snowflake_id, guild_id});
+		db::query("INSERT INTO streaks (nick, guild_id, streak) VALUES('?','?','?') ON DUPLICATE KEY UPDATE streak='?' WHERE nick='?' AND guild_id = '?'", {snowflake_id, guild_id, score, score, snowflake_id, guild_id});
 		check_achievement("streak", snowflake_id, guild_id);
 	}
 }
