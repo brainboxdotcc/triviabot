@@ -14,8 +14,9 @@
         "ko": "<:sporks_error:664735896251269130> 다음에서 ** embed **를 만들 수 없습니다.```js\n{0}\n``` **오류 :** `{1}`",
         "ja": "<:sporks_error:664735896251269130> これから**埋め込み**を作成できません： ```js\n{0}\n``` **エラー:** `{1}`",
         "bg": "<:sporks_error:664735896251269130> Не мога да направя ** вграждане ** от това: ```js\n{0}\n``` ** Грешка: ** `{1}`",
-        "ar": "<:sporks_error:664735896251269130> لا يمكنني عمل **embed** من هذا: `` js\n{0}\n\"\" **خطأ:** `{1}`",
-        "zh": "<:sporks_error:664735896251269130> 我无法从这里进行**嵌入**：\n{0}\n```**错误：**`{1}`"
+        "ar": "<:sporks_error:664735896251269130> لا يمكنني عمل **embed** من هذا: ```js\n{0}\n\"\" **خطأ:** `{1}`",
+        "zh": "<:sporks_error:664735896251269130> 我无法从这里进行**嵌入**：```js\n{0}\n``` **错误：**`{1}`",
+        "nl": "<:sporks_error:664735896251269130> Ik kan hier geen **embed** van maken: ```js\n{0}\n``` **Fout:** `{1}`"
     },
     "MALFORMED_UNICODE": {
         "en": "Malformed unicode in embed: {0}",
@@ -33,7 +34,8 @@
         "ja": "埋め込みの不正な形式のUnicode：{0}",
         "bg": "Неправилен Unicode във вграждането: {0}",
         "ar": "يونيكود مشوه في التضمين: {0}",
-        "zh": "嵌入格式错误的Unicode：{0}"
+        "zh": "嵌入格式错误的Unicode：{0}",
+        "nl": "Onjuist opgemaakte unicode in insluiting: {0}"
     },
     "POWERED_BY": {
         "en": "Powered By TriviaBot!",
@@ -51,7 +53,8 @@
         "ja": "TriviaBotを搭載！",
         "bg": "Осъществено от TriviaBot!",
         "ar": "مدعوم من TriviaBot!",
-        "zh": "由TriviaBot提供支持！"
+        "zh": "由TriviaBot提供支持！",
+        "nl": "Aangedreven door TriviaBot!"
     },
     "ROMAN": {
         "en": "Roman numerals: {0}",
@@ -69,7 +72,8 @@
         "ja": "ローマ数字：{0}",
         "bg": "Римски цифри: {0}",
         "ar": "الأرقام الرومانية: {0}",
-        "zh": "罗马数字：{0}"
+        "zh": "罗马数字：{0}",
+        "nl": "Romeinse cijfers: {0}"
     },
     "ONE": {
         "en": "one",
@@ -87,7 +91,8 @@
         "ja": "1",
         "bg": "един",
         "ar": "واحد",
-        "zh": "一"
+        "zh": "一",
+        "nl": "een"
     },
     "TWO": {
         "en": "two",
@@ -105,7 +110,8 @@
         "ja": "二",
         "bg": "две",
         "ar": "اثنان",
-        "zh": "二"
+        "zh": "二",
+        "nl": "twee"
     },
     "THREE": {
         "en": "three",
@@ -123,7 +129,8 @@
         "ja": "三",
         "bg": "три",
         "ar": "ثلاثة",
-        "zh": "三"
+        "zh": "三",
+        "nl": "drie"
     },
     "FOUR": {
         "en": "four",
@@ -141,7 +148,8 @@
         "ja": "四",
         "bg": "четири",
         "ar": "أربعة",
-        "zh": "四"
+        "zh": "四",
+        "nl": "vier"
     },
     "FIVE": {
         "en": "five",
@@ -159,7 +167,8 @@
         "ja": "五",
         "bg": "пет",
         "ar": "خمسة",
-        "zh": "五"
+        "zh": "五",
+        "nl": "vijf"
     },
     "SIX": {
         "en": "six",
@@ -177,7 +186,8 @@
         "ja": "6",
         "bg": "шест",
         "ar": "ستة",
-        "zh": "六"
+        "zh": "六",
+        "nl": "zes"
     },
     "SEVEN": {
         "en": "seven",
@@ -195,7 +205,8 @@
         "ja": "セブン",
         "bg": "седем",
         "ar": "سبعة",
-        "zh": "七"
+        "zh": "七",
+        "nl": "zeven"
     },
     "EIGHT": {
         "en": "eight",
@@ -213,7 +224,8 @@
         "ja": "8",
         "bg": "осем",
         "ar": "ثمانية",
-        "zh": "八"
+        "zh": "八",
+        "nl": "acht"
     },
     "NINE": {
         "en": "nine",
@@ -231,7 +243,8 @@
         "ja": "ナイン",
         "bg": "девет",
         "ar": "تسع",
-        "zh": "九"
+        "zh": "九",
+        "nl": "negen"
     },
     "TEN": {
         "en": "ten",
@@ -249,7 +262,8 @@
         "ja": "十",
         "bg": "десет",
         "ar": "عشرة",
-        "zh": "十"
+        "zh": "十",
+        "nl": "tien"
     },
     "ELEVEN": {
         "en": "eleven",
@@ -267,7 +281,8 @@
         "ja": "十一",
         "bg": "единадесет",
         "ar": "أحد عشر",
-        "zh": "十一"
+        "zh": "十一",
+        "nl": "elf"
     },
     "TWELVE": {
         "en": "twelve",
@@ -285,7 +300,8 @@
         "ja": "12",
         "bg": "дванадесет",
         "ar": "اثني عشر",
-        "zh": "十二"
+        "zh": "十二",
+        "nl": "twaalf"
     },
     "THIRTEEN": {
         "en": "thirteen",
@@ -303,7 +319,8 @@
         "ja": "13",
         "bg": "тринадесет",
         "ar": "ثلاثة عشر",
-        "zh": "十三"
+        "zh": "十三",
+        "nl": "dertien"
     },
     "FOURTEEN": {
         "en": "fourteen",
@@ -321,7 +338,8 @@
         "ja": "14",
         "bg": "четиринадесет",
         "ar": "أربعة عشرة",
-        "zh": "十四"
+        "zh": "十四",
+        "nl": "veertien"
     },
     "FIFTEEN": {
         "en": "fifteen",
@@ -339,7 +357,8 @@
         "ja": "15",
         "bg": "петнадесет",
         "ar": "خمسة عشر",
-        "zh": "十五"
+        "zh": "十五",
+        "nl": "vijftien"
     },
     "SIXTEEN": {
         "en": "sixteen",
@@ -357,7 +376,8 @@
         "ja": "16",
         "bg": "шестнадесет",
         "ar": "السادس عشر",
-        "zh": "十六"
+        "zh": "十六",
+        "nl": "zestien"
     },
     "SEVENTEEN": {
         "en": "seventeen",
@@ -375,7 +395,8 @@
         "ja": "17",
         "bg": "седемнадесет",
         "ar": "سبعة عشر",
-        "zh": "十七"
+        "zh": "十七",
+        "nl": "zeventien"
     },
     "EIGHTEEN": {
         "en": "eighteen",
@@ -393,7 +414,8 @@
         "ja": "18",
         "bg": "осемнадесет",
         "ar": "الثامنة عشر",
-        "zh": "十八"
+        "zh": "十八",
+        "nl": "achttien"
     },
     "NINETEEN": {
         "en": "nineteen",
@@ -411,7 +433,8 @@
         "ja": "19",
         "bg": "деветнайсет",
         "ar": "تسعة عشر",
-        "zh": "十九"
+        "zh": "十九",
+        "nl": "negentien"
     },
     "TWENTY": {
         "en": "twenty",
@@ -429,7 +452,8 @@
         "ja": "20",
         "bg": "двайсет",
         "ar": "عشرين",
-        "zh": "二十"
+        "zh": "二十",
+        "nl": "twintig"
     },
     "THIRTY": {
         "en": "thirty",
@@ -447,7 +471,8 @@
         "ja": "30",
         "bg": "тридесет",
         "ar": "ثلاثين",
-        "zh": "三十"
+        "zh": "三十",
+        "nl": "dertig"
     },
     "FOURTY": {
         "en": "fourty",
@@ -465,7 +490,8 @@
         "ja": "40",
         "bg": "четиридесет",
         "ar": "أربعين",
-        "zh": "四十"
+        "zh": "四十",
+        "nl": "veertig"
     },
     "FIFTY": {
         "en": "fifty",
@@ -483,7 +509,8 @@
         "ja": "50",
         "bg": "петдесет",
         "ar": "خمسون",
-        "zh": "五十"
+        "zh": "五十",
+        "nl": "vijftig"
     },
     "SIXTY": {
         "en": "sixty",
@@ -501,7 +528,8 @@
         "ja": "60",
         "bg": "шестдесет",
         "ar": "ستين",
-        "zh": "六十"
+        "zh": "六十",
+        "nl": "zestig"
     },
     "SEVENTY": {
         "en": "seventy",
@@ -519,7 +547,8 @@
         "ja": "70",
         "bg": "седемдесет",
         "ar": "سبعون",
-        "zh": "七十"
+        "zh": "七十",
+        "nl": "zeventig"
     },
     "EIGHTY": {
         "en": "eighty",
@@ -537,7 +566,8 @@
         "ja": "80人",
         "bg": "осемдесет",
         "ar": "ثمانون",
-        "zh": "八十"
+        "zh": "八十",
+        "nl": "tachtig"
     },
     "NINETY": {
         "en": "ninety",
@@ -555,7 +585,8 @@
         "ja": "90",
         "bg": "деветдесет",
         "ar": "تسعين",
-        "zh": "九十"
+        "zh": "九十",
+        "nl": "negentig"
     },
     "HUNDRED": {
         "en": "hundred",
@@ -573,7 +604,8 @@
         "ja": "百",
         "bg": "сто",
         "ar": "مائة",
-        "zh": "百"
+        "zh": "百",
+        "nl": "honderd"
     },
     "THOUSAND": {
         "en": "thousand",
@@ -591,7 +623,8 @@
         "ja": "千",
         "bg": "хиляди",
         "ar": "ألف",
-        "zh": "千"
+        "zh": "千",
+        "nl": "duizend"
     },
     "DOLLARS": {
         "en": "dollars",
@@ -609,7 +642,8 @@
         "ja": "ドル",
         "bg": "долара",
         "ar": "دولار",
-        "zh": "美元"
+        "zh": "美元",
+        "nl": "dollars"
     },
     "ZERO": {
         "en": "zero",
@@ -627,7 +661,8 @@
         "ja": "ゼロ",
         "bg": "нула",
         "ar": "صفر",
-        "zh": "零"
+        "zh": "零",
+        "nl": "nul"
     },
     "AND_SPACED": {
         "en": " and ",
@@ -645,7 +680,8 @@
         "ja": " そして ",
         "bg": " и ",
         "ar": " و ",
-        "zh": " 和 "
+        "zh": " 和 ",
+        "nl": " en "
     },
     "MILLION": {
         "en": "million",
@@ -663,7 +699,8 @@
         "ja": "百万",
         "bg": "милиона",
         "ar": "مليون",
-        "zh": "百万"
+        "zh": "百万",
+        "nl": "miljoen"
     },
     "HTM_REGEX": {
         "en": "hundred|thousand|million",
@@ -681,7 +718,8 @@
         "ja": "百|千|百万",
         "bg": "сто|хиляди|милиона",
         "ar": "مائة | ألف | ليون",
-        "zh": "亿"
+        "zh": "亿",
+        "nl": "honderd|duizend|miljoen"
     },
     "HINT_LETTERLONG": {
         "en": "{0} letters long. Starts with '{1}' and ends with '{2}'.",
@@ -699,7 +737,8 @@
         "ja": "{0} 文字の長さ。 「{1}」で始まり、「{2}」で終わります。",
         "bg": "Дълги {0} букви. Започва с „{1}“ и завършва с „{2}“.",
         "ar": "{0} من الأحرف طويلة. يبدأ بـ \"{1}\" وينتهي بـ \"{2}\".",
-        "zh": "{0}个字母长。以“ {1}”开头，以“ {2}”结尾。"
+        "zh": "{0}个字母长。以“ {1}”开头，以“ {2}”结尾。",
+        "nl": "{0} letters lang. Begint met '{1}' en eindigt met '{2}'."
     },
     "HINT_VOWELCOUNT": {
         "en": "{0} letters long and contains {1} vowels.",
@@ -717,7 +756,8 @@
         "ja": "{0} 文字の長さで、{1} 母音が含まれています。",
         "bg": "{0} букви с дължина и съдържа {1} гласни.",
         "ar": "{0} من الأحرف طويلة وتحتوي على {1} أحرف العلة.",
-        "zh": "{0}个字母长，包含{1}个元音。"
+        "zh": "{0}个字母长，包含{1}个元音。",
+        "nl": "{0} letters lang en bevat {1} klinkers."
     },
     "COMMA_PLUS_SPACE": {
         "en": ", plus ",
@@ -731,11 +771,12 @@
         "ru": ", плюс ",
         "it": ", più ",
         "pl": ", plus ",
-        "ko": ", 플러스",
-        "ja": "、プラス",
-        "bg": ", плюс",
-        "ar": "، زائد",
-        "zh": "，再加上"
+        "ko": ", 플러스 ",
+        "ja": "、プラス ",
+        "bg": ", плюс ",
+        "ar": "، زائد ",
+        "zh": "，再加上 ",
+        "nl": ", plus "
     },
     "LOWEST_NONNEG": {
         "en": "The lowest non-negative number",
@@ -753,7 +794,8 @@
         "ja": "最小の非負の数",
         "bg": "Най-ниското неотрицателно число",
         "ar": "أقل رقم غير سالب",
-        "zh": "最低非负数"
+        "zh": "最低非负数",
+        "nl": "Het laagste niet-negatieve getal"
     },
     "INDOLLARS": {
         "en": "{0}, in dollars",
@@ -771,7 +813,8 @@
         "ja": "{0}、ドル",
         "bg": "{0}, в долари",
         "ar": "{0} بالدولار",
-        "zh": "{0}，以美元为单位"
+        "zh": "{0}，以美元为单位",
+        "nl": "{0}, in dollars"
     },
     "QUESTION_COUNTER": {
         "en": ":question: Question {0} of {1}",
@@ -789,7 +832,8 @@
         "ja": ":question: {1}の質問{0}",
         "bg": ":question: Въпрос {0} от {1}",
         "ar": ": السؤال: السؤال {0} من {1}",
-        "zh": "：question：{1}的问题{0}"
+        "zh": ":question: {1}的问题{0}",
+        "nl": ":question: vraag {0} van {1}"
     },
     "INSANE_ROUND": {
         "en": "Insane Round!",
@@ -807,7 +851,8 @@
         "ja": "非常識なラウンド！",
         "bg": "Луд кръг!",
         "ar": "جولة مجنون!",
-        "zh": "疯狂的回合！"
+        "zh": "疯狂的回合！",
+        "nl": "Krankzinnige ronde!"
     },
     "INSANE_ANS_COUNT": {
         "en": "Total of {0} possible answers",
@@ -825,7 +870,8 @@
         "ja": "合計{0}の可能な回答",
         "bg": "Общо {0} възможни отговора",
         "ar": "إجمالي {0} من الإجابات المحتملة",
-        "zh": "总共{0}个可能的答案"
+        "zh": "总共{0}个可能的答案",
+        "nl": "Totaal van {0} mogelijke antwoorden"
     },
     "QUESTION": {
         "en": "Question",
@@ -843,7 +889,8 @@
         "ja": "質問",
         "bg": "Въпрос",
         "ar": "سؤال",
-        "zh": "题"
+        "zh": "题",
+        "nl": "Vraag"
     },
     "Q_FETCH_ERROR": {
         "en": ":question: Couldn't fetch question from API",
@@ -861,7 +908,8 @@
         "ja": ":question: APIから質問を取得できませんでした",
         "bg": ":question: Не може да се извлече въпрос от API",
         "ar": ":question: لا يمكن جلب السؤال من API",
-        "zh": "：question： 无法从API获取问题"
+        "zh": ":question: 无法从API获取问题",
+        "nl": ":question: Kan vraag niet ophalen uit API"
     },
     "Q_SPOOPY": {
         "en": "This seems spoopy",
@@ -879,7 +927,8 @@
         "ja": "これは不気味なようです",
         "bg": "Това изглежда страховито",
         "ar": "يبدو هذا مخادعًا",
-        "zh": "这似乎很鬼"
+        "zh": "这似乎很鬼",
+        "nl": "Dit lijkt spottend"
     },
     "Q_CONTACT_DEVS": {
         "en": "[Please contact the developers](https:\/\/discord.gg\/brainbox)",
@@ -897,7 +946,8 @@
         "ja": "[開発者に連絡してください](https:\/\/discord.gg\/brainbox)",
         "bg": "[Моля, свържете се с разработчиците](https:\/\/discord.gg\/brainbox)",
         "ar": "[الرجاء الاتصال بالمطورين](https:\/\/discord.gg\/brainbox)",
-        "zh": "[请联系开发人员](https:\/\/discord.gg\/brainbox)"
+        "zh": "[请联系开发人员](https:\/\/discord.gg\/brainbox)",
+        "nl": "[Neem contact op met de ontwikkelaars](https:\/\/discord.gg\/brainbox)"
     },
     "ROUND_STOPPING": {
         "en": "Round stopping",
@@ -915,7 +965,8 @@
         "ja": "ラウンドストップ",
         "bg": "Кръгло спиране",
         "ar": "توقف الجولة",
-        "zh": "回合停止"
+        "zh": "回合停止",
+        "nl": "Rond stoppen"
     },
     "ERROR_BROKE_IT": {
         "en": "Error has stopped play!",
@@ -933,7 +984,8 @@
         "ja": "エラーが再生を停止しました！",
         "bg": "Грешката спря да играе!",
         "ar": "توقف خطأ اللعب!",
-        "zh": "错误已停止播放！"
+        "zh": "错误已停止播放！",
+        "nl": "De fout heeft het afspelen gestopt!"
     },
     "SCRAMBLED_ANSWER": {
         "en": "Scrambled Answer: {0}",
@@ -951,7 +1003,8 @@
         "ja": "スクランブルされた回答：{0}",
         "bg": "Разбъркан отговор: {0}",
         "ar": "إجابة مختلطة: {0}",
-        "zh": "混乱的答案：{0}"
+        "zh": "混乱的答案：{0}",
+        "nl": "Gecodeerd antwoord: {0}"
     },
     "HEX": {
         "en": "Hexadecimal: {0:x}",
@@ -969,7 +1022,8 @@
         "ja": "16進数：{0:x}",
         "bg": "Шестнадесетичен: {0:x}",
         "ar": "سداسي عشري: {0:x}",
-        "zh": "十六进制： {0：x}"
+        "zh": "十六进制： {0:x}",
+        "nl": "Hexadecimaal: {0:x}"
     },
     "OCT": {
         "en": "Octal: {0:o}",
@@ -987,7 +1041,8 @@
         "ja": "8進数：{0:o}",
         "bg": "Осмично: {0:o}",
         "ar": "ثماني: {0:o}",
-        "zh": "八进制： {0：o}"
+        "zh": "八进制： {0:o}",
+        "nl": "Octaal: {0:o}"
     },
     "BIN": {
         "en": "Binary: {0:b}",
@@ -1005,7 +1060,8 @@
         "ja": "バイナリ：{0:b}",
         "bg": "Двоично: {0:b}",
         "ar": "ثنائي: {0:b}",
-        "zh": "二进制： {0：b}"
+        "zh": "二进制： {0:b}",
+        "nl": "Binair: {0:b}"
     },
     "CATEGORY": {
         "en": "Category",
@@ -1023,7 +1079,8 @@
         "ja": "カテゴリー",
         "bg": "Категория",
         "ar": "الفئة",
-        "zh": "类别"
+        "zh": "类别",
+        "nl": "Categorie"
     },
     "BRAIN_BROKE_IT": {
         "en": "Something's up, got a question with no text! This shouldn't happen...",
@@ -1041,7 +1098,8 @@
         "ja": "何か問題が発生しました。テキストのない質問があります。これは起こらないはずです...",
         "bg": "Нещо става, имам въпрос без текст! Това не трябва да се случва ...",
         "ar": "حدث شيء ما ، لدي سؤال بدون نص! هذا لا ينبغي أن يحدث ...",
-        "zh": "怎么了，有个没有文字的问题！这不应该发生..."
+        "zh": "怎么了，有个没有文字的问题！这不应该发生...",
+        "nl": "Er is iets aan de hand, heb een vraag zonder tekst! Dit mag niet gebeuren ..."
     },
     "FETCH_Q": {
         "en": "Fetch Question",
@@ -1059,7 +1117,8 @@
         "ja": "質問を取得",
         "bg": "Извлечете въпрос",
         "ar": "إحضار السؤال",
-        "zh": "提取问题"
+        "zh": "提取问题",
+        "nl": "Vraag ophalen"
     },
     "SECS_LEFT": {
         "en": "You have **{0}** seconds remaining!",
@@ -1077,7 +1136,8 @@
         "ja": "残り**{0}**秒です！",
         "bg": "Остават ви **{0}** секунди!",
         "ar": "يتبقى لك **{0}** ثانية!",
-        "zh": "您还有 **{0}** 秒！"
+        "zh": "您还有 **{0}** 秒！",
+        "nl": "Je hebt **{0}** seconden resterend!"
     },
     "FIRST_HINT": {
         "en": "First Hint",
@@ -1095,7 +1155,8 @@
         "ja": "最初のヒント",
         "bg": "Първи намек",
         "ar": "أول تلميح",
-        "zh": "第一提示"
+        "zh": "第一提示",
+        "nl": "Eerste hint"
     },
     "SECOND_HINT": {
         "en": "Second Hint",
@@ -1113,7 +1174,8 @@
         "ja": "2番目のヒント",
         "bg": "Втори съвет",
         "ar": "التلميح الثاني",
-        "zh": "第二提示"
+        "zh": "第二提示",
+        "nl": "Tweede hint"
     },
     "INSANE_FOUND": {
         "en": "**{0}** answers were found!",
@@ -1131,7 +1193,8 @@
         "ja": "**{0}**回答が見つかりました！",
         "bg": "**{0}** бяха намерени отговори!",
         "ar": "**{0}** تم العثور على إجابات!",
-        "zh": "找到 **{0}** 个答案！"
+        "zh": "找到 **{0}** 个答案！",
+        "nl": "**{0}** antwoorden gevonden!"
     },
     "ANS_WAS": {
         "en": "The answer was: **{0}**",
@@ -1149,7 +1212,8 @@
         "ja": "答えは：**{0}**",
         "bg": "Отговорът беше: **{0}**",
         "ar": "كانت الإجابة: **{0}**",
-        "zh": "答案是： **{0}**"
+        "zh": "答案是： **{0}**",
+        "nl": "Het antwoord was: **{0}**"
     },
     "STREAK_SMASHED": {
         "en": "**{0}**'s streak of **{1}** answers in a row comes to a grinding halt!",
@@ -1167,7 +1231,8 @@
         "ja": "**{0}** の一連の**{1}**の回答が連続して停止します！",
         "bg": "Поредицата от {0} ** от **{1}** отговори подред спира до мелене!",
         "ar": "**{0}** سلسلة الإجابات المتتالية **{1}** تتوقف تمامًا!",
-        "zh": "**{0}** 连续出现的 **{1}** 连连停顿！"
+        "zh": "**{0}** 连续出现的 **{1}** 连连停顿！",
+        "nl": "**{0}**'s reeks **{1}** antwoorden op een rij komt tot stilstand!"
     },
     "TIME_UP": {
         "en": "Time Up!",
@@ -1185,7 +1250,8 @@
         "ja": "タイムアップ！",
         "bg": "Времето свърши!",
         "ar": "انتهى الوقت!",
-        "zh": "时间到！"
+        "zh": "时间到！",
+        "nl": "Tijd op!"
     },
     "OUT_OF_TIME": {
         "en": "Out of time!",
@@ -1203,7 +1269,8 @@
         "ja": "時間がなくなって！",
         "bg": "Няма време!",
         "ar": "منتهي!",
-        "zh": "没时间了！"
+        "zh": "没时间了！",
+        "nl": "Geen tijd meer!"
     },
     "COMING_UP": {
         "en": "Next question coming up in about **{0}** seconds...",
@@ -1221,7 +1288,8 @@
         "ja": "次の質問は約**{0}**秒で出てきます...",
         "bg": "Следващият въпрос се появява след около **{0}** секунди ...",
         "ar": "السؤال التالي سيظهر في غضون **{0}** ثانية تقريبًا ...",
-        "zh": "下一个问题大约在 **{0}** 秒内出现..."
+        "zh": "下一个问题大约在 **{0}** 秒内出现...",
+        "nl": "Volgende vraag komt binnen ongeveer **{0}** seconden ..."
     },
     "REST": {
         "en": "A little time to rest your fingers...",
@@ -1239,7 +1307,8 @@
         "ja": "指を休める少しの時間...",
         "bg": "Малко време за почивка на пръстите ...",
         "ar": "القليل من الوقت لإراحة أصابعك ...",
-        "zh": "一点时间休息一下手指..."
+        "zh": "一点时间休息一下手指...",
+        "nl": "Een beetje tijd om je vingers te laten rusten ..."
     },
     "END1": {
         "en": "End of round of **{0}** questions",
@@ -1257,7 +1326,8 @@
         "ja": "**{0}** の質問のラウンドの終わり",
         "bg": "Край на кръга от **{0}** въпроси",
         "ar": "نهاية جولة الأسئلة **{0}**",
-        "zh": "**{0}** 问题的回合结束"
+        "zh": "**{0}** 问题的回合结束",
+        "nl": "Einde ronde van **{0}** vragen"
     },
     "END_TITLE": {
         "en": "End of the round",
@@ -1275,7 +1345,8 @@
         "ja": "ラウンドの終わり",
         "bg": "Край на рунда",
         "ar": "نهاية الجولة",
-        "zh": "回合结束"
+        "zh": "回合结束",
+        "nl": "Einde van de ronde"
     },
     "LEADERBOARD": {
         "en": "Trivia Leaderboard",
@@ -1293,7 +1364,8 @@
         "ja": "雑学クイズリーダーボード",
         "bg": "Класация на Trivia",
         "ar": "التوافه المتصدرين",
-        "zh": "Trivia排行榜"
+        "zh": "Trivia排行榜",
+        "nl": "Trivia Leaderboard"
     },
     "TOP_TEN": {
         "en": "Today's Top Ten",
@@ -1311,7 +1383,8 @@
         "ja": "今日のトップテン",
         "bg": "Днешната десетка",
         "ar": "العشرة الأوائل اليوم",
-        "zh": "今日十大"
+        "zh": "今日十大",
+        "nl": "De top tien van vandaag"
     },
     "MORE_INFO": {
         "en": "More Information",
@@ -1329,7 +1402,8 @@
         "ja": "詳しくは",
         "bg": "Повече информация",
         "ar": "معلومات اكثر",
-        "zh": "更多信息"
+        "zh": "更多信息",
+        "nl": "Meer informatie"
     },
     "LEADER_LINK": {
         "en": "[View server leaderboards](https:\/\/triviabot.co.uk\/stats\/{0})\nDaily scores reset at midnight GMT.",
@@ -1347,7 +1421,8 @@
         "ja": "[サーバーリーダーボードを表示](https:\/\/triviabot.co.uk\/stats\/{0})\n毎日のスコアはグリニッジ標準時の深夜にリセットされます。",
         "bg": "[Преглед на класациите на сървърите](https:\/\/triviabot.co.uk\/stats\/{0})\nЕжедневните резултати се нулират в полунощ GMT.",
         "ar": "[عرض لوحات صدارة الخادم](https:\/\/triviabot.co.uk\/stats\/{0})\nيتم إعادة تعيين النتائج اليومية في منتصف الليل بتوقيت جرينتش.",
-        "zh": "[查看服务器排行榜](https:\/\/triviabot.co.uk\/stats\/{0})\n格林尼治标准时间(GMT)午夜重置每日得分。"
+        "zh": "[查看服务器排行榜](https:\/\/triviabot.co.uk\/stats\/{0})\n格林尼治标准时间(GMT)午夜重置每日得分。",
+        "nl": "[Bekijk server leaderboards](https:\/\/triviabot.co.uk\/stats\/ {0})\nDagelijkse scores gereset om middernacht GMT."
     },
     "DASH_STOP": {
         "en": "The round of trivia was stopped from the [dashboard](https:\/\/triviabot.co.uk\/dashboard\/)!",
@@ -1365,7 +1440,8 @@
         "ja": "雑学クイズのラウンドは[ダッシュボード](https:\/\/triviabot.co.uk\/dashboard\/)から停止されました！",
         "bg": "Кръгът от любопитни факти беше спрян от [таблото за управление](https:\/\/triviabot.co.uk\/dashboard\/)!",
         "ar": "تم إيقاف جولة التوافه من [لوحة القيادة] (https:\/\/triviabot.co.uk\/dashboard\/)!",
-        "zh": "从 [dashboard](https:\/\/triviabot.co.uk\/dashboard\/) 停止了琐事回合！"
+        "zh": "从 [dashboard](https:\/\/triviabot.co.uk\/dashboard\/) 停止了琐事回合！",
+        "nl": "De ronde van trivia werd gestopt vanaf het [dashboard](https:\/\/triviabot.co.uk\/dashboard\/)!"
     },
     "STOPPING": {
         "en": "Round Stopping!",
@@ -1383,7 +1459,8 @@
         "ja": "ラウンドストップ！",
         "bg": "Кръгло спиране!",
         "ar": "جولة توقف!",
-        "zh": "回合停止！"
+        "zh": "回合停止！",
+        "nl": "Rond stoppen!"
     },
     "PREFIX": {
         "en": "My prefix on this server is `{0}`. Type `{1}help` for help.",
@@ -1401,7 +1478,8 @@
         "ja": "このサーバーのプレフィックスは `{0}` です。ヘルプが必要な場合は、「`{1}help` 」と入力してください。",
         "bg": "Префиксът ми на този сървър е `{0}`. Въведете `{1}help` за помощ.",
         "ar": "بادئتي على هذا الخادم هي \"{0}`. اكتب `{1}help` للمساعدة.",
-        "zh": "我在该服务器上的前缀是 `{0}`。输入 `{1}help` 以获取帮助。"
+        "zh": "我在该服务器上的前缀是 `{0}`。输入 `{1}help` 以获取帮助。",
+        "nl": "Mijn voorvoegsel op deze server is `{0}`. Typ `{1}help` voor hulp."
     },
     "LAST_ONE": {
         "en": "**{0}** found the last answer!",
@@ -1419,7 +1497,8 @@
         "ja": "**{0}** 最後の答えが見つかりました！",
         "bg": "**{0}** намери последния отговор!",
         "ar": "**{0}** تم العثور على آخر إجابة!",
-        "zh": "**{0}** 找到了最后一个答案！"
+        "zh": "**{0}** 找到了最后一个答案！",
+        "nl": "**{0}** vond het laatste antwoord!"
     },
     "INSANE_CORRECT": {
         "en": "**{0}** was correct with **{1}**, gaining one point! **{2}** answers remaining out of **{3}**.",
@@ -1437,7 +1516,8 @@
         "ja": "**{0}** は**{1}**で正解で、1ポイントを獲得しました。 **{2}**回答は**{3}**から残っています。",
         "bg": "**{0}** беше правилно с **{1}**, спечелвайки една точка! **{2}** отговори остават извън **{3}**.",
         "ar": "**{0}** كان صحيحًا مع **{1}** ، وربح نقطة واحدة! **{2}** الإجابات المتبقية من **{3}**.",
-        "zh": "**{0}**与**{1}**是对的，获得了1分！ **{2}** 答案不在**{3}**之内。"
+        "zh": "**{0}**与**{1}**是对的，获得了1分！ **{2}** 答案不在**{3}**之内。",
+        "nl": "**{0}** had gelijk met **{1}** en behaalde één punt! **{2}** resterende antwoorden van **{3}**."
     },
     "POINT": {
         "en": "point",
@@ -1455,7 +1535,8 @@
         "ja": "ポイント",
         "bg": "точка",
         "ar": "نقطة",
-        "zh": "点"
+        "zh": "点",
+        "nl": "punt"
     },
     "POINTS": {
         "en": "points",
@@ -1473,7 +1554,8 @@
         "ja": "ポイント",
         "bg": "точки",
         "ar": "نقاط",
-        "zh": "点数"
+        "zh": "点数",
+        "nl": "punten"
     },
     "NORM_CORRECT": {
         "en": "The answer was **{0}**. You gain **{1}** {2} for answering in **{3}** seconds!",
@@ -1491,7 +1573,8 @@
         "ja": "答えは**{0}**でした。 **{3}**秒で答えると、**{1}** {2}を獲得できます！",
         "bg": "Отговорът беше **{0}**. Печелите **{1}** {2} за отговор в **{3}** секунди!",
         "ar": "كان الجواب **{0}**. تكسب **{1}** {2} للإجابة في **{3}** ثوانٍ!",
-        "zh": "答案是 **{0}**。您会在**{3}**秒内获得 **{1}** {2}！"
+        "zh": "答案是 **{0}**。您会在**{3}**秒内获得 **{1}** {2}！",
+        "nl": "Het antwoord was **{0}**. U krijgt **{1}** {2} voor het beantwoorden in **{3}** seconden!"
     },
     "RECORD_TIME": {
         "en": "\n**{0}** has broken the record time for this question!",
@@ -1509,7 +1592,8 @@
         "ja": "\n**{0}** はこの質問の記録的な時間を破りました！",
         "bg": "\n**{0}** счупи рекордното време за този въпрос!",
         "ar": "\n**{0}** حطم الرقم القياسي لهذا السؤال!",
-        "zh": "\n**{0}** 打破了该问题的记录时间！"
+        "zh": "\n**{0}** 打破了该问题的记录时间！",
+        "nl": "\n**{0}** heeft de recordtijd voor deze vraag verbroken!"
     },
     "SCORE_UPDATE": {
         "en": "\n**{0}**'s score is now **{1}**.",
@@ -1527,7 +1611,8 @@
         "ja": "\n**{0}**のスコアは**{1}**になりました。",
         "bg": "\n** Резултатът от {0} ** вече е **{1}**.",
         "ar": "\n**{0}** أصبحت نتيجة **{1}** الآن.",
-        "zh": "\n**{0}** 的分数现在是 **{1}**。"
+        "zh": "\n**{0}** 的分数现在是 **{1}**。",
+        "nl": "\n** De score van **{0}** is nu **{1}**."
     },
     "TEAM_SCORE": {
         "en": "\nTeam **{0}** also gains **{1}** {2} and is now on **{3}**",
@@ -1545,7 +1630,8 @@
         "ja": "\nチーム**{0}**も**{1}** {2}を獲得し、現在**{3}**にいます",
         "bg": "\nЕкипът **{0}** също печели **{1}** {2} и вече е на **{3}**",
         "ar": "\nيكتسب الفريق **{0}**أيضًا**{1}** {2} وهو الآن في **{3}**",
-        "zh": "\n团队 **{0}** 也获得了 **{1}** {2}，现在在 **{3}**"
+        "zh": "\n团队 **{0}** 也获得了 **{1}** {2}，现在在 **{3}**",
+        "nl": "\nTeam **{0}** wint ook **{1}** {2} en is nu bezig **{3}**"
     },
     "ON_A_STREAK": {
         "en": "\n**{0}** is on a streak! **{1}** questions and counting",
@@ -1563,7 +1649,8 @@
         "ja": "\n**{0}** が連続しています！ **{1}**質問とカウント",
         "bg": "\n**{0}** е в серия! **{1}** въпроси и броене",
         "ar": "\n**{0}** في خط متواصل! **{1}** الأسئلة والعد",
-        "zh": "\n**{0}** 连胜！ **{1}** 问题和计数"
+        "zh": "\n**{0}** 连胜！ **{1}** 问题和计数",
+        "nl": "\n**{0}** loopt vast! **{1}** vragen en tellen"
     },
     "BEATEN_BEST": {
         "en": ", and has beaten their personal best!",
@@ -1581,7 +1668,8 @@
         "ja": "、そして彼らの個人的なベストを打ち負かしました！",
         "bg": ", и е победил техните лични рекорди!",
         "ar": "، وتغلبوا على أفضل ما لديهم!",
-        "zh": "，并击败了自己的个人最好的！"
+        "zh": "，并击败了自己的个人最好的！",
+        "nl": ", en hebben hun persoonlijk record verslagen!"
     },
     "NOT_THERE_YET": {
         "en": ", but has some way to go yet before they beat their personal best of **{0}**",
@@ -1599,7 +1687,8 @@
         "ja": "、しかし、彼らが**{0}**の個人的なベストを打ち負かす前にまだ行く方法があります",
         "bg": ", но има още някакъв път, преди да победят най-доброто от **{0}**",
         "ar": "، ولكن لا يزال أمامه طريق ليقطعه قبل أن يتفوق على أفضل ما لديه **{0}**",
-        "zh": "，但在他们击败 **{0}** 个人最好成绩之前还有一段路要走"
+        "zh": "，但在他们击败 **{0}** 个人最好成绩之前还有一段路要走",
+        "nl": ", maar heeft nog een lange weg te gaan voordat ze hun persoonlijk record van **{0}**"
     },
     "STREAK_BEATDOWN": {
         "en": "\n**{0}** just beat <@{1}>'s record streak of {2} answers!",
@@ -1617,7 +1706,8 @@
         "ja": "\n**{0}** <@{1}> の{2}の回答の記録を破りました！",
         "bg": "\n**{0}** просто победи рекордната поредица от {2} отговора на <@{1}>!",
         "ar": "\n**{0}** فقط تجاوز الرقم القياسي لـ <@{1}> المتتالي من {2} الإجابات!",
-        "zh": "\n**{0}**击败了<@{1}>创纪录的{2}个答案！"
+        "zh": "\n**{0}**击败了<@{1}>创纪录的{2}个答案！",
+        "nl": "\n**{0}** heb net de recordreeks van {2} antwoorden van <@ {1}> overtroffen!"
     },
     "STREAK_ENDER": {
         "en": "\n**{0}** just ended <@{1}>'s streak of {2} answers in a row!",
@@ -1635,7 +1725,8 @@
         "ja": "\n**{0}** <@{1}> の{2}回答の連続が連続して終了しました！",
         "bg": "\n**{0}** току-що завърши поредицата от <@{1}> последователни {2} отговора!",
         "ar": "\n**{0}** انتهى للتو سلسلة <@{1}> من {2} الإجابات على التوالي!",
-        "zh": "\n**{0}** 连续结束了<@{1}>连续{2}个答案的连胜！"
+        "zh": "\n**{0}** 连续结束了<@{1}>连续{2}个答案的连胜！",
+        "nl": "\n**{0}** heeft zojuist de reeks {2} antwoorden op rij van <@{1}> beëindigd!"
     },
     "CORRECT": {
         "en": "Correct, {0}!",
@@ -1653,7 +1744,8 @@
         "ja": "正解、{0}！",
         "bg": "Правилно, {0}!",
         "ar": "صحيح ، {0}!",
-        "zh": "正确，{0}！"
+        "zh": "正确，{0}！",
+        "nl": "Juist, {0}!"
     },
     "CHANNEL_WUT": {
         "en": "**{0}**, this channel ID does not exist!",
@@ -1671,7 +1763,8 @@
         "ja": "**{0}**、 このチャンネルIDは存在しません！",
         "bg": "**{0}**, този идентификатор на канала не съществува!",
         "ar": "**{0}** ، معرف القناة هذا غير موجود!",
-        "zh": "**{0}**， 该频道ID不存在！"
+        "zh": "**{0}**， 该频道ID不存在！",
+        "nl": "**{0}**, deze kanaal-ID bestaat niet!"
     },
     "ROUND_START_ID": {
         "en": "Round of {0} questions started on channel id {1}",
@@ -1689,7 +1782,8 @@
         "ja": "チャネルID {1}で開始された{0}の質問のラウンド",
         "bg": "Кръг от {0} започнали въпроси за идентификатор на канал {1}",
         "ar": "بدأت جولة الأسئلة {0} على معرف القناة {1}",
-        "zh": "从频道ID {1}开始的{0}个问题回合"
+        "zh": "从频道ID {1}开始的{0}个问题回合",
+        "nl": "Ronde van {0} vragen begonnen over kanaal-ID {1}"
     },
     "ROUND_START_ID_NH": {
         "en": "Round of {0} questions started on channel id {1} **without hints**!",
@@ -1707,7 +1801,8 @@
         "ja": "{0}の質問のラウンドはチャンネルID {1}で始まりました**ヒントなし**！",
         "bg": "Кръг от {0} въпроси започна с идентификатор на канал {1} ** без подсказки **!",
         "ar": "بدأت جولة الأسئلة {0} على معرّف القناة {1} ** بدون تلميحات **!",
-        "zh": "在频道ID {1}上开始了{0}个问题回合，**没有提示**！"
+        "zh": "在频道ID {1}上开始了{0}个问题回合，**没有提示**！",
+        "nl": "Ronde van {0} vragen begon over kanaal-ID {1} **zonder hints**!"
     },
     "RESTART_RESUME": {
         "en": "Because the bot was restarted, your game was stopped. This game has been resumed.",
@@ -1725,7 +1820,8 @@
         "ja": "ボットが再起動されたため、ゲームは停止しました。このゲームは再開されました。",
         "bg": "Тъй като ботът е рестартиран, играта ви е спряна. Тази игра е възобновена.",
         "ar": "بسبب إعادة تشغيل الروبوت ، تم إيقاف لعبتك. تم استئناف هذه اللعبة.",
-        "zh": "由于机器人已重新启动，因此您的游戏已停止。这场比赛已经恢复。"
+        "zh": "由于机器人已重新启动，因此您的游戏已停止。这场比赛已经恢复。",
+        "nl": "Omdat de bot opnieuw is opgestart, is je game gestopt. Dit spel is hervat."
     },
     "STAFF_ONLY": {
         "en": "Only bot moderators can use this command",
@@ -1743,7 +1839,8 @@
         "ja": "このコマンドを使用できるのはボットモデレーターのみです",
         "bg": "Само модераторите на ботове могат да използват тази команда",
         "ar": "يمكن لمشرفي البوت فقط استخدام هذا الأمر",
-        "zh": "只有漫游器主持人才能使用此命令"
+        "zh": "只有漫游器主持人才能使用此命令",
+        "nl": "Alleen botmoderators kunnen deze opdracht gebruiken"
     },
     "SHITLISTED": {
         "en": "**{0}**, you can't start a round of trivia here, as the bot owner has explicitly blocked games from being started on this server.\nIf you want to start a round of trivia, first [invite the bot](https:\/\/discord.com\/oauth2\/authorize?client_id={1}&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code) to your own server!",
@@ -1761,7 +1858,8 @@
         "ja": "**{0}**、ボットの所有者がこのサーバーでのゲームの開始を明示的にブロックしているため、ここで雑学クイズを開始することはできません。\n雑学クイズのラウンドを開始する場合は、最初に[ボットを招待](https:\/\/discord.com\/oauth2\/authorize?client_id={1}&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code)を自分のサーバーに！",
         "bg": "**{0}**, тук не можете да започнете кръг от любопитни факти, тъй като собственикът на бота изрично е блокирал стартирането на игри на този сървър.\nАко искате да започнете кръг от любопитни факти, първо [поканете бота](https:\/\/discord.com\/oauth2\/authorize?client_id={1}&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code) към вашия собствен сървър!",
         "ar": "**{0}** ، لا يمكنك بدء جولة من المعلومات التافهة هنا ، حيث أن مالك الروبوت قد حظر صراحة بدء تشغيل الألعاب على هذا الخادم.\nإذا كنت تريد بدء جولة من المعلومات التافهة ، أولاً [قم بدعوة الروبوت](https:\/\/discord.com\/oauth2\/authorize?client_id={1}&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code) للخادم الخاص بك!",
-        "zh": "**{0}**，您无法在此处开始一轮琐事，因为漫游器所有者已明确禁止在此服务器上启动游戏。\n如果您想开始一轮琐事，请首先 [邀请bot](https:\/\/discord.com\/oauth2\/authorize?client_id={1}&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code)添加到您自己的服务器！"
+        "zh": "**{0}**，您无法在此处开始一轮琐事，因为漫游器所有者已明确禁止在此服务器上启动游戏。\n如果您想开始一轮琐事，请首先 [邀请bot](https:\/\/discord.com\/oauth2\/authorize?client_id={1}&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code)添加到您自己的服务器！",
+        "nl": "**{0}**, je kunt hier geen trivia-ronde starten, omdat de bot-eigenaar expliciet heeft geblokkeerd dat games op deze server kunnen worden gestart.\nAls je een ronde van trivia wilt starten, [nodig de bot uit](https:\/\/discord.com\/oauth2\/authorize?client_id={1}&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code) naar uw eigen server!"
     },
     "NOWAY": {
         "en": ":warning: Can't start two rounds at once on one server!",
@@ -1779,7 +1877,8 @@
         "ja": ":warning: 1つのサーバーで一度に2つのラウンドを開始することはできません！",
         "bg": ":warning: Не мога да започна два кръга наведнъж на един сървър!",
         "ar": ":warning: تحذير: لا يمكن بدء جولتين في وقت واحد على خادم واحد!",
-        "zh": "：warning： 不能在一台服务器上同时开始两轮！"
+        "zh": ":warning: 不能在一台服务器上同时开始两轮！",
+        "nl": ":warning: kan niet twee rondes tegelijk starten op één server!"
     },
     "ALREADYACTIVE": {
         "en": "A round of trivia is already active",
@@ -1797,7 +1896,8 @@
         "ja": "雑学クイズのラウンドはすでにアクティブです",
         "bg": "Кръг от любопитни факти вече е активен",
         "ar": "جولة من التوافه نشطة بالفعل",
-        "zh": "一轮琐事已经活跃"
+        "zh": "一轮琐事已经活跃",
+        "nl": "Er is al een ronde trivia actief"
     },
     "CHANNELREF": {
         "en": "Please see <#{0}> to join the game",
@@ -1815,7 +1915,8 @@
         "ja": "ゲームに参加するには<#{0}>をご覧ください",
         "bg": "Моля, вижте <#{0}>, за да се присъедините към играта",
         "ar": "يرجى مراجعة <#{0}> للانضمام إلى اللعبة",
-        "zh": "请参阅 <#{0}> 加入游戏"
+        "zh": "请参阅 <#{0}> 加入游戏",
+        "nl": "Zie <#{0}> om mee te doen aan het spel"
     },
     "GETPREMIUM": {
         "en": "Get TriviaBot Premium!",
@@ -1833,7 +1934,8 @@
         "ja": "TriviaBotプレミアムを入手！",
         "bg": "Вземете TriviaBot Premium!",
         "ar": "احصل على TriviaBot Premium!",
-        "zh": "获取TriviaBot Premium！"
+        "zh": "获取TriviaBot Premium！",
+        "nl": "Schaf TriviaBot Premium aan!"
     },
     "PREMDETAIL1": {
         "en": "If you want to do this, TriviaBot Premium lets you run as many concurrent games on the same server as you want. For more information please see the [TriviaBot Premium Page](https:\/\/triviabot.co.uk\/premium\/).",
@@ -1851,7 +1953,8 @@
         "ja": "これを実行したい場合、TriviaBot Premiumを使用すると、同じサーバー上で必要な数の同時ゲームを実行できます。詳細については、[TriviaBotプレミアムページ](https:\/\/triviabot.co.uk\/premium\/)を参照してください。",
         "bg": "Ако искате да направите това, TriviaBot Premium ви позволява да стартирате толкова едновременни игри на същия сървър, колкото искате. За повече информация, моля, вижте [Страница TriviaBot Premium](https:\/\/triviabot.co.uk\/premium\/).",
         "ar": "إذا كنت تريد القيام بذلك ، يتيح لك TriviaBot Premium تشغيل العديد من الألعاب المتزامنة على نفس الخادم كما تريد. لمزيد من المعلومات ، يرجى الاطلاع على [صفحة TriviaBot المميزة](https:\/\/triviabot.co.uk\/premium\/).",
-        "zh": "如果要执行此操作，则TriviaBot Premium允许您在同一服务器上运行任意数量的并发游戏。有关更多信息，请参见 [TriviaBot高级页面](https:\/\/triviabot.co.uk\/premium\/)。"
+        "zh": "如果要执行此操作，则TriviaBot Premium允许您在同一服务器上运行任意数量的并发游戏。有关更多信息，请参见 [TriviaBot高级页面](https:\/\/triviabot.co.uk\/premium\/)。",
+        "nl": "Als je dit wilt doen, laat TriviaBot Premium je zoveel gelijktijdige games op dezelfde server draaien als je wilt. Zie voor meer informatie de [TriviaBot Premium-pagina](https:\/\/triviabot.co.uk\/premium\/)."
     },
     "PREMDETAIL2": {
         "en": "If you want to do this, TriviaBot Premium lets you run quickfire rounds of up to 200 questions! For more information please see the [TriviaBot Premium Page](https:\/\/triviabot.co.uk\/premium\/).",
@@ -1869,7 +1972,8 @@
         "ja": "これを実行したい場合、TriviaBot Premiumを使用すると、最大200の質問のクイックファイアラウンドを実行できます。詳細については、[TriviaBotプレミアムページ](https:\/\/triviabot.co.uk\/premium\/)を参照してください。",
         "bg": "Ако искате да направите това, TriviaBot Premium ви позволява да стартирате бързи кръгове до 200 въпроса! За повече информация, моля, вижте [Страница TriviaBot Premium](https:\/\/triviabot.co.uk\/premium\/).",
         "ar": "إذا كنت ترغب في القيام بذلك ، يتيح لك TriviaBot Premium تشغيل جولات سريعة تصل إلى 200 سؤال! لمزيد من المعلومات ، يرجى الاطلاع على [صفحة TriviaBot المميزة](https:\/\/triviabot.co.uk\/premium\/).",
-        "zh": "如果您想这样做，TriviaBot Premium可让您运行多达200个问题的快速解答！有关更多信息，请参见 [TriviaBot高级页面](https:\/\/triviabot.co.uk\/premium\/)。"
+        "zh": "如果您想这样做，TriviaBot Premium可让您运行多达200个问题的快速解答！有关更多信息，请参见 [TriviaBot高级页面](https:\/\/triviabot.co.uk\/premium\/)。",
+        "nl": "Als je dit wilt doen, kun je met TriviaBot Premium quickfire-rondes van maximaal 200 vragen uitvoeren! Zie voor meer informatie de [TriviaBot Premium-pagina](https:\/\/triviabot.co.uk\/premium\/)."
     },
     "MAX15": {
         "en": ":warning: Can't start a quickfire round of more than 15 questions",
@@ -1885,9 +1989,10 @@
         "pl": ":warning: nie można rozpocząć szybkiej rundy zawierającej więcej niż 15 pytań",
         "ko": ":warning: 15 개 이상의 질문에 대한 빠른 라운드를 시작할 수 없습니다.",
         "ja": ":warning: 15を超える質問のクイックファイアラウンドを開始できません",
-        "bg": ": предупреждение: Не може да започне бърз кръг от повече от 15 въпроса",
+        "bg": ":warning: Не може да започне бърз кръг от повече от 15 въпроса",
         "ar": ":warning: تحذير: لا يمكن بدء جولة سريعة تتكون من أكثر من 15 سؤالاً",
-        "zh": "：warning： 无法启动超过15个问题的快速讨论"
+        "zh": ":warning: 无法启动超过15个问题的快速讨论",
+        "nl": ":warning: Kan geen quickfire-ronde van meer dan 15 vragen starten"
     },
     "MAX15DETAIL": {
         "en": "**{0}**, you can't create a quickfire trivia round of less than 5 or more than {1} questions!",
@@ -1905,7 +2010,8 @@
         "ja": "**{0}**、5つ未満または{1}を超える質問のクイックファイアトリビアラウンドを作成することはできません。",
         "bg": "**{0}**, не можете да създадете бърз кръг от любопитни факти с по-малко от 5 или повече от {1} въпроса!",
         "ar": "**{0}** ، لا يمكنك إنشاء جولة سريعة من أقل من 5 أسئلة أو أكثر من {1} أسئلة!",
-        "zh": "**{0}**，您不能创建少于5个或多于{1}个问题的快速问答。"
+        "zh": "**{0}**，您不能创建少于5个或多于{1}个问题的快速问答。",
+        "nl": "**{0}**, je kunt geen quickfire-trivia-ronde maken van minder dan 5 of meer dan {1} vragen!"
     },
     "MAX200": {
         "en": "**{0}**, you can't create a normal trivia round of less than 5 or more than 200 questions!",
@@ -1923,7 +2029,8 @@
         "ja": "**{0}**、5つ未満または200を超える質問の通常の雑学クイズラウンドを作成することはできません。",
         "bg": "**{0}**, не можете да създадете нормален кръг от любопитни факти с по-малко от 5 или повече от 200 въпроса!",
         "ar": "**{0}** ، لا يمكنك إنشاء جولة أسئلة عامة عادية تتكون من أقل من 5 أو أكثر من 200 سؤال!",
-        "zh": "**{0}**，您不能创建少于5个或超过200个问题的普通琐事！"
+        "zh": "**{0}**，您不能创建少于5个或超过200个问题的普通琐事！",
+        "nl": "**{0}**, je kunt geen normale trivia-ronde maken van minder dan 5 of meer dan 200 vragen!"
     },
     "SPOOPY2": {
         "en": "**{0}**, something spoopy happened. Please try again in a couple of minutes!",
@@ -1941,7 +2048,8 @@
         "ja": "**{0}**、何か不気味なことが起こりました。数分後にもう一度お試しください。",
         "bg": "**{0}**, случи се нещо призрачно. Моля, опитайте отново след няколко минути!",
         "ar": "**{0}** ، حدث شيء مخادع. يرجى المحاولة مرة أخرى بعد دقيقتين!",
-        "zh": "**{0}**，发生了一些混乱。请过几分钟再试！"
+        "zh": "**{0}**，发生了一些混乱。请过几分钟再试！",
+        "nl": "**{0}**, er is iets spottigs gebeurd. Probeer het over een paar minuten opnieuw!"
     },
     "BROKED": {
         "en": "That wasn't supposed to happen...",
@@ -1959,7 +2067,8 @@
         "ja": "それは起こるはずではなかった...",
         "bg": "Това не трябваше да се случва ...",
         "ar": "لم يكن من المفترض أن يحدث ذلك ...",
-        "zh": "那不应该发生的..."
+        "zh": "那不应该发生的...",
+        "nl": "Dat had niet mogen gebeuren ..."
     },
     "RESUMED": {
         "en": "resumed",
@@ -1977,7 +2086,8 @@
         "ja": "再開",
         "bg": "възобновено",
         "ar": "استأنف",
-        "zh": "已恢复"
+        "zh": "已恢复",
+        "nl": "hervat"
     },
     "STARTED": {
         "en": "started",
@@ -1995,7 +2105,8 @@
         "ja": "開始しました",
         "bg": "започна",
         "ar": "بدأت",
-        "zh": "开始了"
+        "zh": "开始了",
+        "nl": "begonnen"
     },
     "ABOTADMIN": {
         "en": "a bot admin",
@@ -2013,7 +2124,8 @@
         "ja": "ボット管理者",
         "bg": "администратор на бот",
         "ar": "مدير الروبوت",
-        "zh": "机器人管理员"
+        "zh": "机器人管理员",
+        "nl": "een botbeheerder"
     },
     "NEWROUND": {
         "en": ":question: New {0}trivia round {1} by {2}!",
@@ -2031,7 +2143,8 @@
         "ja": ":question: {2}による新しい{0}雑学クイズラウンド{1}！",
         "bg": ":question: Нов {0} любопитен кръг {1} от {2}!",
         "ar": ":question: سؤال: جديد {0} جولة تريفيا {1} بواسطة {2}!",
-        "zh": "：question: 新的{0}琐事在{1}之前经过{2}！"
+        "zh": ":question: 新的{0}琐事在{1}之前经过{2}！",
+        "nl": ":question: Nieuwe {0} trivia-ronde {1} door {2}!"
     },
     "NEWROUND_NH": {
         "en": ":question: New {0}trivia round {1} by {2} **without hints**!",
@@ -2049,7 +2162,8 @@
         "ja": ":question: 新しい{0}雑学クイズラウンド{1} by {2} **ヒントなし**！",
         "bg": ":question: Нов {0} любопитен кръг {1} от {2} ** без подсказки **!",
         "ar": ":question: سؤال: {0} جولة جديدة {1} من {2} ** بدون تلميحات **!",
-        "zh": "：question： 新的{0}琐事在{1}之前{2} **没有提示**！"
+        "zh": ":question: 新的{0}琐事在{1}之前{2} **没有提示**！",
+        "nl": ":question: Nieuwe {0}trivia-ronde {1} door {2} **zonder hints**!"
     },
     "GETREADY": {
         "en": "Get Ready",
@@ -2067,7 +2181,8 @@
         "ja": "準備をしなさい",
         "bg": "Приготви се",
         "ar": "إستعد",
-        "zh": "做好准备"
+        "zh": "做好准备",
+        "nl": "Maak je klaar"
     },
     "FIRSTCOMING": {
         "en": "First question coming up!",
@@ -2085,7 +2200,8 @@
         "ja": "最初の質問が出てきます！",
         "bg": "Предстои първият въпрос!",
         "ar": "السؤال الأول قادم!",
-        "zh": "第一个问题来了！"
+        "zh": "第一个问题来了！",
+        "nl": "Eerste vraag komt eraan!"
     },
     "HOWPLAY": {
         "en": "How to play",
@@ -2103,7 +2219,8 @@
         "ja": "遊び方",
         "bg": "Как да играя",
         "ar": "كيف ألعب",
-        "zh": "怎么玩"
+        "zh": "怎么玩",
+        "nl": "Hoe te spelen"
     },
     "INSTRUCTIONS": {
         "en": "Type your answer on channel to answer a question. The first to answer gets the points. To report any incorrect or invalid question, click the link in the title of the question's message.",
@@ -2121,7 +2238,8 @@
         "ja": "質問に答えるには、チャンネルに回答を入力してください。最初に答えるとポイントがもらえます。間違った質問または無効な質問を報告するには、質問のメッセージのタイトルにあるリンクをクリックします。",
         "bg": "Въведете отговора си в канала, за да отговорите на въпрос. Първият, който отговори, получава точките. За да подадете сигнал за неправилен или невалиден въпрос, щракнете върху връзката в заглавието на съобщението на въпроса.",
         "ar": "اكتب إجابتك على القناة للإجابة على سؤال. أول من يجيب يحصل على النقاط. للإبلاغ عن أي سؤال غير صحيح أو غير صالح ، انقر فوق الارتباط الموجود في عنوان رسالة السؤال.",
-        "zh": "在频道上输入答案以回答问题。最先回答的就是要点。要报告任何不正确或无效的问题，请单击问题消息标题中的链接。"
+        "zh": "在频道上输入答案以回答问题。最先回答的就是要点。要报告任何不正确或无效的问题，请单击问题消息标题中的链接。",
+        "nl": "Typ je antwoord op kanaal om een ​​vraag te beantwoorden. De eerste die antwoordt, krijgt de punten. Om een ​​onjuiste of ongeldige vraag te melden, klikt u op de link in de titel van het bericht van de vraag."
     },
     "ALREADYRUN": {
         "en": "Buhhh... a round is already running here, **{0}**!",
@@ -2139,7 +2257,8 @@
         "ja": "うーん...ラウンドはすでにここで実行されています、**{0}**！",
         "bg": "Buhhh ... тук вече тече кръг, **{0}**!",
         "ar": "بوهه ... جولة تجري هنا بالفعل ، **{0}**!",
-        "zh": "Buhhh ...这里已经进行了一轮了，**{0}**！"
+        "zh": "Buhhh ...这里已经进行了一轮了，**{0}**！",
+        "nl": "Buhhh ... er loopt hier al een ronde, **{0}**!"
     },
     "CANTSTOPMEIMTHEGINGERBREADMAN": {
         "en": "**{0}**, only moderators can stop trivia on this server!",
@@ -2157,7 +2276,8 @@
         "ja": "**{0}**、このサーバーで雑学クイズを停止できるのはモデレーターのみです。",
         "bg": "**{0}**, само модераторите могат да спрат любопитни факти на този сървър!",
         "ar": "**{0}** ، يمكن للمشرفين فقط إيقاف المعلومات التافهة على هذا الخادم!",
-        "zh": "**{0}**，只有主持人可以在此服务器上停止琐事！"
+        "zh": "**{0}**，只有主持人可以在此服务器上停止琐事！",
+        "nl": "**{0}**, alleen moderators kunnen trivia op deze server stoppen!"
     },
     "AREYOUSTARTINGSOMETHING": {
         "en": "**{0}**, only moderators can start trivia on this server!",
@@ -2175,7 +2295,8 @@
         "ja": "**{0}**、このサーバーで雑学クイズを開始できるのはモデレーターのみです。",
         "bg": "**{0}**, само модераторите могат да стартират любопитни факти на този сървър!",
         "ar": "**{0}** ، يمكن للمشرفين فقط بدء البحث على هذا الخادم!",
-        "zh": "**{0}**，只有主持人可以在此服务器上启动琐事！"
+        "zh": "**{0}**，只有主持人可以在此服务器上启动琐事！",
+        "nl": "**{0}**, alleen moderators kunnen trivia starten op deze server!"
     },
     "STOPOK": {
         "en": "**{0}** has stopped the round of trivia!",
@@ -2190,10 +2311,11 @@
         "it": "**{0}** ha interrotto il giro di curiosità!",
         "pl": "**{0}** zatrzymał rundę ciekawostek!",
         "ko": "**{0}** 님이 퀴즈 라운드를 중단했습니다!",
-        "ja": "**{0}**は雑学クイズのラウンドを停止しました！",
+        "ja": "**{0}** は雑学クイズのラウンドを停止しました！",
         "bg": "**{0}** спря кръга от любопитни факти!",
         "ar": "**{0}** أوقف جولة المعلومات البسيطة!",
-        "zh": "**{0}**已停止一轮琐事！"
+        "zh": "**{0}** 已停止一轮琐事！",
+        "nl": "**{0}** heeft de ronde van trivia gestopt!"
     },
     "NOTRIVIA": {
         "en": "No trivia round is running here, **{0}**!",
@@ -2211,7 +2333,8 @@
         "ja": "ここでは雑学クイズは実行されていません、**{0}**！",
         "bg": "Тук не се провежда кръг от любопитни факти, **{0}**!",
         "ar": "لا توجد جولة معلومات عامة تجري هنا ، **{0}**!",
-        "zh": "此处没有琐事回合，**{0}**！"
+        "zh": "此处没有琐事回合，**{0}**！",
+        "nl": "Er loopt hier geen trivia-ronde, **{0}**!"
     },
     "VOTEAD": {
         "en": "[Vote for the bot every 12 hours](https:\/\/top.gg\/bot\/{0}\/vote) to get eight uses of the `{1}votehint` command, which gives you a personal hint via direct message!",
@@ -2223,13 +2346,14 @@
         "hi": "[प्रत्येक 12 घंटे में बॉट के लिए वोट दें](https:\/\/top.gg\/bot\/{0}\/vote) `{1}votehint` कमांड के आठ उपयोग प्राप्त करने के लिए, जो आपको प्रत्यक्ष के माध्यम से एक व्यक्तिगत संकेत देता है संदेश!",
         "sv": "[Rösta på botten var 12: e timme](https:\/\/top.gg\/bot\/{0}\/vote) för att få åtta användningar av kommandot `{1}votehint`, vilket ger dig en personlig ledtråd via direkt meddelande!",
         "ru": "[Голосуйте за бота каждые 12 часов](https:\/\/top.gg\/bot\/{0}\/vote), чтобы получить восемь использований команды `{1}votehint`, которая дает вам личную подсказку через прямую сообщение!",
-        "it": "[Vota per il bot ogni 12 ore](https:\/\/top.gg\/bot\/{0}\/vote) per ottenere otto usi del comando `{1} votehint`, che ti dà un suggerimento personale tramite messaggio diretto!",
-        "pl": "[Głosuj na bota co 12 godzin](https:\/\/top.gg\/bot\/{0}\/vote), aby uzyskać osiem zastosowań polecenia `{1} votehint`, które daje ci osobistą wskazówkę w bezpośredniej wiadomości!",
-        "ko": "[12 시간마다 봇에 투표](https:\/\/top.gg\/bot\/{0}\/vote)하여 직접 메시지를 통해 개인적인 힌트를 제공하는`{1} votehint` 명령을 8 번 사용하세요!",
-        "ja": "[12時間ごとにボットに投票する](https:\/\/top.gg\/bot\/{0}\/vote) `{1} votehint`コマンドを8回使用すると、ダイレクトメッセージで個人的なヒントが得られます。",
-        "bg": "[Гласувайте за бота на всеки 12 часа](https:\/\/top.gg\/bot\/{0}\/vote), за да получите осем употреби на командата `{1} votehint`, която ви дава личен намек чрез директно съобщение!",
+        "it": "[Vota per il bot ogni 12 ore](https:\/\/top.gg\/bot\/{0}\/vote) per ottenere otto usi del comando `{1}votehint`, che ti dà un suggerimento personale tramite messaggio diretto!",
+        "pl": "[Głosuj na bota co 12 godzin](https:\/\/top.gg\/bot\/{0}\/vote), aby uzyskać osiem zastosowań polecenia `{1}votehint`, które daje ci osobistą wskazówkę w bezpośredniej wiadomości!",
+        "ko": "[12 시간마다 봇에 투표](https:\/\/top.gg\/bot\/{0}\/vote)하여 직접 메시지를 통해 개인적인 힌트를 제공하는`{1}votehint` 명령을 8 번 사용하세요!",
+        "ja": "[12時間ごとにボットに投票する](https:\/\/top.gg\/bot\/{0}\/vote) `{1}votehint` コマンドを8回使用すると、ダイレクトメッセージで個人的なヒントが得られます。",
+        "bg": "[Гласувайте за бота на всеки 12 часа](https:\/\/top.gg\/bot\/{0}\/vote), за да получите осем употреби на командата `{1}votehint`, която ви дава личен намек чрез директно съобщение!",
         "ar": "[صوّت لبرنامج الروبوت كل 12 ساعة] (https:\/\/top.gg\/bot\/{0}\/vote) للحصول على ثمانية استخدامات للأمر `{1}votehint` ، والذي يمنحك تلميحًا شخصيًا عبر رسالة مباشرة!",
-        "zh": "[每12个小时为机器人投票一次](https:\/\/top.gg\/bot\/{0}\/vote)获得 `{1}votehint` 命令的八种用法，可通过直接消息给您个人提示！"
+        "zh": "[每12个小时为机器人投票一次](https:\/\/top.gg\/bot\/{0}\/vote)获得 `{1}votehint` 命令的八种用法，可通过直接消息给您个人提示！",
+        "nl": "[Stem elke 12 uur op de bot](https:\/\/top.gg\/bot\/{0}\/vote) om acht keer gebruik te maken van het `{1}votehint`-commando, dat je een persoonlijke hint geeft via een direct bericht!"
     },
     "PRIVHINT": {
         "en": "**Get Private Hints by Voting!**\n",
@@ -2246,8 +2370,9 @@
         "ko": "**투표하여 비공개 힌트를 받으세요!**\n",
         "ja": "**投票してプライベートヒントを入手してください！**\n",
         "bg": "** Получавайте частни съвети чрез гласуване!**\n",
-        "ar": "** احصل على تلميحات خاصة عن طريق التصويت! **\n",
-        "zh": "**通过投票获取私人提示！**\n"
+        "ar": "**احصل على تلميحات خاصة عن طريق التصويت!**\n",
+        "zh": "**通过投票获取私人提示！**\n",
+        "nl": "**Krijg privé-tips door te stemmen!**\n"
     },
     "NOTVOTED": {
         "en": "You haven't voted for the bot today!\n",
@@ -2265,7 +2390,8 @@
         "ja": "今日はボットに投票していません！\n",
         "bg": "Днес не сте гласували за бота!\n",
         "ar": "لم تقم بالتصويت لصالح الروبوت اليوم!\n",
-        "zh": "您今天还没有投票给该机器人！\n"
+        "zh": "您今天还没有投票给该机器人！\n",
+        "nl": "Je hebt vandaag niet op de bot gestemd!\n"
     },
     "NOMOREHINTS": {
         "en": "You are out of voter hints, **{0}**!\n",
@@ -2283,7 +2409,8 @@
         "ja": "投票者のヒントがありません、**{0}**！\n",
         "bg": "Нямате намеци за гласоподаватели, **{0}**!\n",
         "ar": "نفدت تلميحات الناخبين ، **{0}**!\n",
-        "zh": "您没有选民提示，**{0}**！\n"
+        "zh": "您没有选民提示，**{0}**！\n",
+        "nl": "U heeft geen hints voor de kiezer, **{0}**!\n"
     },
     "VH1": {
         "en": "**{0}**, i've sent you a hint via DM!\nYou have **{1}** voter hint(s) remaining which expire in **{2} hours and {3} minutes**.",
@@ -2301,7 +2428,8 @@
         "ja": "**{0}**、DM経由でヒントを送信しました。\n**{1}**投票者のヒントが残っています。これは** {2}時間{3}分**で期限切れになります。",
         "bg": "**{0}**, изпратих ви подсказка чрез DM!\nОстават ви **{1}** подсказване (и) за избирателите, които изтичат след ** {2} часа и {3} минути **.",
         "ar": "**{0}** ، لقد أرسلت إليك تلميحًا عبر رسالة مباشرة!\nبقي لديك **{1}** تلميح (تلميحات) ناخبين تنتهي صلاحيته خلال ** {2} ساعة و {3} دقيقة **.",
-        "zh": "**{0}**，我已经通过DM向您发送了提示！\n您还有**{1}**个投票者提示，它们将在** {2}小时和{3}分钟**内到期。"
+        "zh": "**{0}**，我已经通过DM向您发送了提示！\n您还有**{1}**个投票者提示，它们将在** {2}小时和{3}分钟**内到期。",
+        "nl": "**{0}**, ik heb je een hint gestuurd via DM!\nU heeft nog **{1}** hint (en) voor kiezers die over ** {2} uur en {3} minuten ** vervallen."
     },
     "VH2": {
         "en": "**{0}**, i've sent you a hint via DM!\nYou have **NO MORE** voter hints remaining and can vote again in **{1} hours and {2} minutes**.",
@@ -2319,7 +2447,8 @@
         "ja": "**{0}**、DM経由でヒントを送信しました。\n**これ以上**の投票者のヒントは残っておらず、** {1}時間と{2}分**で再度投票できます。",
         "bg": "**{0}**, изпратих ви подсказка чрез DM!\nОстават ** БЕЗ ПОВЕЧЕ ** подсказки за гласоподаватели и можете да гласувате отново след ** {1} часа и {2} минути **.",
         "ar": "**{0}** ، لقد أرسلت إليك تلميحًا عبر رسالة مباشرة!\nبقي لديك ** لا مزيد من ** تلميحات الناخبين ويمكنك التصويت مرة أخرى خلال ** {1} ساعة و {2} دقيقة **.",
-        "zh": "**{0}**，我已经通过DM向您发送了提示！\n您还有**没有更多**的选民提示，可以在** {1}小时和{2}分钟**内再次投票。"
+        "zh": "**{0}**，我已经通过DM向您发送了提示！\n您还有**没有更多**的选民提示，可以在** {1}小时和{2}分钟**内再次投票。",
+        "nl": "**{0}**, ik heb je een hint gestuurd via DM!\nU heeft **NIET MEER** kiezershints meer en kunt over **{1} uur en {2} minuten** opnieuw stemmen."
     },
     "WAITABIT": {
         "en": "You should probaly wait until a non-insane round question is being asked, **{0}**!",
@@ -2337,7 +2466,8 @@
         "ja": "非常識ではないラウンドの質問が行われるまで、おそらく待つ必要があります、**{0}**！",
         "bg": "Трябва да изчакате, докато не бъде зададен нелуд кръгъл въпрос, **{0}**!",
         "ar": "يجب عليك الانتظار حتى يتم طرح سؤال دائري غير مجنون ، **{0}**!",
-        "zh": "您应该认真地等待，直到出现一个非疯狂的圆形问题，**{0}**！"
+        "zh": "您应该认真地等待，直到出现一个非疯狂的圆形问题，**{0}**！",
+        "nl": "U moet waarschijnlijk wachten tot er een niet-gekke ronde vraag wordt gesteld, **{0}**!"
     },
     "NOROUND": {
         "en": "No trivia round is running here, **{0}**!",
@@ -2355,7 +2485,8 @@
         "ja": "ここでは雑学クイズは実行されていません、**{0}**！",
         "bg": "Тук не се провежда кръг от любопитни факти, **{0}**!",
         "ar": "لا توجد جولة معلومات عامة تجري هنا ، **{0}**!",
-        "zh": "此处没有琐事回合，**{0}**！"
+        "zh": "此处没有琐事回合，**{0}**！",
+        "nl": "Er loopt hier geen trivia-ronde, **{0}**!"
     },
     "ACTIVEGAMES": {
         "en": "Active Games",
@@ -2373,7 +2504,8 @@
         "ja": "アクティブなゲーム",
         "bg": "Активни игри",
         "ar": "الألعاب النشطة",
-        "zh": "活动游戏"
+        "zh": "活动游戏",
+        "nl": "Actieve spellen"
     },
     "TOTALSERVERS": {
         "en": "Total Servers",
@@ -2391,7 +2523,8 @@
         "ja": "合計サーバー",
         "bg": "Общо сървъри",
         "ar": "إجمالي الخوادم",
-        "zh": "服务器总数"
+        "zh": "服务器总数",
+        "nl": "Totaal aantal servers"
     },
     "CONNSINCE": {
         "en": "Connected Since",
@@ -2409,7 +2542,8 @@
         "ja": "以来接続",
         "bg": "Свързан от",
         "ar": "متصل منذ",
-        "zh": "自连接以来"
+        "zh": "自连接以来",
+        "nl": "Verbonden sinds"
     },
     "ONLINEUSERS": {
         "en": "Online Users",
@@ -2427,7 +2561,8 @@
         "ja": "オンラインユーザー",
         "bg": "Онлайн потребители",
         "ar": "مستخدمين على الهواء",
-        "zh": "在线用户"
+        "zh": "在线用户",
+        "nl": "Online gebruikers"
     },
     "UPTIME": {
         "en": "Uptime",
@@ -2445,7 +2580,8 @@
         "ja": "稼働時間",
         "bg": "Време за работа",
         "ar": "مدة التشغيل",
-        "zh": "正常运行时间"
+        "zh": "正常运行时间",
+        "nl": "Uptime"
     },
     "SHARDS": {
         "en": "Shards",
@@ -2463,7 +2599,8 @@
         "ja": "破片",
         "bg": "Осколки",
         "ar": "شظايا",
-        "zh": "碎片"
+        "zh": "碎片",
+        "nl": "Scherven"
     },
     "MEMBERINTENT": {
         "en": "Member Intent",
@@ -2481,7 +2618,8 @@
         "ja": "メンバーの意図",
         "bg": "Намерение на член",
         "ar": "نية العضو",
-        "zh": "会员意向"
+        "zh": "会员意向",
+        "nl": "Intentie van het lid"
     },
     "TESTMODE": {
         "en": "Test Mode",
@@ -2499,7 +2637,8 @@
         "ja": "テストモード",
         "bg": "Тестов режим",
         "ar": "وضع الاختبار",
-        "zh": "测试模式"
+        "zh": "测试模式",
+        "nl": "Testmodus"
     },
     "DEVMODE": {
         "en": "Developer Mode",
@@ -2517,7 +2656,8 @@
         "ja": "開発者モード",
         "bg": "Режим за програмисти",
         "ar": "وضع المطور",
-        "zh": "开发者模式"
+        "zh": "开发者模式",
+        "nl": "Ontwikkelaarsmodus"
     },
     "MYPREFIX": {
         "en": "Prefix",
@@ -2535,7 +2675,8 @@
         "ja": "プレフィックス",
         "bg": "Префикс",
         "ar": "اختصار",
-        "zh": "字首"
+        "zh": "字首",
+        "nl": "Voorvoegsel"
     },
     "BOTVER": {
         "en": "Bot Version",
@@ -2553,7 +2694,8 @@
         "ja": "ボットバージョン",
         "bg": "Бот версия",
         "ar": "نسخة البوت",
-        "zh": "Bot版本"
+        "zh": "Bot版本",
+        "nl": "Bot-versie"
     },
     "LIBVER": {
         "en": "Library Version",
@@ -2571,7 +2713,8 @@
         "ja": "ライブラリバージョン",
         "bg": "Версия на библиотеката",
         "ar": "نسخة المكتبة",
-        "zh": "图书馆版本"
+        "zh": "图书馆版本",
+        "nl": "Bibliotheekversie"
     },
     "INFO": {
         "en": "Information",
@@ -2589,7 +2732,8 @@
         "ja": "情報",
         "bg": "Информация",
         "ar": "معلومات",
-        "zh": "信息"
+        "zh": "信息",
+        "nl": "Informatie"
     },
     "TICKYES": {
         "en": ":white_check_mark: Yes",
@@ -2607,7 +2751,8 @@
         "ja": ":white_check_mark: はい",
         "bg": ":white_check_mark: Да",
         "ar": ":white_check_mark: نعم",
-        "zh": "：white_check_mark： 是"
+        "zh": ":white_check_mark: 是",
+        "nl": ":white_check_mark: Ja"
     },
     "CROSSNO": {
         "en": "<:wc_rs:667695516737470494> No",
@@ -2625,7 +2770,8 @@
         "ja": "<:wc_rs:667695516737470494>いいえ",
         "bg": "<:wc_rs:667695516737470494> Не",
         "ar": "<:wc_rs:667695516737470494> لا",
-        "zh": "<：wc_rs：667695516737470494> 否"
+        "zh": "<:wc_rs:667695516737470494> 否",
+        "nl": "<:wc_rs:667695516737470494> Nee"
     },
     "YAYPREMIUM": {
         "en": ":star: This server has TriviaBot Premium! They rock! :star:",
@@ -2643,7 +2789,8 @@
         "ja": ":star: このサーバーにはTriviaBotプレミアムがあります！彼らは揺れる！ :star:",
         "bg": ":star: Този сървър има TriviaBot Premium! Те се люлеят! :star:",
         "ar": ":star: يحتوي هذا الخادم على TriviaBot Premium! هم صخرة! :نجمة :star:",
-        "zh": "：star： 该服务器具有TriviaBot Premium！他们摇滚！ ：star："
+        "zh": ":star: 该服务器具有TriviaBot Premium！他们摇滚！ :star:",
+        "nl": ":star: Deze server heeft TriviaBot Premium! Ze rocken! :star:"
     },
     "JOINED": {
         "en": "You have successfully joined the team \"**{0}**\", **{1}**",
@@ -2661,7 +2808,8 @@
         "ja": "チーム \"**{0}**\"、**{1}**に正常に参加しました",
         "bg": "Успешно се присъединихте към екипа „**{0}**“, **{1}**",
         "ar": "لقد انضممت بنجاح إلى فريق \"**{0}**\" ، **{1}**",
-        "zh": "您已成功加入“ **{0}**”，**{1}**团队"
+        "zh": "您已成功加入“ **{0}**”，**{1}**团队",
+        "nl": "U bent met succes lid geworden van het team \"**{0}**\", **{1}**"
     },
     "CALLFORBACKUP": {
         "en": "Call for backup!",
@@ -2679,7 +2827,8 @@
         "ja": "バックアップを求めてください！",
         "bg": "Обадете се за архивиране!",
         "ar": "اتصل للنسخ الاحتياطي!",
-        "zh": "要求备份！"
+        "zh": "要求备份！",
+        "nl": "Bel voor ondersteuning!"
     },
     "CANTJOIN": {
         "en": "I cannot bring about world peace, make you a sandwich, or join that team, **{0}**",
@@ -2697,7 +2846,8 @@
         "ja": "私は世界平和をもたらしたり、サンドイッチを作ったり、そのチームに参加したりすることはできません**{0}**",
         "bg": "Не мога да постигна световен мир, да ви направя сандвич или да се присъединя към този екип, **{0}**",
         "ar": "لا يمكنني إحلال السلام العالمي ، أو إعداد شطيرة لك ، أو الانضمام إلى هذا الفريق ، **{0}**",
-        "zh": "我无法实现世界和平，不能给你做三明治，也不能加入那个团队，**{0}**"
+        "zh": "我无法实现世界和平，不能给你做三明治，也不能加入那个团队，**{0}**",
+        "nl": "Ik kan geen wereldvrede brengen, geen boterham voor je maken of lid worden van dat team, **{0}**"
     },
     "CREATED": {
         "en": "You have successfully **created** and joined the team \"**{0}**\", **{1}**",
@@ -2715,25 +2865,27 @@
         "ja": "**作成**し、チーム \"**{0}**\"、**{1}**に参加しました。",
         "bg": "Успешно ** създадохте ** и се присъединихте към екипа „**{0}**“, **{1}**",
         "ar": "لقد نجحت في **إنشاء** والانضمام إلى الفريق \"**{0}**\" ، **{1}**",
-        "zh": "您已经成功**创建**并加入了团队“ **{0}**”，**{1}**"
+        "zh": "您已经成功**创建**并加入了团队“ **{0}**”，**{1}**",
+        "nl": "U heeft **gemaakt** en bent lid geworden van het team \"**{0}**\", **{1}**"
     },
     "CANTCREATE": {
         "en": "I couldn't create that team, **{0}**...",
         "tr": "O takımı oluşturamadım, **{0}**...",
         "pt": "Não consegui criar esse time, **{0}**...",
         "fr": "Je n'ai pas pu créer cette équipe, **{0}**...",
-        "es": "No pude crear ese equipo, **{0}** ...",
-        "de": "Ich konnte dieses Team nicht erstellen, **{0}** ...",
+        "es": "No pude crear ese equipo, **{0}**...",
+        "de": "Ich konnte dieses Team nicht erstellen, **{0}**...",
         "hi": "मैं वह टीम नहीं बना सका, **{0}** ...",
-        "sv": "Jag kunde inte skapa det teamet, **{0}** ...",
-        "ru": "Мне не удалось создать эту команду, **{0}** ...",
-        "it": "Non sono riuscito a creare quella squadra, **{0}** ...",
-        "pl": "Nie mogłem stworzyć tego zespołu, **{0}** ...",
-        "ko": "그 팀을 만들 수 없습니다. **{0}** ...",
-        "ja": "そのチームを作成できませんでした、**{0}** .. ..",
-        "bg": "Не можах да създам този екип, **{0}** ...",
-        "ar": "لم أتمكن من إنشاء هذا الفريق ، **{0}** ...",
-        "zh": "我无法创建该团队，**{0}** ..."
+        "sv": "Jag kunde inte skapa det teamet, **{0}**...",
+        "ru": "Мне не удалось создать эту команду, **{0}**...",
+        "it": "Non sono riuscito a creare quella squadra, **{0}**...",
+        "pl": "Nie mogłem stworzyć tego zespołu, **{0}**...",
+        "ko": "그 팀을 만들 수 없습니다. **{0}**...",
+        "ja": "そのチームを作成できませんでした、**{0}**...",
+        "bg": "Не можах да създам този екип, **{0}**...",
+        "ar": "لم أتمكن من إنشاء هذا الفريق ، **{0}**...",
+        "zh": "我无法创建该团队，**{0}**...",
+        "nl": "Ik kon dat team niet maken, **{0}**..."
     },
     "ALREADYMEMBER": {
         "en": "**{0}**, you are already a member of team \"**{1}**\"!",
@@ -2751,7 +2903,8 @@
         "ja": "**{0}**、あなたはすでにチーム \"**{1}**\"のメンバーです！",
         "bg": "**{0}**, вече сте член на екипа „**{1}**“!",
         "ar": "**{0}** ، أنت بالفعل عضو في فريق \"**{1}**\"!",
-        "zh": "**{0}**，您已经是“ **{1}**”团队的成员！"
+        "zh": "**{0}**，您已经是“ **{1}**”团队的成员！",
+        "nl": "**{0}**, u bent al lid van team \"**{1}**\"!"
     },
     "ZELDAREFERENCE": {
         "en": "It's unsafe to go alone...",
@@ -2769,7 +2922,8 @@
         "ja": "一人で行くのは危険です...",
         "bg": "Не е безопасно да отидете сами ...",
         "ar": "من غير الآمن الذهاب بمفردك ...",
-        "zh": "一个人去是不安全的..."
+        "zh": "一个人去是不安全的...",
+        "nl": "Het is onveilig om alleen te gaan ..."
     },
     "YOULONER": {
         "en": "**{0}**, you aren't a member of any team! Use **{1}join** to join a team!",
@@ -2787,7 +2941,8 @@
         "ja": "**{0}**、あなたはどのチームのメンバーでもありません！ ** {1}参加**を使用してチームに参加してください！",
         "bg": "**{0}**, не сте член на нито един отбор! Използвайте ** {1} присъединяване **, за да се присъедините към екип!",
         "ar": "**{0}** ، أنت لست عضوًا في أي فريق! استخدم ** {1} انضم ** للانضمام إلى فريق!",
-        "zh": "**{0}**，您不是任何团队的成员！使用** {1}加入**加入团队！"
+        "zh": "**{0}**，您不是任何团队的成员！使用** {1}加入**加入团队！",
+        "nl": "**{0}**, u bent geen lid van een team! Gebruik ** {1} join ** om lid te worden van een team!"
     },
     "LEFTTEAM": {
         "en": "**{0}** has left team **{1}**",
@@ -2805,7 +2960,8 @@
         "ja": "**{0}**がチームを去りました**{1}**",
         "bg": "**{0}** напусна екипа **{1}**",
         "ar": "**{0}** غادر الفريق **{1}**",
-        "zh": "**{0}** 已离开团队**{1}**"
+        "zh": "**{0}** 已离开团队**{1}**",
+        "nl": "**{0}** heeft het team verlaten **{1}**"
     },
     "COMEBACK": {
         "en": "Come back, we'll miss you! :cry:",
@@ -2823,7 +2979,8 @@
         "ja": "戻ってきて、あなたがいなくて寂しいです！ ：cry：",
         "bg": "Върни се, ще ни липсваш! : cry:",
         "ar": "تعال ، سنفتقدك! :يبكي :cry:",
-        "zh": "回来，我们会想念你的！ ：cry:"
+        "zh": "回来，我们会想念你的！ ：cry:",
+        "nl": "Kom terug, we zullen je missen! :huilen:"
     },
     "HERPDERP": {
         "en": "<@{0}>, herp derp, theres a malformed help file. Please contact a developer on the official support server: https:\/\/discord.gg\/brainbox",
@@ -2841,7 +2998,8 @@
         "ja": "<@{0}>、herp derp、不正な形式のヘルプファイルがあります。公式サポートサーバーの開発者に連絡してください：https：\/\/discord.gg\/brainbox",
         "bg": "<@{0}>, herp derp, има деформиран файл за помощ. Моля, свържете се с разработчик на официалния сървър за поддръжка: https:\/\/discord.gg\/brainbox",
         "ar": "<@{0}> ، herp derp ، يوجد ملف تعليمات تالف. يرجى الاتصال بالمطور على خادم الدعم الرسمي: https:\/\/discord.gg\/brainbox",
-        "zh": "<@{0}>，herp derp，那里的帮助文件格式错误。请与官方支持服务器上的开发人员联系： https:\/\/discord.gg\/brainbox"
+        "zh": "<@{0}>，herp derp，那里的帮助文件格式错误。请与官方支持服务器上的开发人员联系： https:\/\/discord.gg\/brainbox",
+        "nl": "<@{0}>, herp derp, er is een verkeerd opgemaakt helpbestand. Neem contact op met een ontwikkelaar op de officiële ondersteuningsserver: https:\/\/discord.gg\/brainbox"
     },
     "WOAHTHERE": {
         "en": "Whoa there!",
@@ -2859,7 +3017,8 @@
         "ja": "おっと！",
         "bg": "Уау!",
         "ar": "قف هناك!",
-        "zh": "哇！"
+        "zh": "哇！",
+        "nl": "Whoa daar!"
     },
     "RATELIMITED": {
         "en": "Please wait {0} seconds before trying the **{1}** command again!",
@@ -2877,7 +3036,8 @@
         "ja": "**{1}**コマンドを再試行する前に、{0}秒待ってください。",
         "bg": "Моля, изчакайте {0} секунди, преди да опитате отново командата **{1}**!",
         "ar": "الرجاء الانتظار {0} ثانية قبل تجربة الأمر **{1}** مرة أخرى!",
-        "zh": "请等待{0}秒，然后再次尝试**{1}**命令！"
+        "zh": "请等待{0}秒，然后再次尝试**{1}**命令！",
+        "nl": "Wacht {0} seconden voordat u de opdracht **{1}** opnieuw probeert!"
     },
     "INVITEME": {
         "en": "Invite TriviaBot",
@@ -2895,7 +3055,8 @@
         "ja": "TriviaBotを招待する",
         "bg": "Поканете TriviaBot",
         "ar": "قم بدعوة TriviaBot",
-        "zh": "邀请TriviaBot"
+        "zh": "邀请TriviaBot",
+        "nl": "Nodig TriviaBot uit"
     },
     "INVITEBLURB": {
         "en": "Does your server need some entertainment?\n\nTo invite TriviaBot to your own server, [click here](https:\/\/discord.com\/oauth2\/authorize?client_id=715906723982082139&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code)\n<:blank:667278047006949386>",
@@ -2913,7 +3074,8 @@
         "ja": "サーバーには娯楽が必要ですか？\n\nTriviaBotを自分のサーバーに招待するには、[ここをクリック](https:\/\/discord.com\/oauth2\/authorize?client_id=715906723982082139&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code)\n<:blank:667278047006949386>",
         "bg": "Има ли нужда от сървъра ви за забавление?\n\nЗа да поканите TriviaBot на вашия собствен сървър, [щракнете тук](https:\/\/discord.com\/oauth2\/authorize?client_id=715906723982082139&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code)\n<:blank:667278047006949386>",
         "ar": "هل يحتاج الخادم الخاص بك إلى بعض الترفيه؟\n\nلدعوة TriviaBot إلى الخادم الخاص بك ، [انقر هنا] (https:\/\/discord.com\/oauth2\/authorize؟client_id=715906723982082139&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftrespiabot.co. )\n<:blank: 667278047006949386>",
-        "zh": "您的服务器需要娱乐吗？\n\n要将TriviaBot邀请到您自己的服务器，请[单击此处](https:\/\/discord.com\/oauth2\/authorize?client_id=715906723982082139&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code )\n<：blank：667278047006949386>"
+        "zh": "您的服务器需要娱乐吗？\n\n要将TriviaBot邀请到您自己的服务器，请[单击此处](https:\/\/discord.com\/oauth2\/authorize?client_id=715906723982082139&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code)\n<:blank:667278047006949386>",
+        "nl": "Heeft uw server wat entertainment nodig?\n\nOm TriviaBot uit te nodigen op je eigen server, [klik hier](https:\/\/discord.com\/oauth2\/authorize?client_id=715906723982082139&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code)\n<:blank:667278047006949386>"
     },
     "ONLINE": {
         "en": "Online",
@@ -2931,7 +3093,8 @@
         "ja": "オンライン",
         "bg": "На линия",
         "ar": "عبر الانترنت",
-        "zh": "线上"
+        "zh": "线上",
+        "nl": "Online"
     },
     "OFFLINE": {
         "en": "Offline",
@@ -2949,7 +3112,8 @@
         "ja": "オフライン",
         "bg": "Извън линия",
         "ar": "غير متصل على الانترنت",
-        "zh": "离线"
+        "zh": "离线",
+        "nl": "Offline"
     },
     "SHARD": {
         "en": "Shard",
@@ -2967,7 +3131,8 @@
         "ja": "シャード",
         "bg": "Шард",
         "ar": "شظية",
-        "zh": "碎片"
+        "zh": "碎片",
+        "nl": "Scherf"
     },
     "PONG": {
         "en": "Pong!",
@@ -2985,7 +3150,8 @@
         "ja": "ポン！",
         "bg": "Понг!",
         "ar": "بونغ!",
-        "zh": "ong！"
+        "zh": "ong！",
+        "nl": "Pong!"
     },
     "DISCPING": {
         "en": "Discord API",
@@ -3003,7 +3169,8 @@
         "ja": "Discord API",
         "bg": "API на Discord",
         "ar": "واجهة برمجة تطبيقات Discord",
-        "zh": "Discord API"
+        "zh": "Discord API",
+        "nl": "Discord API"
     },
     "APIPING": {
         "en": "TriviaBot API",
@@ -3021,7 +3188,8 @@
         "ja": "TriviaBot API",
         "bg": "API на TriviaBot",
         "ar": "واجهة برمجة تطبيقات TriviaBot",
-        "zh": "TriviaBot API"
+        "zh": "TriviaBot API",
+        "nl": "TriviaBot-API"
     },
     "DBPING": {
         "en": "Database",
@@ -3039,7 +3207,8 @@
         "ja": "データベース",
         "bg": "База данни",
         "ar": "قاعدة البيانات",
-        "zh": "数据库"
+        "zh": "数据库",
+        "nl": "Database"
     },
     "OKPING": {
         "en": "These figures are within expected ranges!",
@@ -3057,7 +3226,8 @@
         "ja": "これらの数値は予想範囲内です！",
         "bg": "Тези цифри са в рамките на очакваните граници!",
         "ar": "هذه الأرقام ضمن النطاقات المتوقعة!",
-        "zh": "这些数字在预期范围内！"
+        "zh": "这些数字在预期范围内！",
+        "nl": "Deze cijfers vallen binnen het verwachte bereik!"
     },
     "BADPING": {
         "en": "Something odd is happening. Please remain calm!",
@@ -3075,7 +3245,8 @@
         "ja": "何か奇妙なことが起こっています。落ち着いてください！",
         "bg": "Нещо странно се случва. Моля, запазете спокойствие!",
         "ar": "شيء غريب يحدث. من فضلك حافظ على هدوئك!",
-        "zh": "奇怪的事情正在发生。请保持冷静！"
+        "zh": "奇怪的事情正在发生。请保持冷静！",
+        "nl": "Er gebeurt iets vreemds. Blijf alsjeblieft kalm!"
     },
     "TIME2": {
         "en": "%d hours, %d mins",
@@ -3092,8 +3263,9 @@
         "ko": "%d 시간, %d 분",
         "ja": "%d 時間、%d 分",
         "bg": "%d часа, %d минути",
-        "ar": "%d ساعة ،٪ d دقيقة",
-        "zh": "%d 小时，％d分钟"
+        "ar": "%d ساعة ،%d دقيقة",
+        "zh": "%d 小时，%d分钟",
+        "nl": "%d uur, %d minuten"
     },
     "TIME3": {
         "en": "%d days, %d hours, %d mins",
@@ -3110,8 +3282,9 @@
         "ko": "%d 일, %d 시간, %d 분",
         "ja": "%d日、%d時間、%d分",
         "bg": "%d дни, %d часа, %d минути",
-        "ar": "%d يوم ،٪ d ساعة ،٪ d دقيقة",
-        "zh": "%d 天，％d小时，％d分钟"
+        "ar": "%d يوم ،%d ساعة ،%d دقيقة",
+        "zh": "%d 天，%d小时，%d分钟",
+        "nl": "%d dagen,%d uur,%d minuten"
     },
     "PRIVACY": {
         "en": "Team Privacy",
@@ -3129,7 +3302,8 @@
         "ja": "チームのプライバシー",
         "bg": "Поверителност на екипа",
         "ar": "خصوصية الفريق",
-        "zh": "团队隐私"
+        "zh": "团队隐私",
+        "nl": "Teamprivacy"
     },
     "PRV_ON": {
         "en": "Your Team Privacy setting is set to: **ON**.\n\nYou will show as `[ Private Member ]` in team member lists.",
@@ -3147,7 +3321,8 @@
         "ja": "チームのプライバシー設定は**オン**に設定されています。\n\nチームメンバーリストに「[プライベートメンバー]」と表示されます。",
         "bg": "Настройката за поверителност на вашия екип е настроена на: ** ON **.\n\nЩе се покаже като `[Частен член]` в списъците с членове на екипа.",
         "ar": "تم تعيين إعداد خصوصية الفريق على: **ON**.\n\nستظهر كـ \"[عضو خاص]\" في قوائم أعضاء الفريق.",
-        "zh": "您的团队隐私设置设置为：**开启**。\n\n您将在团队成员列表中显示为“ [私人成员]”。"
+        "zh": "您的团队隐私设置设置为：**开启**。\n\n您将在团队成员列表中显示为“ [私人成员]”。",
+        "nl": "Uw teamprivacy-instelling is ingesteld op: **AAN**.\n\nU wordt weergegeven als `[Private Member]` in de teamledenlijsten."
     },
     "PRV_OFF": {
         "en": "Your Team Privacy setting is set to: **OFF**.\n\nYou will show as your username in team member lists.",
@@ -3165,7 +3340,8 @@
         "ja": "チームのプライバシー設定は**オフ**に設定されています。\n\nチームメンバーリストにユーザー名として表示されます。",
         "bg": "Настройката за поверителност на вашия екип е настроена на: ** OFF **.\n\nЩе се покажете като ваше потребителско име в списъците с членове на екипа.",
         "ar": "تم تعيين إعداد خصوصية الفريق على: **إيقاف**.\n\nستظهر كاسم المستخدم الخاص بك في قوائم أعضاء الفريق.",
-        "zh": "您的团队隐私设置设置为：**关闭**。\n\n您将在团队成员列表中显示为用户名。"
+        "zh": "您的团队隐私设置设置为：**关闭**。\n\n您将在团队成员列表中显示为用户名。",
+        "nl": "Uw teamprivacy-instelling is ingesteld op: **UIT**.\n\nU wordt als uw gebruikersnaam weergegeven in de lijsten met teamleden."
     },
     "NOTQUITERIGHT": {
         "en": "That's not quite right...",
@@ -3183,7 +3359,8 @@
         "ja": "それは完全に正しくありません...",
         "bg": "Това не е съвсем правилно ...",
         "ar": "هذا ليس صحيحا تماما...",
-        "zh": "不太对..."
+        "zh": "不太对...",
+        "nl": "Dat klopt niet helemaal..."
     },
     "NOSUCHTEAM": {
         "en": "There is no team called `%s`",
@@ -3200,8 +3377,9 @@
         "ko": "`%s`라는 팀이 없습니다.",
         "ja": "`%s`というチームはありません",
         "bg": "Няма екип, наречен `%s`",
-        "ar": "لا يوجد فريق يسمى `٪ s`",
-        "zh": "没有名为“％s”的团队"
+        "ar": "لا يوجد فريق يسمى `%s`",
+        "zh": "没有名为 `%s` 的团队",
+        "nl": "Er is geen team met de naam `%s`"
     },
     "TINFO": {
         "en": "Team Information",
@@ -3219,7 +3397,8 @@
         "ja": "チーム情報",
         "bg": "Информация за екипа",
         "ar": "معلومات الفريق",
-        "zh": "团队信息"
+        "zh": "团队信息",
+        "nl": "Teaminformatie"
     },
     "NAME": {
         "en": "Name",
@@ -3237,7 +3416,8 @@
         "ja": "名前",
         "bg": "Име",
         "ar": "اسم",
-        "zh": "名称"
+        "zh": "名称",
+        "nl": "Naam"
     },
     "FOUNDER": {
         "en": "Founder",
@@ -3255,7 +3435,8 @@
         "ja": "創設者",
         "bg": "Основател",
         "ar": "مؤسس",
-        "zh": "创办人"
+        "zh": "创办人",
+        "nl": "Oprichter"
     },
     "MEMBERCOUNT": {
         "en": "Member Count",
@@ -3273,7 +3454,8 @@
         "ja": "会員数",
         "bg": "Брой членове",
         "ar": "عدد الأعضاء",
-        "zh": "会员人数"
+        "zh": "会员人数",
+        "nl": "Leden Aantal"
     },
     "POINTSTOTAL": {
         "en": "Points Total",
@@ -3291,7 +3473,8 @@
         "ja": "合計ポイント",
         "bg": "Общо точки",
         "ar": "مجموع النقاط",
-        "zh": "总积分"
+        "zh": "总积分",
+        "nl": "Punten totaal"
     },
     "GLOBALRANK": {
         "en": "Global Rank",
@@ -3309,7 +3492,8 @@
         "ja": "世界ランク",
         "bg": "Глобален ранг",
         "ar": "التصنيف العالمي",
-        "zh": "全球排名"
+        "zh": "全球排名",
+        "nl": "Algemene Rangschikking"
     },
     "DATEFOUNDED": {
         "en": "Date Founded",
@@ -3327,7 +3511,8 @@
         "ja": "設立日",
         "bg": "Дата на основаване",
         "ar": "تاريخ التأسيس",
-        "zh": "成立时间"
+        "zh": "成立时间",
+        "nl": "Datum opgericht"
     },
     "TEAMHUB": {
         "en": "[View Team Hub Page](https:\/\/triviabot.co.uk\/team\/%s)",
@@ -3345,7 +3530,8 @@
         "ja": "[チームハブページを表示](https:\/\/triviabot.co.uk\/team\/%s)",
         "bg": "[Вижте страницата на екипа на екипа](https:\/\/triviabot.co.uk\/team\/%s)",
         "ar": "[عرض صفحة مركز الفريق](https:\/\/triviabot.co.uk\/team\/%s)",
-        "zh": "[查看团队中心页面](https:\/\/triviabot.co.uk\/team\/%s)"
+        "zh": "[查看团队中心页面](https:\/\/triviabot.co.uk\/team\/%s)",
+        "nl": "[Bekijk Team Hub-pagina](https:\/\/triviabot.co.uk\/team\/%s)"
     },
     "TOP10TEAMS": {
         "en": "Top Ten Teams",
@@ -3363,7 +3549,8 @@
         "ja": "トップ10チーム",
         "bg": "Десетте отбора",
         "ar": "أفضل عشرة فرق",
-        "zh": "十大球队"
+        "zh": "十大球队",
+        "nl": "Top tien teams"
     },
     "MONTHLYNITRO": {
         "en": "Monthly Nitro Leaderboard",
@@ -3381,7 +3568,8 @@
         "ja": "毎月のニトロリーダーボード",
         "bg": "Месечна класация на Nitro",
         "ar": "Nitro Leaderboard الشهرية",
-        "zh": "每月硝基排行榜"
+        "zh": "每月硝基排行榜",
+        "nl": "Maandelijks Nitro Leaderboard"
     },
     "LANGCHANGE": {
         "en": "TriviaBot's language has been set to English (UK)",
@@ -3399,7 +3587,8 @@
         "ja": "TriviaBotの言語は英語(UK)に設定されています",
         "bg": "Езикът на TriviaBot е настроен на български",
         "ar": "تم ضبط لغة TriviaBot على اللغة العربية",
-        "zh": "TriviaBot的语言已设置为中文（简体）"
+        "zh": "TriviaBot的语言设置为中文",
+        "nl": "De taal van TriviaBot is ingesteld op Nederlands"
     },
     "SUPPORTEDLANGS": {
         "en": "The supported languages for TriviaBot are:",
@@ -3417,7 +3606,8 @@
         "ja": "TriviaBotでサポートされている言語は次のとおりです。",
         "bg": "Поддържаните езици за TriviaBot са:",
         "ar": "اللغات المدعومة لـ TriviaBot هي:",
-        "zh": "TriviaBot支持的语言是："
+        "zh": "TriviaBot支持的语言是：",
+        "nl": "De ondersteunde talen voor TriviaBot zijn:"
     },
     "HOWTOCHANGE": {
         "en": "Use `!language <code>` (e.g. `!language en`) to change the bot's language",
@@ -3435,7 +3625,8 @@
         "ja": "ボットの言語を変更するには、`!language <code>`(例：`!language en`)を使用します",
         "bg": "Използвайте `!language <code>` (например `!language en`), за да промените езика на бота",
         "ar": "استخدم `!language <code>` (مثل `!language en`) لتغيير لغة الروبوت",
-        "zh": "使用`!language <code>`(例如`!language en`)更改漫游器的语言"
+        "zh": "使用`!language <code>`(例如`!language en`)更改漫游器的语言",
+        "nl": "Gebruik `!language <code>` (bijv. `!language en`) om de taal van de bot te wijzigen"
     },
     "PREFIXSET": {
         "en": "The bot's prefix is now: `%s`",
@@ -3452,8 +3643,9 @@
         "ko": "봇의 접두사는 이제 `%s` 입니다.",
         "ja": "ボットのプレフィックスは次のようになりました：`%s`",
         "bg": "Префиксът на бота е сега: `%s`",
-        "ar": "بادئة الروبوت الآن هي: `٪ s`",
-        "zh": "机器人的前缀现在为：％s"
+        "ar": "بادئة الروبوت الآن هي: `%s`",
+        "zh": "机器人的前缀现在为：`%s`",
+        "nl": "Het voorvoegsel van de bot is nu: `%s`"
     },
     "BADLANG": {
         "en": "No such language. Use `!language` without a parameter to see the valid language list.",
@@ -3471,7 +3663,8 @@
         "ja": "そのような言語はありません。有効な言語リストを表示するには、パラメータなしで `!language` を使用してください。",
         "bg": "Няма такъв език. Използвайте `!language` без параметър, за да видите валидния списък с езици.",
         "ar": "لا توجد مثل هذه اللغة. استخدم \"! اللغة\" ب!languageمة لمشاهدة قائمة اللغات الصالحة.",
-        "zh": "没有这样的语言。使用不带参数的`!language`可以查看有效的语言列表。"
+        "zh": "没有这样的语言。使用不带参数的`!language`可以查看有效的语言列表。",
+        "nl": "Geen dergelijke taal. Gebruik `!language` zonder parameter om de geldige talenlijst te zien."
     },
     "MODONLY": {
         "en": "Only roles specified in the dashboard, or the server owner, can execute this command.",
@@ -3489,7 +3682,8 @@
         "ja": "このコマンドを実行できるのは、ダッシュボードまたはサーバー所有者で指定された役割のみです。",
         "bg": "Само ролите, посочени в таблото, или собственикът на сървъра, могат да изпълнят тази команда.",
         "ar": "يمكن فقط للأدوار المحددة في لوحة المعلومات أو مالك الخادم تنفيذ هذا الأمر.",
-        "zh": "只有在仪表板中指定的角色或服务器所有者才能执行此命令。"
+        "zh": "只有在仪表板中指定的角色或服务器所有者才能执行此命令。",
+        "nl": "Alleen rollen die zijn opgegeven in het dashboard, of de servereigenaar, kunnen deze opdracht uitvoeren."
     },
     "WELCOME": {
         "en": "Thank you for inviting **TriviaBot** to %s! To get started with the bot, simply type `!start` to start a slow game of trivia or `!quickfire` to start a fast-paced game.\n\nYou can quickly set the bot's prefix with the `!language` and `!prefix` commands or by using the [dashboard](https:\/\/triviabot.co.uk\/dashboard) where you can also remotely start and stop games, change who has access to the bot, and more!\n\nFor further help please join [the official support server](https:\/\/discord.gg\/brainbox).\n\nHave fun!",
@@ -3507,7 +3701,8 @@
         "ja": "** TriviaBot **を％sに招待していただきありがとうございます。ボットの使用を開始するには、「!start」と入力して雑学クイズの遅いゲームを開始するか、「!quickfire」と入力してペースの速いゲームを開始します。\n\n`!language`コマンドと`！prefix`コマンドを使用するか、[ダッシュボード](https:\/\/triviabot.co.uk\/dashboard)を使用してボットのプレフィックスをすばやく設定できます。この場合、ゲームをリモートで開始および停止したり、変更したりすることもできます。ボットにアクセスできる人など！\n\nさらにヘルプが必要な場合は、[公式サポートサーバー](https:\/\/discord.gg\/brainbox)に参加してください。\n\n楽しんで！",
         "bg": "Благодарим ви, че поканихте **TriviaBot** на %s! За да започнете с бота, просто напишете `!start`, за да започнете бавна игра на любопитни факти или `!quickfire`, за да започнете бърза игра.\n\nМожете бързо да зададете префикса на бота с командите `!language` и `!prefix` или като използвате [таблото за управление](https:\/\/triviabot.co.uk\/dashboard), където можете също дистанционно да стартирате и спирате игри, да променяте който има достъп до бота и още!\n\nЗа допълнителна помощ, моля, присъединете се към [официалния сървър за поддръжка](https:\/\/discord.gg\/brainbox).\n\nЗабавлявай се!",
         "ar": "شكرًا لك على دعوة **TriviaBot** إلى٪ s! لبدء استخدام الروبوت ، ما عليك سوى كتابة \"! start\" لبدء لعبة أسئلة بسيطة أو \"!quickfire\" لبدء لعبة سريعة الخطى.\n\nيمكنك بسرعة تعيين بادئة الروبوت بأوامر `! language` و`! prefix` أو باستخدام [لوحة القيادة](https:\/\/triviabot.co.uk\/dashboard) حيث يمكنك أيضًا بدء الألعاب وإيقافها عن بُعد ، وتغيير من لديه حق الوصول إلى الروبوت والمزيد!\n\nلمزيد من المساعدة ، يرجى الانضمام إلى [خادم الدعم الرسمي] (https:\/\/discord.gg\/brainbox).\n\nإستمتع!",
-        "zh": "感谢您邀请“ TriviaBot”加入％s！要开始使用该机器人，只需键入“！start”即可启动慢速琐事游戏，或键入“!quickfire”即可启动快节奏游戏。\n\n您可以使用`!language`和`!prefix`命令或使用[dashboard](https:\/\/triviabot.co.uk\/dashboard)快速设置机器人的前缀，也可以远程启动和停止游戏，更改谁有权使用该机器人，以及更多！\n\n要获得更多帮助，请加入[官方支持服务器](https:\/\/discord.gg\/brainbox)。\n\n玩得开心！"
+        "zh": "感谢您邀请“ TriviaBot”加入％s！要开始使用该机器人，只需键入“！start”即可启动慢速琐事游戏，或键入“!quickfire”即可启动快节奏游戏。\n\n您可以使用`!language`和`!prefix`命令或使用[dashboard](https:\/\/triviabot.co.uk\/dashboard)快速设置机器人的前缀，也可以远程启动和停止游戏，更改谁有权使用该机器人，以及更多！\n\n要获得更多帮助，请加入[官方支持服务器](https:\/\/discord.gg\/brainbox)。\n\n玩得开心！",
+        "nl": "Bedankt voor het uitnodigen van **TriviaBot** voor%s! Om met de bot te beginnen, typ je gewoon `!start` om een ​​langzaam spel met trivia te starten of `!quickfire` om een ​​snel spel te starten.\n\nJe kunt snel het voorvoegsel van de bot instellen met de `!language` en `!prefix` commando's of door het [dashboard](https:\/\/triviabot.co.uk\/dashboard) te gebruiken waar je ook op afstand games kunt starten en stoppen, verander die toegang heeft tot de bot, en meer!\n\nVoor verdere hulp kunt u zich aanmelden bij [de officiële ondersteuningsserver](https:\/\/discord.gg\/brainbox).\n\nVeel plezier!"
     },
     "SHARD_IS": {
         "en": "That server is on shard %d",
@@ -3525,7 +3720,8 @@
         "ja": "そのサーバーはシャード%dにあります",
         "bg": "Този сървър е на парче %d",
         "ar": "هذا الخادم موجود على الجزء %d",
-        "zh": "该服务器在分片%d上"
+        "zh": "该服务器在分片%d上",
+        "nl": "Die server staat op shard %d"
     },
     "CLUSTER": {
         "en": "Cluster",
@@ -3543,7 +3739,8 @@
         "ja": "集まる",
         "bg": "Клъстер",
         "ar": "العنقودية",
-        "zh": "簇"
+        "zh": "簇",
+        "nl": "TROS"
     },
     "GLOBAL": {
         "en": "Global Leaderboards",
@@ -3561,7 +3758,8 @@
         "ja": "グローバルリーダーボード",
         "bg": "Глобални класации",
         "ar": "المتصدرين العالمية",
-        "zh": "全球排行榜"
+        "zh": "全球排行榜",
+        "nl": "Wereldwijde klassementen"
     },
     "ACH": {
         "en": "Your Achievements",
@@ -3579,7 +3777,8 @@
         "ja": "あなたの成果",
         "bg": "Вашите постижения",
         "ar": "إنجازاتك",
-        "zh": "您的成就"
+        "zh": "您的成就",
+        "nl": "Jouw prestaties"
     },
     "UNLOCK": {
         "en": "Achievement Unlocked!",
@@ -3597,7 +3796,8 @@
         "ja": "実績のロックが解除されました！",
         "bg": "Отключено постижение!",
         "ar": "تم فتح الإنجاز!",
-        "zh": "成就解锁！"
+        "zh": "成就解锁！",
+        "nl": "Prestatie ontgrendeld!"
     },
     "ACH1": {
         "en": "Unlocked a 10 Question Streak",
@@ -3615,7 +3815,8 @@
         "ja": "10の質問ストリークのロックを解除しました",
         "bg": "Отключи серия от 10 въпроса",
         "ar": "تم فتح خط 10 أسئلة",
-        "zh": "解锁了10条问题"
+        "zh": "解锁了10条问题",
+        "nl": "Een reeks van 10 vragen ontgrendeld"
     },
     "ACH1N": {
         "en": "You cant stop me",
@@ -3633,7 +3834,8 @@
         "ja": "あなたは私を止めることはできません",
         "bg": "Не можеш да ме спреш",
         "ar": "لا يمكنك ايقافي",
-        "zh": "你不能阻止我"
+        "zh": "你不能阻止我",
+        "nl": "Je kunt me niet stoppen"
     },
     "ACH2": {
         "en": "Answered a 20 Question Streak",
@@ -3651,7 +3853,8 @@
         "ja": "20の質問ストリークに回答しました",
         "bg": "Отговори на 20 въпроса",
         "ar": "أجاب على خط 20 سؤالا",
-        "zh": "回答了20个问题"
+        "zh": "回答了20个问题",
+        "nl": "Een reeks van 20 vragen beantwoord"
     },
     "ACH2N": {
         "en": "Streaking for fun and profit",
@@ -3669,7 +3872,8 @@
         "ja": "楽しさと利益のためのストリーク",
         "bg": "Ивици за забавление и печалба",
         "ar": "تسليط الضوء من أجل المتعة والربح",
-        "zh": "追求乐趣和利润"
+        "zh": "追求乐趣和利润",
+        "nl": "Streven naar plezier en winst"
     },
     "ACH3": {
         "en": "Smashed a 50 Question Streak",
@@ -3687,7 +3891,8 @@
         "ja": "50の質問ストリークを壊した",
         "bg": "Разби 50 поредица от въпроси",
         "ar": "حطم خط 50 سؤالا",
-        "zh": "打破了50个问题的连胜纪录"
+        "zh": "打破了50个问题的连胜纪录",
+        "nl": "Een reeks van 50 vragen gebroken"
     },
     "ACH3N": {
         "en": "Streak Master",
@@ -3705,7 +3910,8 @@
         "ja": "ストリークマスター",
         "bg": "Streak Master",
         "ar": "ماستر الخط",
-        "zh": "连胜大师"
+        "zh": "连胜大师",
+        "nl": "Streak Master"
     },
     "ACH4": {
         "en": "Managed a 100 Question Streak",
@@ -3723,7 +3929,8 @@
         "ja": "100の質問ストリークを管理しました",
         "bg": "Управлява 100 въпроса",
         "ar": "تمكنت من إدارة خط 100 سؤال",
-        "zh": "处理了100条问题"
+        "zh": "处理了100条问题",
+        "nl": "Beheerde een reeks van 100 vragen"
     },
     "ACH4N": {
         "en": "Streak Legend",
@@ -3741,7 +3948,8 @@
         "ja": "ストリークレジェンド",
         "bg": "Streak Legend",
         "ar": "خط الأسطورة",
-        "zh": "连胜传奇"
+        "zh": "连胜传奇",
+        "nl": "Streak Legend"
     },
     "ACH5": {
         "en": "Started a new trivia game every day for a week",
@@ -3759,7 +3967,8 @@
         "ja": "1週間毎日新しい雑学クイズゲームを開始しました",
         "bg": "Започна нова игра на любопитни факти всеки ден в продължение на една седмица",
         "ar": "بدأت لعبة أسئلة جديدة كل يوم لمدة أسبوع",
-        "zh": "一周内每天开始新的琐事游戏"
+        "zh": "一周内每天开始新的琐事游戏",
+        "nl": "Startte een week lang elke dag een nieuw trivia-spel"
     },
     "ACH5N": {
         "en": "The daily grind",
@@ -3777,7 +3986,8 @@
         "ja": "毎日のグラインド",
         "bg": "Ежедневното смилане",
         "ar": "الطحن اليومي",
-        "zh": "日常磨"
+        "zh": "日常磨",
+        "nl": "De dagelijkse sleur"
     },
     "ACH6": {
         "en": "Started a new trivia game every day for a month",
@@ -3795,7 +4005,8 @@
         "ja": "1か月間毎日新しい雑学クイズゲームを開始しました",
         "bg": "Започна нова игра на любопитни факти всеки ден в продължение на месец",
         "ar": "بدأت لعبة جديدة كل يوم لمدة شهر",
-        "zh": "每月开始一个新的琐事游戏，持续一个月"
+        "zh": "每月开始一个新的琐事游戏，持续一个月",
+        "nl": "Startte een maand lang elke dag een nieuw trivia-spel"
     },
     "ACH6N": {
         "en": "Mythical Man-Month",
@@ -3813,7 +4024,8 @@
         "ja": "人月の神話",
         "bg": "Митичен човек-месец",
         "ar": "شهر الرجل الأسطوري",
-        "zh": "神话人月"
+        "zh": "神话人月",
+        "nl": "Mythische man-maand"
     },
     "ACH7": {
         "en": "Started a game on Christmas Day",
@@ -3831,7 +4043,8 @@
         "ja": "クリスマスの日にゲームを開始しました",
         "bg": "Започна игра на Коледа",
         "ar": "بدأت لعبة يوم عيد الميلاد",
-        "zh": "在圣诞节那天开始游戏"
+        "zh": "在圣诞节那天开始游戏",
+        "nl": "Begon een spel op eerste kerstdag"
     },
     "ACH7N": {
         "en": "Trivia > Family",
@@ -3849,7 +4062,8 @@
         "ja": "雑学クイズ>家族",
         "bg": "Любопитни факти> Семейство",
         "ar": "التوافه> الأسرة",
-        "zh": "琐事>家庭"
+        "zh": "琐事>家庭",
+        "nl": "Trivia>Familie"
     },
     "ACH8": {
         "en": "Won the day's trivia on any server",
@@ -3867,7 +4081,8 @@
         "ja": "任意のサーバーでその日の雑学クイズに勝ちました",
         "bg": "Спечелени любопитни факти за деня на всеки сървър",
         "ar": "ربح معلومات اليوم على أي خادم",
-        "zh": "在任何服务器上赢得当日琐事"
+        "zh": "在任何服务器上赢得当日琐事",
+        "nl": "Won de trivia van de dag op elke server"
     },
     "ACH8N": {
         "en": "\"A winner is you!\"",
@@ -3879,13 +4094,14 @@
         "hi": "\"A winner is you!\"",
         "sv": "\"A winner is you!\"",
         "ru": "\"A winner is you!\"",
-        "it": "\"Un vincitore sei tu!\"",
-        "pl": "\"Zwycięzcą jesteś ty!\"",
-        "ko": "\"승자는 당신입니다!\"",
-        "ja": "「勝者はあなたです！」",
-        "bg": "„Победител си ти!“",
-        "ar": "\"الفائز هو أنت!\"",
-        "zh": "“胜利者是你！”"
+        "it": "\"A winner is you!\"",
+        "pl": "\"A winner is you!\"",
+        "ko": "\"A winner is you!\"",
+        "ja": "\"A winner is you!\"",
+        "bg": "\"A winner is you!\"",
+        "ar": "\"A winner is you!\"",
+        "zh": "\"A winner is you!\"",
+        "nl": "\"A winner is you!\""
     },
     "ACH9": {
         "en": "Won the monthly nitro prize",
@@ -3903,7 +4119,8 @@
         "ja": "毎月のニトロ賞を受賞",
         "bg": "Спечели месечната нитро награда",
         "ar": "ربح جائزة نيترو الشهرية",
-        "zh": "每月获得硝基奖"
+        "zh": "每月获得硝基奖",
+        "nl": "Won de maandelijkse nitroprijs"
     },
     "ACH9N": {
         "en": "Eyes on the prize",
@@ -3921,7 +4138,8 @@
         "ja": "賞の目",
         "bg": "Очи на наградата",
         "ar": "عيون على الجائزة",
-        "zh": "关注奖品"
+        "zh": "关注奖品",
+        "nl": "Ogen op de prijs"
     },
     "UNLOCK_DETAIL": {
         "en": "You have unlocked an achievement on **TriviaBot**!",
@@ -3939,7 +4157,8 @@
         "ja": "**TriviaBot** でアチーブメントのロックを解除しました！",
         "bg": "Отключихте постижение на ** TriviaBot **!",
         "ar": "لقد حققت إنجازًا في **TriviaBot**!",
-        "zh": "您已在**TriviaBot**上解锁成就！"
+        "zh": "您已在**TriviaBot**上解锁成就！",
+        "nl": "Je hebt een prestatie ontgrendeld op **TriviaBot**!"
     },
     "EARNED": {
         "en": "You earned an achievement!",
@@ -3957,7 +4176,8 @@
         "ja": "あなたは成果を獲得しました！",
         "bg": "Спечелихте постижение!",
         "ar": "لقد حصلت على إنجاز!",
-        "zh": "您获得了成就！"
+        "zh": "您获得了成就！",
+        "nl": "Je hebt een prestatie verdiend!"
     },
     "TROPHYCABINET": {
         "en": "Your Trophy Cabinet",
@@ -3975,7 +4195,8 @@
         "ja": "あなたのトロフィーキャビネット",
         "bg": "Вашият шкаф за трофеи",
         "ar": "خزانة الجوائز الخاصة بك",
-        "zh": "您的奖杯柜"
+        "zh": "您的奖杯柜",
+        "nl": "Je prijzenkast"
     },
     "ACHCOUNT": {
         "en": "**%d** achievements unlocked, **%d** achievements still to unlock.",
@@ -3993,7 +4214,8 @@
         "ja": "**%d** アチーブメントのロックが解除され、**%d** アチーブメントのロックが解除されます。",
         "bg": "**%d** постижения отключени, **%d** постижения все още се отключват.",
         "ar": "تم فتح **%d ** من الإنجازات ، ولا يزال يتعين إلغاء قفل **%d ** الإنجازات.",
-        "zh": "**%d **成就已解锁，**%d **成就仍未解锁。"
+        "zh": "**%d **成就已解锁，**%d **成就仍未解锁。",
+        "nl": "**%d ** prestaties ontgrendeld, **%d** prestaties nog te ontgrendelen."
     },
     "TOVIEWACH": {
         "en": "Use the !achievements command on any channel to view your trophy cabinet at any time.",
@@ -4011,7 +4233,8 @@
         "ja": "任意のチャネルで `!achievements` コマンドを使用して、いつでもトロフィーキャビネットを表示できます。",
         "bg": "Използвайте командата! Постижения на всеки канал, за да прегледате шкафа си за трофеи по всяко време.",
         "ar": "استخدم أمر الإنجازات! على أي قناة لعرض خزانة الجوائز الخاصة بك في أي وقت.",
-        "zh": "在任何频道上使用！achievements命令可随时查看您的奖杯柜。"
+        "zh": "在任何频道上使用！achievements命令可随时查看您的奖杯柜。",
+        "nl": "Gebruik het! Achievements-commando op elk kanaal om je prijzenkast op elk moment te bekijken."
     },
     "CATDISABLED": {
         "en": "Category **'%s'** is now disabled on this guild. You will no longer see questions from this category from the next time you start a new game.",
@@ -4029,7 +4252,8 @@
         "ja": "カテゴリ**'%s'** はこのギルドで無効になりました。次回新しいゲームを開始したときから、このカテゴリの質問は表示されなくなります。",
         "bg": "Категория **'%s'** вече е деактивирана в тази гилдия. Вече няма да виждате въпроси от тази категория от следващия път, когато стартирате нова игра.",
         "ar": "الفئة ** '%s' ** معطلة الآن في هذه الجماعة. لن ترى بعد الآن أسئلة من هذه الفئة في المرة التالية التي تبدأ فيها لعبة جديدة.",
-        "zh": "现在在该行会上禁用类别**'%s'**。从下次开始新游戏时，您将不再看到此类别的问题。"
+        "zh": "现在在该行会上禁用类别**'%s'**。从下次开始新游戏时，您将不再看到此类别的问题。",
+        "nl": "Categorie **'%s'** is nu uitgeschakeld voor deze gilde. Je zult geen vragen uit deze categorie meer zien vanaf de volgende keer dat je een nieuw spel start."
     },
     "CATENABLED": {
         "en": "Category **'%s'** is now enabled on this guild. You will see questions from this category from the next time you start a new game.",
@@ -4047,7 +4271,8 @@
         "ja": "カテゴリ**'%s'** がこのギルドで有効になりました。次回新しいゲームを開始したときに、このカテゴリの質問が表示されます。",
         "bg": "Категория **'%s'** вече е активирана в тази гилдия. Ще видите въпроси от тази категория от следващия път, когато стартирате нова игра.",
         "ar": "تم تمكين الفئة ** '٪s' ** الآن في هذه الجماعة. سترى أسئلة من هذه الفئة في المرة القادمة التي تبدأ فيها لعبة جديدة.",
-        "zh": "现在已在该行会上启用类别**'％s'**。下次开始新游戏时，您将看到此类别的问题。"
+        "zh": "现在已在该行会上启用类别**'％s'**。下次开始新游戏时，您将看到此类别的问题。",
+        "nl": "Categorie **'%s'** is nu ingeschakeld voor deze gilde. Je zult vragen uit deze categorie zien vanaf de volgende keer dat je een nieuw spel start."
     },
     "CATDONE": {
         "en": "As you wish...",
@@ -4065,7 +4290,8 @@
         "ja": "あなたの好きなように...",
         "bg": "Както желаеш...",
         "ar": "مثل ما تتمنى...",
-        "zh": "如你所愿..."
+        "zh": "如你所愿...",
+        "nl": "Zoals je wenst..."
     },
     "CATLIST": {
         "en": "List of categories",
@@ -4083,7 +4309,8 @@
         "ja": "カテゴリのリスト",
         "bg": "Списък на категориите",
         "ar": "قائمة الفئات",
-        "zh": "类别清单"
+        "zh": "类别清单",
+        "nl": "Lijst met categorieën"
     },
     "CATHINT": {
         "en": "Use `!enable` and `!disable` to disable a category for your guild.",
@@ -4101,7 +4328,8 @@
         "ja": "ギルドのカテゴリを無効にするには、 `!enable` と`!disable` を使用します。",
         "bg": "Използвайте `!enable` и `!disable`, за да деактивирате категория за вашата гилдия.",
         "ar": "استخدم \"! تمكين\" و \"! تعطيل\" لتعطيل فئة من أجل نقابتك.",
-        "zh": "使用`!enable`和`!disable`禁用行会的类别。"
+        "zh": "使用`!enable`和`!disable`禁用行会的类别。",
+        "nl": "Gebruik `!enable` en `!disable` om een ​​categorie voor uw gilde uit te schakelen."
     },
     "CATERROR": {
         "en": "I can't do that, Dave",
@@ -4119,7 +4347,8 @@
         "ja": "できない、デイブ",
         "bg": "Не мога да направя това, Дейв",
         "ar": "لا يمكنني فعل ذلك يا ديف",
-        "zh": "戴夫，我做不到"
+        "zh": "戴夫，我做不到",
+        "nl": "Ik kan dat niet doen, Dave"
     },
     "NOSUCHCAT": {
         "en": "There is no category named `%s`",
@@ -4136,8 +4365,9 @@
         "ko": "`%s` 라는 카테고리가 없습니다.",
         "ja": "`%s` という名前のカテゴリはありません",
         "bg": "Няма категория с име `%s`",
-        "ar": "لا توجد فئة مسماة `٪ s`",
-        "zh": "没有名为“％s”的类别"
+        "ar": "لا توجد فئة مسماة `%s`",
+        "zh": "没有名为“%s”的类别",
+        "nl": "Er is geen categorie met de naam `%s`"
     },
     "TOOFEWCATS": {
         "en": "You cannot disable this category as this would mean less than 1000 questions remain to be asked in games. This would be unfair to other players competing on leaderboards or for nitro, and would make for a boring game. Please enable some other categories if you want to disable this one.",
@@ -4155,7 +4385,8 @@
         "ja": "このカテゴリを無効にすることはできません。これは、ゲームで質問される質問が1000未満になることを意味します。これは、リーダーボードやニトロを競う他のプレイヤーにとって不公平であり、退屈なゲームになります。これを無効にする場合は、他のいくつかのカテゴリを有効にしてください。",
         "bg": "Не можете да деактивирате тази категория, тъй като това би означавало да останат по-малко от 1000 въпроса в игрите. Това би било несправедливо спрямо други играчи, които се състезават на класации или за нитро, и би довело до скучна игра. Моля, активирайте някои други категории, ако искате да деактивирате тази.",
         "ar": "لا يمكنك تعطيل هذه الفئة لأن هذا يعني أنه لا يزال يتعين طرح أقل من 1000 سؤال في الألعاب. سيكون هذا غير عادل للاعبين الآخرين الذين يتنافسون على لوحات الصدارة أو على نيترو ، وسيجعل اللعبة مملة. الرجاء تمكين بعض الفئات الأخرى إذا كنت تريد تعطيل هذه الفئة.",
-        "zh": "您不能禁用此类别，因为这将意味着游戏中尚待回答的问题少于1000个。这对于其他在排行榜上或在硝基比赛中的玩家来说是不公平的，并且会使无聊的游戏变得无聊。如果要禁用此类别，请启用其他类别。"
+        "zh": "您不能禁用此类别，因为这将意味着游戏中尚待回答的问题少于1000个。这对于其他在排行榜上或在硝基比赛中的玩家来说是不公平的，并且会使无聊的游戏变得无聊。如果要禁用此类别，请启用其他类别。",
+        "nl": "U kunt deze categorie niet uitschakelen, aangezien dit zou betekenen dat er minder dan 1000 vragen overblijven in games. Dit zou oneerlijk zijn tegenover andere spelers die strijden op scoreborden of voor nitro, en het zou een saai spel opleveren. Schakel een aantal andere categorieën in als u deze wilt uitschakelen."
     },
     "INSANESTATS": {
         "en": "Insane Round Statistics",
@@ -4173,7 +4404,8 @@
         "ja": "非常識なラウンド統計",
         "bg": "Безумна кръгла статистика",
         "ar": "إحصاءات الجولة المجنونة",
-        "zh": "疯狂的回合统计"
+        "zh": "疯狂的回合统计",
+        "nl": "Insane Round Statistieken"
     },
     "START_TOO_SMALL": {
         "en": "This category is too small to play right now! If you want to play this category on its own, please submit more questions so that the category has at least 1000, which you can do this by [clicking here](https:\/\/triviabot.co.uk\/addq\/), or if you subscribe to [TriviaBot Premium](https:\/\/triviabot.co.uk\/premium\/) you can start rounds with categories of only **200** questions instead of **1000**!",
@@ -4191,7 +4423,8 @@
         "ja": "このカテゴリは小さすぎて今はプレイできません！このカテゴリを単独でプレイしたい場合は、カテゴリが少なくとも1000になるように質問を送信してください。これは、[ここをクリック](https:\/\/triviabot.co.uk\/addq\/)、または[TriviaBot Premium](https:\/\/triviabot.co.uk\/premium\/) に登録すると、**1000** ではなく**200** の質問のカテゴリでラウンドを開始できます。",
         "bg": "Тази категория е твърде малка за игра в момента! Ако искате да играете тази категория самостоятелно, моля, изпратете още въпроси, така че категорията да има поне 1000, което можете да направите, като [кликнете тук](https:\/\/triviabot.co.uk\/addq\/), или ако се абонирате за [TriviaBot Premium](https:\/\/triviabot.co.uk\/premium\/), можете да започнете кръгове с категории само с **200** въпроса вместо **1000**!",
         "ar": "هذه الفئة صغيرة جدا للعب الآن! إذا كنت تريد تشغيل هذه الفئة بمفردها ، فالرجاء إرسال المزيد من الأسئلة بحيث تحتوي الفئة على 1000 على الأقل ، ويمكنك القيام بذلك عن طريق [النقر هنا] (https:\/\/triviabot.co.uk\/addq\/) ، أو إذا قمت بالاشتراك في [TriviaBot Premium] (https:\/\/triviabot.co.uk\/premium\/) ، يمكنك بدء جولات بفئات **200** سؤال فقط بدلاً من **1000**!",
-        "zh": "这个类别太小，无法播放！如果您想独自玩这个类别，请提交更多问题，以便该类别至少有1000个，您可以通过单击 [单击此处](https:\/\/triviabot.co.uk\/addq\/)来完成，或者如果您订阅[TriviaBot Premium](https:\/\/triviabot.co.uk\/premium\/)，则可以仅以**200**个问题而不是**1000**的类别开始回合！"
+        "zh": "这个类别太小，无法播放！如果您想独自玩这个类别，请提交更多问题，以便该类别至少有1000个，您可以通过单击 [单击此处](https:\/\/triviabot.co.uk\/addq\/)来完成，或者如果您订阅[TriviaBot Premium](https:\/\/triviabot.co.uk\/premium\/)，则可以仅以**200**个问题而不是**1000**的类别开始回合！",
+        "nl": "Deze categorie is nu te klein om te spelen! Als je deze categorie alleen wilt spelen, dien dan meer vragen in zodat de categorie er minstens 1000 heeft, wat je kunt doen door [hier te klikken] (https:\/\/triviabot.co.uk\/addq\/), of als je je abonneert op [TriviaBot Premium] (https:\/\/triviabot.co.uk\/premium\/) kun je rondes starten met categorieën van slechts **200** vragen in plaats van **1000**!"
     },
     "START_TOO_SMALL_PREM": {
         "en": "This category is too small to play right now! If you want to play this category on its own, please submit more questions so that the category has at least 200, which you can do this by [clicking here](https:\/\/triviabot.co.uk\/addq\/).",
@@ -4209,7 +4442,8 @@
         "ja": "このカテゴリは小さすぎて今はプレイできません！このカテゴリを単独でプレイしたい場合は、カテゴリが少なくとも200になるように質問を送信してください。これは、[ここをクリック](https:\/\/triviabot.co.uk\/addq\/) で実行できます。",
         "bg": "Тази категория е твърде малка за игра в момента! Ако искате да играете тази категория самостоятелно, моля, изпратете още въпроси, така че категорията да има поне 200, което можете да направите, като [кликнете тук](https:\/\/triviabot.co.uk\/addq\/).",
         "ar": "هذه الفئة صغيرة جدا للعب الآن! إذا كنت تريد تشغيل هذه الفئة بمفردها ، فالرجاء إرسال المزيد من الأسئلة بحيث تحتوي الفئة على 200 سؤال على الأقل ، ويمكنك القيام بذلك عن طريق [النقر هنا] (https:\/\/triviabot.co.uk\/addq\/).",
-        "zh": "这个类别太小，无法播放！如果您想独自玩这个类别，请提交更多问题，以便该类别至少有200个，您可以通过单击 [单击此处](https:\/\/triviabot.co.uk\/addq\/)来完成。"
+        "zh": "这个类别太小，无法播放！如果您想独自玩这个类别，请提交更多问题，以便该类别至少有200个，您可以通过单击 [单击此处](https:\/\/triviabot.co.uk\/addq\/)来完成。",
+        "nl": "Deze categorie is nu te klein om te spelen! Als je deze categorie alleen wilt spelen, dien dan meer vragen in zodat de categorie er minstens 200 heeft, wat je kunt doen door [hier klikken](https:\/\/triviabot.co.uk\/addq\/)."
     },
     "START_BAD_CATEGORY": {
         "en": "I can't find any category names that look like the one you specified. Please try again. You can use `!categories` to get a list of categories.",
@@ -4227,7 +4461,8 @@
         "ja": "指定したカテゴリ名が見つかりません。もう一度やり直してください。 `!categories` を使用して、カテゴリのリストを取得できます。",
         "bg": "Не мога да намеря имена на категории, които да изглеждат като това, което сте посочили. Моля, опитайте отново. Можете да използвате `!categories`, за да получите списък с категории.",
         "ar": "لا يمكنني العثور على أي أسماء فئات تشبه تلك التي حددتها. حاول مرة اخرى. يمكنك استخدام \"! فئات\" للحصول على قائمة الفئات.",
-        "zh": "我找不到与您指定的名称相似的任何类别名称。请再试一次。您可以使用 `!categories` 获取类别列表。"
+        "zh": "我找不到与您指定的名称相似的任何类别名称。请再试一次。您可以使用 `!categories` 获取类别列表。",
+        "nl": "Ik kan geen categorienamen vinden die lijken op de naam die je hebt opgegeven. Probeer het opnieuw. U kunt `!categories` gebruiken om een ​​lijst met categorieën te krijgen."
     },
     "PAGES": {
         "en": "Page %d of %d",
@@ -4245,7 +4480,8 @@
         "ja": "%dのページ %d",
         "bg": "Страница %d от %d",
         "ar": "الصفحة %d من %d",
-        "zh": "第%d页，共%d页"
+        "zh": "第%d页，共%d页",
+        "nl": "Pagina %d van %d"
     },
     "DASHBOARDLINK": {
         "en": "[Click here to access the TriviaBot dashboard](https:\/\/triviabot.co.uk\/dashboard)",
@@ -4263,7 +4499,8 @@
         "ja": "[TriviaBotダッシュボードにアクセスするには、ここをクリックしてください](https:\/\/triviabot.co.uk\/dashboard)",
         "bg": "[Щракнете тук за достъп до таблото за управление TriviaBot](https:\/\/triviabot.co.uk\/dashboard)",
         "ar": "[انقر هنا للوصول إلى لوحة تحكم TriviaBot] (https:\/\/triviabot.co.uk\/dashboard)",
-        "zh": "[单击此处访问TriviaBot仪表板](https:\/\/triviabot.co.uk\/dashboard)"
+        "zh": "[单击此处访问TriviaBot仪表板](https:\/\/triviabot.co.uk\/dashboard)",
+        "nl": "[Klik hier om het TriviaBot-dashboard te openen](https:\/\/triviabot.co.uk\/dashboard)"
     },
     "LEADERBOARDLINK": {
         "en": "[Click here to access the TriviaBot global leaderboards](https:\/\/triviabot.co.uk\/leaderboard\/)",
@@ -4281,7 +4518,8 @@
         "ja": "[TriviaBotグローバルリーダーボードにアクセスするには、ここをクリックしてください](https:\/\/triviabot.co.uk\/leaderboard\/)",
         "bg": "[Щракнете тук, за да получите достъп до глобалните класации на TriviaBot](https:\/\/triviabot.co.uk\/leaderboard\/)",
         "ar": "[انقر هنا للوصول إلى لوحات الصدارة العالمية لـ TriviaBot](https:\/\/triviabot.co.uk\/leaderboard\/)",
-        "zh": "[单击此处访问TriviaBot全球排行榜](https:\/\/triviabot.co.uk\/leaderboard\/)"
+        "zh": "[单击此处访问TriviaBot全球排行榜](https:\/\/triviabot.co.uk\/leaderboard\/)",
+        "nl": "[Klik hier om toegang te krijgen tot de wereldwijde TriviaBot-klassementen](https:\/\/triviabot.co.uk\/leaderboard\/)"
     },
     "PINGKEY": {
         "en": ":green_circle: Up :red_circle: Down <:wrench:546395191892901909> Maintenance",
@@ -4299,6 +4537,7 @@
         "ja": ":green_circle: 上 :red_circle: 下 <:wrench:546395191892901909> メンテナンス",
         "bg": ":green_circle: Нагоре: red_circle: Надолу <:wrench:546395191892901909> Поддръжка",
         "ar": ":green_circle: Up: red_circle: Down <:wrench:546395191892901909> الصيانة",
-        "zh": ":green_circle: 向上 :red_circle: 向下 <:wrench:546395191892901909> 维护"
+        "zh": ":green_circle: 向上 :red_circle: 向下 <:wrench:546395191892901909> 维护",
+        "nl": ":green_circle: Op :red_circle: Omlaag <:wrench:546395191892901909> Onderhoud"
     }
 }

@@ -562,14 +562,8 @@ bool join_team(int64_t snowflake_id, const std::string &team, int64_t channel_id
 /* Update the streak for a player on a guild */
 void change_streak(int64_t snowflake_id, int64_t guild_id, int score)
 {
-	// first, get their current best...
-	db::resultset streak = db::query("SELECT streak FROM streaks WHERE nick='?' AND guild_id = '?'",{snowflake_id, guild_id});
-	uint64_t current = (streak.size() ? from_string<uint64_t>(streak[0]["streak"], std::dec) : 0);
-	if (current) {
-		// they beat their personal best, update.
-		db::query("INSERT INTO streaks (nick, guild_id, streak) VALUES('?','?','?') ON DUPLICATE KEY UPDATE streak='?'", {snowflake_id, guild_id, score, score});
-		check_achievement("streak", snowflake_id, guild_id);
-	}
+	db::query("INSERT INTO streaks (nick, guild_id, streak) VALUES('?','?','?') ON DUPLICATE KEY UPDATE streak='?'", {snowflake_id, guild_id, score, score});
+	check_achievement("streak", snowflake_id, guild_id);
 }
 
 /* Get the current streak details for a player on a guild, and the best streak for the guild at present */
