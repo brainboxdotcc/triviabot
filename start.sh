@@ -21,13 +21,13 @@
 
 # Obtain cluster count to start from config.json
 clusters=$(/usr/bin/jq -r '.clustercount' config.json)
-max=$(expr $clusters - 1)
+max=$((clusters - 1))
 
 # Start a screen session for each cluster
-for i in $(seq 0 $max)
+for i in $(seq 0 "$max")
 do
 	# Start cluster
-	/usr/bin/screen -dmS triviabot$i ./run-cluster.sh $i $clusters
+	/usr/bin/screen -dmS "triviabot$i" ./run-cluster.sh "$i" "$clusters"
 	# Wait one minute between each cluster startup to ensure we dont hit rate limits for IDENTIFY
 	/bin/sleep 1m
 done

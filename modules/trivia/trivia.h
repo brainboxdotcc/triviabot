@@ -132,7 +132,7 @@ public:
 	void UpdatePresenceLine();
 	std::string conv_num(std::string datain, const guild_settings_t &settings);
 	std::string letterlong(std::string text, const guild_settings_t &settings);
-	std::string vowelcount(std::string text, const guild_settings_t &settings);
+	std::string vowelcount(const std::string &text, const guild_settings_t &settings);
 	std::string numbertoname(int64_t number, const guild_settings_t& settings);
 	std::string GetNearestNumber(int64_t number, const guild_settings_t& settings);
 	int64_t GetNearestNumberVal(int64_t number, const guild_settings_t& settings);

@@ -52,7 +52,6 @@ void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 
 	bool quickfire = (base_command == "quickfire" || base_command == "qf");
 	bool hintless = (base_command == "hardcore" || base_command == "hc");
-	bool resumed = false;
 
 	json document;
 	std::ifstream configfile("../config.json");
@@ -177,7 +176,7 @@ void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 			}
 			fields.push_back({_("GETREADY", settings), _("FIRSTCOMING", settings), false});
 			fields.push_back({_("HOWPLAY", settings), _("INSTRUCTIONS", settings), false});
-			creator->EmbedWithFields(settings, fmt::format(_((hintless ? "NEWROUND_NH" : "NEWROUND"), settings), (hintless ? "**HARDCORE** " : (quickfire ? "**QUICKFIRE** " : "")), (resumed ? _("RESUMED", settings) : _("STARTED", settings)), (resumed ? _("ABOTADMIN", settings) : username)), fields, cmd.channel_id);
+			creator->EmbedWithFields(settings, fmt::format(_((hintless ? "NEWROUND_NH" : "NEWROUND"), settings), (hintless ? "**HARDCORE** " : (quickfire ? "**QUICKFIRE** " : "")),  _("STARTED", settings), username), fields, cmd.channel_id);
 
 			creator->CacheUser(cmd.author_id, cmd.channel_id);
 			log_game_start(cmd.guild_id, cmd.channel_id, questions, quickfire, c->get_name(), cmd.author_id, sl, hintless);

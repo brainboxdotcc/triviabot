@@ -64,7 +64,7 @@ std::pair<int, int> countvowel(const std::string &input)
 	std::string i = utf8lower(input, true);
 	std::setlocale(LC_CTYPE, "en_US.UTF-8");
 	std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-	std::wstring str = converter.from_bytes(input.c_str());
+	std::wstring str = converter.from_bytes(i.c_str());
 	int vowels = 0;
 	int len = 0;
 	for (std::wstring::iterator it = str.begin(); it != str.end(); ++it) {

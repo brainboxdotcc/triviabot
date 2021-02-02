@@ -43,29 +43,31 @@ state_t::state_t()
 {
 }
 
-state_t::state_t(TriviaModule* _creator, uint32_t questions, uint32_t currstreak, int64_t lastanswered, uint32_t question_index, uint32_t _interval, int64_t _channel_id, bool _hintless, const std::vector<std::string> &_shuffle_list, trivia_state_t startstate,  int64_t _guild_id)
+state_t::state_t(TriviaModule* _creator, uint32_t questions, uint32_t currstreak, int64_t lastanswered, uint32_t question_index, uint32_t _interval, int64_t _channel_id, bool _hintless, const std::vector<std::string> &_shuffle_list, trivia_state_t startstate,  int64_t _guild_id) :
+
+	next_tick(time(NULL)),
+	creator(_creator),
+	terminating(false),
+	channel_id(_channel_id),
+	guild_id(_guild_id),
+	numquestions(questions),
+       	round(question_index),
+	score(0),
+	start_time(time(NULL)),
+	shuffle_list(_shuffle_list),
+	gamestate(startstate),
+	streak(currstreak),
+	asktime(0),
+	found(false),
+	interval(_interval),
+	insane_num(0),
+	insane_left(0),
+	next_quickfire(0),
+	hintless(_hintless),
+	last_to_answer(lastanswered)
 {
-	next_tick = time(NULL);
-	creator = _creator;
 	creator->GetBot()->core.log->debug("state_t::state_t()");
-	terminating = false;
-	channel_id = _channel_id;
-	guild_id = _guild_id;
-	numquestions = questions;
-       	round = question_index;
-	score = 0;
-	start_time = time(NULL);
-	shuffle_list = _shuffle_list;
-	gamestate = startstate;
-	streak = currstreak;
-	asktime = 0;
-	found = false;
-	interval = _interval;
-	insane_num = 0;
-	insane_left = 0;
-	next_quickfire = 0;
 	insane.clear();
-	hintless = _hintless;
 }
 
 std::string state_t::_(const std::string &k, const guild_settings_t& settings)
@@ -107,10 +109,11 @@ void state_t::handle_message(const in_msg& m)
 		if (is_insane_round()) {
 
 			/* Insane round */
-			bool done = false;
 			std::string answered = utf8lower(removepunct(m.msg), settings.language == "es");
 			auto i = this->insane.find(answered);
 			if (i != this->insane.end()) {
+				bool done = false;
+
 				this->insane.erase(i);
 
 				if (--this->insane_left < 1) {

@@ -56,7 +56,6 @@ TriviaModule::TriviaModule(Bot* instigator, ModuleLoader* ml) : Module(instigato
 	/* Check for and store API key */
 	if (Bot::GetConfig("apikey") == "") {
 		throw "TriviaBot API key missing";
-		return;
 	}
 	set_io_context(bot->io, Bot::GetConfig("apikey"), bot, this);
 
@@ -377,7 +376,7 @@ guild_settings_t TriviaModule::GetGuildSettings(int64_t guild_id)
 std::string TriviaModule::GetVersion()
 {
 	/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-	std::string version = "$ModVer 74$";
+	std::string version = "$ModVer 75$";
 	return "3.0." + version.substr(8,version.length() - 9);
 }
 
@@ -427,7 +426,7 @@ std::string TriviaModule::letterlong(std::string text, const guild_settings_t &s
 	}
 }
 
-std::string TriviaModule::vowelcount(std::string text, const guild_settings_t &settings)
+std::string TriviaModule::vowelcount(const std::string &text, const guild_settings_t &settings)
 {
 	std::pair<int, int> counts = countvowel(text);
 	return fmt::format(_("HINT_VOWELCOUNT", settings), counts.second, counts.first);
