@@ -35,7 +35,7 @@
         "bg": "Неправилен Unicode във вграждането: {0}",
         "ar": "يونيكود مشوه في التضمين: {0}",
         "zh": "嵌入格式错误的Unicode：{0}",
-        "nl": "Onjuist opgemaakte unicode in insluiting: {0}"
+        "nl": "Onjuist opgemaakte unicode in embed: {0}"
     },
     "POWERED_BY": {
         "en": "Powered By TriviaBot!",
@@ -643,7 +643,7 @@
         "bg": "долара",
         "ar": "دولار",
         "zh": "美元",
-        "nl": "dollars"
+        "nl": "dollar"
     },
     "ZERO": {
         "en": "zero",
@@ -814,7 +814,7 @@
         "bg": "{0}, в долари",
         "ar": "{0} بالدولار",
         "zh": "{0}，以美元为单位",
-        "nl": "{0}, in dollars"
+        "nl": "{0}, in dollar"
     },
     "QUESTION_COUNTER": {
         "en": ":question: Question {0} of {1}",
@@ -852,7 +852,7 @@
         "bg": "Луд кръг!",
         "ar": "جولة مجنون!",
         "zh": "疯狂的回合！",
-        "nl": "Krankzinnige ronde!"
+        "nl": "Waanzinnige ronde!"
     },
     "INSANE_ANS_COUNT": {
         "en": "Total of {0} possible answers",
@@ -928,7 +928,7 @@
         "bg": "Това изглежда страховито",
         "ar": "يبدو هذا مخادعًا",
         "zh": "这似乎很鬼",
-        "nl": "Dit lijkt spottend"
+        "nl": "Dit lijkt spoopy"
     },
     "Q_CONTACT_DEVS": {
         "en": "[Please contact the developers](https:\/\/discord.gg\/brainbox)",
@@ -966,7 +966,7 @@
         "bg": "Кръгло спиране",
         "ar": "توقف الجولة",
         "zh": "回合停止",
-        "nl": "Rond stoppen"
+        "nl": "Ronde stoppen"
     },
     "ERROR_BROKE_IT": {
         "en": "Error has stopped play!",
@@ -985,7 +985,7 @@
         "bg": "Грешката спря да играе!",
         "ar": "توقف خطأ اللعب!",
         "zh": "错误已停止播放！",
-        "nl": "De fout heeft het afspelen gestopt!"
+        "nl": "Een fout heeft het spel gestopt!"
     },
     "SCRAMBLED_ANSWER": {
         "en": "Scrambled Answer: {0}",
@@ -1099,7 +1099,7 @@
         "bg": "Нещо става, имам въпрос без текст! Това не трябва да се случва ...",
         "ar": "حدث شيء ما ، لدي سؤال بدون نص! هذا لا ينبغي أن يحدث ...",
         "zh": "怎么了，有个没有文字的问题！这不应该发生...",
-        "nl": "Er is iets aan de hand, heb een vraag zonder tekst! Dit mag niet gebeuren ..."
+        "nl": "Er is iets aan de hand, er is een vraag zonder tekst! Dit hoort niet te gebeuren ..."
     },
     "FETCH_Q": {
         "en": "Fetch Question",
@@ -1137,7 +1137,7 @@
         "bg": "Остават ви **{0}** секунди!",
         "ar": "يتبقى لك **{0}** ثانية!",
         "zh": "您还有 **{0}** 秒！",
-        "nl": "Je hebt **{0}** seconden resterend!"
+        "nl": "Je hebt nog **{0}** seconden!"
     },
     "FIRST_HINT": {
         "en": "First Hint",
@@ -1232,7 +1232,7 @@
         "bg": "Поредицата от {0} ** от **{1}** отговори подред спира до мелене!",
         "ar": "**{0}** سلسلة الإجابات المتتالية **{1}** تتوقف تمامًا!",
         "zh": "**{0}** 连续出现的 **{1}** 连连停顿！",
-        "nl": "**{0}**'s reeks **{1}** antwoorden op een rij komt tot stilstand!"
+        "nl": "**{0}**'s reeks van **{1}** antwoorden op een rij komt tot stilstand!"
     },
     "TIME_UP": {
         "en": "Time Up!",
@@ -1289,7 +1289,7 @@
         "bg": "Следващият въпрос се появява след около **{0}** секунди ...",
         "ar": "السؤال التالي سيظهر في غضون **{0}** ثانية تقريبًا ...",
         "zh": "下一个问题大约在 **{0}** 秒内出现...",
-        "nl": "Volgende vraag komt binnen ongeveer **{0}** seconden ..."
+        "nl": "De volgende vraag komt binnen ongeveer **{0}** seconden ..."
     },
     "REST": {
         "en": "A little time to rest your fingers...",
@@ -1422,7 +1422,7 @@
         "bg": "[Преглед на класациите на сървърите](https:\/\/triviabot.co.uk\/stats\/{0})\nЕжедневните резултати се нулират в полунощ GMT.",
         "ar": "[عرض لوحات صدارة الخادم](https:\/\/triviabot.co.uk\/stats\/{0})\nيتم إعادة تعيين النتائج اليومية في منتصف الليل بتوقيت جرينتش.",
         "zh": "[查看服务器排行榜](https:\/\/triviabot.co.uk\/stats\/{0})\n格林尼治标准时间(GMT)午夜重置每日得分。",
-        "nl": "[Bekijk server leaderboards](https:\/\/triviabot.co.uk\/stats\/ {0})\nDagelijkse scores gereset om middernacht GMT."
+        "nl": "[Bekijk server leaderboards](https:\/\/triviabot.co.uk\/stats\/ {0})\nDagelijkse scores worden gereset om middernacht GMT."
     },
     "DASH_STOP": {
         "en": "The round of trivia was stopped from the [dashboard](https:\/\/triviabot.co.uk\/dashboard\/)!",
@@ -1460,7 +1460,7 @@
         "bg": "Кръгло спиране!",
         "ar": "جولة توقف!",
         "zh": "回合停止！",
-        "nl": "Rond stoppen!"
+        "nl": "De ronde stopt!"
     },
     "PREFIX": {
         "en": "My prefix on this server is `{0}`. Type `{1}help` for help.",
@@ -1631,7 +1631,7 @@
         "bg": "\nЕкипът **{0}** също печели **{1}** {2} и вече е на **{3}**",
         "ar": "\nيكتسب الفريق **{0}**أيضًا**{1}** {2} وهو الآن في **{3}**",
         "zh": "\n团队 **{0}** 也获得了 **{1}** {2}，现在在 **{3}**",
-        "nl": "\nTeam **{0}** wint ook **{1}** {2} en is nu bezig **{3}**"
+        "nl": "\nTeam **{0}** wint ook **{1}** {2} en heeft nu een score van **{3}**"
     },
     "ON_A_STREAK": {
         "en": "\n**{0}** is on a streak! **{1}** questions and counting",
@@ -1650,7 +1650,7 @@
         "bg": "\n**{0}** е в серия! **{1}** въпроси и броене",
         "ar": "\n**{0}** في خط متواصل! **{1}** الأسئلة والعد",
         "zh": "\n**{0}** 连胜！ **{1}** 问题和计数",
-        "nl": "\n**{0}** loopt vast! **{1}** vragen en tellen"
+        "nl": "\n**{0}** doet het goed! Al **{1}** vragen op rij correct beantwoord"
     },
     "BEATEN_BEST": {
         "en": ", and has beaten their personal best!",
@@ -1669,7 +1669,7 @@
         "bg": ", и е победил техните лични рекорди!",
         "ar": "، وتغلبوا على أفضل ما لديهم!",
         "zh": "，并击败了自己的个人最好的！",
-        "nl": ", en hebben hun persoonlijk record verslagen!"
+        "nl": ", en heeft hun persoonlijk record verslagen!"
     },
     "NOT_THERE_YET": {
         "en": ", but has some way to go yet before they beat their personal best of **{0}**",
@@ -1688,7 +1688,7 @@
         "bg": ", но има още някакъв път, преди да победят най-доброто от **{0}**",
         "ar": "، ولكن لا يزال أمامه طريق ليقطعه قبل أن يتفوق على أفضل ما لديه **{0}**",
         "zh": "，但在他们击败 **{0}** 个人最好成绩之前还有一段路要走",
-        "nl": ", maar heeft nog een lange weg te gaan voordat ze hun persoonlijk record van **{0}**"
+        "nl": ", hij/zij heeft nog een lange weg te gaan voordat hun persoonlijk record van **{0}** verbroken wordt"
     },
     "STREAK_BEATDOWN": {
         "en": "\n**{0}** just beat <@{1}>'s record streak of {2} answers!",
@@ -1707,7 +1707,7 @@
         "bg": "\n**{0}** просто победи рекордната поредица от {2} отговора на <@{1}>!",
         "ar": "\n**{0}** فقط تجاوز الرقم القياسي لـ <@{1}> المتتالي من {2} الإجابات!",
         "zh": "\n**{0}**击败了<@{1}>创纪录的{2}个答案！",
-        "nl": "\n**{0}** heb net de recordreeks van {2} antwoorden van <@ {1}> overtroffen!"
+        "nl": "\n**{0}** heeft net de recordreeks van {2} antwoorden van <@{1}> overtroffen!"
     },
     "STREAK_ENDER": {
         "en": "\n**{0}** just ended <@{1}>'s streak of {2} answers in a row!",
@@ -1783,7 +1783,7 @@
         "bg": "Кръг от {0} започнали въпроси за идентификатор на канал {1}",
         "ar": "بدأت جولة الأسئلة {0} على معرف القناة {1}",
         "zh": "从频道ID {1}开始的{0}个问题回合",
-        "nl": "Ronde van {0} vragen begonnen over kanaal-ID {1}"
+        "nl": "Ronde van {0} vragen begonnen op kanaal-ID {1}"
     },
     "ROUND_START_ID_NH": {
         "en": "Round of {0} questions started on channel id {1} **without hints**!",
@@ -1802,7 +1802,7 @@
         "bg": "Кръг от {0} въпроси започна с идентификатор на канал {1} ** без подсказки **!",
         "ar": "بدأت جولة الأسئلة {0} على معرّف القناة {1} ** بدون تلميحات **!",
         "zh": "在频道ID {1}上开始了{0}个问题回合，**没有提示**！",
-        "nl": "Ronde van {0} vragen begon over kanaal-ID {1} **zonder hints**!"
+        "nl": "Ronde van {0} vragen begon op kanaal-ID {1} **zonder hints**!"
     },
     "RESTART_RESUME": {
         "en": "Because the bot was restarted, your game was stopped. This game has been resumed.",
@@ -1821,7 +1821,7 @@
         "bg": "Тъй като ботът е рестартиран, играта ви е спряна. Тази игра е възобновена.",
         "ar": "بسبب إعادة تشغيل الروبوت ، تم إيقاف لعبتك. تم استئناف هذه اللعبة.",
         "zh": "由于机器人已重新启动，因此您的游戏已停止。这场比赛已经恢复。",
-        "nl": "Omdat de bot opnieuw is opgestart, is je game gestopt. Dit spel is hervat."
+        "nl": "Omdat de bot opnieuw is opgestart, was je game gestopt. Dit spel is hervat."
     },
     "STAFF_ONLY": {
         "en": "Only bot moderators can use this command",
@@ -1840,7 +1840,7 @@
         "bg": "Само модераторите на ботове могат да използват тази команда",
         "ar": "يمكن لمشرفي البوت فقط استخدام هذا الأمر",
         "zh": "只有漫游器主持人才能使用此命令",
-        "nl": "Alleen botmoderators kunnen deze opdracht gebruiken"
+        "nl": "Alleen botmoderators kunnen dat commando gebruiken"
     },
     "SHITLISTED": {
         "en": "**{0}**, you can't start a round of trivia here, as the bot owner has explicitly blocked games from being started on this server.\nIf you want to start a round of trivia, first [invite the bot](https:\/\/discord.com\/oauth2\/authorize?client_id={1}&scope=bot+identify&permissions=268880960&redirect_uri=https%3A%2F%2Ftriviabot.co.uk%2F&response_type=code) to your own server!",
@@ -1878,7 +1878,7 @@
         "bg": ":warning: Не мога да започна два кръга наведнъж на един сървър!",
         "ar": ":warning: تحذير: لا يمكن بدء جولتين في وقت واحد على خادم واحد!",
         "zh": ":warning: 不能在一台服务器上同时开始两轮！",
-        "nl": ":warning: kan niet twee rondes tegelijk starten op één server!"
+        "nl": ":warning: Je kan geen twee rondes tegelijk starten op één server!"
     },
     "ALREADYACTIVE": {
         "en": "A round of trivia is already active",
@@ -1992,7 +1992,7 @@
         "bg": ":warning: Не може да започне бърз кръг от повече от 15 въпроса",
         "ar": ":warning: تحذير: لا يمكن بدء جولة سريعة تتكون من أكثر من 15 سؤالاً",
         "zh": ":warning: 无法启动超过15个问题的快速讨论",
-        "nl": ":warning: Kan geen quickfire-ronde van meer dan 15 vragen starten"
+        "nl": ":warning: Je kan geen quickfire-ronde van meer dan 15 vragen starten"
     },
     "MAX15DETAIL": {
         "en": "**{0}**, you can't create a quickfire trivia round of less than 5 or more than {1} questions!",
@@ -2011,7 +2011,7 @@
         "bg": "**{0}**, не можете да създадете бърз кръг от любопитни факти с по-малко от 5 или повече от {1} въпроса!",
         "ar": "**{0}** ، لا يمكنك إنشاء جولة سريعة من أقل من 5 أسئلة أو أكثر من {1} أسئلة!",
         "zh": "**{0}**，您不能创建少于5个或多于{1}个问题的快速问答。",
-        "nl": "**{0}**, je kunt geen quickfire-trivia-ronde maken van minder dan 5 of meer dan {1} vragen!"
+        "nl": "**{0}**, je kunt geen quickfire trivia ronde maken met minder dan 5 of meer dan {1} vragen!"
     },
     "MAX200": {
         "en": "**{0}**, you can't create a normal trivia round of less than 5 or more than 200 questions!",
@@ -2030,7 +2030,7 @@
         "bg": "**{0}**, не можете да създадете нормален кръг от любопитни факти с по-малко от 5 или повече от 200 въпроса!",
         "ar": "**{0}** ، لا يمكنك إنشاء جولة أسئلة عامة عادية تتكون من أقل من 5 أو أكثر من 200 سؤال!",
         "zh": "**{0}**，您不能创建少于5个或超过200个问题的普通琐事！",
-        "nl": "**{0}**, je kunt geen normale trivia-ronde maken van minder dan 5 of meer dan 200 vragen!"
+        "nl": "**{0}**, je kunt geen normale trivia-ronde maken met minder dan 5 of meer dan 200 vragen!"
     },
     "SPOOPY2": {
         "en": "**{0}**, something spoopy happened. Please try again in a couple of minutes!",
@@ -2049,7 +2049,7 @@
         "bg": "**{0}**, случи се нещо призрачно. Моля, опитайте отново след няколко минути!",
         "ar": "**{0}** ، حدث شيء مخادع. يرجى المحاولة مرة أخرى بعد دقيقتين!",
         "zh": "**{0}**，发生了一些混乱。请过几分钟再试！",
-        "nl": "**{0}**, er is iets spottigs gebeurd. Probeer het over een paar minuten opnieuw!"
+        "nl": "**{0}**, er is iets spoopy gebeurd. Probeer het over een paar minuten opnieuw!"
     },
     "BROKED": {
         "en": "That wasn't supposed to happen...",
@@ -2201,7 +2201,7 @@
         "bg": "Предстои първият въпрос!",
         "ar": "السؤال الأول قادم!",
         "zh": "第一个问题来了！",
-        "nl": "Eerste vraag komt eraan!"
+        "nl": "De eerste vraag komt eraan!"
     },
     "HOWPLAY": {
         "en": "How to play",
@@ -2220,7 +2220,7 @@
         "bg": "Как да играя",
         "ar": "كيف ألعب",
         "zh": "怎么玩",
-        "nl": "Hoe te spelen"
+        "nl": "Hoe spelen"
     },
     "INSTRUCTIONS": {
         "en": "Type your answer on channel to answer a question. The first to answer gets the points. To report any incorrect or invalid question, click the link in the title of the question's message.",
@@ -2239,7 +2239,7 @@
         "bg": "Въведете отговора си в канала, за да отговорите на въпрос. Първият, който отговори, получава точките. За да подадете сигнал за неправилен или невалиден въпрос, щракнете върху връзката в заглавието на съобщението на въпроса.",
         "ar": "اكتب إجابتك على القناة للإجابة على سؤال. أول من يجيب يحصل على النقاط. للإبلاغ عن أي سؤال غير صحيح أو غير صالح ، انقر فوق الارتباط الموجود في عنوان رسالة السؤال.",
         "zh": "在频道上输入答案以回答问题。最先回答的就是要点。要报告任何不正确或无效的问题，请单击问题消息标题中的链接。",
-        "nl": "Typ je antwoord op kanaal om een ​​vraag te beantwoorden. De eerste die antwoordt, krijgt de punten. Om een ​​onjuiste of ongeldige vraag te melden, klikt u op de link in de titel van het bericht van de vraag."
+        "nl": "Typ je antwoord in dit kanaal om een ​​vraag te beantwoorden. De eerste die antwoordt, krijgt de punten. Om een ​​onjuiste of ongeldige vraag te melden, klikt u op de link in de titel van het bericht van de vraag."
     },
     "ALREADYRUN": {
         "en": "Buhhh... a round is already running here, **{0}**!",
@@ -2391,7 +2391,7 @@
         "bg": "Днес не сте гласували за бота!\n",
         "ar": "لم تقم بالتصويت لصالح الروبوت اليوم!\n",
         "zh": "您今天还没有投票给该机器人！\n",
-        "nl": "Je hebt vandaag niet op de bot gestemd!\n"
+        "nl": "Je hebt vandaag nog niet op de bot gestemd!\n"
     },
     "NOMOREHINTS": {
         "en": "You are out of voter hints, **{0}**!\n",
@@ -2410,7 +2410,7 @@
         "bg": "Нямате намеци за гласоподаватели, **{0}**!\n",
         "ar": "نفدت تلميحات الناخبين ، **{0}**!\n",
         "zh": "您没有选民提示，**{0}**！\n",
-        "nl": "U heeft geen hints voor de kiezer, **{0}**!\n"
+        "nl": "Je hebt geen hints meer, **{0}**!\n"
     },
     "VH1": {
         "en": "**{0}**, i've sent you a hint via DM!\nYou have **{1}** voter hint(s) remaining which expire in **{2} hours and {3} minutes**.",
@@ -2429,7 +2429,7 @@
         "bg": "**{0}**, изпратих ви подсказка чрез DM!\nОстават ви **{1}** подсказване (и) за избирателите, които изтичат след ** {2} часа и {3} минути **.",
         "ar": "**{0}** ، لقد أرسلت إليك تلميحًا عبر رسالة مباشرة!\nبقي لديك **{1}** تلميح (تلميحات) ناخبين تنتهي صلاحيته خلال ** {2} ساعة و {3} دقيقة **.",
         "zh": "**{0}**，我已经通过DM向您发送了提示！\n您还有**{1}**个投票者提示，它们将在** {2}小时和{3}分钟**内到期。",
-        "nl": "**{0}**, ik heb je een hint gestuurd via DM!\nU heeft nog **{1}** hint (en) voor kiezers die over ** {2} uur en {3} minuten ** vervallen."
+        "nl": "**{0}**, ik heb je een hint gestuurd via DM!\nJe hebt nog **{1}** hint(s) voor voters die over ** {2} uur en {3} minuten ** vervallen."
     },
     "VH2": {
         "en": "**{0}**, i've sent you a hint via DM!\nYou have **NO MORE** voter hints remaining and can vote again in **{1} hours and {2} minutes**.",
@@ -2448,7 +2448,7 @@
         "bg": "**{0}**, изпратих ви подсказка чрез DM!\nОстават ** БЕЗ ПОВЕЧЕ ** подсказки за гласоподаватели и можете да гласувате отново след ** {1} часа и {2} минути **.",
         "ar": "**{0}** ، لقد أرسلت إليك تلميحًا عبر رسالة مباشرة!\nبقي لديك ** لا مزيد من ** تلميحات الناخبين ويمكنك التصويت مرة أخرى خلال ** {1} ساعة و {2} دقيقة **.",
         "zh": "**{0}**，我已经通过DM向您发送了提示！\n您还有**没有更多**的选民提示，可以在** {1}小时和{2}分钟**内再次投票。",
-        "nl": "**{0}**, ik heb je een hint gestuurd via DM!\nU heeft **NIET MEER** kiezershints meer en kunt over **{1} uur en {2} minuten** opnieuw stemmen."
+        "nl": "**{0}**, ik heb je een hint gestuurd via DM!\nJe hebt **GEEN** voter hints meer en kunt over **{1} uur en {2} minuten** opnieuw stemmen."
     },
     "WAITABIT": {
         "en": "You should probaly wait until a non-insane round question is being asked, **{0}**!",
@@ -2467,7 +2467,7 @@
         "bg": "Трябва да изчакате, докато не бъде зададен нелуд кръгъл въпрос, **{0}**!",
         "ar": "يجب عليك الانتظار حتى يتم طرح سؤال دائري غير مجنون ، **{0}**!",
         "zh": "您应该认真地等待，直到出现一个非疯狂的圆形问题，**{0}**！",
-        "nl": "U moet waarschijnlijk wachten tot er een niet-gekke ronde vraag wordt gesteld, **{0}**!"
+        "nl": "Je wacht best tot er een niet-waanzinnige ronde-vraag wordt gesteld, **{0}**!"
     },
     "NOROUND": {
         "en": "No trivia round is running here, **{0}**!",
@@ -2486,7 +2486,7 @@
         "bg": "Тук не се провежда кръг от любопитни факти, **{0}**!",
         "ar": "لا توجد جولة معلومات عامة تجري هنا ، **{0}**!",
         "zh": "此处没有琐事回合，**{0}**！",
-        "nl": "Er loopt hier geen trivia-ronde, **{0}**!"
+        "nl": "Er is hier geen trivia-ronde bezig, **{0}**!"
     },
     "ACTIVEGAMES": {
         "en": "Active Games",
@@ -2600,7 +2600,7 @@
         "bg": "Осколки",
         "ar": "شظايا",
         "zh": "碎片",
-        "nl": "Scherven"
+        "nl": "Shards"
     },
     "MEMBERINTENT": {
         "en": "Member Intent",
@@ -2619,7 +2619,7 @@
         "bg": "Намерение на член",
         "ar": "نية العضو",
         "zh": "会员意向",
-        "nl": "Intentie van het lid"
+        "nl": "Intentie van member"
     },
     "TESTMODE": {
         "en": "Test Mode",
@@ -2790,7 +2790,7 @@
         "bg": ":star: Този сървър има TriviaBot Premium! Те се люлеят! :star:",
         "ar": ":star: يحتوي هذا الخادم على TriviaBot Premium! هم صخرة! :نجمة :star:",
         "zh": ":star: 该服务器具有TriviaBot Premium！他们摇滚！ :star:",
-        "nl": ":star: Deze server heeft TriviaBot Premium! Ze rocken! :star:"
+        "nl": ":star: Deze server heeft TriviaBot Premium! Zij zijn geweldig! :star:"
     },
     "JOINED": {
         "en": "You have successfully joined the team \"**{0}**\", **{1}**",
@@ -2866,7 +2866,7 @@
         "bg": "Успешно ** създадохте ** и се присъединихте към екипа „**{0}**“, **{1}**",
         "ar": "لقد نجحت في **إنشاء** والانضمام إلى الفريق \"**{0}**\" ، **{1}**",
         "zh": "您已经成功**创建**并加入了团队“ **{0}**”，**{1}**",
-        "nl": "U heeft **gemaakt** en bent lid geworden van het team \"**{0}**\", **{1}**"
+        "nl": "Je hebt \"**{0}**\" aangemaakt en bent lid geworden van dit team, **{1}**"
     },
     "CANTCREATE": {
         "en": "I couldn't create that team, **{0}**...",
@@ -2942,7 +2942,7 @@
         "bg": "**{0}**, не сте член на нито един отбор! Използвайте ** {1} присъединяване **, за да се присъедините към екип!",
         "ar": "**{0}** ، أنت لست عضوًا في أي فريق! استخدم ** {1} انضم ** للانضمام إلى فريق!",
         "zh": "**{0}**，您不是任何团队的成员！使用** {1}加入**加入团队！",
-        "nl": "**{0}**, u bent geen lid van een team! Gebruik ** {1} join ** om lid te worden van een team!"
+        "nl": "**{0}**, je bent geen lid van een team! Gebruik ** {1} join ** om lid te worden van een team!"
     },
     "LEFTTEAM": {
         "en": "**{0}** has left team **{1}**",
@@ -2961,7 +2961,7 @@
         "bg": "**{0}** напусна екипа **{1}**",
         "ar": "**{0}** غادر الفريق **{1}**",
         "zh": "**{0}** 已离开团队**{1}**",
-        "nl": "**{0}** heeft het team verlaten **{1}**"
+        "nl": "**{0}** heeft team **{1}** verlaten"
     },
     "COMEBACK": {
         "en": "Come back, we'll miss you! :cry:",
@@ -2980,7 +2980,7 @@
         "bg": "Върни се, ще ни липсваш! : cry:",
         "ar": "تعال ، سنفتقدك! :يبكي :cry:",
         "zh": "回来，我们会想念你的！ ：cry:",
-        "nl": "Kom terug, we zullen je missen! :huilen:"
+        "nl": "Kom terug, we zullen je missen! :cry:"
     },
     "HERPDERP": {
         "en": "<@{0}>, herp derp, theres a malformed help file. Please contact a developer on the official support server: https:\/\/discord.gg\/brainbox",
@@ -3037,7 +3037,7 @@
         "bg": "Моля, изчакайте {0} секунди, преди да опитате отново командата **{1}**!",
         "ar": "الرجاء الانتظار {0} ثانية قبل تجربة الأمر **{1}** مرة أخرى!",
         "zh": "请等待{0}秒，然后再次尝试**{1}**命令！",
-        "nl": "Wacht {0} seconden voordat u de opdracht **{1}** opnieuw probeert!"
+        "nl": "Wacht {0} seconden voordat u het commando **{1}** opnieuw probeert!"
     },
     "INVITEME": {
         "en": "Invite TriviaBot",
@@ -3132,7 +3132,7 @@
         "bg": "Шард",
         "ar": "شظية",
         "zh": "碎片",
-        "nl": "Scherf"
+        "nl": "Shard"
     },
     "PONG": {
         "en": "Pong!",
@@ -3189,7 +3189,7 @@
         "bg": "API на TriviaBot",
         "ar": "واجهة برمجة تطبيقات TriviaBot",
         "zh": "TriviaBot API",
-        "nl": "TriviaBot-API"
+        "nl": "TriviaBot API"
     },
     "DBPING": {
         "en": "Database",
@@ -3284,7 +3284,7 @@
         "bg": "%d дни, %d часа, %d минути",
         "ar": "%d يوم ،%d ساعة ،%d دقيقة",
         "zh": "%d 天，%d小时，%d分钟",
-        "nl": "%d dagen,%d uur,%d minuten"
+        "nl": "%d dagen ,%d uur, %d minuten"
     },
     "PRIVACY": {
         "en": "Team Privacy",
@@ -3322,7 +3322,7 @@
         "bg": "Настройката за поверителност на вашия екип е настроена на: ** ON **.\n\nЩе се покаже като `[Частен член]` в списъците с членове на екипа.",
         "ar": "تم تعيين إعداد خصوصية الفريق على: **ON**.\n\nستظهر كـ \"[عضو خاص]\" في قوائم أعضاء الفريق.",
         "zh": "您的团队隐私设置设置为：**开启**。\n\n您将在团队成员列表中显示为“ [私人成员]”。",
-        "nl": "Uw teamprivacy-instelling is ingesteld op: **AAN**.\n\nU wordt weergegeven als `[Private Member]` in de teamledenlijsten."
+        "nl": "Jouw teamprivacy-instelling is ingesteld op: **AAN**.\n\nJe wordt weergegeven als `[Private Member]` in de teamledenlijsten."
     },
     "PRV_OFF": {
         "en": "Your Team Privacy setting is set to: **OFF**.\n\nYou will show as your username in team member lists.",
@@ -3341,7 +3341,7 @@
         "bg": "Настройката за поверителност на вашия екип е настроена на: ** OFF **.\n\nЩе се покажете като ваше потребителско име в списъците с членове на екипа.",
         "ar": "تم تعيين إعداد خصوصية الفريق على: **إيقاف**.\n\nستظهر كاسم المستخدم الخاص بك في قوائم أعضاء الفريق.",
         "zh": "您的团队隐私设置设置为：**关闭**。\n\n您将在团队成员列表中显示为用户名。",
-        "nl": "Uw teamprivacy-instelling is ingesteld op: **UIT**.\n\nU wordt als uw gebruikersnaam weergegeven in de lijsten met teamleden."
+        "nl": "Jouw teamprivacy-instelling is ingesteld op: **UIT**.\n\nJe wordt als jouw gebruikersnaam weergegeven in de lijsten met teamleden."
     },
     "NOTQUITERIGHT": {
         "en": "That's not quite right...",
@@ -3455,7 +3455,7 @@
         "bg": "Брой членове",
         "ar": "عدد الأعضاء",
         "zh": "会员人数",
-        "nl": "Leden Aantal"
+        "nl": "Aantal Leden"
     },
     "POINTSTOTAL": {
         "en": "Points Total",
@@ -3683,7 +3683,7 @@
         "bg": "Само ролите, посочени в таблото, или собственикът на сървъра, могат да изпълнят тази команда.",
         "ar": "يمكن فقط للأدوار المحددة في لوحة المعلومات أو مالك الخادم تنفيذ هذا الأمر.",
         "zh": "只有在仪表板中指定的角色或服务器所有者才能执行此命令。",
-        "nl": "Alleen rollen die zijn opgegeven in het dashboard, of de servereigenaar, kunnen deze opdracht uitvoeren."
+        "nl": "Alleen rollen die zijn opgegeven in het dashboard, of de servereigenaar, kunnen dat commando uitvoeren."
     },
     "WELCOME": {
         "en": "Thank you for inviting **TriviaBot** to %s! To get started with the bot, simply type `!start` to start a slow game of trivia or `!quickfire` to start a fast-paced game.\n\nYou can quickly set the bot's prefix with the `!language` and `!prefix` commands or by using the [dashboard](https:\/\/triviabot.co.uk\/dashboard) where you can also remotely start and stop games, change who has access to the bot, and more!\n\nFor further help please join [the official support server](https:\/\/discord.gg\/brainbox).\n\nHave fun!",
@@ -3702,7 +3702,7 @@
         "bg": "Благодарим ви, че поканихте **TriviaBot** на %s! За да започнете с бота, просто напишете `!start`, за да започнете бавна игра на любопитни факти или `!quickfire`, за да започнете бърза игра.\n\nМожете бързо да зададете префикса на бота с командите `!language` и `!prefix` или като използвате [таблото за управление](https:\/\/triviabot.co.uk\/dashboard), където можете също дистанционно да стартирате и спирате игри, да променяте който има достъп до бота и още!\n\nЗа допълнителна помощ, моля, присъединете се към [официалния сървър за поддръжка](https:\/\/discord.gg\/brainbox).\n\nЗабавлявай се!",
         "ar": "شكرًا لك على دعوة **TriviaBot** إلى٪ s! لبدء استخدام الروبوت ، ما عليك سوى كتابة \"! start\" لبدء لعبة أسئلة بسيطة أو \"!quickfire\" لبدء لعبة سريعة الخطى.\n\nيمكنك بسرعة تعيين بادئة الروبوت بأوامر `! language` و`! prefix` أو باستخدام [لوحة القيادة](https:\/\/triviabot.co.uk\/dashboard) حيث يمكنك أيضًا بدء الألعاب وإيقافها عن بُعد ، وتغيير من لديه حق الوصول إلى الروبوت والمزيد!\n\nلمزيد من المساعدة ، يرجى الانضمام إلى [خادم الدعم الرسمي] (https:\/\/discord.gg\/brainbox).\n\nإستمتع!",
         "zh": "感谢您邀请“ TriviaBot”加入％s！要开始使用该机器人，只需键入“！start”即可启动慢速琐事游戏，或键入“!quickfire”即可启动快节奏游戏。\n\n您可以使用`!language`和`!prefix`命令或使用[dashboard](https:\/\/triviabot.co.uk\/dashboard)快速设置机器人的前缀，也可以远程启动和停止游戏，更改谁有权使用该机器人，以及更多！\n\n要获得更多帮助，请加入[官方支持服务器](https:\/\/discord.gg\/brainbox)。\n\n玩得开心！",
-        "nl": "Bedankt voor het uitnodigen van **TriviaBot** voor%s! Om met de bot te beginnen, typ je gewoon `!start` om een ​​langzaam spel met trivia te starten of `!quickfire` om een ​​snel spel te starten.\n\nJe kunt snel het voorvoegsel van de bot instellen met de `!language` en `!prefix` commando's of door het [dashboard](https:\/\/triviabot.co.uk\/dashboard) te gebruiken waar je ook op afstand games kunt starten en stoppen, verander die toegang heeft tot de bot, en meer!\n\nVoor verdere hulp kunt u zich aanmelden bij [de officiële ondersteuningsserver](https:\/\/discord.gg\/brainbox).\n\nVeel plezier!"
+        "nl": "Bedankt voor het uitnodigen van **TriviaBot** naar %s! Om met de bot te beginnen, typ je gewoon `!start` om een ​​langzaam spel met trivia te starten of `!quickfire` om een ​​snel spel te starten.\n\nJe kunt snel het voorvoegsel van de bot instellen met de `!language` en `!prefix` commando's of door het [dashboard](https:\/\/triviabot.co.uk\/dashboard) te gebruiken waar je ook op afstand games kunt starten en stoppen, veranderen wie toegang heeft tot de bot, en meer!\n\nVoor verdere hulp kan je je aanmelden bij [de officiële ondersteuningsserver](https:\/\/discord.gg\/brainbox).\n\nVeel plezier!"
     },
     "SHARD_IS": {
         "en": "That server is on shard %d",
@@ -3740,7 +3740,7 @@
         "bg": "Клъстер",
         "ar": "العنقودية",
         "zh": "簇",
-        "nl": "TROS"
+        "nl": "Cluster"
     },
     "GLOBAL": {
         "en": "Global Leaderboards",
@@ -3778,7 +3778,7 @@
         "bg": "Вашите постижения",
         "ar": "إنجازاتك",
         "zh": "您的成就",
-        "nl": "Jouw prestaties"
+        "nl": "Jouw achievements"
     },
     "UNLOCK": {
         "en": "Achievement Unlocked!",
@@ -3797,7 +3797,7 @@
         "bg": "Отключено постижение!",
         "ar": "تم فتح الإنجاز!",
         "zh": "成就解锁！",
-        "nl": "Prestatie ontgrendeld!"
+        "nl": "Achievement ontgrendeld!"
     },
     "ACH1": {
         "en": "Unlocked a 10 Question Streak",
@@ -3873,7 +3873,7 @@
         "bg": "Ивици за забавление и печалба",
         "ar": "تسليط الضوء من أجل المتعة والربح",
         "zh": "追求乐趣和利润",
-        "nl": "Streven naar plezier en winst"
+        "nl": "Streven naar lol en winst"
     },
     "ACH3": {
         "en": "Smashed a 50 Question Streak",
@@ -3892,7 +3892,7 @@
         "bg": "Разби 50 поредица от въпроси",
         "ar": "حطم خط 50 سؤالا",
         "zh": "打破了50个问题的连胜纪录",
-        "nl": "Een reeks van 50 vragen gebroken"
+        "nl": "Een reeks van 50 vragen behaald"
     },
     "ACH3N": {
         "en": "Streak Master",
@@ -3930,7 +3930,7 @@
         "bg": "Управлява 100 въпроса",
         "ar": "تمكنت من إدارة خط 100 سؤال",
         "zh": "处理了100条问题",
-        "nl": "Beheerde een reeks van 100 vragen"
+        "nl": "Haalde een reeks van 100 vragen"
     },
     "ACH4N": {
         "en": "Streak Legend",
@@ -4044,7 +4044,7 @@
         "bg": "Започна игра на Коледа",
         "ar": "بدأت لعبة يوم عيد الميلاد",
         "zh": "在圣诞节那天开始游戏",
-        "nl": "Begon een spel op eerste kerstdag"
+        "nl": "Begon een spel op Kerstdag"
     },
     "ACH7N": {
         "en": "Trivia > Family",
@@ -4063,7 +4063,7 @@
         "bg": "Любопитни факти> Семейство",
         "ar": "التوافه> الأسرة",
         "zh": "琐事>家庭",
-        "nl": "Trivia>Familie"
+        "nl": "Trivia > Familie"
     },
     "ACH8": {
         "en": "Won the day's trivia on any server",
@@ -4082,7 +4082,7 @@
         "bg": "Спечелени любопитни факти за деня на всеки сървър",
         "ar": "ربح معلومات اليوم على أي خادم",
         "zh": "在任何服务器上赢得当日琐事",
-        "nl": "Won de trivia van de dag op elke server"
+        "nl": "Won de trivia van de dag op een server"
     },
     "ACH8N": {
         "en": "\"A winner is you!\"",
@@ -4158,7 +4158,7 @@
         "bg": "Отключихте постижение на ** TriviaBot **!",
         "ar": "لقد حققت إنجازًا في **TriviaBot**!",
         "zh": "您已在**TriviaBot**上解锁成就！",
-        "nl": "Je hebt een prestatie ontgrendeld op **TriviaBot**!"
+        "nl": "Je hebt een achievement ontgrendeld op **TriviaBot**!"
     },
     "EARNED": {
         "en": "You earned an achievement!",
@@ -4177,7 +4177,7 @@
         "bg": "Спечелихте постижение!",
         "ar": "لقد حصلت على إنجاز!",
         "zh": "您获得了成就！",
-        "nl": "Je hebt een prestatie verdiend!"
+        "nl": "Je hebt een achievement verdiend!"
     },
     "TROPHYCABINET": {
         "en": "Your Trophy Cabinet",
@@ -4215,7 +4215,7 @@
         "bg": "**%d** постижения отключени, **%d** постижения все още се отключват.",
         "ar": "تم فتح **%d ** من الإنجازات ، ولا يزال يتعين إلغاء قفل **%d ** الإنجازات.",
         "zh": "**%d **成就已解锁，**%d **成就仍未解锁。",
-        "nl": "**%d ** prestaties ontgrendeld, **%d** prestaties nog te ontgrendelen."
+        "nl": "**%d ** achievements ontgrendeld, **%d** achievements nog te ontgrendelen."
     },
     "TOVIEWACH": {
         "en": "Use the !achievements command on any channel to view your trophy cabinet at any time.",
@@ -4234,7 +4234,7 @@
         "bg": "Използвайте командата! Постижения на всеки канал, за да прегледате шкафа си за трофеи по всяко време.",
         "ar": "استخدم أمر الإنجازات! على أي قناة لعرض خزانة الجوائز الخاصة بك في أي وقت.",
         "zh": "在任何频道上使用！achievements命令可随时查看您的奖杯柜。",
-        "nl": "Gebruik het! Achievements-commando op elk kanaal om je prijzenkast op elk moment te bekijken."
+        "nl": "Gebruik het !achievements commando op een kanaal om je prijzenkast op elk moment te bekijken."
     },
     "CATDISABLED": {
         "en": "Category **'%s'** is now disabled on this guild. You will no longer see questions from this category from the next time you start a new game.",
@@ -4253,7 +4253,7 @@
         "bg": "Категория **'%s'** вече е деактивирана в тази гилдия. Вече няма да виждате въпроси от тази категория от следващия път, когато стартирате нова игра.",
         "ar": "الفئة ** '%s' ** معطلة الآن في هذه الجماعة. لن ترى بعد الآن أسئلة من هذه الفئة في المرة التالية التي تبدأ فيها لعبة جديدة.",
         "zh": "现在在该行会上禁用类别**'%s'**。从下次开始新游戏时，您将不再看到此类别的问题。",
-        "nl": "Categorie **'%s'** is nu uitgeschakeld voor deze gilde. Je zult geen vragen uit deze categorie meer zien vanaf de volgende keer dat je een nieuw spel start."
+        "nl": "Categorie **'%s'** is nu uitgeschakeld voor deze guild. Je zult geen vragen uit deze categorie meer zien vanaf de volgende keer dat je een nieuw spel start."
     },
     "CATENABLED": {
         "en": "Category **'%s'** is now enabled on this guild. You will see questions from this category from the next time you start a new game.",
@@ -4272,7 +4272,7 @@
         "bg": "Категория **'%s'** вече е активирана в тази гилдия. Ще видите въпроси от тази категория от следващия път, когато стартирате нова игра.",
         "ar": "تم تمكين الفئة ** '٪s' ** الآن في هذه الجماعة. سترى أسئلة من هذه الفئة في المرة القادمة التي تبدأ فيها لعبة جديدة.",
         "zh": "现在已在该行会上启用类别**'％s'**。下次开始新游戏时，您将看到此类别的问题。",
-        "nl": "Categorie **'%s'** is nu ingeschakeld voor deze gilde. Je zult vragen uit deze categorie zien vanaf de volgende keer dat je een nieuw spel start."
+        "nl": "Categorie **'%s'** is nu ingeschakeld voor deze guild. Je zult vragen uit deze categorie zien vanaf de volgende keer dat je een nieuw spel start."
     },
     "CATDONE": {
         "en": "As you wish...",
@@ -4329,7 +4329,7 @@
         "bg": "Използвайте `!enable` и `!disable`, за да деактивирате категория за вашата гилдия.",
         "ar": "استخدم \"! تمكين\" و \"! تعطيل\" لتعطيل فئة من أجل نقابتك.",
         "zh": "使用`!enable`和`!disable`禁用行会的类别。",
-        "nl": "Gebruik `!enable` en `!disable` om een ​​categorie voor uw gilde uit te schakelen."
+        "nl": "Gebruik `!enable` en `!disable` om een ​​categorie voor jouw guild uit te schakelen."
     },
     "CATERROR": {
         "en": "I can't do that, Dave",
@@ -4386,7 +4386,7 @@
         "bg": "Не можете да деактивирате тази категория, тъй като това би означавало да останат по-малко от 1000 въпроса в игрите. Това би било несправедливо спрямо други играчи, които се състезават на класации или за нитро, и би довело до скучна игра. Моля, активирайте някои други категории, ако искате да деактивирате тази.",
         "ar": "لا يمكنك تعطيل هذه الفئة لأن هذا يعني أنه لا يزال يتعين طرح أقل من 1000 سؤال في الألعاب. سيكون هذا غير عادل للاعبين الآخرين الذين يتنافسون على لوحات الصدارة أو على نيترو ، وسيجعل اللعبة مملة. الرجاء تمكين بعض الفئات الأخرى إذا كنت تريد تعطيل هذه الفئة.",
         "zh": "您不能禁用此类别，因为这将意味着游戏中尚待回答的问题少于1000个。这对于其他在排行榜上或在硝基比赛中的玩家来说是不公平的，并且会使无聊的游戏变得无聊。如果要禁用此类别，请启用其他类别。",
-        "nl": "U kunt deze categorie niet uitschakelen, aangezien dit zou betekenen dat er minder dan 1000 vragen overblijven in games. Dit zou oneerlijk zijn tegenover andere spelers die strijden op scoreborden of voor nitro, en het zou een saai spel opleveren. Schakel een aantal andere categorieën in als u deze wilt uitschakelen."
+        "nl": "Je kunt deze categorie niet uitschakelen, aangezien dit zou betekenen dat er minder dan 1000 vragen overblijven in games. Dit zou oneerlijk zijn tegenover andere spelers die strijden op scoreborden of voor nitro, en het zou een saai spel opleveren. Schakel een aantal andere categorieën in als je deze wilt uitschakelen."
     },
     "INSANESTATS": {
         "en": "Insane Round Statistics",
@@ -4405,7 +4405,7 @@
         "bg": "Безумна кръгла статистика",
         "ar": "إحصاءات الجولة المجنونة",
         "zh": "疯狂的回合统计",
-        "nl": "Insane Round Statistieken"
+        "nl": "Waanzinnige Ronde Statistieken"
     },
     "START_TOO_SMALL": {
         "en": "This category is too small to play right now! If you want to play this category on its own, please submit more questions so that the category has at least 1000, which you can do this by [clicking here](https:\/\/triviabot.co.uk\/addq\/), or if you subscribe to [TriviaBot Premium](https:\/\/triviabot.co.uk\/premium\/) you can start rounds with categories of only **200** questions instead of **1000**!",
@@ -4424,7 +4424,7 @@
         "bg": "Тази категория е твърде малка за игра в момента! Ако искате да играете тази категория самостоятелно, моля, изпратете още въпроси, така че категорията да има поне 1000, което можете да направите, като [кликнете тук](https:\/\/triviabot.co.uk\/addq\/), или ако се абонирате за [TriviaBot Premium](https:\/\/triviabot.co.uk\/premium\/), можете да започнете кръгове с категории само с **200** въпроса вместо **1000**!",
         "ar": "هذه الفئة صغيرة جدا للعب الآن! إذا كنت تريد تشغيل هذه الفئة بمفردها ، فالرجاء إرسال المزيد من الأسئلة بحيث تحتوي الفئة على 1000 على الأقل ، ويمكنك القيام بذلك عن طريق [النقر هنا] (https:\/\/triviabot.co.uk\/addq\/) ، أو إذا قمت بالاشتراك في [TriviaBot Premium] (https:\/\/triviabot.co.uk\/premium\/) ، يمكنك بدء جولات بفئات **200** سؤال فقط بدلاً من **1000**!",
         "zh": "这个类别太小，无法播放！如果您想独自玩这个类别，请提交更多问题，以便该类别至少有1000个，您可以通过单击 [单击此处](https:\/\/triviabot.co.uk\/addq\/)来完成，或者如果您订阅[TriviaBot Premium](https:\/\/triviabot.co.uk\/premium\/)，则可以仅以**200**个问题而不是**1000**的类别开始回合！",
-        "nl": "Deze categorie is nu te klein om te spelen! Als je deze categorie alleen wilt spelen, dien dan meer vragen in zodat de categorie er minstens 1000 heeft, wat je kunt doen door [hier te klikken] (https:\/\/triviabot.co.uk\/addq\/), of als je je abonneert op [TriviaBot Premium] (https:\/\/triviabot.co.uk\/premium\/) kun je rondes starten met categorieën van slechts **200** vragen in plaats van **1000**!"
+        "nl": "Deze categorie is nu te klein om te spelen! Als je deze categorie alleen wilt spelen, dien dan meer vragen in zodat de categorie er minstens 1000 heeft, wat je kunt doen door [hier te klikken] (https:\/\/triviabot.co.uk\/addq\/), of als je je abonneert op [TriviaBot Premium](https:\/\/triviabot.co.uk\/premium\/) kun je rondes starten met categorieën van slechts **200** vragen in plaats van **1000**!"
     },
     "START_TOO_SMALL_PREM": {
         "en": "This category is too small to play right now! If you want to play this category on its own, please submit more questions so that the category has at least 200, which you can do this by [clicking here](https:\/\/triviabot.co.uk\/addq\/).",
@@ -4462,7 +4462,7 @@
         "bg": "Не мога да намеря имена на категории, които да изглеждат като това, което сте посочили. Моля, опитайте отново. Можете да използвате `!categories`, за да получите списък с категории.",
         "ar": "لا يمكنني العثور على أي أسماء فئات تشبه تلك التي حددتها. حاول مرة اخرى. يمكنك استخدام \"! فئات\" للحصول على قائمة الفئات.",
         "zh": "我找不到与您指定的名称相似的任何类别名称。请再试一次。您可以使用 `!categories` 获取类别列表。",
-        "nl": "Ik kan geen categorienamen vinden die lijken op de naam die je hebt opgegeven. Probeer het opnieuw. U kunt `!categories` gebruiken om een ​​lijst met categorieën te krijgen."
+        "nl": "Ik kan geen categorienamen vinden die lijken op de naam die je hebt opgegeven. Probeer het opnieuw. Je kan `!categories` gebruiken om een ​​lijst met categorieën te krijgen."
     },
     "PAGES": {
         "en": "Page %d of %d",
@@ -4538,7 +4538,7 @@
         "bg": ":green_circle: Нагоре: red_circle: Надолу <:wrench:546395191892901909> Поддръжка",
         "ar": ":green_circle: Up: red_circle: Down <:wrench:546395191892901909> الصيانة",
         "zh": ":green_circle: 向上 :red_circle: 向下 <:wrench:546395191892901909> 维护",
-        "nl": ":green_circle: Op :red_circle: Omlaag <:wrench:546395191892901909> Onderhoud"
+        "nl": ":green_circle: Up :red_circle: Down <:wrench:546395191892901909> Onderhoud"
     },
     "LIMITED": {
         "en": "The trivia moderators of this server have restricted this game type to a maximum of {0} questions. The game's length has been limited.",
