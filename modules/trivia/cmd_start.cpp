@@ -95,8 +95,11 @@ void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 
 	if (!already_running) {
 		creator->GetBot()->core.log->debug("start game, no existing state");
+
 		int32_t max_quickfire = (settings.premium ? 200 : 15);
-		if ((!quickfire && (questions < 5 || questions > 200)) || (quickfire && (questions < 5 || questions > max_quickfire))) {
+		int32_t max_normal = 200;
+
+		if ((!quickfire && (questions < 5 || questions > max_normal)) || (quickfire && (questions < 5 || questions > max_quickfire))) {
 			if (quickfire) {
 				if (questions > max_quickfire && !settings.premium) {
 					creator->EmbedWithFields(settings, _("MAX15", settings), {{_("GETPREMIUM", settings), _("PREMDETAIL2", settings), false}}, cmd.channel_id);
@@ -108,6 +111,26 @@ void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 			}
 			return;
 		}
+
+		if (!quickfire) {
+			if (hintless) {
+				if (settings.max_hardcore_round < questions) {
+					questions = settings.max_hardcore_round;
+					creator->SimpleEmbed(settings, ":warning:", fmt::format(_("LIMITED", settings), settings.max_hardcore_round), cmd.channel_id);
+				}
+			} else {
+				if (settings.max_normal_round < questions) {
+					questions = settings.max_normal_round;
+					creator->SimpleEmbed(settings, ":warning:", fmt::format(_("LIMITED", settings), settings.max_normal_round), cmd.channel_id);
+				}
+			}
+		} else {
+			if (settings.max_quickfire_round < questions) {
+				questions = settings.max_quickfire_round;
+				creator->SimpleEmbed(settings, ":warning:", fmt::format(_("LIMITED", settings), settings.max_quickfire_round), cmd.channel_id);
+			}
+		}
+
 		std::vector<std::string> sl = fetch_shuffle_list(cmd.guild_id, category);
 		if (sl.size() == 1) {
 			if (sl[0] == "*** No such category ***") {

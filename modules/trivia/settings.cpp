@@ -34,7 +34,11 @@ guild_settings_t::guild_settings_t(int64_t _guild_id,
 		int64_t _role_reward_id,
 		const std::string &_custom_url,
 		const std::string &_language,
-		int32_t _question_interval)
+		int32_t _question_interval,
+		uint32_t max_normal,
+		uint32_t max_quickfire,
+		uint32_t max_hardcore,
+		bool disableinsane)
 	        :
 			guild_id(_guild_id),
 			prefix(_prefix),
@@ -47,5 +51,9 @@ guild_settings_t::guild_settings_t(int64_t _guild_id,
 			role_reward_id(_role_reward_id),
 			custom_url(_custom_url),
 			language(_language),
-			question_interval(_question_interval < 20 || _question_interval > 3600 ? 20 : _question_interval)
+			question_interval(_question_interval < 20 || _question_interval > 3600 ? 20 : _question_interval),
+			max_normal_round(max_normal > 200 ? 200 : max_normal),
+			max_quickfire_round(premium ? (max_quickfire > 200 ? 200 : max_quickfire) : (max_quickfire > 15 ? 15 : max_quickfire)),
+			max_hardcore_round(max_hardcore > 200 ? 200 : max_hardcore),
+			disable_insane_rounds(disableinsane)
 { }

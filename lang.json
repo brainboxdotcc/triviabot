@@ -4539,5 +4539,8 @@
         "ar": ":green_circle: Up: red_circle: Down <:wrench:546395191892901909> الصيانة",
         "zh": ":green_circle: 向上 :red_circle: 向下 <:wrench:546395191892901909> 维护",
         "nl": ":green_circle: Op :red_circle: Omlaag <:wrench:546395191892901909> Onderhoud"
+    },
+    "LIMITED": {
+	"en": "The trivia moderators of this server have restricted this game type to a maximum of {0} questions. The game's length has been limited."
     }
 }

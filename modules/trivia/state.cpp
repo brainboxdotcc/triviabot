@@ -596,5 +596,6 @@ void state_t::do_end_game()
 bool state_t::is_insane_round()
 {
 	/* Insane rounds are every tenth question */
-	return (round % 10 == 0);
+	guild_settings_t s = creator->GetGuildSettings(guild_id);
+	return (s.disable_insane_rounds == false && (round % 10 == 0));
 }

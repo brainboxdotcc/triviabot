@@ -439,6 +439,7 @@ bool log_question_index(int64_t guild_id, int64_t channel_id, int32_t index, uin
 	gethostname(hostname, 1023);
 
 	uint32_t cluster_id = bot->GetClusterID();
+	guild_settings_t settings = module->GetGuildSettings(guild_id);
 	bool should_stop = false;
 
 	/* Update game details */
@@ -458,10 +459,11 @@ bool log_question_index(int64_t guild_id, int64_t channel_id, int32_t index, uin
 		}
 	}
 
-	if (
+	if (settings.disable_insane_rounds == false && (
 		((state == TRIV_ANSWER_CORRECT) && (index % 10 == 0)) ||				/* all found */
 		((state == TRIV_ASK_QUESTION || state == TRIV_END) && ((index - 1) % 10 == 0))		/* time up */
-   	   ) {
+   	   )
+	) {
 		/* Last round was an insane round, display insane round score table embed if there were any participants */
 		db::resultset insane_stats = db::query("SELECT * FROM insane_round_statistics INNER JOIN trivia_user_cache ON trivia_user_cache.snowflake_id = insane_round_statistics.user_id WHERE channel_id = '?' ORDER BY score DESC", {channel_id});
 		std::string desc;
