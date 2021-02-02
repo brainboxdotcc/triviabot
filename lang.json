@@ -1650,7 +1650,7 @@
         "bg": "\n**{0}** е в серия! **{1}** въпроси и броене",
         "ar": "\n**{0}** في خط متواصل! **{1}** الأسئلة والعد",
         "zh": "\n**{0}** 连胜！ **{1}** 问题和计数",
-        "nl": "\n**{0}** doet het goed! Al **{1}** vragen op rij correct beantwoord"
+        "nl": "\n**{0}** is onverslagen! Al **{1}** vragen op rij correct beantwoord"
     },
     "BEATEN_BEST": {
         "en": ", and has beaten their personal best!",
@@ -1688,7 +1688,7 @@
         "bg": ", но има още някакъв път, преди да победят най-доброто от **{0}**",
         "ar": "، ولكن لا يزال أمامه طريق ليقطعه قبل أن يتفوق على أفضل ما لديه **{0}**",
         "zh": "，但在他们击败 **{0}** 个人最好成绩之前还有一段路要走",
-        "nl": ", hij/zij heeft nog een lange weg te gaan voordat hun persoonlijk record van **{0}** verbroken wordt"
+        "nl": ", maar het is nog een lange weg om het persoonlijk record van **{0}** te verslaan"
     },
     "STREAK_BEATDOWN": {
         "en": "\n**{0}** just beat <@{1}>'s record streak of {2} answers!",

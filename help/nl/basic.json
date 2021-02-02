@@ -13,17 +13,17 @@
         "fields": [
                 {
                         "name": "Zoek hulp en configureer :user: via het dashboard ",
-                        "value": "Alle instellingen en configuratie voor deze bot kunnen worden beheerd via het [TriviaBot Dashboard](https://triviabot.co.uk/dashboard). Voor verdere assistentie kunt u zich aanmelden bij de [officiële brainbox.cc discord-server](https://discord.gg/brainbox).\n<:blank:667278047006949386>",
+                        "value": "Alle instellingen en configuratie voor deze bot kunnen worden beheerd via het [TriviaBot Dashboard](https://triviabot.co.uk/dashboard). Voor verdere assistentie kan je je aanmelden bij de [officiële brainbox.cc discord-server](https://discord.gg/brainbox).\n<:blank:667278047006949386>",
                         "inline": false
                 },
                 {
                         "name": "<:dice:722798416765255800> Hoe u Trivia start",
-                        "value": "[Hoe je trivia-games start en stopt, via onenigheid of via het dashboard ](https://triviabot.co.uk/help/#start)\n<:blank:667278047006949386>",
+                        "value": "[Hoe je trivia-games start en stopt, via Discord of via het dashboard ](https://triviabot.co.uk/help/#start)\n<:blank:667278047006949386>",
                         "inline": false
                 },
                 {
                         "name": ":gear: Configuratie",
-                        "value": "[TriviaBot configureren voor uw server (inclusief het wijzigen van het voorvoegsel van de bot)](https://triviabot.co.uk/help/#config)\n<:blank:667278047006949386>",
+                        "value": "[TriviaBot configureren voor jouw server (inclusief het wijzigen van het voorvoegsel van de bot)](https://triviabot.co.uk/help/#config)\n<:blank:667278047006949386>",
                         "inline": false
                 },
                 {
@@ -33,13 +33,13 @@
                 },
 		{
                         "name": "<:nitro:750660974029176833> Speel om Nitro te winnen",
-                        "value": "[Als je aan het begin van elke maand de nummer één speler bent, kun je Discord Nitro winnen! Klik hier om het nitro-klassement te bekijken!](https://triviabot.co.uk/monthly-nitro/)\n<:blank:667278047006949386>",
+                        "value": "[Als je aan het begin van de maand de nummer één speler bent, kun je Discord Nitro winnen! Klik hier om het nitro-klassement te bekijken!](https://triviabot.co.uk/monthly-nitro/)\n<:blank:667278047006949386>",
                         "inline": false
 
 		},
 		{
 			"name": "<:crystalball:722798415045460008> Stem op TriviaBot!",
-			"value": "[Stem op TriviaBot op top.gg voor persoonlijke hints via direct bericht](https://top.gg/bot/715906723982082139/vote)\n<:blank:667278047006949386>",
+			"value": "[Stem voor TriviaBot op top.gg voor persoonlijke hints via direct bericht](https://top.gg/bot/715906723982082139/vote)\n<:blank:667278047006949386>",
 			"inline": false
 		},
                 {
