@@ -406,8 +406,8 @@ void state_t::do_normal_round(bool silent)
 									question.customhint1[x] = '#';
 							}
 						}
-					} else if (r >= 5 && r <= 8) {
-					question.customhint1 = creator->letterlong(question.answer, settings);
+					} else if (r <= 8) {
+						question.customhint1 = creator->letterlong(question.answer, settings);
 					} else {
 						question.customhint1 = fmt::format(_("SCRAMBLED_ANSWER", settings), question.shuffle1);
 					}
