@@ -4541,6 +4541,22 @@
         "nl": ":green_circle: Op :red_circle: Omlaag <:wrench:546395191892901909> Onderhoud"
     },
     "LIMITED": {
-	"en": "The trivia moderators of this server have restricted this game type to a maximum of {0} questions. The game's length has been limited."
+        "en": "The trivia moderators of this server have restricted this game type to a maximum of {0} questions. The game's length has been limited.",
+        "fr": "Les modérateurs de trivia de ce serveur ont limité ce type de jeu à un maximum de {0} questions. La durée du jeu a été limitée.",
+        "pt": "Os moderadores de curiosidades deste servidor restringiram este tipo de jogo a um máximo de {0} perguntas. A duração do jogo foi limitada.",
+        "tr": "Bu sunucunun trivia moderatörleri bu oyun türünü en fazla {0} soruyla sınırladı. Oyunun uzunluğu sınırlandırıldı.",
+        "es": "Los moderadores de trivia de este servidor han restringido este tipo de juego a un máximo de {0} preguntas. La duración del juego ha sido limitada.",
+        "de": "Die Trivia-Moderatoren dieses Servers haben diesen Spieltyp auf maximal {0} Fragen beschränkt. Die Länge des Spiels wurde begrenzt.",
+        "hi": "इस सर्वर के सामान्य ज्ञान मध्यस्थों ने इस गेम प्रकार को अधिकतम {0} प्रश्नों तक सीमित रखा है। खेल की लंबाई सीमित कर दी गई है।",
+        "sv": "Servernas trivia-moderatorer har begränsat den här speltypen till högst {0} frågor. Spellängden har varit begränsad.",
+        "ru": "Модераторы викторины на этом сервере ограничили этот тип игры до {0} вопросов. Продолжительность игры ограничена.",
+        "it": "I moderatori dei quiz di questo server hanno limitato questo tipo di gioco a un massimo di {0} domande. La durata del gioco è stata limitata.",
+        "pl": "Moderatorzy ciekawostek na tym serwerze ograniczyli ten typ gry do maksymalnie {0} pytań. Długość gry została ograniczona.",
+        "ko": "이 서버의 퀴즈 중재자가이 게임 유형을 최대 {0} 개의 질문으로 제한했습니다. 게임의 길이가 제한되었습니다.",
+        "ja": "このサーバーの雑学クイズモデレーターは、このゲームタイプを最大{0}の質問に制限しています。ゲームの長さは制限されています。",
+        "bg": "Модераторите на любопитни факти на този сървър са ограничили този тип игра до максимум {0} въпроса. Продължителността на играта е ограничена.",
+        "ar": "قام مشرفو المعلومات العامة لهذا الخادم بتقييد نوع هذه اللعبة بعدد {0} سؤال كحد أقصى. طول اللعبة كان محدودا.",
+        "zh": "该服务器的琐事主持人已将此游戏类型限制为最多{0}个问题。游戏的长度受到限制。",
+        "nl": "De trivia-moderators van deze server hebben dit speltype beperkt tot maximaal {0} vragen. De lengte van het spel is beperkt."
     }
 }
