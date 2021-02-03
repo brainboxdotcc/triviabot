@@ -250,7 +250,7 @@ void cache_user(const aegis::user *_user, const aegis::guild *_guild, const aegi
 question_t question_t::fetch(int64_t id, int64_t guild_id, const guild_settings_t &settings)
 {
 	// Replaced with direct db query for perforamance increase - 29Dec20
-	db::query("INSERT INTO stats (id, lastasked, timesasked, lastcorrect, record_time) VALUES('?',now(),1,NULL,60000) ON DUPLICATE KEY UPDATE lastasked = now(), timesasked = timesasked + 1 ", {id});
+	db::query("INSERT INTO stats (id, lastasked, timesasked, lastcorrect, record_time) VALUES('?',UNIX_TIMESTAMP(),1,NULL,60000) ON DUPLICATE KEY UPDATE lastasked = UNIX_TIMESTAMP(), timesasked = timesasked + 1 ", {id});
 	db::resultset question;
 	if (settings.language == "en") {
 		question = db::query("select questions.*, ans1.*, hin1.*, sta1.*, cat1.name as catname from questions left join hints as hin1 on questions.id=hin1.id left join answers as ans1 on questions.id=ans1.id left join stats as sta1 on questions.id=sta1.id left join categories as cat1 on questions.category=cat1.id where questions.id = ?", {id});
