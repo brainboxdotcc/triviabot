@@ -97,6 +97,45 @@ bool state_t::is_valid()
 	return creator && creator->GetBot()->core.find_guild(guild_id) && creator->GetBot()->core.find_channel(channel_id);
 }
 
+/* Returs the number of players to attempt a question (right or wrong) in the past 60 seconds */
+uint32_t state_t::get_activity()
+{
+	time_t now = time(NULL);
+	uint32_t act = 0;
+	for (const auto &a : activity) {
+		if (now - a.second < 60) {
+			act++;
+		}
+	}
+	return act;
+}
+
+/* Returns true if the bot should drop a coin, probability is a percentage based on number of active players
+ * in last 60 second rolling window
+ */
+bool state_t::should_drop_coin()
+{
+	uint32_t activity = get_activity();
+	uint32_t probability = 0;
+	if (activity >= 2 && activity <= 3) {
+		probability = 1;
+	} else if (activity >= 4 && activity <= 7) {
+		probability = 2;
+	} else if (activity >= 8 && activity <= 11) {
+		probability = 3;
+	} else if (activity >= 12 && activity <= 15) {
+		probability = 4;
+	} else if (activity >= 16) {
+		probability = 5;
+	}
+	return (creator->random(1, 100) <= probability);
+}
+
+void state_t::record_activity(uint64_t user_id)
+{
+	activity[user_id] = time(NULL);                
+}
+
 /* Handle inbound message */
 void state_t::handle_message(const in_msg& m)
 {
@@ -105,6 +144,9 @@ void state_t::handle_message(const in_msg& m)
 
 	if (gamestate == TRIV_ASK_QUESTION || gamestate == TRIV_FIRST_HINT || gamestate == TRIV_SECOND_HINT || gamestate == TRIV_TIME_UP) {
 		guild_settings_t settings = creator->GetGuildSettings(guild_id);
+
+		/* Flag activity of user */
+		record_activity(m.author_id);
 
 		if (is_insane_round()) {
 
@@ -173,6 +215,7 @@ void state_t::handle_message(const in_msg& m)
 				int32_t score = this->score;
 
 				std::string ans_message;
+
 				ans_message.append(fmt::format(_("NORM_CORRECT", settings), this->original_answer, score, pts, time_to_answer));
 				if (time_to_answer < question.recordtime) {
 					ans_message.append(fmt::format(_("RECORD_TIME", settings), m.username));
@@ -210,10 +253,26 @@ void state_t::handle_message(const in_msg& m)
 					streak = 1;
 				}
 
+				bool coin = should_drop_coin();
+				std::string thumbnail = "";
+				if (coin) {
+					/* Player got a coin drop! */
+					thumbnail = "https://triviabot.co.uk/images/coin.gif";
+					/* TODO: Award coin */
+					db::query("INSERT INTO coins (user_id, balance) VALUES(?, 1) ON DUPLICATE KEY UPDATE balance = balance + 1", {m.author_id});
+					db::resultset rs = db::query("SELECT * FROM coins WHERE user_id = ?", {m.author_id});
+					uint64_t current = 0;
+					if (rs.size()) {
+						current = from_string<uint64_t>(rs[0]["balance"], std::dec);
+					}
+					ans_message.append("\n\n**").append(fmt::format(_(std::string("COIN_DROP_") + std::to_string(creator->random(1, 4)), settings), m.username, current)).append("**");
+
+				}
+
 				/* Update last person to answer */
 				last_to_answer = m.author_id;
 
-					creator->SimpleEmbed(settings, ":thumbsup:", ans_message, channel_id, fmt::format(_("CORRECT", settings), m.username), question.answer_image);
+					creator->SimpleEmbed(settings, ":thumbsup:", ans_message, channel_id, fmt::format(_("CORRECT", settings), m.username), question.answer_image, thumbnail);
 
 				if (log_question_index(guild_id, channel_id, round, streak, last_to_answer, gamestate, question.id)) {
 					StopGame(settings);

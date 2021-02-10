@@ -4,7 +4,6 @@
 #include <map>
 #include <thread>
 #include <deque>
-#include <mutex>
 
 enum trivia_state_t
 {
@@ -54,6 +53,10 @@ class state_t
 {
 	class TriviaModule* creator;
 	std::string _(const std::string &k, const class guild_settings_t& settings);
+	uint32_t get_activity();
+	void record_activity(uint64_t user_id);
+	bool should_drop_coin();
+
  public:
 	time_t next_tick;
 	bool terminating;
@@ -77,6 +80,7 @@ class state_t
 	time_t next_quickfire;
 	bool hintless;
 	std::map<std::string, bool> insane;
+	std::map<uint64_t, time_t> activity;
 
 	state_t(const state_t &) = default;
 	state_t();

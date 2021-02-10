@@ -4558,5 +4558,17 @@
         "ar": "قام مشرفو المعلومات العامة لهذا الخادم بتقييد نوع هذه اللعبة بعدد {0} سؤال كحد أقصى. طول اللعبة كان محدودا.",
         "zh": "该服务器的琐事主持人已将此游戏类型限制为最多{0}个问题。游戏的长度受到限制。",
         "nl": "De trivia-moderators van deze server hebben dit speltype beperkt tot maximaal {0} vragen. De lengte van het spel is beperkt."
+    },
+    "COIN_DROP_1": {
+	"en": "{0} has won a coin, meaning they now have {1} coin(s)! Keep playing with groups of people to win more coins!"
+    },
+    "COIN_DROP_2": {
+	"en": "TriviaBot threw a coin at {0}! Catch! Now you have {1} coin(s) in your wallet! Keep playing with groups of people to win more coins!"
+    },
+    "COIN_DROP_3": {
+	"en": "Have a coin {0}, you're doing great! You've got {1} coin(s) now! Keep playing with groups of people to win more coins!"
+    },
+    "COIN_DROP_4": {
+	"en": "Make room in your wallet for another coin, {0}! You now have {1} coin(s)! Keep playing with groups of people to win more coins!"
     }
 }

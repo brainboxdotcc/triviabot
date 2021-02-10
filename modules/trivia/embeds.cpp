@@ -87,13 +87,16 @@ void TriviaModule::ProcessEmbed(const guild_settings_t& settings, const std::str
 	}
 }
 
-void TriviaModule::SimpleEmbed(const guild_settings_t& settings, const std::string &emoji, const std::string &text, int64_t channelID, const std::string &title, const std::string &image)
+void TriviaModule::SimpleEmbed(const guild_settings_t& settings, const std::string &emoji, const std::string &text, int64_t channelID, const std::string &title, const std::string &image, const std::string &thumbnail)
 {
 	uint32_t colour = settings.embedcolour;
 	std::string imageinfo;
 	/* Add image if there is one */
 	if (!image.empty()) {
-		imageinfo = ",\"image\":{\"url\":\"" + escape_json(image) + "\"}";
+		imageinfo += ",\"image\":{\"url\":\"" + escape_json(image) + "\"}";
+	}
+	if (!thumbnail.empty()) {
+		imageinfo += ",\"thumbnail\":{\"url\":\"" + escape_json(thumbnail) + "\"}";
 	}
 	if (!title.empty()) {
 		/* With title */
@@ -105,7 +108,7 @@ void TriviaModule::SimpleEmbed(const guild_settings_t& settings, const std::stri
 }
 
 /* Send an embed containing one or more fields */
-void TriviaModule::EmbedWithFields(const guild_settings_t& settings, const std::string &title, std::vector<field_t> fields, int64_t channelID, const std::string &url, const std::string &image)
+void TriviaModule::EmbedWithFields(const guild_settings_t& settings, const std::string &title, std::vector<field_t> fields, int64_t channelID, const std::string &url, const std::string &image, const std::string &thumbnail)
 {
 		uint32_t colour = settings.embedcolour;
 		std::string json = fmt::format("{{" + (!url.empty() ? "\"url\":\"" + escape_json(url) + "\"," : "") + "\"title\":\"{}\",\"color\":{},\"fields\":[", escape_json(title), colour);
@@ -120,6 +123,9 @@ void TriviaModule::EmbedWithFields(const guild_settings_t& settings, const std::
 		/* Add image if there is one */
 		if (!image.empty()) {
 			json += "\"image\":{\"url\":\"" + escape_json(image) + "\"},";
+		}
+		if (!thumbnail.empty()) {
+			json += "\"thumbnail\":{\"url\":\"" + escape_json(thumbnail) + "\"},";
 		}
 		/* Footer, 'powered by' detail, icon */
 		json += "\"footer\":{\"link\":\"https://triviabot.co.uk/\",\"text\":\"" + _("POWERED_BY", settings) + "\",\"icon_url\":\"https:\\/\\/triviabot.co.uk\\/images\\/triviabot_tl_icon.png\"}}";
