@@ -376,7 +376,7 @@ guild_settings_t TriviaModule::GetGuildSettings(int64_t guild_id)
 std::string TriviaModule::GetVersion()
 {
 	/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-	std::string version = "$ModVer 75$";
+	std::string version = "$ModVer 76$";
 	return "3.0." + version.substr(8,version.length() - 9);
 }
 
@@ -444,9 +444,9 @@ void TriviaModule::show_stats(int64_t guild_id, int64_t channel_id)
 		int64_t snowflake_id;
 		score >> points;
 		score >> snowflake_id;
-		db::resultset rs = db::query("SELECT * FROM trivia_user_cache WHERE snowflake_id = ?", {snowflake_id});
+		db::resultset rs = db::query("SELECT *, get_emojis(?) as emojis FROM trivia_user_cache WHERE snowflake_id = ?", {snowflake_id, snowflake_id});
 		if (rs.size() > 0) {
-			msg.append(fmt::format("{0}. `{1}#{2:04d}` ({3})\n", count++, rs[0]["username"], from_string<uint32_t>(rs[0]["discriminator"], std::dec), points));
+			msg.append(fmt::format("{0}. `{1}#{2:04d}` ({3}) {4}\n", count++, rs[0]["username"], from_string<uint32_t>(rs[0]["discriminator"], std::dec), points, rs[0]["emojis"]));
 		} else {
 			msg.append(fmt::format("{}. <@{}> ({})\n", count++, snowflake_id, points));
 		}

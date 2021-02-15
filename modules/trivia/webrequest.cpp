@@ -465,12 +465,12 @@ bool log_question_index(int64_t guild_id, int64_t channel_id, int32_t index, uin
    	   )
 	) {
 		/* Last round was an insane round, display insane round score table embed if there were any participants */
-		db::resultset insane_stats = db::query("SELECT * FROM insane_round_statistics INNER JOIN trivia_user_cache ON trivia_user_cache.snowflake_id = insane_round_statistics.user_id WHERE channel_id = '?' ORDER BY score DESC", {channel_id});
+		db::resultset insane_stats = db::query("SELECT *, get_emojis(trivia_user_cache.snowflake_id) as emojis FROM insane_round_statistics INNER JOIN trivia_user_cache ON trivia_user_cache.snowflake_id = insane_round_statistics.user_id WHERE channel_id = '?' ORDER BY score DESC", {channel_id});
 		std::string desc;
 		uint32_t i = 1;
 		for (auto sc = insane_stats.begin(); sc != insane_stats.end(); ++sc) {
-			desc += fmt::format("**#{0}** `{1}#{2:04d}` (*{3}*)\n",
-					i, (*sc)["username"], from_string<uint32_t>((*sc)["discriminator"], std::dec), Comma(from_string<int32_t>((*sc)["score"], std::dec)));
+			desc += fmt::format("**#{0}** `{1}#{2:04d}` (*{3}*) {4}\n",
+					i, (*sc)["username"], from_string<uint32_t>((*sc)["discriminator"], std::dec), Comma(from_string<int32_t>((*sc)["score"], std::dec)), (*sc)["emojis"]);
 			i++;
 		}
 		if (!desc.empty()) {
