@@ -32,5 +32,6 @@ do
 	# Run bot, cluster id and max clusters are passed in from start.sh
 	./bot -members -clusterid "$1" -maxclusters "$2"
 	../mail-core-file.sh "$1" "$(pwd)"
+	sleep 10
 done
 

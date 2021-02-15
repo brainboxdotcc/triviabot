@@ -22,12 +22,13 @@
  *
  ***********************************************************************************************************/
 
-$total_shards = 18;
-$clusters = 8;
 $testuser = 'brain';
 
 $settings = json_decode(file_get_contents("config.json"));
 $conn = mysqli_connect($settings->dbhost, $settings->dbuser, $settings->dbpass);
+
+$clusters = $settings->clustercount;
+$total_shards = $settings->shardcount;
 
 if (!$conn) {
 	die("Can't connect to database, check config.json\n");

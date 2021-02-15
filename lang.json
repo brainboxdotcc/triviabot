@@ -4691,5 +4691,43 @@
         "ar": "انقر هنا لزيارة متجر TriviaBot للعملات المعدنية وإنفاق عملاتك المعدنية!",
         "zh": "单击此处访问TriviaBot硬币商店并消费您的硬币！",
         "nl": "Klik hier om de TriviaBot-muntenwinkel te bezoeken en je munten uit te geven!"
+    },
+    "GAVECOINS": {
+        "en": "You have given {0} coins to <@{1}>!",
+        "fr": "Vous avez donné {0} pièces à <@{1}>!",
+        "pt": "Você deu {0} moedas para <@{1}>!",
+        "tr": "<@{1}> için {0} jeton verdiniz!",
+        "es": "¡Le has dado {0} monedas a <@{1}>!",
+        "de": "Sie haben <@{1}> {0} Münzen gegeben!",
+        "hi": "आपने <@{1}> को {0} सिक्के दिए हैं!",
+        "sv": "Du har gett {0} mynt till <@{1}>!",
+        "ru": "Вы отдали {0} монет <@{1}>!",
+        "it": "Hai dato {0} monete a <@{1}>!",
+        "pl": "Dałeś {0} monety użytkownikowi <@{1}>!",
+        "ko": "<@{1}> 에게 {0} 코인을주었습니다!",
+        "ja": "<@{1}> に{0}コインを贈りました！",
+        "bg": "Дали сте {0} монети на <@{1}>!",
+        "ar": "لقد قدمت {0} عملات معدنية إلى <@{1}>!",
+        "zh": "您已将{0}个硬币分配给 <@{1}>！",
+        "nl": "U heeft {0} munten gegeven aan <@{1}>!"
+    },
+    "NOTENOUGH": {
+        "en": "You don't have enough coins to do that!",
+        "fr": "Vous n'avez pas assez de pièces pour faire ça!",
+        "pt": "Você não tem moedas suficientes para fazer isso!",
+        "tr": "Bunu yapmak için yeterli paranız yok!",
+        "es": "¡No tienes suficientes monedas para hacer eso!",
+        "de": "Sie haben nicht genug Münzen, um das zu tun!",
+        "hi": "आपके पास ऐसा करने के लिए पर्याप्त सिक्के नहीं हैं!",
+        "sv": "Du har inte tillräckligt med mynt för att göra det!",
+        "ru": "У вас недостаточно монет для этого!",
+        "it": "Non hai abbastanza monete per farlo!",
+        "pl": "Nie masz na to dość monet!",
+        "ko": "당신은 그것을하기에 충분한 동전이 없습니다!",
+        "ja": "あなたはそれをするのに十分なコインを持っていません！",
+        "bg": "Нямате достатъчно монети, за да го направите!",
+        "ar": "ليس لديك عملات كافية للقيام بذلك!",
+        "zh": "您没有足够的硬币来做到这一点！",
+        "nl": "Je hebt niet genoeg munten om dat te doen!"
     }
 }
