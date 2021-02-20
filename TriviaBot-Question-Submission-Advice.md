@@ -21,7 +21,7 @@ This question is of low quality because it incorporates something that almost ev
 This question is of low quality because it is a simple yes/no question that can be answered in under a second by just typing `yes and no` in chat.
 
 `Who is the current president of the USA`:
-This question is of low quality since it doesn't provide a year and just says `current`. This means that in x years this question will have to be replaced or alternitvly you could say `Who is the president of the USA in 2021`. We will deny this question. Any question that will not be valid in 10 years will be denied. 
+This question is of low quality since it doesn't provide a year and just says `current`. This means that in x years this question will have to be replaced. We will deny questions like this. Any question that will not be valid in 10 years will be denied. 
 
 `in the star trek what is the letter GAN's meaning`:
 This question is of low quality since it breaks grammar rules and has spelling mistakes. If you do not fluently speak English, submit your question in your native language and we will translate it for you. We would probably deny this question.
