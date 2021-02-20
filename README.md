@@ -3,8 +3,6 @@ This project contains the source code for the Brainbox.cc TriviaBot. Written in 
 
 It was originally FruitLoopy Trivia on irc.chatspike.net and i've been running this bot in some form since 2004.
 
-It is recommended that you have a some understanding of C++.
-
 This source code repository is for reference and learning only as it **won't work without a TriviaBot API key**, which i'm not prepared to give out to people (no, this isn't "*open trivia database*"). Without this key, the bot will start, but will be unable to start any games, or retrieve any statistics or update the cache.
 
 ## Project and System status
@@ -104,12 +102,3 @@ run.sh will restart the bot executable continually if it dies. If the bot quits,
 | 2.0 / 2005      | IRC                            | [WinBot](https://www.winbot.co.uk) 2.3             | PlugPerl (Perl 5.6) | Discontinued |
 | 3.0 / 2005      | IRC                            | [Botnix](https://www.botnix.org) 1.0 Beta 1        | Perl 5.6            | Discontinued |
 | 4.0 / 2020      | [Discord](https://discord.com) | [Sporks](https://sporks.gg), [aegis.cpp](https://github.com/zeroxs/aegis.cpp)   | C++17               | Active       |
-
-## Hosting Recomendations
-- [Oxide Hosting](https://oxide.host/)
-- [GalaxyGate](https://galaxygate.net/)
-- [OVH](https://ovh.co.uk/)
-- [Hetzner](https://hetzner.com/)
-- [Contabo](https://contabo.com/)
-
-> © Brainbox.cc | discord.gg/brainbox
