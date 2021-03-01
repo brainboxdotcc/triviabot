@@ -200,6 +200,9 @@ bool TriviaModule::OnGuildCreate(const modevent::guild_create &guild)
 		std::lock_guard<std::mutex> guild_queue_lock(guildqueuemutex);
 		guilds_to_update.push_back(gq);
 	}*/
+	if (guild.guild.unavailable) {
+		bot->core.log->error("Guild ID {} is unavailable due to an outage!", guild.guild.id.get());
+	}
 	return true;
 }
 
@@ -376,7 +379,7 @@ guild_settings_t TriviaModule::GetGuildSettings(int64_t guild_id)
 std::string TriviaModule::GetVersion()
 {
 	/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-	std::string version = "$ModVer 76$";
+	std::string version = "$ModVer 77$";
 	return "3.0." + version.substr(8,version.length() - 9);
 }
 
