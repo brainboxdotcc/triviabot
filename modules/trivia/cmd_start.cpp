@@ -35,6 +35,17 @@
 
 command_start_t::command_start_t(class TriviaModule* _creator, const std::string &_base_command) : command_t(_creator, _base_command) { }
 
+std::vector<uint64_t> GetChannelWhitelist(uint64_t guild_id)
+{
+	std::vector<uint64_t> wl;
+	db::resultset rs = db::query("SELECT channel_id FROM channel_whitelist WHERE guild_id = '?'", {guild_id});
+	for (auto row : rs) {
+		wl.push_back(from_string<uint64_t>(row["channel_id"], std::dec));
+	}
+	return wl;
+}
+
+
 void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_settings_t &settings, const std::string &username, bool is_moderator, aegis::channel* c, aegis::user* user)
 {
 	int32_t questions;
@@ -72,6 +83,23 @@ void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 		}
 	}
 
+	std::vector<uint64_t> whitelist = GetChannelWhitelist(cmd.guild_id);
+	std::string whitelist_str;
+	bool allowed = true;
+	if (whitelist.size()) {
+		allowed = false;
+		for (uint64_t cid : whitelist) {
+			whitelist_str.append(fmt::format(" <#{0}>", cid));
+			if (cid == cmd.channel_id) {
+				allowed = true;
+			}
+		}
+	}
+
+	if (!allowed) {
+		creator->SimpleEmbed(settings, ":warning:", fmt::format(_("NOTINWHITELIST", settings), whitelist_str), cmd.channel_id);
+		return;
+	}
 
 	if (!settings.premium) {
 		std::lock_guard<std::mutex> states_lock(creator->states_mutex);

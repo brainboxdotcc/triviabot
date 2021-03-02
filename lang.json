@@ -4767,5 +4767,24 @@
         "ar": "ملف تعريفي للمستخدم",
         "zh": "用户资料",
         "nl": "Gebruikersprofiel"
+    },
+    "NOTINWHITELIST": {
+        "en": "You cannot start trivia on this channel. Trivia may only be started on these channels: {0}",
+        "fr": "Vous ne pouvez pas démarrer de trivia sur cette chaîne. Les jeux-questionnaires ne peuvent être lancés que sur ces chaînes: {0}",
+        "pt": "Você não pode iniciar curiosidades neste canal. As curiosidades só podem ser iniciadas nestes canais: {0}",
+        "tr": "Bu kanalda trivia başlatamazsınız. Bilgi yarışması yalnızca şu kanallarda başlatılabilir: {0}",
+        "es": "No puede iniciar trivia en este canal. Las trivia solo se pueden iniciar en estos canales: {0}",
+        "de": "Sie können auf diesem Kanal keine Trivia starten. Trivia kann nur auf diesen Kanälen gestartet werden: {0}",
+        "hi": "आप इस चैनल पर सामान्य ज्ञान शुरू नहीं कर सकते। सामान्य ज्ञान केवल इन चैनलों पर शुरू किया जा सकता है: {0}",
+        "sv": "Du kan inte starta trivia på den här kanalen. Trivia får bara startas på följande kanaler: {0}",
+        "ru": "На этом канале нельзя запускать мелочи. Викторины можно запускать только на этих каналах: {0}",
+        "it": "Non puoi iniziare a fare curiosità su questo canale. I quiz possono essere avviati solo su questi canali: {0}",
+        "pl": "Nie możesz rozpocząć ciekawostek na tym kanale. Ciekawostki można uruchamiać tylko na tych kanałach: {0}",
+        "ko": "이 채널에서 퀴즈를 시작할 수 없습니다. 퀴즈는 다음 채널에서만 시작할 수 있습니다. {0}",
+        "ja": "このチャンネルで雑学クイズを開始することはできません。雑学クイズは次のチャンネルでのみ開始できます：{0}",
+        "bg": "Не можете да стартирате любопитни факти в този канал. Trivia може да се стартира само на тези канали: {0}",
+        "ar": "لا يمكنك البدء في التوافه على هذه القناة. يمكن بدء تشغيل \"الأشياء الصغيرة\" على هذه القنوات فقط: {0}",
+        "zh": "您无法在此频道上开始琐事。琐事只能在以下频道上启动：{0}",
+        "nl": "Je kunt geen trivia starten op dit kanaal. Trivia mag alleen worden gestart op deze kanalen: {0}"
     }
 }
