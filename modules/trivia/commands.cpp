@@ -125,7 +125,7 @@ void TriviaModule::handle_command(const in_cmd &cmd) {
 					can_execute = true;
 					limits[cmd.channel_id] = time(NULL) + PER_CHANNEL_RATE_LIMIT;
 				}
-				if (can_execute || from_dashboard) {
+				if (can_execute || cmd.from_dashboard) {
 					bot->core.log->debug("command_t '{}' routed to handler", base_command);
 					command->second->call(cmd, tokens, settings, cmd.username, moderator, c, user);
 				} else {

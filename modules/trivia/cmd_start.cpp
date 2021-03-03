@@ -86,7 +86,7 @@ void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 	std::vector<uint64_t> whitelist = GetChannelWhitelist(cmd.guild_id);
 	std::string whitelist_str;
 	bool allowed = true;
-	if (!cmd.from_dashboard whitelist.size()) {
+	if (!cmd.from_dashboard && whitelist.size()) {
 		allowed = false;
 		for (uint64_t cid : whitelist) {
 			whitelist_str.append(fmt::format(" <#{0}>", cid));
@@ -104,7 +104,7 @@ void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 	if (!settings.premium) {
 		std::lock_guard<std::mutex> states_lock(creator->states_mutex);
 		for (auto j = creator->states.begin(); j != creator->states.end(); ++j) {
-			if (j->second.guild_id == cmd.guild_id && j->second.gamestate != TRIV_END) {
+			if (j->second.guild_id == cmd.guild_id && j->second.gamestate != TRIV_END && j->second.channel_id != cmd.channel_id) {
 				creator->EmbedWithFields(settings, _("NOWAY", settings), {
 					{_("ALREADYACTIVE", settings), fmt::format(_("CHANNELREF", settings), j->first), false},
 					{_("GETPREMIUM", settings), _("PREMDETAIL1", settings), false}
@@ -122,7 +122,7 @@ void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 	}
 
 	if (already_running && cmd.from_dashboard) {
-		creator->SimpleEmbed(settings, ":octagonal_sign:", _("DASH_STOP", settings), channel_id, _("STOPPING", settings));
+		creator->SimpleEmbed(settings, ":octagonal_sign:", _("DASH_STOP", settings), cmd.channel_id, _("STOPPING", settings));
 		log_game_end(cmd.guild_id, cmd.channel_id);
 		already_running = false;
 	}
