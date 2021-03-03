@@ -105,11 +105,19 @@ void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 		std::lock_guard<std::mutex> states_lock(creator->states_mutex);
 		for (auto j = creator->states.begin(); j != creator->states.end(); ++j) {
 			if (j->second.guild_id == cmd.guild_id && j->second.gamestate != TRIV_END && j->second.channel_id != cmd.channel_id) {
-				creator->EmbedWithFields(settings, _("NOWAY", settings), {
-					{_("ALREADYACTIVE", settings), fmt::format(_("CHANNELREF", settings), j->first), false},
-					{_("GETPREMIUM", settings), _("PREMDETAIL1", settings), false}
-				}, cmd.channel_id);
-				return;
+				/* Start commands from dashbord supercede other running games and stop them */
+				if (cmd.from_dashboard) {
+					creator->SimpleEmbed(settings, ":octagonal_sign:", _("DASH_STOP", settings), j->first, _("STOPPING", settings));
+					log_game_end(cmd.guild_id, j->first);
+					creator->states.erase(j);
+					break;
+				} else {
+					creator->EmbedWithFields(settings, _("NOWAY", settings), {
+						{_("ALREADYACTIVE", settings), fmt::format(_("CHANNELREF", settings), j->first), false},
+						{_("GETPREMIUM", settings), _("PREMDETAIL1", settings), false}
+					}, cmd.channel_id);
+					return;
+				}
 			}
 		}
 	}
