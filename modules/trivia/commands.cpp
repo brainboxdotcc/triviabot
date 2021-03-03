@@ -35,7 +35,7 @@
 #include "piglatin.h"
 #include "commands.h"
 
-in_cmd::in_cmd(const std::string &m, int64_t author, int64_t channel, int64_t guild, bool mention, const std::string &user) : msg(m), author_id(author), channel_id(channel), guild_id(guild), mentions_bot(mention), username(user)
+in_cmd::in_cmd(const std::string &m, int64_t author, int64_t channel, int64_t guild, bool mention, const std::string &user, bool dashboard) : msg(m), author_id(author), channel_id(channel), guild_id(guild), mentions_bot(mention), from_dashboard(dashboard), username(user)
 {
 }
 
@@ -125,7 +125,7 @@ void TriviaModule::handle_command(const in_cmd &cmd) {
 					can_execute = true;
 					limits[cmd.channel_id] = time(NULL) + PER_CHANNEL_RATE_LIMIT;
 				}
-				if (can_execute) {
+				if (can_execute || from_dashboard) {
 					bot->core.log->debug("command_t '{}' routed to handler", base_command);
 					command->second->call(cmd, tokens, settings, cmd.username, moderator, c, user);
 				} else {

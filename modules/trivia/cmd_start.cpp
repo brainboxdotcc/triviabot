@@ -76,7 +76,7 @@ void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 		}
 	}
 
-	if (settings.only_mods_start) {
+	if (!cmd.from_dashboard && settings.only_mods_start) {
 		if (!is_moderator) {
 			creator->SimpleEmbed(settings, ":warning:", fmt::format(_("AREYOUSTARTINGSOMETHING", settings), username), cmd.channel_id);
 			return;
@@ -86,7 +86,7 @@ void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 	std::vector<uint64_t> whitelist = GetChannelWhitelist(cmd.guild_id);
 	std::string whitelist_str;
 	bool allowed = true;
-	if (whitelist.size()) {
+	if (!cmd.from_dashboard whitelist.size()) {
 		allowed = false;
 		for (uint64_t cid : whitelist) {
 			whitelist_str.append(fmt::format(" <#{0}>", cid));
@@ -114,10 +114,17 @@ void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 		}
 	}
 
+	/* Stop and REPLACE existing games if from dashboard */
 	bool already_running = false;
 	{
 		std::lock_guard<std::mutex> states_lock(creator->states_mutex);
 		already_running = (creator->states.find(cmd.channel_id) != creator->states.end());
+	}
+
+	if (already_running && cmd.from_dashboard) {
+		creator->SimpleEmbed(settings, ":octagonal_sign:", _("DASH_STOP", settings), channel_id, _("STOPPING", settings));
+		log_game_end(cmd.guild_id, cmd.channel_id);
+		already_running = false;
 	}
 
 	if (!already_running) {

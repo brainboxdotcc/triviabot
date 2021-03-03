@@ -100,7 +100,7 @@ public:
 	Bot* GetBot();
 	virtual ~TriviaModule();
 	void SetupCommands();
-	void queue_command(const std::string &message, int64_t author, int64_t channel, int64_t guild, bool mention, const std::string &username);
+	void queue_command(const std::string &message, int64_t author, int64_t channel, int64_t guild, bool mention, const std::string &username, bool from_dashboard = false);
 	void handle_command(const in_cmd &cmd);
 	void ProcessCommands();
 	void ProcessGuildQueue();

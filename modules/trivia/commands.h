@@ -15,7 +15,8 @@ class in_cmd
 	int64_t channel_id;
 	int64_t guild_id;
 	bool mentions_bot;
-	in_cmd(const std::string &m, int64_t author, int64_t channel, int64_t guild, bool mention, const std::string &username);
+	bool from_dashboard;
+	in_cmd(const std::string &m, int64_t author, int64_t channel, int64_t guild, bool mention, const std::string &username, bool dashboard);
 };
 
 class command_t 

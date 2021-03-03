@@ -84,10 +84,10 @@ TriviaModule::TriviaModule(Bot* instigator, ModuleLoader* ml) : Module(instigato
 	SetupCommands();
 }
 
-void TriviaModule::queue_command(const std::string &message, int64_t author, int64_t channel, int64_t guild, bool mention, const std::string &username)
+void TriviaModule::queue_command(const std::string &message, int64_t author, int64_t channel, int64_t guild, bool mention, const std::string &username, bool from_dashboard)
 {
 	std::lock_guard<std::mutex> cmd_lock(cmdmutex);
-	commandqueue.push_back(in_cmd(message, author, channel, guild, mention, username));
+	commandqueue.push_back(in_cmd(message, author, channel, guild, mention, username, from_dashboard));
 }
 
 void TriviaModule::ProcessCommands()
@@ -379,7 +379,7 @@ guild_settings_t TriviaModule::GetGuildSettings(int64_t guild_id)
 std::string TriviaModule::GetVersion()
 {
 	/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-	std::string version = "$ModVer 77$";
+	std::string version = "$ModVer 78$";
 	return "3.0." + version.substr(8,version.length() - 9);
 }
 
@@ -568,6 +568,7 @@ bool TriviaModule::RealOnMessage(const modevent::message_create &message, const 
 {
 	std::string username;
 	aegis::gateway::objects::message msg = message.msg;
+	bool is_from_dashboard = (_author_id != 0);
 
 	// Allow overriding of author id from remote start code
 	int64_t author_id = _author_id ? _author_id : msg.get_author_id().get();
@@ -629,7 +630,7 @@ bool TriviaModule::RealOnMessage(const modevent::message_create &message, const 
 
 		std::string command = clean_message.substr(settings.prefix.length(), clean_message.length() - settings.prefix.length());
 		if (user != nullptr) {
-			queue_command(command, author_id, channel_id, guild_id, mentioned, username);
+			queue_command(command, author_id, channel_id, guild_id, mentioned, username, is_from_dashboard);
 			bot->core.log->info("CMD (USER={}, GUILD={}): <{}> {}", author_id, guild_id, username, clean_message);
 		} else {
 			bot->core.log->debug("User is null when handling command. C:{} A:{}", channel_id, author_id);
