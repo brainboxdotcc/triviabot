@@ -133,7 +133,7 @@ bool state_t::should_drop_coin()
 
 void state_t::record_activity(uint64_t user_id)
 {
-	activity[user_id] = time(NULL);                
+	activity[user_id] = time(NULL);		
 }
 
 /* Handle inbound message */
@@ -172,6 +172,9 @@ void state_t::handle_message(const in_msg& m)
 				}
 				update_score_only(m.author_id, guild_id, 1, channel_id);
 				creator->CacheUser(m.author_id, channel_id);
+
+				do_insane_board();
+
 				if (done) {
 					/* Only save state if all answers have been found */
 					if (log_question_index(guild_id, channel_id, round, streak, last_to_answer, gamestate, 0)) {
@@ -555,6 +558,22 @@ void state_t::do_first_hint()
 	if (log_question_index(guild_id, channel_id, round, streak, last_to_answer, gamestate, question.id)) {
 		StopGame(settings);
 	}
+}
+
+void state_t::do_insane_board() {
+	/* Last round was an insane round, display insane round score table embed if there were any participants */
+	db::resultset insane_stats = db::query("SELECT *, get_emojis(trivia_user_cache.snowflake_id) as emojis FROM insane_round_statistics INNER JOIN trivia_user_cache ON trivia_user_cache.snowflake_id = insane_round_statistics.user_id WHERE channel_id = '?' ORDER BY score DESC", {channel_id});
+	std::string desc;
+	uint32_t i = 1;
+	for (auto sc = insane_stats.begin(); sc != insane_stats.end(); ++sc) {
+		desc += fmt::format("**#{0}** `{1}#{2:04d}` (*{3}*) {4}\n", i, (*sc)["username"], from_string<uint32_t>((*sc)["discriminator"], std::dec), Comma(from_string<int32_t>((*sc)["score"], std::dec)), (*sc)["emojis"]);
+		i++;
+	}
+	if (!desc.empty()) {
+		guild_settings_t settings = creator->GetGuildSettings(guild_id);
+		creator->SimpleEmbed(settings, "", desc, channel_id, _("INSANESTATS", settings));
+	}
+	db::query("DELETE FROM insane_round_statistics WHERE channel_id = '?'", {channel_id});
 }
 
 /* State machine event for second hint */

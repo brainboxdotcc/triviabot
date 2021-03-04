@@ -459,27 +459,6 @@ bool log_question_index(int64_t guild_id, int64_t channel_id, int32_t index, uin
 		}
 	}
 
-	if (settings.disable_insane_rounds == false && (
-		((state == TRIV_ANSWER_CORRECT) && (index % 10 == 0)) ||				/* all found */
-		((state == TRIV_ASK_QUESTION || state == TRIV_END) && ((index - 1) % 10 == 0))		/* time up */
-   	   )
-	) {
-		/* Last round was an insane round, display insane round score table embed if there were any participants */
-		db::resultset insane_stats = db::query("SELECT *, get_emojis(trivia_user_cache.snowflake_id) as emojis FROM insane_round_statistics INNER JOIN trivia_user_cache ON trivia_user_cache.snowflake_id = insane_round_statistics.user_id WHERE channel_id = '?' ORDER BY score DESC", {channel_id});
-		std::string desc;
-		uint32_t i = 1;
-		for (auto sc = insane_stats.begin(); sc != insane_stats.end(); ++sc) {
-			desc += fmt::format("**#{0}** `{1}#{2:04d}` (*{3}*) {4}\n",
-					i, (*sc)["username"], from_string<uint32_t>((*sc)["discriminator"], std::dec), Comma(from_string<int32_t>((*sc)["score"], std::dec)), (*sc)["emojis"]);
-			i++;
-		}
-		if (!desc.empty()) {
-			guild_settings_t settings = module->GetGuildSettings(guild_id);
-			module->SimpleEmbed(settings, "", desc, channel_id, module->_("INSANESTATS", settings));
-		}
-		db::query("DELETE FROM insane_round_statistics WHERE channel_id = '?'", {channel_id});
-	}
-
 	return should_stop;
 }
 

@@ -56,6 +56,7 @@ class state_t
 	uint32_t get_activity();
 	void record_activity(uint64_t user_id);
 	bool should_drop_coin();
+	void do_insane_board();
 
  public:
 	time_t next_tick;

@@ -158,10 +158,16 @@ std::string removepunct(const std::string &input)
 	std::wstring out;
 	for (std::wstring::const_iterator c = str.begin(); c != str.end(); ++c) {
 		if (!
-			(*c == L',' || *c == L'.' || *c == L':'  || *c == L'/' ||
-			 *c == L';' || *c == L'!' || *c == L'?' || *c == L'('  ||
-			 *c == L')' || *c == L'-' || *c == L'"' || *c == L'\'' ||
-			 *c == L'\r' || *c == L'\n' || *c == L'\t' || *c == L'\v')
+			(*c == L',' || *c == L'.'   || *c == L':'  || *c == L'/'  ||
+			 *c == L';' || *c == L'!'   || *c == L'?'  || *c == L'('  ||
+			 *c == L'‘' || *c == L'’'   || *c == L'“'  || *c == L'”'  ||
+			 *c == L'«' || *c == L'»'   || *c == L'‹'  || *c == L'›'  ||
+			 *c == L'「' || *c == L'」' || *c == L'﹁' || *c == L'﹂' ||
+			 *c == L'『' || *c == L'』' || *c == L'﹃' || *c == L'﹄' ||
+			 *c == L'《' || *c == L'》' || *c == L'〈' || *c == L'〉' ||
+			 *c == L')' || *c == L'-'   || *c == L'"'  || *c == L'\'' ||
+			 *c == L'„' || *c == L'\r'  || *c == L'\n' || *c == L'\t' ||
+			 *c == L'\v')
 		) {
 			out += *c;
 		}
