@@ -86,8 +86,8 @@ TriviaModule::TriviaModule(Bot* instigator, ModuleLoader* ml) : Module(instigato
 
 void TriviaModule::queue_command(const std::string &message, int64_t author, int64_t channel, int64_t guild, bool mention, const std::string &username, bool from_dashboard)
 {
-	std::lock_guard<std::mutex> cmd_lock(cmdmutex);
-	commandqueue.push_back(in_cmd(message, author, channel, guild, mention, username, from_dashboard));
+	//std::lock_guard<std::mutex> cmd_lock(cmdmutex);
+	handle_command(in_cmd(message, author, channel, guild, mention, username, from_dashboard));
 }
 
 void TriviaModule::ProcessCommands()
@@ -379,7 +379,7 @@ guild_settings_t TriviaModule::GetGuildSettings(int64_t guild_id)
 std::string TriviaModule::GetVersion()
 {
 	/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-	std::string version = "$ModVer 78$";
+	std::string version = "$ModVer 79$";
 	return "3.0." + version.substr(8,version.length() - 9);
 }
 

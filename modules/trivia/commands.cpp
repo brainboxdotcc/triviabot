@@ -115,22 +115,29 @@ void TriviaModule::handle_command(const in_cmd &cmd) {
 	
 			auto command = commands.find(base_command);
 			if (command != commands.end()) {
-			/* Commands handled in the bot in C++ */
+
 				bool can_execute = false;
-				auto check = limits.find(cmd.channel_id);
-				if (check == limits.end()) {
-					can_execute = true;
-					limits[cmd.channel_id] = time(NULL) + PER_CHANNEL_RATE_LIMIT;
-				} else if (time(NULL) > check->second) {
-					can_execute = true;
-					limits[cmd.channel_id] = time(NULL) + PER_CHANNEL_RATE_LIMIT;
+				auto command = commands.find(base_command);
+				if (command != commands.end()) {
+					std::lock_guard<std::mutex> cmd_lock(cmdmutex);
+					auto check = limits.find(cmd.channel_id);
+					if (check == limits.end()) {
+						can_execute = true;
+						limits[cmd.channel_id] = time(NULL) + PER_CHANNEL_RATE_LIMIT;
+					} else if (time(NULL) > check->second) {
+						can_execute = true;
+						limits[cmd.channel_id] = time(NULL) + PER_CHANNEL_RATE_LIMIT;
+					}
 				}
+
 				if (can_execute || cmd.from_dashboard) {
 					bot->core.log->debug("command_t '{}' routed to handler", base_command);
 					command->second->call(cmd, tokens, settings, cmd.username, moderator, c, user);
 				} else {
 					/* Display rate limit message, but only one per rate limit period */
 					bool emit_rl_warning = false;
+					std::lock_guard<std::mutex> cmd_lock(cmdmutex);
+
 					auto check = last_rl_warning.find(cmd.channel_id);
 					if (check == last_rl_warning.end()) {
 						emit_rl_warning = true;
@@ -153,14 +160,18 @@ void TriviaModule::handle_command(const in_cmd &cmd) {
 				}
 				if (command_exists) {
 					bool can_execute = false;
-					auto check = limits.find(cmd.channel_id);
-					if (check == limits.end()) {
-						can_execute = true;
-						limits[cmd.channel_id] = time(NULL) + PER_CHANNEL_RATE_LIMIT;
-					} else if (time(NULL) > check->second) {
-						can_execute = true;
-						limits[cmd.channel_id] = time(NULL) + PER_CHANNEL_RATE_LIMIT;
+					{
+						std::lock_guard<std::mutex> cmd_lock(cmdmutex);
+						auto check = limits.find(cmd.channel_id);
+						if (check == limits.end()) {
+							can_execute = true;
+							limits[cmd.channel_id] = time(NULL) + PER_CHANNEL_RATE_LIMIT;
+						} else if (time(NULL) > check->second) {
+							can_execute = true;
+							limits[cmd.channel_id] = time(NULL) + PER_CHANNEL_RATE_LIMIT;
+						}
 					}
+
 					if (can_execute) {
 						std::string rest;
 						std::getline(tokens, rest);
@@ -173,6 +184,8 @@ void TriviaModule::handle_command(const in_cmd &cmd) {
 					} else {
 						/* Display rate limit message, but only one per rate limit period */
 						bool emit_rl_warning = false;
+						std::lock_guard<std::mutex> cmd_lock(cmdmutex);
+
 						auto check = last_rl_warning.find(cmd.channel_id);
 						if (check == last_rl_warning.end()) {
 							emit_rl_warning = true;
