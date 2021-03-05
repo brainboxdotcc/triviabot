@@ -161,6 +161,9 @@ void state_t::handle_message(const in_msg& m)
 				if (--this->insane_left < 1) {
 					done = true;
 					creator->SimpleEmbed(settings, ":thumbsup:", fmt::format(_("LAST_ONE", settings), m.username), channel_id);
+
+					do_insane_board();
+
 					if (round <= this->numquestions - 1) {
 						round++;
 						gamestate = TRIV_ANSWER_CORRECT;
@@ -172,8 +175,6 @@ void state_t::handle_message(const in_msg& m)
 				}
 				update_score_only(m.author_id, guild_id, 1, channel_id);
 				creator->CacheUser(m.author_id, channel_id);
-
-				do_insane_board();
 
 				if (done) {
 					/* Only save state if all answers have been found */
@@ -606,6 +607,9 @@ void state_t::do_time_up()
 			/* Insane round */
 			int32_t found = insane_num - insane_left;
 			creator->SimpleEmbed(settings, ":alarm_clock:", fmt::format(_("INSANE_FOUND", settings), found), channel_id, _("TIME_UP", settings));
+
+			do_insane_board();
+
 		} else if (question.answer != "") {
 			/* Not insane round */
 			creator->SimpleEmbed(settings, ":alarm_clock:", fmt::format(_("ANS_WAS", settings), question.answer), channel_id, _("OUT_OF_TIME", settings), question.answer_image);
