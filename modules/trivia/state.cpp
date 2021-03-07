@@ -161,9 +161,6 @@ void state_t::handle_message(const in_msg& m)
 				if (--this->insane_left < 1) {
 					done = true;
 					creator->SimpleEmbed(settings, ":thumbsup:", fmt::format(_("LAST_ONE", settings), m.username), channel_id);
-
-					do_insane_board();
-
 					if (round <= this->numquestions - 1) {
 						round++;
 						gamestate = TRIV_ANSWER_CORRECT;
@@ -177,6 +174,7 @@ void state_t::handle_message(const in_msg& m)
 				creator->CacheUser(m.author_id, channel_id);
 
 				if (done) {
+					do_insane_board();
 					/* Only save state if all answers have been found */
 					if (log_question_index(guild_id, channel_id, round, streak, last_to_answer, gamestate, 0)) {
 						StopGame(settings);
