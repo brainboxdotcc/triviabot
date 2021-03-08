@@ -135,21 +135,6 @@ void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 		already_running = false;
 	}
 
-	if (quickfire && !settings.premium) {
-		db::resultset lastinsane = db::query("SELECT * FROM insane_cooldown WHERE guild_id = ?", {cmd.guild_id});
-		if (lastinsane.size()) {
-			time_t last_insane_time = from_string<time_t>(lastinsane[0]["last_started"], std::dec);
-			if (time(NULL) - last_insane_time < 900) {
-				int64_t seconds = 900 - (time(NULL) - last_insane_time);
-				int64_t minutes = floor((float)seconds / 60.0f);
-				seconds = seconds % 60;
-				creator->SimpleEmbed(settings, ":warning:", fmt::format(_("INSANE_COOLDOWN", settings), minutes, seconds), cmd.channel_id);
-				return;
-			}
-		}
-		db::query("INSERT INTO insane_cooldown (guild_id, last_started) VALUES(?, UNIX_TIMESTAMP()) ON DUPLICATE KEY UPDATE last_started = UNIX_TIMESTAMP()", {cmd.guild_id});
-	}
-
 	if (!already_running) {
 		creator->GetBot()->core.log->debug("start game, no existing state");
 
@@ -201,6 +186,22 @@ void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 			creator->SimpleEmbed(settings, ":warning:", fmt::format(_("SPOOPY2", settings), username), cmd.channel_id, _("BROKED", settings));
 			return;
 		} else  {
+
+			if (quickfire && !settings.premium) {
+				db::resultset lastinsane = db::query("SELECT * FROM insane_cooldown WHERE guild_id = ?", {cmd.guild_id});
+				if (lastinsane.size()) {
+					time_t last_insane_time = from_string<time_t>(lastinsane[0]["last_started"], std::dec);
+					if (time(NULL) - last_insane_time < 900) {
+						int64_t seconds = 900 - (time(NULL) - last_insane_time);
+						int64_t minutes = floor((float)seconds / 60.0f);
+						seconds = seconds % 60;
+						creator->SimpleEmbed(settings, ":warning:", fmt::format(_("INSANE_COOLDOWN", settings), minutes, seconds), cmd.channel_id);
+						return;
+					}
+				}
+				db::query("INSERT INTO insane_cooldown (guild_id, last_started) VALUES(?, UNIX_TIMESTAMP()) ON DUPLICATE KEY UPDATE last_started = UNIX_TIMESTAMP()", {cmd.guild_id});
+			}
+			
 			{
 				std::lock_guard<std::mutex> states_lock(creator->states_mutex);
 
