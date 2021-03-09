@@ -45,7 +45,6 @@ std::vector<uint64_t> GetChannelWhitelist(uint64_t guild_id)
 	return wl;
 }
 
-
 void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_settings_t &settings, const std::string &username, bool is_moderator, aegis::channel* c, aegis::user* user)
 {
 	int32_t questions;
@@ -201,6 +200,8 @@ void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 				}
 				db::query("INSERT INTO insane_cooldown (guild_id, last_started) VALUES(?, UNIX_TIMESTAMP()) ON DUPLICATE KEY UPDATE last_started = UNIX_TIMESTAMP()", {cmd.guild_id});
 			}
+
+			CheckCreateWebhook(cmd.channel_id);
 			
 			{
 				std::lock_guard<std::mutex> states_lock(creator->states_mutex);

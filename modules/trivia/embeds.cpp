@@ -29,6 +29,7 @@
 #include <sporks/statusfield.h>
 #include <sporks/database.h>
 #include "trivia.h"
+#include "webrequest.h"
 
 /* Make a string safe to send as a JSON literal */
 std::string TriviaModule::escape_json(const std::string &s) {
@@ -81,7 +82,13 @@ void TriviaModule::ProcessEmbed(const guild_settings_t& settings, const std::str
 			}
 		}
 		if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == channelID) {
-			c->create_message_embed("", embed);
+			/* Check if this channel has a webhook. If it does, use it! */
+			db::resultset rs = db::query("SELECT * FROM channel_webhooks WHERE channel_id = ?", {channelID});
+			if (rs.size()) {
+				PostWebhook(rs[0]["webhook"], embed.dump());
+			} else {
+				c->create_message_embed("", embed);
+			}
 			bot->sent_messages++;
 		}
 	}

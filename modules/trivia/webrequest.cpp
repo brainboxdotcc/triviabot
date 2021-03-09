@@ -38,16 +38,22 @@
 #include <sporks/stringops.h>
 #include <sporks/database.h>
 #include <dirent.h>
+#define CPPHTTPLIB_OPENSSL_SUPPORT
 #include "httplib.h"
 #include "trivia.h"
 #include "wlower.h"
+
+
+#define FIRE_AND_FORGET_QUEUES 10
 
 asio::io_context * _io_context = nullptr;
 Bot* bot = nullptr;
 TriviaModule* module = nullptr;
 std::string apikey;
-std::mutex faflock;
-std::thread* ft = nullptr;
+std::mutex faflock[FIRE_AND_FORGET_QUEUES];
+std::mutex fafindex;
+uint32_t faf_index = 0;
+std::thread* ft[FIRE_AND_FORGET_QUEUES] = { nullptr };
 
 
 std::string web_request(const std::string &_host, const std::string &_path, const std::string &_body = "");
@@ -66,8 +72,11 @@ question_t::question_t() : id(0), lastasked(0), timesasked(0), recordtime(0)
 }
 
 /* Represents a fire-and-forget REST request. A fire-and-forget request can be executed in the future
- * and expects no result. It goes into a queue and will be executed in at least 100ms time. They can be
- * guaranteed to be executed in-order.
+ * and expects no result. It goes into a queue and will be executed in at least 100ms time. No guarantee
+ * of in-order execution if theyre submitted within the same 100ms.
+ *
+ * There are ten fire and forget queues, each of which has a web request pushed into it, selected by
+ * round robin.
  */
 struct fire_and_forget_t {
 	std::string host;
@@ -76,18 +85,18 @@ struct fire_and_forget_t {
 };
 
 /* A queue of fire-and-forget requests waiting to be executed. */
-std::queue<fire_and_forget_t> faf;
+std::queue<fire_and_forget_t> faf[FIRE_AND_FORGET_QUEUES];
 
-void fireandforget()
+void fireandforget(uint32_t queue_index)
 {
 	while (1) {
 		bool something = false;
 		fire_and_forget_t f;
 		{
-			std::lock_guard<std::mutex> fafguard(faflock);
-			if (!faf.empty()) {
-				f = faf.front();
-				faf.pop();
+			std::lock_guard<std::mutex> fafguard(faflock[queue_index]);
+			if (!faf[queue_index].empty()) {
+				f = faf[queue_index].front();
+				faf[queue_index].pop();
 				something = true;
 			}
 		}
@@ -106,7 +115,9 @@ void set_io_context(asio::io_context* ioc, const std::string &_apikey, Bot* _bot
 	apikey = _apikey;
 	bot = _bot;
 	module = _module;
-	ft = new std::thread(&fireandforget);
+	for (uint32_t i = 0; i < FIRE_AND_FORGET_QUEUES; ++i) {
+		ft[i] = new std::thread(&fireandforget, i);
+	}
 }
 
 /* Encodes a url parameter similar to php urlencode() */
@@ -138,7 +149,8 @@ std::string web_request(const std::string &_host, const std::string &_path, cons
 {
 	try
 	{
-		httplib::Client cli(_host.c_str(), 80);
+		httplib::Client cli(_host.c_str());
+		cli.enable_server_certificate_verification(false);
 		httplib::Headers headers = {
 			{"X-API-Auth", apikey}
 		};
@@ -155,16 +167,16 @@ std::string web_request(const std::string &_host, const std::string &_path, cons
 			}
 		}
 		else {
-			if (auto res = cli.Post(_path.c_str(), _body.c_str(), "text/plain")) {
+			if (auto res = cli.Post(_path.c_str(), _body.c_str(), "application/json")) {
 				if (res->status == 200) {
 					rv = res->body;
 				}
-				//std::cout << "status: " << res->status << "\n";
+				//std::cout << _host << " " << _path << " body \"" << _body << "\" status: " << res->status << " b=" << res->body << "\n";
 			} else {
-				//std::cout << "error: " << res.error() << "\n";
+				//std::cout << _host << " " << _path << " error: " << res.error() << "\n";
 			}
 		}
-			
+		
 		return rv;
 	}
 	catch (std::exception& e)
@@ -177,11 +189,16 @@ std::string web_request(const std::string &_host, const std::string &_path, cons
 /* Execute a TriviaBot API call at a later time, putting it into the fire-and-forget queue */
 void later(const std::string &_path, const std::string &_body)
 {
-	std::lock_guard<std::mutex> fafguard(faflock);
+	std::lock_guard<std::mutex> fi(fafindex);
+	std::lock_guard<std::mutex> fafguard(faflock[faf_index]);
 	if (bot->IsDevMode()) {
-		faf.push({BACKEND_HOST_DEV, fmt::format(BACKEND_PATH_DEV, _path), _body});
+		faf[faf_index].push({BACKEND_HOST_DEV, fmt::format(BACKEND_PATH_DEV, _path), _body});
 	} else {
-		faf.push({BACKEND_HOST_LIVE, fmt::format(BACKEND_PATH_LIVE, _path), _body});
+		faf[faf_index].push({BACKEND_HOST_LIVE, fmt::format(BACKEND_PATH_LIVE, _path), _body});
+	}
+	faf_index++;
+	if (faf_index > FIRE_AND_FORGET_QUEUES - 1) {
+		faf_index = 0;
 	}
 }
 
@@ -601,6 +618,26 @@ int32_t get_team_points(const std::string &team)
 		return from_string<int32_t>(r[0]["score"], std::dec);
 	} else {
 		return 0;
+	}
+}
+
+void CheckCreateWebhook(uint64_t channel_id)
+{
+	/* Create webhook */
+	runcli("createwebhook", 0, 0, channel_id, "");
+}
+
+void PostWebhook(const std::string &webhook_url, const std::string &embed)
+{
+	std::lock_guard<std::mutex> fi(fafindex);
+	std::lock_guard<std::mutex> fafguard(faflock[faf_index]);
+
+	std::string host = webhook_url.substr(0, webhook_url.find("/api/"));
+	std::string path = webhook_url.substr(host.length(), webhook_url.length());
+	faf[faf_index].push({host, path, "{\"content\":\"\", \"embeds\":[" + embed + "]}"});
+	faf_index++;
+	if (faf_index > FIRE_AND_FORGET_QUEUES - 1) {
+		faf_index = 0;
 	}
 }
 
