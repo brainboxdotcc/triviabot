@@ -38,27 +38,47 @@
 #include <sporks/stringops.h>
 #include <sporks/database.h>
 #include <dirent.h>
+#include <arpa/inet.h>
+#include <sys/socket.h>
+#include <netdb.h>
+#include <ifaddrs.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <linux/if_link.h>
 #define CPPHTTPLIB_OPENSSL_SUPPORT
 #include "httplib.h"
 #include "trivia.h"
 #include "wlower.h"
 
 
+#define START_STATUS 100
+#define END_STATUS 600
 #define FIRE_AND_FORGET_QUEUES 10
 
 asio::io_context * _io_context = nullptr;
 Bot* bot = nullptr;
 TriviaModule* module = nullptr;
 std::string apikey;
+
 std::mutex faflock[FIRE_AND_FORGET_QUEUES];
 std::mutex fafindex;
-uint32_t faf_index = 0;
-std::thread* ft[FIRE_AND_FORGET_QUEUES] = { nullptr };
+std::mutex interfaceindex;
+std::mutex statsmutex;
 
+uint32_t faf_index = 0;
+uint32_t interface_index = 0;
+
+std::thread* ft[FIRE_AND_FORGET_QUEUES] = { nullptr };
+std::thread* statdumper;
+
+std::map<std::string, std::map<uint32_t, uint64_t> > statuscodes;
+std::map<std::string, uint64_t> requests;
+std::map<std::string, uint64_t> errors;
 
 std::string web_request(const std::string &_host, const std::string &_path, const std::string &_body = "");
 std::string fetch_page(const std::string &_endpoint, const std::string &body = "");
-
+std::vector<std::string> getinterfaces();
 
 question_t::question_t(int64_t _id, const std::string &_question, const std::string &_answer, const std::string &_hint1, const std::string &_hint2, const std::string &_catname, time_t _lastasked, int32_t _timesasked,
 	const std::string &_lastcorrect, time_t _record_time, const std::string &_shuffle1, const std::string &_shuffle2, const std::string &_question_image, const std::string &_answer_image) :
@@ -108,6 +128,33 @@ void fireandforget(uint32_t queue_index)
 	}
 }
 
+void statdump()
+{
+	while(1) {
+		{
+			std::lock_guard<std::mutex> sp(statsmutex);
+			std::vector<std::string> inter = getinterfaces();
+			for (auto i : inter) {
+				uint64_t r = 0, e = 0;
+				if (requests.find(i) != requests.end()) {
+					r = requests[i];
+				}
+				if (errors.find(i) != errors.end()) {
+					e = errors[i];
+				}
+				db::query("INSERT INTO http_requests (interface, hard_errors, requests) VALUES('?', ?, ?) ON DUPLICATE KEY UPDATE hard_errors = hard_errors + ?, requests = requests + ?", {i, e, r, e, r});
+				if (statuscodes.find(i) != statuscodes.end()) {
+					for (auto & codes : statuscodes[i]) {
+						db::query("INSERT INTO http_status_codes (interface, status_code, requests) VALUES('?', ?, ?) ON DUPLICATE KEY UPDATE requests = requests + ?", {i, codes.first, codes.second, codes.second});
+					}
+				}
+
+			}
+		}
+		std::this_thread::sleep_for(std::chrono::seconds(60));
+	}
+}
+
 /* Initialisation function */
 void set_io_context(asio::io_context* ioc, const std::string &_apikey, Bot* _bot, TriviaModule* _module)
 {
@@ -118,6 +165,7 @@ void set_io_context(asio::io_context* ioc, const std::string &_apikey, Bot* _bot
 	for (uint32_t i = 0; i < FIRE_AND_FORGET_QUEUES; ++i) {
 		ft[i] = new std::thread(&fireandforget, i);
 	}
+	statdumper = new std::thread(&statdump);
 }
 
 /* Encodes a url parameter similar to php urlencode() */
@@ -144,13 +192,52 @@ std::string url_encode(const std::string &value) {
 	return escaped.str();
 }
 
+std::vector<std::string> getinterfaces()
+{
+	struct ifaddrs *ifaddr = NULL;
+	char host[NI_MAXHOST];
+	std::vector<std::string> rv;
+
+	if (getifaddrs(&ifaddr) != -1) {
+		for (struct ifaddrs *ifa = ifaddr; ifa != NULL; ifa = ifa->ifa_next) {
+			if (ifa->ifa_addr && ifa->ifa_addr->sa_family == AF_INET) {
+				if (!getnameinfo(ifa->ifa_addr, sizeof(sockaddr_in), host, NI_MAXHOST, NULL, 0, NI_NUMERICHOST)) {
+					std::string ip = host;
+					/* Exclude localhost and docker */
+					if (ip != "127.0.0.1" && ip != "172.17.0.1") {
+						rv.push_back(ip);
+					}
+				}
+			}
+		}
+		freeifaddrs(ifaddr);
+	}
+	return rv;
+}
+
+std::string getinterface()
+{
+	int curindex;
+	std::vector<std::string> interfaces = getinterfaces();
+	{
+		std::lock_guard<std::mutex> ii(interfaceindex);
+		curindex = interface_index;
+		if (++interface_index >= interfaces.size()) {
+			interface_index = 0;
+		}
+		return interfaces[curindex];
+	}
+}
+
 /* Make a REST web request (either GET or POST) to a HTTP server */
 std::string web_request(const std::string &_host, const std::string &_path, const std::string &_body)
 {
+	std::string iface = getinterface();
 	try
 	{
 		httplib::Client cli(_host.c_str());
 		cli.enable_server_certificate_verification(false);
+		cli.set_interface(iface.c_str());
 		httplib::Headers headers = {
 			{"X-API-Auth", apikey}
 		};
@@ -171,9 +258,29 @@ std::string web_request(const std::string &_host, const std::string &_path, cons
 				if (res->status == 200) {
 					rv = res->body;
 				}
-				//std::cout << _host << " " << _path << " body \"" << _body << "\" status: " << res->status << " b=" << res->body << "\n";
+				{
+					std::lock_guard<std::mutex> sp(statsmutex);
+					if (statuscodes.find(iface) == statuscodes.end()) {
+						statuscodes[iface] = {};
+					}
+					if (statuscodes[iface].find(res->status) == statuscodes[iface].end()) {
+						statuscodes[iface][res->status] = 1;
+					} else {
+						statuscodes[iface][res->status]++;
+					}
+					if (requests.find(iface) == requests.end()) {
+						requests[iface] = 1;
+					} else {
+						requests[iface]++;
+					}
+				}
 			} else {
-				//std::cout << _host << " " << _path << " error: " << res.error() << "\n";
+				std::lock_guard<std::mutex> sp(statsmutex);
+				if (errors.find(iface) == errors.end()) {
+					errors[iface] = 1;
+				} else {
+					errors[iface]++;
+				}
 			}
 		}
 		
@@ -182,6 +289,12 @@ std::string web_request(const std::string &_host, const std::string &_path, cons
 	catch (std::exception& e)
 	{
 		std::cout << "Exception: " << e.what() << "\n";
+		std::lock_guard<std::mutex> sp(statsmutex);
+		if (errors.find(iface) == errors.end()) {
+			errors[iface] = 1;
+		} else {
+			errors[iface]++;
+		}
 	}
 	return "";
 }
