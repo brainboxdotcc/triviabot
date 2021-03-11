@@ -85,7 +85,7 @@ void TriviaModule::ProcessEmbed(const guild_settings_t& settings, const std::str
 			/* Check if this channel has a webhook. If it does, use it! */
 			db::resultset rs = db::query("SELECT * FROM channel_webhooks WHERE channel_id = ?", {channelID});
 			if (rs.size()) {
-				PostWebhook(rs[0]["webhook"], embed.dump());
+				PostWebhook(rs[0]["webhook"], embed.dump(), channelID);
 			} else {
 				c->create_message_embed("", embed);
 			}

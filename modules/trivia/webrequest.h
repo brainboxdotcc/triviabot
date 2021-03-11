@@ -77,5 +77,5 @@ void send_hint(int64_t snowflake_id, const std::string &hint, uint32_t remaining
 json get_active(const std::string &hostname, int64_t cluster_id);
 void check_achievement(const std::string &when, uint64_t user_id, uint64_t guild_id);
 void CheckCreateWebhook(uint64_t channel_id);
-void PostWebhook(const std::string &webhook_url, const std::string &embed);
+void PostWebhook(const std::string &webhook_url, const std::string &embed, uint64_t channel_id);
 

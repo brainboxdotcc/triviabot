@@ -65,6 +65,7 @@ std::mutex faflock[FIRE_AND_FORGET_QUEUES];
 std::mutex fafindex;
 std::mutex interfaceindex;
 std::mutex statsmutex;
+std::mutex rlmutex;
 
 uint32_t faf_index = 0;
 uint32_t interface_index = 0;
@@ -72,11 +73,15 @@ uint32_t interface_index = 0;
 std::thread* ft[FIRE_AND_FORGET_QUEUES] = { nullptr };
 std::thread* statdumper;
 
+std::map<std::string, time_t> interfacelock;
+std::map<uint64_t, time_t> channellock;
+
+
 std::map<std::string, std::map<uint32_t, uint64_t> > statuscodes;
 std::map<std::string, uint64_t> requests;
 std::map<std::string, uint64_t> errors;
 
-std::string web_request(const std::string &_host, const std::string &_path, const std::string &_body = "");
+std::string web_request(const std::string &_host, const std::string &_path, const std::string &_body = "", uint64_t channel_id = 0);
 std::string fetch_page(const std::string &_endpoint, const std::string &body = "");
 std::vector<std::string> getinterfaces();
 
@@ -102,6 +107,9 @@ struct fire_and_forget_t {
 	std::string host;
 	std::string path;
 	std::string body;
+	uint64_t channel_id;
+
+	fire_and_forget_t() : channel_id(0) { };
 };
 
 /* A queue of fire-and-forget requests waiting to be executed. */
@@ -121,7 +129,7 @@ void fireandforget(uint32_t queue_index)
 			}
 		}
 		if (something) {
-			web_request(f.host, f.path, f.body);
+			web_request(f.host, f.path, f.body, f.channel_id);
 		} else {
 			std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		}
@@ -233,11 +241,29 @@ std::string getinterface()
 }
 
 /* Make a REST web request (either GET or POST) to a HTTP server */
-std::string web_request(const std::string &_host, const std::string &_path, const std::string &_body)
+std::string web_request(const std::string &_host, const std::string &_path, const std::string &_body, uint64_t channel_id)
 {
 	std::string iface = getinterface();
 	try
 	{
+		/* Check that another queue isn't waiting on rate limit for this channel or interface */
+		time_t when = 0;
+		{
+			std::lock_guard<std::mutex> rl(rlmutex);
+			if (channellock.find(channel_id)) {
+				when = channellock[channel_id];
+			}
+			if (!when && interfacelock.find(iface)) {
+				when = interfacelock[iface];
+			}
+		}
+		if (when > 0 && when < time(NULL)) {
+			int64_t seconds = when - time(NULL) + 1;
+			if (seconds > 0) {
+				std::this_thread::sleep_for(std::chrono::seconds(seconds));
+			}
+		}
+
 		httplib::Client cli(_host.c_str());
 		cli.enable_server_certificate_verification(false);
 		cli.set_interface(iface.c_str());
@@ -261,6 +287,25 @@ std::string web_request(const std::string &_host, const std::string &_path, cons
 				if (res->status == 200) {
 					rv = res->body;
 				}
+
+				if (res->get_header_value("X-RateLimit-Remaining") != "" && from_string<int64_t>(res->get_header_value("x-ratelimit-remaining"), std::dec) == 0) {
+					/* Sleep and wait until we can send again */
+					time_t now = time(NULL);
+					time_t later = res->get_header_value("X-RateLimit-Reset");
+					int64_t seconds = later - now + 1;
+					if (res->get_header_value("X-RateLimit-Global") != "") {
+						/* Global ratelimit hit (!) lock interface */
+						std::lock_guard<std::mutex> rl(rlmutex);
+						interfacelock[iface] = later;
+					} else {
+						std::lock_guard<std::mutex> rl(rlmutex);
+						channellock[channel_id] = later;
+					}
+					if (seconds > 0) {
+						std::this_thread::sleep_for(std::chrono::seconds(seconds));
+					}
+				}
+
 				{
 					std::lock_guard<std::mutex> sp(statsmutex);
 					if (statuscodes.find(iface) == statuscodes.end()) {
@@ -743,14 +788,14 @@ void CheckCreateWebhook(uint64_t channel_id)
 	runcli("createwebhook", 0, 0, channel_id, "");
 }
 
-void PostWebhook(const std::string &webhook_url, const std::string &embed)
+void PostWebhook(const std::string &webhook_url, const std::string &embed, uint64_t channel_id)
 {
 	std::lock_guard<std::mutex> fi(fafindex);
 	std::lock_guard<std::mutex> fafguard(faflock[faf_index]);
 
 	std::string host = webhook_url.substr(0, webhook_url.find("/api/"));
 	std::string path = webhook_url.substr(host.length(), webhook_url.length());
-	faf[faf_index].push({host, path, "{\"content\":\"\", \"embeds\":[" + embed + "]}"});
+	faf[faf_index].push({host, path, "{\"content\":\"\", \"embeds\":[" + embed + "]}", channel_id};
 	faf_index++;
 	if (faf_index > FIRE_AND_FORGET_QUEUES - 1) {
 		faf_index = 0;
