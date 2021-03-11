@@ -268,7 +268,9 @@ std::string web_request(const std::string &_host, const std::string &_path, cons
 		/* If we have to wait, and the rate limit timeout has not already been reached, wait. */
 		if (seconds > 0 && when + seconds > time(NULL)) {
 			/* Rate limit waits that have expired will have negative seconds here */
-			bot->core.log->warn("Rate limit would be reached on other thread: Waiting {} seconds for rate limit to clear on {}", seconds, type);
+			if (bot) {
+				bot->core.log->warn("Rate limit would be reached on other thread: Waiting {} seconds for rate limit to clear on {}", seconds, type);
+			}
 			std::this_thread::sleep_for(std::chrono::seconds(seconds));
 		}
 
@@ -289,15 +291,23 @@ std::string web_request(const std::string &_host, const std::string &_path, cons
 
 		if (_body.empty()) {
 			if (auto res = cli.Get(_path.c_str())) {
-				if (res->status == 200) {
+				if (res->status < 400) {
 					rv = res->body;
+				} else {
+					if (bot) {
+						bot->core.log->warn("HTTP Error {} on GET {}/{}", res->status, _host, _path);
+					}
 				}
 			}
 		}
 		else {
 			if (auto res = cli.Post(_path.c_str(), _body.c_str(), "application/json")) {
-				if (res->status == 200) {
+				if (res->status < 400) {
 					rv = res->body;
+				} else {
+					if (bot) {
+						bot->core.log->warn("HTTP Error {} on POST {}/{} (channel_id={})", res->status, _host, _path, channel_id);
+					}
 				}
 
 				/* Check rate limits, global and per channel */
@@ -335,7 +345,9 @@ std::string web_request(const std::string &_host, const std::string &_path, cons
 						 * Other threads are told to wait by the values stored to channellock
 						 * and interfacelock.
 						 */
-						bot->core.log->warn("Rate limit would be reached on this thread: waiting {} seconds for rate limit to clear on {}", seconds, type);
+						if (bot) {
+							bot->core.log->warn("Rate limit would be reached on this thread: waiting {} seconds for rate limit to clear on {}", seconds, type);
+						}
 						std::this_thread::sleep_for(std::chrono::seconds(seconds));
 					}
 				}
@@ -371,7 +383,9 @@ std::string web_request(const std::string &_host, const std::string &_path, cons
 	}
 	catch (std::exception& e)
 	{
-		std::cout << "Exception: " << e.what() << "\n";
+		if (bot) {
+			bot->core.log->warn("Exception: {}", e.what());
+		}
 		std::lock_guard<std::mutex> sp(statsmutex);
 		if (errors.find(iface) == errors.end()) {
 			errors[iface] = 1;
