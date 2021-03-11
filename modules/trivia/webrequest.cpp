@@ -73,8 +73,8 @@ uint32_t interface_index = 0;
 std::thread* ft[FIRE_AND_FORGET_QUEUES] = { nullptr };
 std::thread* statdumper;
 
-std::map<std::string, time_t> interfacelock;
-std::map<uint64_t, time_t> channellock;
+std::map<std::string, std::pair<int64_t, time_t> > interfacelock;
+std::map<uint64_t, std::pair<int64_t, time_t> > channellock;
 
 
 std::map<std::string, std::map<uint32_t, uint64_t> > statuscodes;
@@ -246,11 +246,7 @@ std::string web_request(const std::string &_host, const std::string &_path, cons
 	{
 		/* Check that another queue isn't waiting on rate limit for this channel or interface */
 		time_t when = 0;
-		time_t rawtime;
-		struct tm timeinfo;  // get date and time info
-		time(&rawtime);
-		localtime_r(&rawtime, &timeinfo);
-		int32_t dst = ((timeinfo.tm_isdst > 0) ? 1 * 60 * 60 : 0);
+		int64_t seconds = 0;
 
 		/* Check for existing rate limits that other queue threads have flagged */
 		std::string type;
@@ -258,23 +254,22 @@ std::string web_request(const std::string &_host, const std::string &_path, cons
 			std::lock_guard<std::mutex> rl(rlmutex);
 			/* Channel rate limit hit on another thread */
 			if (channellock.find(channel_id) != channellock.end()) {
-				when = channellock[channel_id];
+				when = channellock[channel_id].second;
+				seconds = channellock[channel_id].first;
 				type = fmt::format("channel {}", channel_id);
 			}
 			/* Interface rate limit hit on another thread */
 			if (!when && interfacelock.find(iface) != interfacelock.end()) {
-				when = interfacelock[iface];
+				when = interfacelock[iface].second;
+				seconds = interfacelock[iface].first;
 				type = fmt::format("interface {}", iface);
 			}
 		}
 		/* If we have to wait, and the rate limit timeout has not already been reached, wait. */
-		if (when > 0) {
-			int64_t seconds = when - time(NULL) + 1;
+		if (seconds > 0 && when + seconds > time(NULL)) {
 			/* Rate limit waits that have expired will have negative seconds here */
-			if (seconds > 0) {
-				bot->core.log->warn("Rate limit would be reached on other thread: Waiting {} seconds for rate limit to clear on {}", seconds, type);
-				std::this_thread::sleep_for(std::chrono::seconds(seconds));
-			}
+			bot->core.log->warn("Rate limit would be reached on other thread: Waiting {} seconds for rate limit to clear on {}", seconds, type);
+			std::this_thread::sleep_for(std::chrono::seconds(seconds));
 		}
 
 		/* Build httplib client */
@@ -308,10 +303,14 @@ std::string web_request(const std::string &_host, const std::string &_path, cons
 				/* Check rate limits, global and per channel */
 				if (res->get_header_value("X-RateLimit-Remaining") != "" && from_string<int64_t>(res->get_header_value("X-RateLimit-Remaining"), std::dec) == 0) {
 
-					/* Linux adjusts the local time_t value when DST is in effect. Compensate for this. */
-					time_t now = time(NULL) - dst;
-					time_t later = from_string<time_t>(res->get_header_value("X-RateLimit-Reset"), std::dec);
-					int64_t seconds = later - now + 1;
+					int64_t seconds = 0;
+					/* If there's a retry-after (global ratelimit) we always prefer that over reset-after */
+					if (res->get_header_value("X-RateLimit-Retry-After") != "") {
+						seconds = from_string<time_t>(res->get_header_value("X-RateLimit-Retry-After"), std::dec);;
+					} else {
+						seconds = from_string<time_t>(res->get_header_value("X-RateLimit-Reset-After"), std::dec);
+					}
+
 					std::string type;
 
 					if (res->get_header_value("X-RateLimit-Global") != "") {
@@ -321,14 +320,14 @@ std::string web_request(const std::string &_host, const std::string &_path, cons
 						 * the same IP, but may not be if production is using NIC teaming)
 						*/
 						std::lock_guard<std::mutex> rl(rlmutex);
-						interfacelock[iface] = later;
+						interfacelock[iface] = std::make_pair(seconds, time(NULL));
 						type = fmt::format("channel {}", channel_id);
 					} else {
 						/* Channel ratelimit hit (other webhooks are being fired by other bots/automations
 						 * taking the number of requests in the last minute over 30)
 						 */
 						std::lock_guard<std::mutex> rl(rlmutex);
-						channellock[channel_id] = later;
+						channellock[channel_id] = std::make_pair(seconds, time(NULL));
 						type = fmt::format("interface {}", iface);
 					}
 					if (seconds > 0) {
