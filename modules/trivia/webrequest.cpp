@@ -108,8 +108,6 @@ struct fire_and_forget_t {
 	std::string path;
 	std::string body;
 	uint64_t channel_id;
-
-	fire_and_forget_t() : channel_id(0) { };
 };
 
 /* A queue of fire-and-forget requests waiting to be executed. */
@@ -248,29 +246,48 @@ std::string web_request(const std::string &_host, const std::string &_path, cons
 	{
 		/* Check that another queue isn't waiting on rate limit for this channel or interface */
 		time_t when = 0;
+		time_t rawtime;
+		struct tm timeinfo;  // get date and time info
+		time(&rawtime);
+		localtime_r(&rawtime, &timeinfo);
+		int32_t dst = ((timeinfo.tm_isdst > 0) ? 1 * 60 * 60 : 0);
+
+		/* Check for existing rate limits that other queue threads have flagged */
+		std::string type;
 		{
 			std::lock_guard<std::mutex> rl(rlmutex);
-			if (channellock.find(channel_id)) {
+			/* Channel rate limit hit on another thread */
+			if (channellock.find(channel_id) != channellock.end()) {
 				when = channellock[channel_id];
+				type = fmt::format("channel {}", channel_id);
 			}
-			if (!when && interfacelock.find(iface)) {
+			/* Interface rate limit hit on another thread */
+			if (!when && interfacelock.find(iface) != interfacelock.end()) {
 				when = interfacelock[iface];
+				type = fmt::format("interface {}", iface);
 			}
 		}
-		if (when > 0 && when < time(NULL)) {
+		/* If we have to wait, and the rate limit timeout has not already been reached, wait. */
+		if (when > 0) {
 			int64_t seconds = when - time(NULL) + 1;
+			/* Rate limit waits that have expired will have negative seconds here */
 			if (seconds > 0) {
+				bot->core.log->warn("Rate limit would be reached on other thread: Waiting {} seconds for rate limit to clear on {}", seconds, type);
 				std::this_thread::sleep_for(std::chrono::seconds(seconds));
 			}
 		}
 
+		/* Build httplib client */
 		httplib::Client cli(_host.c_str());
 		cli.enable_server_certificate_verification(false);
 		cli.set_interface(iface.c_str());
-		httplib::Headers headers = {
-			{"X-API-Auth", apikey}
-		};
-		cli.set_default_headers(headers);
+
+		if (!channel_id) {
+			httplib::Headers headers = {
+				{"X-API-Auth", apikey}
+			};
+			cli.set_default_headers(headers);
+		}
 
 		std::string rv;
 		int code = 0;
@@ -288,24 +305,43 @@ std::string web_request(const std::string &_host, const std::string &_path, cons
 					rv = res->body;
 				}
 
-				if (res->get_header_value("X-RateLimit-Remaining") != "" && from_string<int64_t>(res->get_header_value("x-ratelimit-remaining"), std::dec) == 0) {
-					/* Sleep and wait until we can send again */
-					time_t now = time(NULL);
-					time_t later = res->get_header_value("X-RateLimit-Reset");
+				/* Check rate limits, global and per channel */
+				if (res->get_header_value("X-RateLimit-Remaining") != "" && from_string<int64_t>(res->get_header_value("X-RateLimit-Remaining"), std::dec) == 0) {
+
+					/* Linux adjusts the local time_t value when DST is in effect. Compensate for this. */
+					time_t now = time(NULL) - dst;
+					time_t later = from_string<time_t>(res->get_header_value("X-RateLimit-Reset"), std::dec);
 					int64_t seconds = later - now + 1;
+					std::string type;
+
 					if (res->get_header_value("X-RateLimit-Global") != "") {
-						/* Global ratelimit hit (!) lock interface */
+						/* Global ratelimit hit (!) lock interface. 
+						 * On single-homed systems this holds back all requests in all queues, in multi-homed
+						 * systems this holds back all requests coming from the same network interface (generally
+						 * the same IP, but may not be if production is using NIC teaming)
+						*/
 						std::lock_guard<std::mutex> rl(rlmutex);
 						interfacelock[iface] = later;
+						type = fmt::format("channel {}", channel_id);
 					} else {
+						/* Channel ratelimit hit (other webhooks are being fired by other bots/automations
+						 * taking the number of requests in the last minute over 30)
+						 */
 						std::lock_guard<std::mutex> rl(rlmutex);
 						channellock[channel_id] = later;
+						type = fmt::format("interface {}", iface);
 					}
 					if (seconds > 0) {
+						/* If there are seconds to sleep, wait for them in this thread.
+						 * Other threads are told to wait by the values stored to channellock
+						 * and interfacelock.
+						 */
+						bot->core.log->warn("Rate limit would be reached on this thread: waiting {} seconds for rate limit to clear on {}", seconds, type);
 						std::this_thread::sleep_for(std::chrono::seconds(seconds));
 					}
 				}
 
+				/* Update mutexed counters */
 				{
 					std::lock_guard<std::mutex> sp(statsmutex);
 					if (statuscodes.find(iface) == statuscodes.end()) {
@@ -353,9 +389,9 @@ void later(const std::string &_path, const std::string &_body)
 	std::lock_guard<std::mutex> fi(fafindex);
 	std::lock_guard<std::mutex> fafguard(faflock[faf_index]);
 	if (bot->IsDevMode()) {
-		faf[faf_index].push({BACKEND_HOST_DEV, fmt::format(BACKEND_PATH_DEV, _path), _body});
+		faf[faf_index].push({BACKEND_HOST_DEV, fmt::format(BACKEND_PATH_DEV, _path), _body, 0});
 	} else {
-		faf[faf_index].push({BACKEND_HOST_LIVE, fmt::format(BACKEND_PATH_LIVE, _path), _body});
+		faf[faf_index].push({BACKEND_HOST_LIVE, fmt::format(BACKEND_PATH_LIVE, _path), _body, 0});
 	}
 	faf_index++;
 	if (faf_index > FIRE_AND_FORGET_QUEUES - 1) {
@@ -795,7 +831,7 @@ void PostWebhook(const std::string &webhook_url, const std::string &embed, uint6
 
 	std::string host = webhook_url.substr(0, webhook_url.find("/api/"));
 	std::string path = webhook_url.substr(host.length(), webhook_url.length());
-	faf[faf_index].push({host, path, "{\"content\":\"\", \"embeds\":[" + embed + "]}", channel_id};
+	faf[faf_index].push({host, path, "{\"content\":\"\", \"embeds\":[" + embed + "]}", channel_id});
 	faf_index++;
 	if (faf_index > FIRE_AND_FORGET_QUEUES - 1) {
 		faf_index = 0;
