@@ -37,3 +37,10 @@ std::string homoglyph(const std::string &input);
 
 /* Remove punctuation and spaces from a string */
 std::string removepunct(const std::string &input);
+
+/* Length in symbols of a utf-8 string, e.g. wlength("Riñón") == 5 */
+size_t wlength(const std::string &input);
+
+std::string wfirst(const std::string &input);
+
+std::string wlast(const std::string &input);

@@ -150,6 +150,36 @@ std::string homoglyph(const std::string &input)
 	return converter.to_bytes(o);
 }
 
+size_t wlength(const std::string &input)
+{
+	std::setlocale(LC_CTYPE, "en_US.UTF-8");
+	std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+	return converter.from_bytes(input.c_str()).length();
+}
+
+std::string wfirst(const std::string &input)
+{
+	std::setlocale(LC_CTYPE, "en_US.UTF-8");
+	std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+	std::wstring str = converter.from_bytes(input.c_str());
+	std::wstring r;
+	std::wstring::const_iterator n = str.begin();
+	r += *n;
+	return converter.to_bytes(r);
+}
+
+std::string wlast(const std::string &input)
+{
+	std::setlocale(LC_CTYPE, "en_US.UTF-8");
+	std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+	std::wstring str = converter.from_bytes(input.c_str());
+	std::wstring r;
+	std::wstring::const_iterator n = str.end();
+	--n;
+	r += *n;
+	return converter.to_bytes(r);
+}
+
 std::string removepunct(const std::string &input)
 {
 	std::setlocale(LC_CTYPE, "en_US.UTF-8"); // the locale will be the UTF-8 enabled English

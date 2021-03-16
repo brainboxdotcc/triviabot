@@ -379,7 +379,7 @@ guild_settings_t TriviaModule::GetGuildSettings(int64_t guild_id)
 std::string TriviaModule::GetVersion()
 {
 	/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-	std::string version = "$ModVer 79$";
+	std::string version = "$ModVer 80$";
 	return "3.0." + version.substr(8,version.length() - 9);
 }
 
@@ -423,7 +423,7 @@ std::string TriviaModule::letterlong(std::string text, const guild_settings_t &s
 {
 	text = ReplaceString(text, " ", "");
 	if (text.length()) {
-		return fmt::format(_("HINT_LETTERLONG", settings), text.length(), text[0], text[text.length() - 1]);
+		return fmt::format(_("HINT_LETTERLONG", settings), wlength(text), wfirst(text), wlast(text));
 	} else {
 		return "An empty answer";
 	}
