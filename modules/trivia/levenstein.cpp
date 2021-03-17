@@ -22,19 +22,27 @@
 
 #include <string>
 #include <cstdint>
+#include <locale>
+#include <codecvt>
+#include <algorithm>
 #include <sporks/stringops.h>
 #include "trivia.h"
+#include "wlower.h"
 
 int TriviaModule::min3(int x, int y, int z) 
 { 
 	return std::min(std::min(x, y), z); 
 } 
 
-int TriviaModule::levenstein(std::string str1, std::string str2) 
+int TriviaModule::levenstein(std::string s1, std::string s2)
 {
 	// Create a table to store results of subproblems
-	str1 = uppercase(str1);
-	str2 = uppercase(str2);
+	s1 = utf8lower(s1, false);
+	s2 = utf8lower(s2, false);
+	std::setlocale(LC_CTYPE, "en_US.UTF-8"); // the locale will be the UTF-8 enabled English
+	std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+	std::wstring str1 = converter.from_bytes(s1.c_str());
+	std::wstring str2 = converter.from_bytes(s2.c_str());
 	int m = str1.length();
 	int n = str2.length();
 	int dp[m + 1][n + 1];
