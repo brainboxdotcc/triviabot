@@ -49,7 +49,7 @@ std::vector<std::string> fetch_shuffle_list(int64_t guild_id, const std::string 
 // These functions used to query the REST API but are more efficient doing direct database queries.
 std::vector<std::string> fetch_insane_round(int64_t &question_id, int64_t guild_id, const class guild_settings_t &settings);
 void update_score_only(int64_t snowflake_id, int64_t guild_id, int score, int64_t channel_id);
-int32_t update_score(int64_t snowflake_id, int64_t guild_id, time_t recordtime, int64_t id, int score);
+int32_t update_score(int64_t snowflake_id, int64_t guild_id, double recordtime, int64_t id, int score);
 int32_t get_total_questions();
 std::vector<std::string> get_top_ten(uint64_t guild_id);
 std::string get_current_team(int64_t snowflake_id);

@@ -86,7 +86,7 @@ std::string fetch_page(const std::string &_endpoint, const std::string &body = "
 std::vector<std::string> getinterfaces();
 
 question_t::question_t(int64_t _id, const std::string &_question, const std::string &_answer, const std::string &_hint1, const std::string &_hint2, const std::string &_catname, time_t _lastasked, int32_t _timesasked,
-	const std::string &_lastcorrect, time_t _record_time, const std::string &_shuffle1, const std::string &_shuffle2, const std::string &_question_image, const std::string &_answer_image) :
+	const std::string &_lastcorrect, double _record_time, const std::string &_shuffle1, const std::string &_shuffle2, const std::string &_question_image, const std::string &_answer_image) :
 	id(_id), question(_question), answer(_answer), customhint1(_hint1), customhint2(_hint2), catname(_catname), lastasked(_lastasked), timesasked(_timesasked), lastcorrect(_lastcorrect), recordtime(_record_time),
 	shuffle1(_shuffle1), shuffle2(_shuffle2), question_image(_question_image), answer_image(_answer_image)
 {
@@ -496,7 +496,7 @@ question_t question_t::fetch(int64_t id, int64_t guild_id, const guild_settings_
 				from_string<time_t>(question[0]["lastasked"], std::dec),
 				from_string<int32_t>(question[0]["timesasked"], std::dec),
 				question[0]["lastcorrect"],
-				from_string<time_t>(question[0]["record_time"], std::dec),
+				from_string<double>(question[0]["record_time"], std::dec),
 				utf8shuffle(question[0]["answer"]),
 				utf8shuffle(question[0]["answer"]),
 				question[0]["question_img_url"],
@@ -698,7 +698,7 @@ bool log_question_index(int64_t guild_id, int64_t channel_id, int32_t index, uin
 }
 
 /* Update the score for a user and their team, during non-insane round */
-int32_t update_score(int64_t snowflake_id, int64_t guild_id, time_t recordtime, int64_t id, int score)
+int32_t update_score(int64_t snowflake_id, int64_t guild_id, double recordtime, int64_t id, int score)
 {
 	// Replaced with direct db query for perforamance increase - 27Dec20
 	db::query("UPDATE stats SET lastcorrect='?', record_time='?' WHERE id = ?", {snowflake_id, recordtime, id});

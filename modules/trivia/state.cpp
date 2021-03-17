@@ -34,6 +34,7 @@
 #include "webrequest.h"
 #include "wlower.h"
 #include "piglatin.h"
+#include "time.h"
 
 in_msg::in_msg(const std::string &m, int64_t author, bool mention, const std::string &_username) : msg(m), author_id(author), mentions_bot(mention), username(_username)
 {
@@ -57,7 +58,7 @@ state_t::state_t(TriviaModule* _creator, uint32_t questions, uint32_t currstreak
 	shuffle_list(_shuffle_list),
 	gamestate(startstate),
 	streak(currstreak),
-	asktime(0),
+	asktime(0.0),
 	found(false),
 	interval(_interval),
 	insane_num(0),
@@ -211,9 +212,9 @@ void state_t::handle_message(const in_msg& m)
 				/* Correct answer */
 				gamestate = TRIV_ANSWER_CORRECT;
 				creator->CacheUser(m.author_id, channel_id);
-				time_t time_to_answer = time(NULL) - this->asktime;
+				double time_to_answer = time_f() - this->asktime;
 				std::string pts = (this->score > 1 ? _("POINTS", settings) : _("POINT", settings));
-				time_t submit_time = question.recordtime;
+				double submit_time = question.recordtime;
 				int32_t score = this->score;
 
 				std::string ans_message;
@@ -222,7 +223,7 @@ void state_t::handle_message(const in_msg& m)
 				if (time_to_answer < question.recordtime) {
 					ans_message.append(fmt::format(_("RECORD_TIME", settings), m.username));
 					submit_time = time_to_answer;
-					}
+				}
 				int32_t newscore = update_score(m.author_id, guild_id, submit_time, question.id, score);
 				ans_message.append(fmt::format(_("SCORE_UPDATE", settings), m.username, newscore ? newscore : score));
 
@@ -440,7 +441,7 @@ void state_t::do_normal_round(bool silent)
 	}
 
 	if (question.question != "") {
-		asktime = time(NULL);
+		asktime = time_f();
 		question.answer = trim(question.answer);
 		original_answer = question.answer;
 		std::string t = creator->conv_num(question.answer, settings);
