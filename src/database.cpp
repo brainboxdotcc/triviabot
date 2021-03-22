@@ -26,6 +26,12 @@
 #include <mutex>
 #include <sstream>
 
+#ifdef MARIADB_VERSION_ID
+	#define CONNECT_STRING "SET NAMES utf8mb4, @@SESSION.max_statement_time=3000"
+#else
+	#define CONNECT_STRING "SET NAMES utf8mb4, @@SESSION.max_execution_time=3000"
+#endif
+
 namespace db {
 
 	MYSQL connection;
@@ -39,7 +45,7 @@ namespace db {
 		std::lock_guard<std::mutex> db_lock(db_mutex);
 		if (mysql_init(&connection) != nullptr) {
 			mysql_options(&connection, MYSQL_SET_CHARSET_NAME, "utf8mb4");
-			mysql_options(&connection, MYSQL_INIT_COMMAND, "SET NAMES utf8mb4, @@SESSION.max_statement_time=3000");
+			mysql_options(&connection, MYSQL_INIT_COMMAND, CONNECT_STRING);
 			char reconnect = 1;
 			if (mysql_options(&connection, MYSQL_OPT_RECONNECT, &reconnect) == 0) {
 				return mysql_real_connect(&connection, host.c_str(), user.c_str(), pass.c_str(), db.c_str(), port, NULL, CLIENT_MULTI_RESULTS | CLIENT_MULTI_STATEMENTS);
