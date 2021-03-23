@@ -169,7 +169,7 @@ void state_t::handle_message(const in_msg& m)
 						gamestate = TRIV_END;
 					}
 				} else {
-					creator->SimpleEmbed(settings, ":thumbsup:", fmt::format(_("INSANE_CORRECT", settings), m.username, m.msg, this->insane_left, this->insane_num), channel_id);
+					creator->SimpleEmbed(settings, ":thumbsup:", fmt::format(_("INSANE_CORRECT", settings), m.username, homoglyph(m.msg), this->insane_left, this->insane_num), channel_id);
 				}
 				update_score_only(m.author_id, guild_id, 1, channel_id);
 				creator->CacheUser(m.author_id, channel_id);
@@ -219,7 +219,7 @@ void state_t::handle_message(const in_msg& m)
 
 				std::string ans_message;
 
-				ans_message.append(fmt::format(_("NORM_CORRECT", settings), this->original_answer, score, pts, time_to_answer));
+				ans_message.append(fmt::format(_("NORM_CORRECT", settings), homoglyph(this->original_answer), score, pts, time_to_answer));
 				if (time_to_answer < question.recordtime) {
 					ans_message.append(fmt::format(_("RECORD_TIME", settings), m.username));
 					submit_time = time_to_answer;
@@ -275,7 +275,11 @@ void state_t::handle_message(const in_msg& m)
 				/* Update last person to answer */
 				last_to_answer = m.author_id;
 
-					creator->SimpleEmbed(settings, ":thumbsup:", ans_message, channel_id, fmt::format(_("CORRECT", settings), m.username), question.answer_image, thumbnail);
+                		if (round + 1 <= numquestions - 2) {
+		                        ans_message += "\n\n" + fmt::format(_("COMING_UP", settings), interval);
+		                }	
+
+				creator->SimpleEmbed(settings, ":thumbsup:", ans_message, channel_id, fmt::format(_("CORRECT", settings), m.username), question.answer_image, thumbnail);
 
 				if (log_question_index(guild_id, channel_id, round, streak, last_to_answer, gamestate, question.id)) {
 					StopGame(settings);
@@ -342,7 +346,7 @@ void state_t::tick()
 
 		if (gamestate == TRIV_ANSWER_CORRECT) {
 			/* Correct answer shortcuts the timer */
-			next_tick = time(NULL) + 5;
+			next_tick = time(NULL);
 		} else {
 			/* Set time for next tick */
 			if (gamestate == TRIV_ASK_QUESTION && interval == TRIV_INTERVAL) {
@@ -601,21 +605,29 @@ void state_t::do_time_up()
 	creator->GetBot()->core.log->debug("do_time_up: G:{} C:{}", guild_id, channel_id);
 	guild_settings_t settings = creator->GetGuildSettings(guild_id);
 
+	std::string content;
+	std::string title;
+	std::string image;
+
 	{
 		if (is_insane_round()) {
 			/* Insane round */
 			int32_t found = insane_num - insane_left;
-			creator->SimpleEmbed(settings, ":alarm_clock:", fmt::format(_("INSANE_FOUND", settings), found), channel_id, _("TIME_UP", settings));
-
+			content += fmt::format(_("INSANE_FOUND", settings), found);
+			title = _("TIME_UP", settings);
 			do_insane_board();
 
 		} else if (question.answer != "") {
 			/* Not insane round */
-			creator->SimpleEmbed(settings, ":alarm_clock:", fmt::format(_("ANS_WAS", settings), question.answer), channel_id, _("OUT_OF_TIME", settings), question.answer_image);
+
+			content += fmt::format(_("ANS_WAS", settings), homoglyph(question.answer));
+			title = _("OUT_OF_TIME", settings);
+			image = question.answer_image;
+
 		}
 		/* FIX: You can only lose your streak on a non-insane round */
 		if (question.answer != "" && !is_insane_round() && streak > 1 && last_to_answer) {
-			creator->SimpleEmbed(settings, ":octagonal_sign:", fmt::format(_("STREAK_SMASHED", settings), fmt::format("<@{}>", last_to_answer), streak), channel_id);
+			content += "\n\n" + fmt::format(_("STREAK_SMASHED", settings), fmt::format("<@{}>", last_to_answer), streak);
 		}
 
 		/* Clear current answer so the question becomes unanswerable */
@@ -630,8 +642,10 @@ void state_t::do_time_up()
 	}
 
 	if (round <= numquestions - 2) {
-		creator->SimpleEmbed(settings, "<a:loading:658667224067735562>", fmt::format(_("COMING_UP", settings), interval == TRIV_INTERVAL ? settings.question_interval : interval), channel_id, _("REST", settings));
+		content += "\n\n" + fmt::format(_("COMING_UP", settings), interval == TRIV_INTERVAL ? settings.question_interval : interval);
 	}
+
+	creator->SimpleEmbed(settings, ":alarm_clock:", content, channel_id, title, image);
 
 	gamestate = (round > numquestions ? TRIV_END : TRIV_ASK_QUESTION);
 	round++;
@@ -647,15 +661,10 @@ void state_t::do_answer_correct()
 
 	guild_settings_t settings = creator->GetGuildSettings(guild_id);
 
-	{
-		round++;
-		question.answer = "";
-		if (round <= numquestions - 2) {
-			creator->SimpleEmbed(settings, "<a:loading:658667224067735562>", fmt::format(_("COMING_UP", settings), interval), channel_id, _("REST", settings));
-		}
-	}
-
+	round++;
+	question.answer = "";
 	gamestate = TRIV_ASK_QUESTION;
+
 	if (log_question_index(guild_id, channel_id, round, streak, last_to_answer, gamestate, question.id)) {
 		StopGame(settings);
 	}
