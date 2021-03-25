@@ -20,5 +20,5 @@
 #
 cd "$2"
 # run gdb in batch mode to generate mail the stack trace of the latest crash to the error_recipeint from config.json
+rm ./core
 /usr/bin/gdb -batch -ex "set pagination off" -ex "set height 0" -ex "set width 0" -ex "bt full" ./bot $(ls -Art ./*core* | tail -n 1) | grep -v ^"No stack."$ | mutt -s "TriviaBot cluster $1 rebooted, stack trace and log attached" -a log/aegis-$1.log -- $(/usr/bin/jq -r '.error_recipient' ../config.json)
-rm $(ls -Art ./*core* | tail -n 1)
