@@ -73,7 +73,6 @@ uint32_t interface_index = 0;
 std::thread* ft[FIRE_AND_FORGET_QUEUES] = { nullptr };
 std::thread* statdumper;
 
-std::map<std::string, std::pair<int64_t, time_t> > interfacelock;
 std::map<uint64_t, std::pair<int64_t, time_t> > channellock;
 
 
@@ -259,10 +258,13 @@ std::string web_request(const std::string &_host, const std::string &_path, cons
 				type = fmt::format("channel {}", channel_id);
 			}
 			/* Interface rate limit hit on another thread */
-			if (!when && interfacelock.find(iface) != interfacelock.end()) {
-				when = interfacelock[iface].second;
-				seconds = interfacelock[iface].first;
-				type = fmt::format("interface {}", iface);
+			if (!when) {
+				db::resultset r = db::query("SELECT * FROM http_ratelimit WHERE interface = '?'", {iface});
+				if (r.size()) {
+					when = from_string<time_t>(r[0]["rl_when"], std::dec);
+					seconds = from_string<uint32_t>(r[0]["rl_seconds"], std::dec);
+					type = fmt::format("interface {}", iface);
+				}
 			}
 		}
 		/* If we have to wait, and the rate limit timeout has not already been reached, wait. */
@@ -329,21 +331,20 @@ std::string web_request(const std::string &_host, const std::string &_path, cons
 						 * systems this holds back all requests coming from the same network interface (generally
 						 * the same IP, but may not be if production is using NIC teaming)
 						*/
-						std::lock_guard<std::mutex> rl(rlmutex);
-						interfacelock[iface] = std::make_pair(seconds, time(NULL));
-						type = fmt::format("channel {}", channel_id);
+						db::query("INSERT INTO http_ratelimit (interface, rl_when, rl_seconds) VALUES('?',?,?) ON DUPLICATE KEY UPDATE rl_when = ?, rl_seconds = ?", {iface, seconds, time(NULL), time(NULL), seconds});
+						type = fmt::format("interface {}", iface);
 					} else {
 						/* Channel ratelimit hit (other webhooks are being fired by other bots/automations
 						 * taking the number of requests in the last minute over 30)
 						 */
 						std::lock_guard<std::mutex> rl(rlmutex);
 						channellock[channel_id] = std::make_pair(seconds, time(NULL));
-						type = fmt::format("interface {}", iface);
+						type = fmt::format("channel {}", channel_id);
 					}
 					if (seconds > 0) {
 						/* If there are seconds to sleep, wait for them in this thread.
 						 * Other threads are told to wait by the values stored to channellock
-						 * and interfacelock.
+						 * map and http_ratelimit table.
 						 */
 						if (bot) {
 							bot->core.log->warn("Rate limit would be reached on this thread: waiting {} seconds for rate limit to clear on {}", seconds, type);
