@@ -2,9 +2,7 @@
  * 
  * TriviaBot, the Discord Quiz Bot with over 80,000 questions!
  *
- * Copyright 2004 Craig Edwards <support@sporks.gg>
- *
- * Core based on Sporks, the Learning Discord Bot, Craig Edwards (c) 2019.
+ * Copyright 2019 Craig Edwards <support@sporks.gg> 
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,8 +24,6 @@
 
 class Module;
 class ModuleLoader;
-
-#define modevent aegis::gateway::events
 
 /** Implementation-specific flags which may be set in Module constructor by calling Attach()
  */
@@ -94,17 +90,9 @@ enum Implementation
 				break; \
 			} \
 		} \
-		catch (fmt::v6::format_error &modexcept) \
-		{ \
-			core.log->error("fmt::v6::format_error caught in module: {}", modexcept.what()); \
-		} \
 		catch (std::exception& modexcept) \
 		{ \
-			core.log->error("Exception caught in module: {}", modexcept.what()); \
-		} \
-		catch (...) \
-		{ \
-			core.log->error("Non-exception caught in module!"); \
+			core->log(dpp::ll_error, fmt::format("Exception caught in module: {}", modexcept.what())); \
 		} \
 	} \
 };
@@ -191,14 +179,14 @@ public:
 
 /**
  * All modules that can be loaded at runtime derive from the Module class. This class contains
- * virtual methods for each event triggered by the aegis library that the bot handles internally,
+ * virtual methods for each event triggered by the library that the bot handles internally,
  * plus some helper methods to identify and report the version number of the module.
  */
 class Module {
-public:
+protected:
 	/* Pointer back to the bot instance that created this module */
 	Bot* bot;
-
+public:
 	/* Instantiate a module, the ModuleLoader is passed in so that we can attach events */
 	Module(Bot* instigator, ModuleLoader* ml);
 
@@ -208,43 +196,42 @@ public:
 	virtual std::string GetVersion();
 	virtual std::string GetDescription();
 
-	/* Aegis events */
-	virtual bool OnChannelCreate(const modevent::channel_create &channel);
-	virtual bool OnReady(const modevent::ready &ready);
-	virtual bool OnChannelDelete(const modevent::channel_delete &channel);
-	virtual bool OnGuildCreate(const modevent::guild_create &guild);
-	virtual bool OnGuildDelete(const modevent::guild_delete &guild);
-	virtual bool OnGuildMemberAdd(const modevent::guild_member_add &gma);
-	virtual bool OnMessage(const modevent::message_create &message, const std::string& clean_message, bool mentioned, const std::vector<std::string> &stringmentions);
+	/* D++ events */
+	virtual bool OnChannelCreate(const dpp::channel_create_t &channel);
+	virtual bool OnReady(const dpp::ready_t &ready);
+	virtual bool OnChannelDelete(const dpp::channel_delete_t &channel);
+	virtual bool OnGuildCreate(const dpp::guild_create_t &guild);
+	virtual bool OnGuildDelete(const dpp::guild_delete_t &guild);
+	virtual bool OnGuildMemberAdd(const dpp::guild_member_add_t &gma);
+	virtual bool OnMessage(const dpp::message_create_t &message, const std::string& clean_message, bool mentioned, const std::vector<std::string> &stringmentions);
 	virtual bool OnPresenceUpdate();
-	virtual bool OnRestEnd(std::chrono::steady_clock::time_point start_time, uint16_t code);
 	virtual bool OnAllShardsReady();
-	virtual bool OnTypingStart(const modevent::typing_start &obj);
-	virtual bool OnMessageUpdate(const modevent::message_update &obj);
-	virtual bool OnMessageDelete(const modevent::message_delete &obj);
-	virtual bool OnMessageDeleteBulk(const modevent::message_delete_bulk &obj);
-	virtual bool OnGuildUpdate(const modevent::guild_update &obj);
-	virtual bool OnMessageReactionAdd(const modevent::message_reaction_add &obj);
-	virtual bool OnMessageReactionRemove(const modevent::message_reaction_remove &obj);
-	virtual bool OnMessageReactionRemoveAll(const modevent::message_reaction_remove_all &obj);
-	virtual bool OnUserUpdate(const modevent::user_update &obj);
-	virtual bool OnResumed(const modevent::resumed &obj);
-	virtual bool OnChannelUpdate(const modevent::channel_update &obj);
-	virtual bool OnChannelPinsUpdate(const modevent::channel_pins_update &obj);
-	virtual bool OnGuildBanAdd(const modevent::guild_ban_add &obj);
-	virtual bool OnGuildBanRemove(const modevent::guild_ban_remove &obj);
-	virtual bool OnGuildEmojisUpdate(const modevent::guild_emojis_update &obj);
-	virtual bool OnGuildIntegrationsUpdate(const modevent::guild_integrations_update &obj);
-	virtual bool OnGuildMemberRemove(const modevent::guild_member_remove &obj);
-	virtual bool OnGuildMemberUpdate(const modevent::guild_member_update &obj);
-	virtual bool OnGuildMembersChunk(const modevent::guild_members_chunk &obj);
-	virtual bool OnGuildRoleCreate(const modevent::guild_role_create &obj);
-	virtual bool OnGuildRoleUpdate(const modevent::guild_role_update &obj);
-	virtual bool OnGuildRoleDelete(const modevent::guild_role_delete &obj);
-	virtual bool OnPresenceUpdateWS(const modevent::presence_update &obj);
-	virtual bool OnVoiceStateUpdate(const modevent::voice_state_update &obj);
-	virtual bool OnVoiceServerUpdate(const modevent::voice_server_update &obj);
-	virtual bool OnWebhooksUpdate(const modevent::webhooks_update &obj);
+	virtual bool OnTypingStart(const dpp::typing_start_t &obj);
+	virtual bool OnMessageUpdate(const dpp::message_update_t &obj);
+	virtual bool OnMessageDelete(const dpp::message_delete_t &obj);
+	virtual bool OnMessageDeleteBulk(const dpp::message_delete_bulk_t &obj);
+	virtual bool OnGuildUpdate(const dpp::guild_update_t &obj);
+	virtual bool OnMessageReactionAdd(const dpp::message_reaction_add_t &obj);
+	virtual bool OnMessageReactionRemove(const dpp::message_reaction_remove_t &obj);
+	virtual bool OnMessageReactionRemoveAll(const dpp::message_reaction_remove_all_t &obj);
+	virtual bool OnUserUpdate(const dpp::user_update_t &obj);
+	virtual bool OnResumed(const dpp::resumed_t &obj);
+	virtual bool OnChannelUpdate(const dpp::channel_update_t &obj);
+	virtual bool OnChannelPinsUpdate(const dpp::channel_pins_update_t &obj);
+	virtual bool OnGuildBanAdd(const dpp::guild_ban_add_t &obj);
+	virtual bool OnGuildBanRemove(const dpp::guild_ban_remove_t &obj);
+	virtual bool OnGuildEmojisUpdate(const dpp::guild_emojis_update_t &obj);
+	virtual bool OnGuildIntegrationsUpdate(const dpp::guild_integrations_update_t &obj);
+	virtual bool OnGuildMemberRemove(const dpp::guild_member_remove_t &obj);
+	virtual bool OnGuildMemberUpdate(const dpp::guild_member_update_t &obj);
+	virtual bool OnGuildMembersChunk(const dpp::guild_members_chunk_t &obj);
+	virtual bool OnGuildRoleCreate(const dpp::guild_role_create_t &obj);
+	virtual bool OnGuildRoleUpdate(const dpp::guild_role_update_t &obj);
+	virtual bool OnGuildRoleDelete(const dpp::guild_role_delete_t &obj);
+	virtual bool OnPresenceUpdateWS(const dpp::presence_update_t &obj);
+	virtual bool OnVoiceStateUpdate(const dpp::voice_state_update_t &obj);
+	virtual bool OnVoiceServerUpdate(const dpp::voice_server_update_t &obj);
+	virtual bool OnWebhooksUpdate(const dpp::webhooks_update_t &obj);
 
 	/* Emit a simple text only embed to a channel, many modules use this for error reporting */
 	void EmbedSimple(const std::string &message, int64_t channelID);

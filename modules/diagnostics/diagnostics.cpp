@@ -2,9 +2,7 @@
  * 
  * TriviaBot, the Discord Quiz Bot with over 80,000 questions!
  *
- * Copyright 2004 Craig Edwards <support@sporks.gg>
- *
- * Core based on Sporks, the Learning Discord Bot, Craig Edwards (c) 2019.
+ * Copyright 2019 Craig Edwards <support@sporks.gg> 
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +18,8 @@
  *
  ************************************************************************************/
 
+#include <dpp/dpp.h>
+#include <fmt/format.h>
 #include <sporks/bot.h>
 #include <sporks/regex.h>
 #include <sporks/modules.h>
@@ -34,16 +34,21 @@
 #include <string>
 #include <array>
 
-struct guild_count_data
-{
-	size_t guilds;
-	size_t members;
-};
+int64_t GetRSS() {
+	int64_t ram = 0;
+	std::ifstream self_status("/proc/self/status");
+	while (self_status) {
+		std::string token;
+		self_status >> token;
+		if (token == "VmRSS:") {
+			self_status >> ram;
+			break;
+		}
+	}
+	self_status.close();
+	return ram * 1024;
+}
 
-struct shard_data
-{
-	std::chrono::time_point<std::chrono::steady_clock> last_message;
-};
 
 std::string exec(const char* cmd) {
 	std::array<char, 128> buffer;
@@ -65,18 +70,12 @@ std::string exec(const char* cmd) {
 class DiagnosticsModule : public Module
 {
 	PCRE* diagnosticmessage;
-	std::vector<shard_data> shards;
 	double microseconds_ping;
 public:
 	DiagnosticsModule(Bot* instigator, ModuleLoader* ml) : Module(instigator, ml)
 	{
 		ml->Attach({ I_OnMessage, I_OnRestEnd }, this);
 		diagnosticmessage = new PCRE("^sudo(\\s+(.+?))$", true);
-
-
-		for (uint32_t i = 0; i < bot->core.get_shard_mgr().shard_max_count; ++i) {
-			shards.push_back({});
-		}
 	}
 
 	virtual ~DiagnosticsModule()
@@ -87,13 +86,13 @@ public:
 	virtual std::string GetVersion()
 	{
 		/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-		std::string version = "$ModVer 26$";
+		std::string version = "$ModVer 31$";
 		return "1.0." + version.substr(8,version.length() - 9);
 	}
 
 	virtual std::string GetDescription()
 	{
-		return "Diagnostic Commands (sudo), '@mention sudo'";
+		return "Diagnostic Commands (sudo), '@Sporks sudo'";
 	}
 
 	virtual bool OnRestEnd(std::chrono::steady_clock::time_point start_time, uint16_t code)
@@ -102,29 +101,28 @@ public:
 		return true;
 	}
 
-	virtual bool OnMessage(const modevent::message_create &message, const std::string& clean_message, bool mentioned, const std::vector<std::string> &stringmentions)
+	virtual bool OnMessage(const dpp::message_create_t &message, const std::string& clean_message, bool mentioned, const std::vector<std::string> &stringmentions)
 	{
 		std::vector<std::string> param;
-		//shards[message.shard.get_id()].last_message = std::chrono::steady_clock::now();
 
 		if (mentioned && diagnosticmessage->Match(clean_message, param) && param.size() >= 3) {
 
-			aegis::gateway::objects::message msg = message.msg;
+			dpp::message msg = *(message.msg);
 			std::stringstream tokens(trim(param[2]));
 			std::string subcommand;
 			tokens >> subcommand;
 
-			bot->core.log->info("SUDO: <{}> {}", msg.get_user().get_username(), clean_message);
+			bot->core->log(dpp::ll_info, fmt::format("SUDO: <{}> {}", msg.author ? msg.author->username : "", clean_message));
 
 			/* Get owner snowflake id from config file */
-			int64_t owner_id = from_string<int64_t>(Bot::GetConfig("owner"), std::dec);
+			dpp::snowflake owner_id = from_string<int64_t>(Bot::GetConfig("owner"), std::dec);
 
 			/* Only allow these commands to the bot owner */
-			if (msg.author.id.get() == owner_id) {
+			if (msg.author && msg.author->id == owner_id) {
 
 				if (param.size() < 3) {
 					/* Invalid number of parameters */
-					EmbedSimple("Sudo make me a sandwich.", msg.get_channel_id().get());
+					EmbedSimple("Sudo make me a sandwich.", msg.channel_id);
 				} else {
 					/* Module list command */
 					if (lowercase(subcommand) == "modules") {
@@ -144,10 +142,10 @@ public:
 						s << fmt::format("+ ╰─────────────────────────┴───────────┴────────────────────────────────────────────────╯") << std::endl;
 						s << "```";
 
-						aegis::channel* c = bot->core.find_channel(msg.get_channel_id().get());
+						dpp::channel* c = dpp::find_channel(msg.channel_id);
 						if (c) {
-							if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == c->get_guild().get_id()) {
-								c->create_message(s.str());
+							if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == c->guild_id) {
+								bot->core->message_create(dpp::message(c->id, s.str()));
 								bot->sent_messages++;
 							}
 						}
@@ -157,21 +155,21 @@ public:
 						std::string modfile;
 						tokens >> modfile;
 						if (bot->Loader->Load(modfile)) {
-							EmbedSimple("Loaded module: " + modfile, msg.get_channel_id().get());
+							EmbedSimple("Loaded module: " + modfile, msg.channel_id);
 						} else {
-							EmbedSimple(std::string("Can't do that: ``") + bot->Loader->GetLastError() + "``", msg.get_channel_id().get());
+							EmbedSimple(std::string("Can't do that: ``") + bot->Loader->GetLastError() + "``", msg.channel_id);
 						}
 					} else if (lowercase(subcommand) == "unload") {
 						/* Unload a module */
 						std::string modfile;
 						tokens >> modfile;
 						if (modfile == "module_diagnostics.so") {
-							EmbedSimple("I suppose you think that's funny, dont you? *I'm sorry. can't do that, dave.*", msg.get_channel_id().get());
+							EmbedSimple("I suppose you think that's funny, dont you? *I'm sorry. can't do that, dave.*", msg.channel_id);
 						} else {
 							if (bot->Loader->Unload(modfile)) {
-								EmbedSimple("Unloaded module: " + modfile, msg.get_channel_id().get());
+								EmbedSimple("Unloaded module: " + modfile, msg.channel_id);
 							} else {
-								EmbedSimple(std::string("Can't do that: ``") + bot->Loader->GetLastError() + "``", msg.get_channel_id().get());
+								EmbedSimple(std::string("Can't do that: ``") + bot->Loader->GetLastError() + "``", msg.channel_id);
 							}
 						}
 					} else if (lowercase(subcommand) == "reload") {
@@ -179,21 +177,12 @@ public:
 						std::string modfile;
 						tokens >> modfile;
 						if (modfile == "module_diagnostics.so") {
-							EmbedSimple("I suppose you think that's funny, dont you? *I'm sorry. can't do that, dave.*", msg.get_channel_id().get());
+							EmbedSimple("I suppose you think that's funny, dont you? *I'm sorry. can't do that, dave.*", msg.channel_id);
 						} else {
 							if (bot->Loader->Reload(modfile)) {
-								EmbedSimple("Reloaded module: " + modfile, msg.get_channel_id().get());
+								EmbedSimple("Reloaded module: " + modfile, msg.channel_id);
 							} else {
-								EmbedSimple(std::string("Can't do that: ``") + bot->Loader->GetLastError() + "``", msg.get_channel_id().get());
-							}
-						}
-					} else if (lowercase(subcommand) == "threadstats") {
-						std::string result = exec("top -b -n1 -d0 | head -n7 && top -b -n1 -d0 -H | grep \"./bot\\|run.sh\" | grep -v grep | grep -v perl");
-						aegis::channel* c = bot->core.find_channel(msg.get_channel_id().get());
-						if (c) {
-							if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == c->get_guild().get_id()) {
-								c->create_message("```" + result + "```");
-								bot->sent_messages++;
+								EmbedSimple(std::string("Can't do that: ``") + bot->Loader->GetLastError() + "``", msg.channel_id);
 							}
 						}
 					} else if (lowercase(subcommand) == "sql") {
@@ -204,9 +193,9 @@ public:
 						std::stringstream w;
 						if (rs.size() == 0) {
 							if (db::error() != "") {
-								EmbedSimple("SQL Error: " + db::error(), msg.get_channel_id().get());
+								EmbedSimple("SQL Error: " + db::error(), msg.channel_id);
 							} else {
-								EmbedSimple("Successfully executed, no rows returned.", msg.get_channel_id().get());
+								EmbedSimple("Successfully executed, no rows returned.", msg.channel_id);
 							}
 						} else {
 							w << "- " << sql << std::endl;
@@ -250,128 +239,95 @@ public:
 								check = name;
 								w << (++check != rs[0].end() ? "┴" : "╯\n");
 							}
-							aegis::channel* c = bot->core.find_channel(msg.get_channel_id().get());
+							dpp::channel* c = dpp::find_channel(msg.channel_id);
 							if (c) {
-								if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == c->get_guild().get_id()) {
-									c->create_message("```diff\n" + w.str() + "```");
+								if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == c->guild_id) {
+									bot->core->message_create(dpp::message(msg.channel_id, "```diff\n" + w.str() + "```"));
 									bot->sent_messages++;
 								}
 							}
 						}
-					} else if (lowercase(subcommand) == "reconnect") {
-						uint32_t snum = 0;
-						tokens >> snum;
-						auto & s = bot->core.get_shard_by_id(snum);
-						if (s.is_connected()) {
-							EmbedSimple("Shard is already connected.", msg.get_channel_id().get());
-						} else {
-							bot->core.get_shard_mgr().queue_reconnect(s);
-						}
-					} else if (lowercase(subcommand) == "forcereconnect") {
-						uint32_t snum = 0;
-						tokens >> snum;
-						auto & s = bot->core.get_shard_by_id(snum);
-						if (s.is_connected()) {
-							EmbedSimple("Shard is already connected.", msg.get_channel_id().get());
-						} else {
-							s.connect();
-						}
-					} else if (lowercase(subcommand) == "disconnect") {
-						uint32_t snum = 0;
-						tokens >> snum;
-						auto & s = bot->core.get_shard_by_id(snum);
-						bot->core.get_shard_mgr().close(s);
-						EmbedSimple("Shard disconnected.", msg.get_channel_id().get());
 					} else if (lowercase(subcommand) == "restart") {
-						EmbedSimple("Restarting...", msg.get_channel_id().get());
+						EmbedSimple("Restarting...", msg.channel_id);
 						::sleep(5);
 						/* Note: exit here will restart, because we run the bot via run.sh which restarts the bot on quit. */
 						exit(0);
 					} else if (lowercase(subcommand) == "ping") {
-						aegis::channel* c = bot->core.find_channel(msg.get_channel_id().get());
+						dpp::channel* c = dpp::find_channel(msg.channel_id);
 						if (c) {
 							std::chrono::steady_clock::time_point start_time = std::chrono::steady_clock::now();
-							aegis::gateway::objects::message m = c->create_message("Pinging...", msg.get_channel_id().get()).get();
-							double microseconds_ping = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - start_time).count();
-							m.delete_message();
-							EmbedSimple(fmt::format("**Pong!** REST Response time: {:.3f} ms", microseconds_ping / 1000, 4), msg.get_channel_id().get());
+							dpp::snowflake cid = msg.channel_id;
+							bot->core->message_create(dpp::message(msg.channel_id, "Pinging..."), [cid, this, start_time](const dpp::confirmation_callback_t & state) {
+								double microseconds_ping = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - start_time).count();
+								dpp::snowflake mid = (std::get<dpp::message>(state.value)).id;
+								this->bot->core->message_delete(mid, cid);
+								this->EmbedSimple(fmt::format("**Pong!** REST Response time: {:.3f} ms", microseconds_ping / 1000, 4), cid);
+							});
 						}
 					} else if (lowercase(subcommand) == "lookup") {
 						int64_t gnum = 0;
 						tokens >> gnum;
-						aegis::guild* guild = bot->core.find_guild(gnum);
+						dpp::guild* guild = dpp::find_guild(gnum);
 						if (guild) {
-							EmbedSimple(fmt::format("**Guild** {} is on **shard** #{}", gnum, guild->shard_id), msg.get_channel_id().get());
+							EmbedSimple(fmt::format("**Guild** {} is on **shard** #{}", gnum, 0), msg.channel_id);
 						} else {
-							EmbedSimple(fmt::format("**Guild** {} is not in my list!", gnum), msg.get_channel_id().get());
+							EmbedSimple(fmt::format("**Guild** {} is not in my list!", gnum), msg.channel_id);
 						}
 					} else if (lowercase(subcommand) == "shardstats") {
 						std::stringstream w;
 						w << "```diff\n";
 
 						uint64_t count = 0, u_count = 0;
-						count = bot->core.get_shard_transfer();
-						u_count = bot->core.get_shard_u_transfer();
-
-						std::vector<guild_count_data> shard_guild_c(bot->core.shard_max_count);
-
-						for (auto & v : bot->core.guilds)
-						{
-							++shard_guild_c[v.second->shard_id].guilds;
-							shard_guild_c[v.second->shard_id].members += v.second->get_members().size();
+						auto& shards = bot->core->get_shards();
+						for (auto i = shards.begin(); i != shards.end(); ++i) {
+							dpp::DiscordClient* shard = i->second;
+							count += shard->GetBytesIn() + shard->GetBytesOut();
+							u_count += shard->GetDeompressedBytesIn() + shard->GetBytesOut();
 						}
 
-						w << fmt::format("  Total transfer: {} (U: {} | {:.2f}%) Memory usage: {}\n", aegis::utility::format_bytes(count), aegis::utility::format_bytes(u_count), (count / (double)u_count)*100, aegis::utility::format_bytes(aegis::utility::getCurrentRSS()));
-						w << fmt::format("- ╭──────┬──────────┬───────┬───────┬────────────────┬────────────┬───────────┬──────────╮\n");
-						w << fmt::format("- │shard#│  sequence│servers│members│uptime          │last message│transferred│reconnects│\n");
-						w << fmt::format("- ├──────┼──────────┼───────┼───────┼────────────────┼────────────┼───────────┼──────────┤\n");
+						w << fmt::format("  Total transfer: {} (U: {} | {:.2f}%) Memory usage: {}\n", dpp::utility::bytes(count), dpp::utility::bytes(u_count), (count / (double)u_count)*100, dpp::utility::bytes(GetRSS()));
+						w << fmt::format("- ╭──────┬──────────┬───────┬───────┬────────────────┬───────────┬──────────╮\n");
+						w << fmt::format("- │shard#│  sequence│servers│members│uptime          │transferred│reconnects│\n");
+						w << fmt::format("- ├──────┼──────────┼───────┼───────┼────────────────┼───────────┼──────────┤\n");
 
-						for (uint32_t i = 0; i < bot->core.shard_max_count; ++i)
+						for (auto i = shards.begin(); i != shards.end(); ++i)
 						{
-							auto & s = bot->core.get_shard_by_id(i);
-							auto time_count = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - shards[s.get_id()].last_message).count();
-							std::string divisor = "ms";
-							if (time_count > 1000) {
-								time_count /= 1000;
-								divisor = "s ";
-							}
-							if (s.is_connected())
+							dpp::DiscordClient* s = i->second;
+							if (s->IsConnected())
 								w << "+ ";
 							else
 								w << "  ";
-							w << fmt::format("|{:6}|{:10}|{:7}|{:7}|{:>16}|{:10}{:2}|{:>11}|{:10}|",
-											 s.get_id(),
-											 s.get_sequence(),
-											 shard_guild_c[s.get_id()].guilds,
-											 shard_guild_c[s.get_id()].members,
-											 s.uptime_str(),
-											 time_count,
-											 divisor,
-											 s.get_transfer_str(),
-											 s.counters.reconnects);
-							if (message.shard.get_id() == s.get_id()) {
+							w << fmt::format("|{:6}|{:10}|{:7}|{:7}|{:>16}|{:>11}|{:10}|",
+											 s->shard_id,
+											 s->last_seq,
+											 s->GetGuildCount(),
+											 s->GetMemberCount(),
+											 s->Uptime().to_string(),
+											 dpp::utility::bytes(s->GetBytesIn() + s->GetBytesOut()),
+											 0);
+							if (message.from->shard_id == s->shard_id) {
 								w << " *\n";
 							} else {
 								w << "\n";
 							}
 						}
-						w << fmt::format("+ ╰──────┴──────────┴───────┴───────┴────────────────┴────────────┴───────────┴──────────╯\n");
+						w << fmt::format("+ ╰──────┴──────────┴───────┴───────┴────────────────┴───────────┴──────────╯\n");
 						w << "```";
-						aegis::channel *channel = bot->core.find_channel(msg.get_channel_id());
+						dpp::channel *channel = dpp::find_channel(msg.channel_id);
 						if (channel) {
-							if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == channel->get_guild().get_id()) {
-								channel->create_message(w.str());
+							if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == channel->guild_id) {
+								bot->core->message_create(dpp::message(channel->id, w.str()));
 								bot->sent_messages++;
 							}
 						}
 					} else {
 						/* Invalid command */
-						EmbedSimple("Sudo **what**? I don't know what that command means.", msg.get_channel_id().get());
+						EmbedSimple("Sudo **what**? I don't know what that command means.", msg.channel_id);
 					}
 				}
 			} else {
 				/* Access denied */
-				EmbedSimple("Make your own sandwich, mortal.", msg.get_channel_id().get());
+				EmbedSimple("Make your own sandwich, mortal.", msg.channel_id);
 			}
 
 			/* Eat the event */

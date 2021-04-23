@@ -1,10 +1,8 @@
 /************************************************************************************
  * 
- * TriviaBot, the Discord Quiz Bot with over 80,000 questions!
+ * Sporks, the learning, scriptable Discord bot!
  *
- * Copyright 2004 Craig Edwards <support@sporks.gg>
- *
- * Core based on Sporks, the Learning Discord Bot, Craig Edwards (c) 2019.
+ * Copyright 2019 Craig Edwards <support@sporks.gg>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,7 +47,7 @@ public:
 	virtual std::string GetVersion()
 	{
 		/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-		std::string version = "$ModVer 9$";
+		std::string version = "$ModVer 8$";
 		return "1.0." + version.substr(8,version.length() - 9);
 	}
 
@@ -75,17 +73,20 @@ public:
 
 	virtual bool OnPresenceUpdate()
 	{
-		int64_t servers = bot->core.get_guild_count();
-		int64_t users = bot->core.get_member_count();
-		int64_t channel_count = bot->core.channels.size();
+		int64_t users = 0, channel_count = 0, servers = 0;
+		for (auto & s : bot->core->get_shards()) {
+			users += s.second->GetMemberCount();
+			channel_count += s.second->GetChannelCount();
+			servers += s.second->GetGuildCount();
+		}
 		int64_t ram = GetRSS();
 		int64_t games = bot->counters.find("activegames") != bot->counters.end() ?  bot->counters["activegames"] : 0;
 
-		db::query("INSERT INTO infobot_discord_counts (shard_id, cluster_id, dev, user_count, server_count, shard_count, channel_count, sent_messages, received_messages, memory_usage, games) VALUES('?','?','?','?','?','?','?','?','?','?','?') ON DUPLICATE KEY UPDATE user_count = '?', server_count = '?', shard_count = '?', channel_count = '?', sent_messages = '?', received_messages = '?', memory_usage = '?', games = '?'",
+		db::query("INSERT INTO infobot_discord_counts (shard_id, cluster_id, dev, user_count, server_count, shard_count, channel_count, sent_messages, received_messages, memory_usage, games) VALUES('?','?','?','?','?','?','?','?','?') ON DUPLICATE KEY UPDATE user_count = '?', server_count = '?', shard_count = '?', channel_count = '?', sent_messages = '?', received_messages = '?', memory_usage = '?'",
 			{
-				0, bot->GetClusterID(), bot->IsDevMode(), users, servers, bot->core.shard_max_count,
+				0, bot->GetClusterID(), bot->IsDevMode(), users, servers, bot->core->get_shards().size(),
 				channel_count, bot->sent_messages, bot->received_messages, ram, games,
-				users, servers, bot->core.shard_max_count,
+				users, servers, bot->core->get_shards().size(),
 				channel_count, bot->sent_messages, bot->received_messages, ram, games
 			}
 		);

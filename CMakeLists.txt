@@ -27,21 +27,13 @@ string(ASCII 27 Esc)
 include(buildtools/cmake/FindMYSQL.cmake)
 include(buildtools/cmake/FindPCRE.cmake)
 
-find_package(OpenSSL REQUIRED)
-find_package(Aegis REQUIRED)
-find_package(ZLIB REQUIRED)
-if ( ZLIB_FOUND )
-	include_directories( ${ZLIB_INCLUDE_DIRS} )
-endif( ZLIB_FOUND )
-
 include_directories( "include" )
 
-target_link_libraries(bot dl ssl crypto z mysqlclient pcre ${ZLIB_LIBRARIES})
+target_link_libraries(bot dl mysqlclient pcre dpp fmt spdlog)
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -pthread -g -O2 -fPIC -rdynamic")
 set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O2")
 
 target_link_libraries(bot)
-
 
 set (modules_dir "modules")
 file(GLOB subdirlist ${modules_dir}/*)

@@ -2,9 +2,7 @@
  * 
  * TriviaBot, the Discord Quiz Bot with over 80,000 questions!
  *
- * Copyright 2004 Craig Edwards <support@sporks.gg>
- *
- * Core based on Sporks, the Learning Discord Bot, Craig Edwards (c) 2019.
+ * Copyright 2019 Craig Edwards <support@sporks.gg>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +18,9 @@
  *
  ************************************************************************************/
 
+#include <dpp/dpp.h>
+#include <nlohmann/json.hpp>
+#include <fmt/format.h>
 #include <sporks/modules.h>
 #ifndef _GNU_SOURCE
 	#define _GNU_SOURCE
@@ -28,6 +29,8 @@
 #include <dlfcn.h>
 #include <sstream>
 #include <sporks/stringops.h>
+
+using json = nlohmann::json;
 
 /**
  * String versions of the enum Implementation values, for display only
@@ -75,7 +78,7 @@ const char* StringNames[I_END + 1] = {
 
 ModuleLoader::ModuleLoader(Bot* creator) : bot(creator)
 {
-	bot->core.log->info("Module loader initialising...");
+	bot->core->log(dpp::ll_info, "Module loader initialising...");
 }
 
 ModuleLoader::~ModuleLoader()
@@ -91,9 +94,9 @@ void ModuleLoader::Attach(const std::vector<Implementation> &i, Module* mod)
 	for (auto n = i.begin(); n != i.end(); ++n) {
 		if (std::find(EventHandlers[*n].begin(), EventHandlers[*n].end(), mod) == EventHandlers[*n].end()) {
 			EventHandlers[*n].push_back(mod);
-			bot->core.log->debug("Module \"{}\" attached event \"{}\"", mod->GetDescription(), StringNames[*n]);
+			bot->core->log(dpp::ll_debug, fmt::format("Module \"{}\" attached event \"{}\"", mod->GetDescription(), StringNames[*n]));
 		} else {
-			bot->core.log->warn("Module \"{}\" is already attached to event \"{}\"", mod->GetDescription(), StringNames[*n]);
+			bot->core->log(dpp::ll_warning, fmt::format("Module \"{}\" is already attached to event \"{}\"", mod->GetDescription(), StringNames[*n]));
 		}
 	}
 }
@@ -107,7 +110,7 @@ void ModuleLoader::Detach(const std::vector<Implementation> &i, Module* mod)
 		auto it = std::find(EventHandlers[*n].begin(), EventHandlers[*n].end(), mod);
 		if (it != EventHandlers[*n].end()) {
 			EventHandlers[*n].erase(it);
-			bot->core.log->debug("Module \"{}\" detached event \"{}\"", mod->GetDescription(), StringNames[*n]);
+			bot->core->log(dpp::ll_debug, fmt::format("Module \"{}\" detached event \"{}\"", mod->GetDescription(), StringNames[*n]));
 		}
 	}
 }
@@ -133,7 +136,7 @@ bool ModuleLoader::Load(const std::string &filename)
 	m.module_object = nullptr;
 	m.init = nullptr;
 
-	bot->core.log->info("Loading module \"{}\"", filename);
+	bot->core->log(dpp::ll_info, fmt::format("Loading module \"{}\"", filename));
 
 	std::lock_guard l(mtx);
 
@@ -146,28 +149,28 @@ bool ModuleLoader::Load(const std::string &filename)
 		m.dlopen_handle = dlopen(full_module_spec.c_str(), RTLD_NOW | RTLD_LOCAL);
 		if (!m.dlopen_handle) {
 			lasterror = dlerror();
-			bot->core.log->error("Can't load module: {}", lasterror);
+			bot->core->log(dpp::ll_error, fmt::format("Can't load module: {}", lasterror));
 			return false;
 		} else {
 			if (!GetSymbol(m, "init_module")) {
-				bot->core.log->error("Can't load module: {}", m.err ? m.err : "General error");
+				bot->core->log(dpp::ll_error, fmt::format("Can't load module: {}", m.err ? m.err : "General error"));
 				lasterror = (m.err ? m.err : "General error");
 				dlclose(m.dlopen_handle);
 				return false;
 			} else {
-				bot->core.log->debug("Module shared object {} loaded, symbol found", filename);
+				bot->core->log(dpp::ll_debug, fmt::format("Module shared object {} loaded, symbol found", filename));
 				m.module_object = m.init(bot, this);
 				/* In the event of a missing module_init symbol, dlsym() returns a valid pointer to a function that returns -1 as its pointer. Why? I don't know.
 				 * FIXME find out why.
 				*/
 				if (!m.module_object || (uint64_t)m.module_object == 0xffffffffffffffff) {
-					bot->core.log->error("Can't load module: Invalid module pointer returned. No symbol?");
+					bot->core->log(dpp::ll_error, fmt::format("Can't load module: Invalid module pointer returned. No symbol?"));
 					m.err = "Not a module (symbol init_module not found)";
 					lasterror = m.err;
 					dlclose(m.dlopen_handle);
 					return false;
 				} else {
-					bot->core.log->debug("Module {} initialised", filename);
+					bot->core->log(dpp::ll_debug, fmt::format("Module {} initialised", filename));
 					Modules[filename] = m;
 					ModuleList[filename] = m.module_object;
 					lasterror = "";
@@ -176,7 +179,7 @@ bool ModuleLoader::Load(const std::string &filename)
 			}
 		}
 	} else {
-		bot->core.log->debug("Module {} already loaded!", filename);
+		bot->core->log(dpp::ll_error, fmt::format("Module {} already loaded!", filename));
 		lasterror = "Module already loaded!";
 		return false;
 	}
@@ -197,7 +200,7 @@ bool ModuleLoader::Unload(const std::string &filename)
 {
 	std::lock_guard l(mtx);
 
-	bot->core.log->debug("Unloading module {} ({}/{})", filename, Modules.size(), ModuleList.size());
+	bot->core->log(dpp::ll_info, fmt::format("Unloading module {} ({}/{})", filename, Modules.size(), ModuleList.size()));
 
 	auto m = Modules.find(filename);
 
@@ -213,7 +216,7 @@ bool ModuleLoader::Unload(const std::string &filename)
 		auto p = std::find(EventHandlers[j].begin(), EventHandlers[j].end(), mod.module_object);
 		if (p != EventHandlers[j].end()) {
 			EventHandlers[j].erase(p);
-			bot->core.log->debug("Removed event {} from {}", StringNames[j], filename);
+			bot->core->log(dpp::ll_debug, fmt::format("Removed event {} from {}", StringNames[j], filename));
 		}
 	}
 	/* Remove module entry */
@@ -222,21 +225,21 @@ bool ModuleLoader::Unload(const std::string &filename)
 	auto v = ModuleList.find(filename);
 	if (v != ModuleList.end()) {
 		ModuleList.erase(v);
-		bot->core.log->debug("Removed {} from module list", filename);
+		bot->core->log(dpp::ll_debug, fmt::format("Removed {} from module list", filename));
 	}
 	
 	if (mod.module_object) {
-		bot->core.log->debug("Module {} dtor", filename);
+		bot->core->log(dpp::ll_debug, fmt::format("Module {} dtor", filename));
 		delete mod.module_object;
 	}
 	
 	/* Remove module from memory */
 	if (mod.dlopen_handle) {
-		bot->core.log->debug("Module {} dlclose()", filename);
+		bot->core->log(dpp::ll_debug, fmt::format("Module {} dlclose()", filename));
 		dlclose(mod.dlopen_handle);
 	}
 
-	bot->core.log->debug("New module counts: {}/{}", Modules.size(), ModuleList.size());
+	bot->core->log(dpp::ll_debug, fmt::format("New module counts: {}/{}", Modules.size(), ModuleList.size()));
 
 	return true;
 }
@@ -308,37 +311,37 @@ std::string Module::GetDescription()
 	return "";
 }
 
-bool Module::OnChannelCreate(const modevent::channel_create &channel)
+bool Module::OnChannelCreate(const dpp::channel_create_t &channel)
 {
 	return true;
 } 
 
-bool Module::OnReady(const modevent::ready &ready)
+bool Module::OnReady(const dpp::ready_t &ready)
 {
 	return true;
 }
 
-bool Module::OnChannelDelete(const modevent::channel_delete &channel)
+bool Module::OnChannelDelete(const dpp::channel_delete_t &channel)
 {
 	return true;
 }
 
-bool Module::OnGuildCreate(const modevent::guild_create &guild)
+bool Module::OnGuildCreate(const dpp::guild_create_t &guild)
 {
 	return true;
 }
 
-bool Module::OnGuildDelete(const modevent::guild_delete &guild)
+bool Module::OnGuildDelete(const dpp::guild_delete_t &guild)
 {
 	return true;
 }
 
-bool Module::OnGuildMemberAdd(const modevent::guild_member_add &gma)
+bool Module::OnGuildMemberAdd(const dpp::guild_member_add_t &gma)
 {
 	return true;
 }
 
-bool Module::OnMessage(const modevent::message_create &message, const std::string& clean_message, bool mentioned, const std::vector<std::string> &stringmentions)
+bool Module::OnMessage(const dpp::message_create_t &message, const std::string& clean_message, bool mentioned, const std::vector<std::string> &stringmentions)
 {
 	return true;
 }
@@ -348,162 +351,157 @@ bool Module::OnPresenceUpdate()
 	return true;
 }
 
-bool Module::OnRestEnd(std::chrono::steady_clock::time_point start_time, uint16_t code)
-{
-	return true;
-}
-
-bool Module::OnTypingStart(const modevent::typing_start &obj)
+bool Module::OnTypingStart(const dpp::typing_start_t &obj)
 {
 	return true;
 }
 
 
-bool Module::OnMessageUpdate(const modevent::message_update &obj)
+bool Module::OnMessageUpdate(const dpp::message_update_t &obj)
 {
 	return true;
 }
 
 
-bool Module::OnMessageDelete(const modevent::message_delete &obj)
+bool Module::OnMessageDelete(const dpp::message_delete_t &obj)
 {
 	return true;
 }
 
 
-bool Module::OnMessageDeleteBulk(const modevent::message_delete_bulk &obj)
+bool Module::OnMessageDeleteBulk(const dpp::message_delete_bulk_t &obj)
 {
 	return true;
 }
 
 
-bool Module::OnGuildUpdate(const modevent::guild_update &obj)
+bool Module::OnGuildUpdate(const dpp::guild_update_t &obj)
 {
 	return true;
 }
 
 
-bool Module::OnMessageReactionAdd(const modevent::message_reaction_add &obj)
+bool Module::OnMessageReactionAdd(const dpp::message_reaction_add_t &obj)
 {
 	return true;
 }
 
 
-bool Module::OnMessageReactionRemove(const modevent::message_reaction_remove &obj)
+bool Module::OnMessageReactionRemove(const dpp::message_reaction_remove_t &obj)
 {
 	return true;
 }
 
 
-bool Module::OnMessageReactionRemoveAll(const modevent::message_reaction_remove_all &obj)
+bool Module::OnMessageReactionRemoveAll(const dpp::message_reaction_remove_all_t &obj)
 {
 	return true;
 }
 
 
-bool Module::OnUserUpdate(const modevent::user_update &obj)
+bool Module::OnUserUpdate(const dpp::user_update_t &obj)
 {
 	return true;
 }
 
 
-bool Module::OnResumed(const modevent::resumed &obj)
+bool Module::OnResumed(const dpp::resumed_t &obj)
 {
 	return true;
 }
 
 
-bool Module::OnChannelUpdate(const modevent::channel_update &obj)
+bool Module::OnChannelUpdate(const dpp::channel_update_t &obj)
 {
 	return true;
 }
 
 
-bool Module::OnChannelPinsUpdate(const modevent::channel_pins_update &obj)
+bool Module::OnChannelPinsUpdate(const dpp::channel_pins_update_t &obj)
 {
 	return true;
 }
 
 
-bool Module::OnGuildBanAdd(const modevent::guild_ban_add &obj)
+bool Module::OnGuildBanAdd(const dpp::guild_ban_add_t &obj)
 {
 	return true;
 }
 
 
-bool Module::OnGuildBanRemove(const modevent::guild_ban_remove &obj)
+bool Module::OnGuildBanRemove(const dpp::guild_ban_remove_t &obj)
 {
 	return true;
 }
 
 
-bool Module::OnGuildEmojisUpdate(const modevent::guild_emojis_update &obj)
+bool Module::OnGuildEmojisUpdate(const dpp::guild_emojis_update_t &obj)
 {
 	return true;
 }
 
 
-bool Module::OnGuildIntegrationsUpdate(const modevent::guild_integrations_update &obj)
+bool Module::OnGuildIntegrationsUpdate(const dpp::guild_integrations_update_t &obj)
 {
 	return true;
 }
 
 
-bool Module::OnGuildMemberRemove(const modevent::guild_member_remove &obj)
+bool Module::OnGuildMemberRemove(const dpp::guild_member_remove_t &obj)
 {
 	return true;
 }
 
 
-bool Module::OnGuildMemberUpdate(const modevent::guild_member_update &obj)
+bool Module::OnGuildMemberUpdate(const dpp::guild_member_update_t &obj)
 {
 	return true;
 }
 
 
-bool Module::OnGuildMembersChunk(const modevent::guild_members_chunk &obj)
+bool Module::OnGuildMembersChunk(const dpp::guild_members_chunk_t &obj)
 {
 	return true;
 }
 
 
-bool Module::OnGuildRoleCreate(const modevent::guild_role_create &obj)
+bool Module::OnGuildRoleCreate(const dpp::guild_role_create_t &obj)
 {
 	return true;
 }
 
 
-bool Module::OnGuildRoleUpdate(const modevent::guild_role_update &obj)
+bool Module::OnGuildRoleUpdate(const dpp::guild_role_update_t &obj)
 {
 	return true;
 }
 
 
-bool Module::OnGuildRoleDelete(const modevent::guild_role_delete &obj)
+bool Module::OnGuildRoleDelete(const dpp::guild_role_delete_t &obj)
 {
 	return true;
 }
 
 
-bool Module::OnPresenceUpdateWS(const modevent::presence_update &obj)
+bool Module::OnPresenceUpdateWS(const dpp::presence_update_t &obj)
 {
 	return true;
 }
 
 
-bool Module::OnVoiceStateUpdate(const modevent::voice_state_update &obj)
+bool Module::OnVoiceStateUpdate(const dpp::voice_state_update_t &obj)
 {
 	return true;
 }
 
 
-bool Module::OnVoiceServerUpdate(const modevent::voice_server_update &obj)
+bool Module::OnVoiceServerUpdate(const dpp::voice_server_update_t &obj)
 {
 	return true;
 }
 
 
-bool Module::OnWebhooksUpdate(const modevent::webhooks_update &obj)
+bool Module::OnWebhooksUpdate(const dpp::webhooks_update_t &obj)
 {
 	return true;
 }
@@ -528,14 +526,17 @@ void Module::EmbedSimple(const std::string &message, int64_t channelID)
 		embed_json = json::parse(s.str());
 	}
 	catch (const std::exception &e) {
-		bot->core.log->error("Invalid json for channel {} created by EmbedSimple: ", channelID, s.str());
+		bot->core->log(dpp::ll_error, fmt::format("Invalid json for channel {} created by EmbedSimple: ", channelID, s.str()));
 	}
-	aegis::channel* channel = bot->core.find_channel(channelID);
+	dpp::channel* channel = dpp::find_channel(channelID);
 	if (channel) {
-		if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == channel->get_guild().get_id()) {
-			channel->create_message_embed("", embed_json);
+		if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == channel->guild_id) {
+			dpp::message m;
+			m.channel_id = channel->id;
+			m.embeds.push_back(dpp::embed(&embed_json));
+			bot->core->message_create(m);
 		}
 	} else {
-		bot->core.log->error("Invalid channel {} passed to EmbedSimple", channelID);
+		bot->core->log(dpp::ll_error, fmt::format("Invalid channel {} passed to EmbedSimple", channelID));
 	}
 }

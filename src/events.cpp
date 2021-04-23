@@ -2,9 +2,7 @@
  * 
  * TriviaBot, the Discord Quiz Bot with over 80,000 questions!
  *
- * Copyright 2004 Craig Edwards <support@sporks.gg>
- *
- * Core based on Sporks, the Learning Discord Bot, Craig Edwards (c) 2019.
+ * Copyright 2019 Craig Edwards <support@sporks.gg> 
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,162 +18,163 @@
  *
  ************************************************************************************/
 
-#include <aegis.hpp>
+#include <dpp/dpp.h>
+#include <fmt/format.h>
 #include <sporks/bot.h>
 #include <sporks/includes.h>
 #include <sporks/modules.h>
 
-void Bot::onTypingStart (aegis::gateway::events::typing_start obj)
+void Bot::onTypingStart (const dpp::typing_start_t &obj)
 {
 	FOREACH_MOD(I_OnTypingStart, OnTypingStart(obj));
 }
 
 
-void Bot::onMessageUpdate (aegis::gateway::events::message_update obj)
+void Bot::onMessageUpdate (const dpp::message_update_t &obj)
 {
 	FOREACH_MOD(I_OnMessageUpdate, OnMessageUpdate(obj));
 }
 
 
-void Bot::onMessageDelete (aegis::gateway::events::message_delete obj)
+void Bot::onMessageDelete (const dpp::message_delete_t &obj)
 {
 	FOREACH_MOD(I_OnMessageDelete, OnMessageDelete(obj));
 }
 
 
-void Bot::onMessageDeleteBulk (aegis::gateway::events::message_delete_bulk obj)
+void Bot::onMessageDeleteBulk (const dpp::message_delete_bulk_t &obj)
 {
 	FOREACH_MOD(I_OnMessageDeleteBulk, OnMessageDeleteBulk(obj));
 }
 
 
-void Bot::onGuildUpdate (aegis::gateway::events::guild_update obj)
+void Bot::onGuildUpdate (const dpp::guild_update_t &obj)
 {
 	FOREACH_MOD(I_OnGuildUpdate, OnGuildUpdate(obj));
 }
 
 
-void Bot::onMessageReactionAdd (aegis::gateway::events::message_reaction_add obj)
+void Bot::onMessageReactionAdd (const dpp::message_reaction_add_t &obj)
 {
 	FOREACH_MOD(I_OnMessageReactionAdd, OnMessageReactionAdd(obj));
 }
 
 
-void Bot::onMessageReactionRemove (aegis::gateway::events::message_reaction_remove obj)
+void Bot::onMessageReactionRemove (const dpp::message_reaction_remove_t &obj)
 {
 	FOREACH_MOD(I_OnMessageReactionRemove, OnMessageReactionRemove(obj));
 }
 
 
-void Bot::onMessageReactionRemoveAll (aegis::gateway::events::message_reaction_remove_all obj)
+void Bot::onMessageReactionRemoveAll (const dpp::message_reaction_remove_all_t &obj)
 {
 	FOREACH_MOD(I_OnMessageReactionRemoveAll, OnMessageReactionRemoveAll(obj));
 }
 
 
-void Bot::onUserUpdate (aegis::gateway::events::user_update obj)
+void Bot::onUserUpdate (const dpp::user_update_t &obj)
 {
 	FOREACH_MOD(I_OnUserUpdate, OnUserUpdate(obj));
 }
 
 
-void Bot::onResumed (aegis::gateway::events::resumed obj)
+void Bot::onResumed (const dpp::resumed_t &obj)
 {
 	FOREACH_MOD(I_OnResumed, OnResumed(obj));
 }
 
 
-void Bot::onChannelUpdate (aegis::gateway::events::channel_update obj)
+void Bot::onChannelUpdate (const dpp::channel_update_t &obj)
 {
 	FOREACH_MOD(I_OnChannelUpdate, OnChannelUpdate(obj));
 }
 
 
-void Bot::onChannelPinsUpdate (aegis::gateway::events::channel_pins_update obj)
+void Bot::onChannelPinsUpdate (const dpp::channel_pins_update_t &obj)
 {
 	FOREACH_MOD(I_OnChannelPinsUpdate, OnChannelPinsUpdate(obj));
 }
 
 
-void Bot::onGuildBanAdd (aegis::gateway::events::guild_ban_add obj)
+void Bot::onGuildBanAdd (const dpp::guild_ban_add_t &obj)
 {
 	FOREACH_MOD(I_OnGuildBanAdd, OnGuildBanAdd(obj));
 }
 
 
-void Bot::onGuildBanRemove (aegis::gateway::events::guild_ban_remove obj)
+void Bot::onGuildBanRemove (const dpp::guild_ban_remove_t &obj)
 {
 	FOREACH_MOD(I_OnGuildBanRemove, OnGuildBanRemove(obj));
 }
 
 
-void Bot::onGuildEmojisUpdate (aegis::gateway::events::guild_emojis_update obj)
+void Bot::onGuildEmojisUpdate (const dpp::guild_emojis_update_t &obj)
 {
 	FOREACH_MOD(I_OnGuildEmojisUpdate, OnGuildEmojisUpdate(obj));
 }
 
 
-void Bot::onGuildIntegrationsUpdate (aegis::gateway::events::guild_integrations_update obj)
+void Bot::onGuildIntegrationsUpdate (const dpp::guild_integrations_update_t &obj)
 {
 	FOREACH_MOD(I_OnGuildIntegrationsUpdate, OnGuildIntegrationsUpdate(obj));
 }
 
 
-void Bot::onGuildMemberRemove (aegis::gateway::events::guild_member_remove obj)
+void Bot::onGuildMemberRemove (const dpp::guild_member_remove_t &obj)
 {
 	FOREACH_MOD(I_OnGuildMemberRemove, OnGuildMemberRemove(obj));
 }
 
 
-void Bot::onGuildMemberUpdate (aegis::gateway::events::guild_member_update obj)
+void Bot::onGuildMemberUpdate (const dpp::guild_member_update_t &obj)
 {
 	FOREACH_MOD(I_OnGuildMemberUpdate, OnGuildMemberUpdate(obj));
 }
 
 
-void Bot::onGuildMembersChunk (aegis::gateway::events::guild_members_chunk obj)
+void Bot::onGuildMembersChunk (const dpp::guild_members_chunk_t &obj)
 {
 	FOREACH_MOD(I_OnGuildMembersChunk, OnGuildMembersChunk(obj));
 }
 
 
-void Bot::onGuildRoleCreate (aegis::gateway::events::guild_role_create obj)
+void Bot::onGuildRoleCreate (const dpp::guild_role_create_t &obj)
 {
 	FOREACH_MOD(I_OnGuildRoleCreate, OnGuildRoleCreate(obj));
 }
 
 
-void Bot::onGuildRoleUpdate (aegis::gateway::events::guild_role_update obj)
+void Bot::onGuildRoleUpdate (const dpp::guild_role_update_t &obj)
 {
 	FOREACH_MOD(I_OnGuildRoleUpdate, OnGuildRoleUpdate(obj));
 }
 
 
-void Bot::onGuildRoleDelete (aegis::gateway::events::guild_role_delete obj)
+void Bot::onGuildRoleDelete (const dpp::guild_role_delete_t &obj)
 {
 	FOREACH_MOD(I_OnGuildRoleDelete, OnGuildRoleDelete(obj));
 }
 
 
-void Bot::onPresenceUpdate (aegis::gateway::events::presence_update obj)
+void Bot::onPresenceUpdate (const dpp::presence_update_t &obj)
 {
 	FOREACH_MOD(I_OnPresenceUpdateWS, OnPresenceUpdateWS(obj));
 }
 
 
-void Bot::onVoiceStateUpdate (aegis::gateway::events::voice_state_update obj)
+void Bot::onVoiceStateUpdate (const dpp::voice_state_update_t &obj)
 {
 	FOREACH_MOD(I_OnVoiceStateUpdate, OnVoiceStateUpdate(obj));
 }
 
 
-void Bot::onVoiceServerUpdate (aegis::gateway::events::voice_server_update obj)
+void Bot::onVoiceServerUpdate (const dpp::voice_server_update_t &obj)
 {
 	FOREACH_MOD(I_OnVoiceServerUpdate, OnVoiceServerUpdate(obj));
 }
 
 
-void Bot::onWebhooksUpdate (aegis::gateway::events::webhooks_update obj)
+void Bot::onWebhooksUpdate (const dpp::webhooks_update_t &obj)
 {
 	FOREACH_MOD(I_OnWebhooksUpdate, OnWebhooksUpdate(obj));
 }
