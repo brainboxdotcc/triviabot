@@ -32,14 +32,26 @@ jobs:
           command: 'cmake  -HDPP -BDPP/build'
       - run:
           name: Building D++
-          command: 'cmake --build DPP/build'
+          command: 'cmake --build DPP/build -j 4'
       - run:
           name: Installing D++
           command: 'cd DPP/build && make install'
+      - run:
+          name: Cloning spdlog
+          command: 'git clone https://github.com/gabime/spdlog.git'
+      - run:
+          name: Creating spdlog build files
+          command: 'cmake  -Hspdlog -Bspdlog/build'
+      - run:
+          name: Building spdlog
+          command: 'cmake --build spdlog/build -j 4'
+      - run:
+          name: Installing spdlog
+          command: 'cd spdlog/build && make install'
       - run:
           name: Creating Build Files
           command: 'cmake -H. -Bbuild'
       - run:
           name: Creating Binary Files
-          command: 'cmake --build build'
+          command: 'cmake --build build -j 4'
 
