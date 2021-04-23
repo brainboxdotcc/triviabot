@@ -20,6 +20,9 @@
  *
  ************************************************************************************/
 
+#include <dpp/dpp.h>
+#include <fmt/format.h>
+#include <nlohmann/json.hpp>
 #include <sporks/modules.h>
 #include <sporks/regex.h>
 #include <string>
@@ -33,6 +36,8 @@
 #include "webrequest.h"
 #include "commands.h"
 
+using json = nlohmann::json;
+
 command_start_t::command_start_t(class TriviaModule* _creator, const std::string &_base_command) : command_t(_creator, _base_command) { }
 
 std::vector<uint64_t> GetChannelWhitelist(uint64_t guild_id)
@@ -45,7 +50,7 @@ std::vector<uint64_t> GetChannelWhitelist(uint64_t guild_id)
 	return wl;
 }
 
-void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_settings_t &settings, const std::string &username, bool is_moderator, aegis::channel* c, aegis::user* user)
+void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_settings_t &settings, const std::string &username, bool is_moderator, dpp::channel* c, dpp::user* user)
 {
 	int32_t questions;
 	std::string str_q;
@@ -70,7 +75,7 @@ void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 	for (auto entry = shitlist.begin(); entry != shitlist.end(); ++entry) {
 		int64_t sl_guild_id = from_string<int64_t>(entry->get<std::string>(), std::dec);
 		if (cmd.channel_id == sl_guild_id) {
-			creator->SimpleEmbed(settings, ":warning:", fmt::format(_("SHITLISTED", settings), username, creator->bot->user.id.get()), cmd.channel_id);
+			creator->SimpleEmbed(settings, ":warning:", fmt::format(_("SHITLISTED", settings), username, creator->GetBot()->user.id), cmd.channel_id);
 			return;
 		}
 	}
@@ -135,7 +140,7 @@ void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 	}
 
 	if (!already_running) {
-		creator->GetBot()->core.log->debug("start game, no existing state");
+		creator->GetBot()->core->log(dpp::ll_debug, fmt::format("start game, no existing state"));
 
 		int32_t max_quickfire = (settings.premium ? 200 : 15);
 		int32_t max_normal = 200;
@@ -220,7 +225,7 @@ void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 					cmd.guild_id
 				);
 
-				creator->bot->core.log->info("Started game on guild {}, channel {}, {} questions [{}] [category: {}]", cmd.guild_id, cmd.channel_id, questions, quickfire ? "quickfire" : "normal", (category.empty() ? "<ALL>" : category));
+				creator->GetBot()->core->log(dpp::ll_info, fmt::format("Started game on guild {}, channel {}, {} questions [{}] [category: {}]", cmd.guild_id, cmd.channel_id, questions, quickfire ? "quickfire" : "normal", (category.empty() ? "<ALL>" : category)));
 
 				std::vector<field_t> fields = {{_("QUESTION", settings), fmt::format("{}", questions), false}};
 				if (!category.empty()) {
@@ -239,8 +244,8 @@ void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 			creator->EmbedWithFields(settings, fmt::format(_((hintless ? "NEWROUND_NH" : "NEWROUND"), settings), (hintless ? "**HARDCORE** " : (quickfire ? "**QUICKFIRE** " : "")),  _("STARTED", settings), username), fields, cmd.channel_id);
 
 			creator->CacheUser(cmd.author_id, cmd.channel_id);
-			log_game_start(cmd.guild_id, cmd.channel_id, questions, quickfire, c->get_name(), cmd.author_id, sl, hintless);
-			creator->GetBot()->core.log->debug("returning from start game");
+			log_game_start(cmd.guild_id, cmd.channel_id, questions, quickfire, c->name, cmd.author_id, sl, hintless);
+			creator->GetBot()->core->log(dpp::ll_debug, fmt::format("returning from start game"));
 			return;
 		}
 	} else {

@@ -20,6 +20,9 @@
  *
  ************************************************************************************/
 
+#include <dpp/dpp.h>
+#include <fmt/format.h>
+#include <nlohmann/json.hpp>
 #include <sporks/modules.h>
 #include <string>
 #include <cstdint>
@@ -29,6 +32,8 @@
 #include "trivia.h"
 #include <sys/stat.h>
 #include <sys/types.h>
+
+using json = nlohmann::json;
 
 time_t get_mtime(const char *path)
 {
@@ -58,7 +63,7 @@ void TriviaModule::CheckLangReload()
 			delete oldlang;
 		}
 		catch (const std::exception &e) {
-			bot->core.log->error("Error in lang.json: ", e.what());
+			bot->core->log(dpp::ll_error, fmt::format("Error in lang.json: ", e.what()));
 			// Delete attempted new language file to prevent memory leaks
 			delete newlang;
 		}

@@ -20,6 +20,8 @@
  *
  ************************************************************************************/
 
+#include <dpp/dpp.h>
+#include <fmt/format.h>
 #include <sporks/modules.h>
 #include <sporks/regex.h>
 #include <string>
@@ -36,7 +38,7 @@
 
 command_votehint_t::command_votehint_t(class TriviaModule* _creator, const std::string &_base_command) : command_t(_creator, _base_command) { }
 
-void command_votehint_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_settings_t &settings, const std::string &username, bool is_moderator, aegis::channel* c, aegis::user* user)
+void command_votehint_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_settings_t &settings, const std::string &username, bool is_moderator, dpp::channel* c, dpp::user* user)
 {
 
 	std::lock_guard<std::mutex> states_lock(creator->states_mutex);
@@ -46,7 +48,7 @@ void command_votehint_t::call(const in_cmd &cmd, std::stringstream &tokens, guil
 		if ((state->gamestate == TRIV_FIRST_HINT || state->gamestate == TRIV_SECOND_HINT || state->gamestate == TRIV_TIME_UP) && (!state->is_insane_round()) != 0 && state->question.answer != "") {
 			db::resultset rs = db::query("SELECT *,(unix_timestamp(vote_time) + 43200 - unix_timestamp()) as remaining FROM infobot_votes WHERE snowflake_id = ? AND now() < vote_time + interval 12 hour", {cmd.author_id});
 			if (rs.size() == 0) {
-				std::string a = fmt::format(_("VOTEAD", settings), creator->bot->user.id.get(), settings.prefix);
+				std::string a = fmt::format(_("VOTEAD", settings), creator->GetBot()->user.id, settings.prefix);
 				creator->SimpleEmbed(settings, "<:wc_rs:667695516737470494>", _("NOTVOTED", settings) + "\n" + a, cmd.channel_id);
 				return;
 			} else {
@@ -56,7 +58,7 @@ void command_votehint_t::call(const in_cmd &cmd, std::stringstream &tokens, guil
 				float hours = floor(secs / 60 / 60);
 				if (remaining_hints < 1) {
 					std::string a = fmt::format(_("NOMOREHINTS", settings), username);
-					std::string b = fmt::format(_("VOTEAD", settings), creator->bot->user.id.get(), settings.prefix);
+					std::string b = fmt::format(_("VOTEAD", settings), creator->GetBot()->user.id, settings.prefix);
 					creator->SimpleEmbed(settings, ":warning:", a + "\n" + b, cmd.channel_id);
 				} else {
 					remaining_hints--;
@@ -70,7 +72,7 @@ void command_votehint_t::call(const in_cmd &cmd, std::stringstream &tokens, guil
 					personal_hint[0] = '#';
 					personal_hint[personal_hint.length() - 1] = '#';
 					personal_hint = ReplaceString(personal_hint, " ", "#");
-					// Get the API to do this, because DMs in aegis are unreliable right now.
+					// Get the API to do this -- note: DPP can do this safely now
 					send_hint(cmd.author_id, personal_hint, remaining_hints);
 					db::query("UPDATE infobot_votes SET dm_hints = ? WHERE snowflake_id = ?", {remaining_hints, cmd.author_id});
 					creator->CacheUser(cmd.author_id, cmd.channel_id);
@@ -83,7 +85,7 @@ void command_votehint_t::call(const in_cmd &cmd, std::stringstream &tokens, guil
 		}
 	} else {
 		std::string a = fmt::format(_("NOROUND", settings), username);
-		std::string b = fmt::format(_("VOTEAD", settings), creator->bot->user.id.get(), settings.prefix);
+		std::string b = fmt::format(_("VOTEAD", settings), creator->GetBot()->user.id, settings.prefix);
 		creator->SimpleEmbed(settings, ":warning:", a + "\n" + b, cmd.channel_id);
 		return;
 	}

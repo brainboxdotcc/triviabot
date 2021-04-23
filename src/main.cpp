@@ -38,7 +38,6 @@
 #include <sys/types.h>
 #include <sys/sysinfo.h>
 #include <sporks/database.h>
-#include <sporks/config.h>
 #include <sporks/stringops.h>
 #include <sporks/modules.h>
 
@@ -159,12 +158,12 @@ void Bot::onReady(const dpp::ready_t& ready) {
 	/* Event broadcast when all shards are ready */
 	shard_init_count++;
 
-	core.log->debug("onReady({}/{})", shard_init_count, core.shard_max_count / (maxclusters ? maxclusters : 1));
+	core->log(dpp::ll_debug, fmt::format("onReady({}/{})", shard_init_count, core->numshards / (maxclusters ? maxclusters : 1)));
 
 	/* Event broadcast when all shards are ready */
 	/* BUGFIX: In a clustered environment, the shard max is divided by the number of clusters */
-	if (shard_init_count == core.shard_max_count / (maxclusters ? maxclusters : 1)) {
-		core.log->debug("OnAllShardsReady()!");
+	if (shard_init_count == core->numshards / (maxclusters ? maxclusters : 1)) {
+		core->log(dpp::ll_debug, fmt::format("OnAllShardsReady()!"));
 		FOREACH_MOD(I_OnAllShardsReady, OnAllShardsReady());
 	}
 }
@@ -187,18 +186,7 @@ void Bot::onMessage(const dpp::message_create_t &message) {
 	}
 	/* Ignore self, and bots */
 	if (message.msg->author->id != user.id && message.msg->author->is_bot() == false) {
-
-		json settings;
-		settings = getSettings(this, message.msg->channel_id, message.msg->guild_id);
-
 		received_messages++;
-
-		/* Ignore anyone on ignore list */
-		std::vector<uint64_t> ignorelist = settings::GetIgnoreList(settings);
-		if (message.msg->author && std::find(ignorelist.begin(), ignorelist.end(), message.msg->author->id) != ignorelist.end()) {
-			core->log(dpp::ll_info, fmt::format("Message #{} dropped, user on channel ignore list", message.msg->id));
-			return;
-		}
 
 		/* Replace all mentions with raw nicknames */
 		bool mentioned = false;
@@ -269,6 +257,8 @@ int main(int argc, char** argv) {
 	int index;
 	char arg;
 	bool clusters_defined = false;
+	uint32_t clusterid = 0;
+	uint32_t maxclusters = 1;
 
 	/* opterr is an extern int. Doesn't smell of thread safety to me, bad GNU bad! */
 	opterr = 0;

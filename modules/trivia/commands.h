@@ -2,9 +2,9 @@
 
 #include <string>
 #include "settings.h"
-#include <aegis.hpp>
+#include <dpp/dpp.h>
 
-#define DECLARE_COMMAND_CLASS(__command_name__) class __command_name__ : public command_t { public: __command_name__(class TriviaModule* _creator, const std::string &_base_command); virtual void call(const in_cmd &cmd, std::stringstream &tokens, guild_settings_t &settings, const std::string &username, bool is_moderator, aegis::channel* c, aegis::user* user); };
+#define DECLARE_COMMAND_CLASS(__command_name__) class __command_name__ : public command_t { public: __command_name__(class TriviaModule* _creator, const std::string &_base_command); virtual void call(const in_cmd &cmd, std::stringstream &tokens, guild_settings_t &settings, const std::string &username, bool is_moderator, dpp::channel* c, dpp::user* user); };
 
 class in_cmd
 {
@@ -27,7 +27,7 @@ class command_t
 	std::string _(const std::string &str, const guild_settings_t &settings);
  public:
 	command_t(class TriviaModule* _creator, const std::string &_base_command);
-	virtual void call(const in_cmd &cmd, std::stringstream &tokens, guild_settings_t &settings, const std::string &username, bool is_moderator, aegis::channel* c, aegis::user* user) = 0;
+	virtual void call(const in_cmd &cmd, std::stringstream &tokens, guild_settings_t &settings, const std::string &username, bool is_moderator, dpp::channel* c, dpp::user* user) = 0;
 	virtual ~command_t();
 };
 

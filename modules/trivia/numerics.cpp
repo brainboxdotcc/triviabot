@@ -20,6 +20,8 @@
  *
  ************************************************************************************/
 
+#include <dpp/dpp.h>
+#include <fmt/format.h>
 #include <string>
 #include <cstdint>
 #include <fstream>

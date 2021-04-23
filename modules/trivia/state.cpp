@@ -20,6 +20,8 @@
  *
  ************************************************************************************/
 
+#include <dpp/dpp.h>
+#include <fmt/format.h>
 #include <sporks/modules.h>
 #include <sporks/regex.h>
 #include <string>
@@ -67,7 +69,7 @@ state_t::state_t(TriviaModule* _creator, uint32_t questions, uint32_t currstreak
 	hintless(_hintless),
 	last_to_answer(lastanswered)
 {
-	creator->GetBot()->core.log->debug("state_t::state_t()");
+	creator->GetBot()->core->log(dpp::ll_debug, fmt::format("state_t::state_t()"));
 	insane.clear();
 }
 
@@ -95,7 +97,7 @@ state_t::~state_t()
 /* Returns true if the state_t is associated with a valid channel and guild */
 bool state_t::is_valid()
 {
-	return creator && creator->GetBot()->core.find_guild(guild_id) && creator->GetBot()->core.find_channel(channel_id);
+	return creator && dpp::find_guild(guild_id) && dpp::find_channel(channel_id);
 }
 
 /* Returs the number of players to attempt a question (right or wrong) in the past 60 seconds */
@@ -338,7 +340,7 @@ void state_t::tick()
 				do_end_game();
 			break;
 			default:
-				creator->GetBot()->core.log->warn("Invalid state '{}', ending round.", gamestate);
+				creator->GetBot()->core->log(dpp::ll_warning, fmt::format("Invalid state '{}', ending round.", gamestate));
 				gamestate = TRIV_END;
 				terminating = true;
 			break;
@@ -357,17 +359,17 @@ void state_t::tick()
 		}
 	}
 	catch (std::exception &e) {
-		creator->GetBot()->core.log->debug("state_t exception! - {}", e.what());
+		creator->GetBot()->core->log(dpp::ll_debug, fmt::format("state_t exception! - {}", e.what()));
 	}
 	catch (...) {
-		creator->GetBot()->core.log->debug("state_t exception! - non-object");
+		creator->GetBot()->core->log(dpp::ll_debug, fmt::format("state_t exception! - non-object"));
 	}
 }
 
 /* State machine event for insane round question */
 void state_t::do_insane_round(bool silent)
 {
-	creator->GetBot()->core.log->debug("do_insane_round: G:{} C:{}", guild_id, channel_id);
+	creator->GetBot()->core->log(dpp::ll_debug, fmt::format("do_insane_round: G:{} C:{}", guild_id, channel_id));
 
 	if (round >= numquestions) {
 		gamestate = TRIV_END;
@@ -420,7 +422,7 @@ void state_t::do_insane_round(bool silent)
 /* State machine event for normal round question */
 void state_t::do_normal_round(bool silent)
 {
-	creator->GetBot()->core.log->debug("do_normal_round: G:{} C:{}", guild_id, channel_id);
+	creator->GetBot()->core->log(dpp::ll_debug, fmt::format("do_normal_round: G:{} C:{}", guild_id, channel_id));
 
 	if (round >= numquestions) {
 		gamestate = TRIV_END;
@@ -430,14 +432,14 @@ void state_t::do_normal_round(bool silent)
 
 	guild_settings_t settings = creator->GetGuildSettings(guild_id);
 
-	creator->GetBot()->core.log->debug("do_normal_round: fetch_question: '{}'", shuffle_list[round - 1]);
+	creator->GetBot()->core->log(dpp::ll_debug, fmt::format("do_normal_round: fetch_question: '{}'", shuffle_list[round - 1]));
 	question = question_t::fetch(from_string<int64_t>(shuffle_list[round - 1], std::dec), guild_id, settings);
 
 	if (question.id == 0) {
 		gamestate = TRIV_END;
 		score = 0;
 		question.answer = "";
-		creator->GetBot()->core.log->warn("do_normal_round(): Attempted to retrieve question id {} but got a malformed response. Round was aborted.", shuffle_list[round - 1]);
+		creator->GetBot()->core->log(dpp::ll_warning, fmt::format("do_normal_round(): Attempted to retrieve question id {} but got a malformed response. Round was aborted.", shuffle_list[round - 1]));
 		if (!silent) {
 			creator->EmbedWithFields(settings, fmt::format(_("Q_FETCH_ERROR", settings)), {{_("Q_SPOOPY", settings), _("Q_CONTACT_DEVS", settings), false}, {_("ROUND_STOPPING", settings), _("ERROR_BROKE_IT", settings), false}}, channel_id);
 		}
@@ -548,7 +550,7 @@ void state_t::do_normal_round(bool silent)
 /* State machine event for first hint */
 void state_t::do_first_hint()
 {
-	creator->GetBot()->core.log->debug("do_first_hint: G:{} C:{}", guild_id, channel_id);
+	creator->GetBot()->core->log(dpp::ll_debug, fmt::format("do_first_hint: G:{} C:{}", guild_id, channel_id));
 	guild_settings_t settings = creator->GetGuildSettings(guild_id);
 	if (is_insane_round()) {
 		/* Insane round countdown */
@@ -583,7 +585,7 @@ void state_t::do_insane_board() {
 /* State machine event for second hint */
 void state_t::do_second_hint()
 {
-	creator->GetBot()->core.log->debug("do_second_hint: G:{} C:{}", guild_id, channel_id);
+	creator->GetBot()->core->log(dpp::ll_debug, fmt::format("do_second_hint: G:{} C:{}", guild_id, channel_id));
 	guild_settings_t settings = creator->GetGuildSettings(guild_id);
 	if (is_insane_round()) {
 		/* Insane round countdown */
@@ -602,7 +604,7 @@ void state_t::do_second_hint()
 /* State machine event for question time up */
 void state_t::do_time_up()
 {
-	creator->GetBot()->core.log->debug("do_time_up: G:{} C:{}", guild_id, channel_id);
+	creator->GetBot()->core->log(dpp::ll_debug, fmt::format("do_time_up: G:{} C:{}", guild_id, channel_id));
 	guild_settings_t settings = creator->GetGuildSettings(guild_id);
 
 	std::string content;
@@ -657,7 +659,7 @@ void state_t::do_time_up()
 /* State machine event for answer correct */
 void state_t::do_answer_correct()
 {
-	creator->GetBot()->core.log->debug("do_answer_correct: G:{} C:{}", guild_id, channel_id);
+	creator->GetBot()->core->log(dpp::ll_debug, fmt::format("do_answer_correct: G:{} C:{}", guild_id, channel_id));
 
 	guild_settings_t settings = creator->GetGuildSettings(guild_id);
 
@@ -673,12 +675,12 @@ void state_t::do_answer_correct()
 /* State machine event for end of game */
 void state_t::do_end_game()
 {
-	creator->GetBot()->core.log->debug("do_end_game: G:{} C:{}", guild_id, channel_id);
+	creator->GetBot()->core->log(dpp::ll_debug, fmt::format("do_end_game: G:{} C:{}", guild_id, channel_id));
 
 	log_game_end(guild_id, channel_id);
 
 	guild_settings_t settings = creator->GetGuildSettings(guild_id);
-	creator->GetBot()->core.log->info("End of game on guild {}, channel {} after {} seconds", guild_id, channel_id, time(NULL) - start_time);
+	creator->GetBot()->core->log(dpp::ll_info, fmt::format("End of game on guild {}, channel {} after {} seconds", guild_id, channel_id, time(NULL) - start_time));
 	creator->SimpleEmbed(settings, ":stop_button:", fmt::format(_("END1", settings), numquestions - 1), channel_id, _("END_TITLE", settings));
 	creator->show_stats(guild_id, channel_id);
 

@@ -20,6 +20,9 @@
  *
  ************************************************************************************/
 
+#include <dpp/dpp.h>
+#include <fmt/format.h>
+#include <nlohmann/json.hpp>
 #include <sporks/modules.h>
 #include <sporks/regex.h>
 #include <string>
@@ -33,26 +36,19 @@
 #include "webrequest.h"
 #include "commands.h"
 
+using json = nlohmann::json;
+
 command_info_t::command_info_t(class TriviaModule* _creator, const std::string &_base_command) : command_t(_creator, _base_command) { }
 
-void command_info_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_settings_t &settings, const std::string &username, bool is_moderator, aegis::channel* c, aegis::user* user)
+void command_info_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_settings_t &settings, const std::string &username, bool is_moderator, dpp::channel* c, dpp::user* user)
 {
 	std::stringstream s;
-	time_t diff = creator->bot->core.uptime() / 1000;
-	int seconds = diff % 60;
-	diff /= 60;
-	int minutes = diff % 60;
-	diff /= 60;
-	int hours = diff % 24;
-	diff /= 24;
-	int days = diff;
+	dpp::utility::uptime ut = creator->GetBot()->core->uptime();
 
 	/* TODO: Make these cluster-safe */
 	int64_t servers = creator->GetGuildTotal();
 	int64_t users = creator->GetMemberTotal();
 
-	char uptime[32];
-	snprintf(uptime, 32, "%d day%s, %02d:%02d:%02d", days, (days != 1 ? "s" : ""), hours, minutes, seconds);
 	char startstr[256];
 	tm _tm;
 	gmtime_r(&creator->startup, &_tm);
@@ -63,19 +59,19 @@ void command_info_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_se
 		statusfield(_("TOTALSERVERS", settings), Comma(servers)),
 		statusfield(_("CONNSINCE", settings), startstr),
 		statusfield(_("ONLINEUSERS", settings), Comma(users)),
-		statusfield(_("UPTIME", settings), std::string(uptime)),
-		statusfield(_("CLUSTER", settings), Comma(creator->bot->GetClusterID())),
-		statusfield(_("SHARDS", settings), Comma(creator->bot->core.shard_max_count)),
-		statusfield(_("MEMBERINTENT", settings), _((creator->bot->HasMemberIntents() ? "TICKYES" : "CROSSNO"), settings)),
-		statusfield(_("TESTMODE", settings), _((creator->bot->IsTestMode() ? "TICKYES" : "CROSSNO"), settings)),
-		statusfield(_("DEVMODE", settings), _((creator->bot->IsDevMode() ? "TICKYES" : "CROSSNO"), settings)),
+		statusfield(_("UPTIME", settings), ut.to_string()),
+		statusfield(_("CLUSTER", settings), Comma(creator->GetBot()->GetClusterID())),
+		statusfield(_("SHARDS", settings), Comma(creator->GetBot()->core->get_shards().size())),
+		statusfield(_("MEMBERINTENT", settings), _((creator->GetBot()->HasMemberIntents() ? "TICKYES" : "CROSSNO"), settings)),
+		statusfield(_("TESTMODE", settings), _((creator->GetBot()->IsTestMode() ? "TICKYES" : "CROSSNO"), settings)),
+		statusfield(_("DEVMODE", settings), _((creator->GetBot()->IsDevMode() ? "TICKYES" : "CROSSNO"), settings)),
 		statusfield(_("MYPREFIX", settings), "``" + creator->escape_json(settings.prefix) + "``"),
 		statusfield(_("BOTVER", settings), std::string(creator->GetVersion())),
-		statusfield(_("LIBVER", settings), std::string(AEGIS_VERSION_TEXT)),
+		statusfield(_("LIBVER", settings), std::string(DPP_VERSION_TEXT)),
 		statusfield("", "")
 	};
 
-	s << "{\"title\":\"" << creator->bot->user.username << " " << _("INFO", settings);
+	s << "{\"title\":\"" << creator->GetBot()->user.username << " " << _("INFO", settings);
 	s << "\",\"color\":" << settings.embedcolour << ",\"url\":\"https:\\/\\/triviabot.co.uk\\/\\/\",";
 	s << "\"footer\":{\"link\":\"https:\\/\\/triviabot.co.uk\\/\",\"text\":\"" << _("POWERED_BY", settings) << "\",\"icon_url\":\"https:\\/\\/triviabot.co.uk\\/images\\/triviabot_tl_icon.png\"},\"fields\":[";
 	for (int i = 0; statusfields[i].name != ""; ++i) {
@@ -91,11 +87,11 @@ void command_info_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_se
 		embed_json = json::parse(s.str());
 	}
 	catch (const std::exception &e) {
-		creator->bot->core.log->error("Malformed json created when reporting info: {}", s.str());
+		creator->GetBot()->core->log(dpp::ll_error, fmt::format("Malformed json created when reporting info: {}", s.str()));
 	}
-	if (!creator->bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == cmd.guild_id) {
-		c->create_message_embed("", embed_json);
-		creator->bot->sent_messages++;
+	if (!creator->GetBot()->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == cmd.guild_id) {
+		creator->GetBot()->core->message_create(dpp::message(cmd.channel_id, dpp::embed(&embed_json)));
+		creator->GetBot()->sent_messages++;
 	}
 	creator->CacheUser(cmd.author_id, cmd.channel_id);
 }

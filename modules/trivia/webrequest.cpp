@@ -20,7 +20,9 @@
  *
  ************************************************************************************/
 
-#include <aegis.hpp>
+#include <dpp/dpp.h>
+#include <fmt/format.h>
+#include <nlohmann/json.hpp>
 #include <string>
 #include <sstream>
 #include <queue>
@@ -51,12 +53,12 @@
 #include "trivia.h"
 #include "wlower.h"
 
+using json = nlohmann::json;
 
 #define START_STATUS 100
 #define END_STATUS 600
 #define FIRE_AND_FORGET_QUEUES 10
 
-asio::io_context * _io_context = nullptr;
 Bot* bot = nullptr;
 TriviaModule* module = nullptr;
 std::string apikey;
@@ -164,9 +166,8 @@ void statdump()
 }
 
 /* Initialisation function */
-void set_io_context(asio::io_context* ioc, const std::string &_apikey, Bot* _bot, TriviaModule* _module)
+void set_io_context(const std::string &_apikey, Bot* _bot, TriviaModule* _module)
 {
-	_io_context = ioc;
 	apikey = _apikey;
 	bot = _bot;
 	module = _module;
@@ -271,7 +272,7 @@ std::string web_request(const std::string &_host, const std::string &_path, cons
 		if (seconds > 0 && when + seconds > time(NULL)) {
 			/* Rate limit waits that have expired will have negative seconds here */
 			if (bot) {
-				bot->core.log->warn("Rate limit would be reached on other thread: Waiting {} seconds for rate limit to clear on {}", seconds, type);
+				bot->core->log(dpp::ll_warning, fmt::format("Rate limit would be reached on other thread: Waiting {} seconds for rate limit to clear on {}", seconds, type));
 			}
 			std::this_thread::sleep_for(std::chrono::seconds(seconds));
 		}
@@ -297,7 +298,7 @@ std::string web_request(const std::string &_host, const std::string &_path, cons
 					rv = res->body;
 				} else {
 					if (bot) {
-						bot->core.log->warn("HTTP Error {} on GET {}/{}", res->status, _host, _path);
+						bot->core->log(dpp::ll_warning, fmt::format("HTTP Error {} on GET {}/{}", res->status, _host, _path));
 					}
 				}
 			}
@@ -308,7 +309,7 @@ std::string web_request(const std::string &_host, const std::string &_path, cons
 					rv = res->body;
 				} else {
 					if (bot) {
-						bot->core.log->warn("HTTP Error {} on POST {}/{} (channel_id={})", res->status, _host, _path, channel_id);
+						bot->core->log(dpp::ll_warning, fmt::format("HTTP Error {} on POST {}/{} (channel_id={})", res->status, _host, _path, channel_id));
 					}
 				}
 
@@ -347,7 +348,7 @@ std::string web_request(const std::string &_host, const std::string &_path, cons
 						 * map and http_ratelimit table.
 						 */
 						if (bot) {
-							bot->core.log->warn("Rate limit would be reached on this thread: waiting {} seconds for rate limit to clear on {}", seconds, type);
+							bot->core->log(dpp::ll_warning, fmt::format("Rate limit would be reached on this thread: waiting {} seconds for rate limit to clear on {}", seconds, type));
 						}
 						std::this_thread::sleep_for(std::chrono::seconds(seconds));
 					}
@@ -385,7 +386,7 @@ std::string web_request(const std::string &_host, const std::string &_path, cons
 	catch (std::exception& e)
 	{
 		if (bot) {
-			bot->core.log->warn("Exception: {}", e.what());
+			bot->core->log(dpp::ll_warning, fmt::format("Exception: {}", e.what()));
 		}
 		std::lock_guard<std::mutex> sp(statsmutex);
 		if (errors.find(iface) == errors.end()) {
@@ -436,37 +437,39 @@ std::vector<std::string> to_list(const std::string &str)
 }
 
 /* Store details about a user to the database. Executes when the user successfully answers a question, or when they issue a valid command */
-void cache_user(const aegis::user *_user, const aegis::guild *_guild, const aegis::user::guild_info* gi)
+void cache_user(const dpp::user *_user, const dpp::guild *_guild, const dpp::guild_member* gi)
 {
 	// Replaced with direct db query for perforamance increase - 27Dec20
 
-	int64_t user_id = _user->get_id().get();
-	int64_t guild_id = _guild->get_id().get();
+	int64_t user_id = _user->id;
+	int64_t guild_id = _guild->id;
 	db::query("START TRANSACTION", {});
 
 	db::query("INSERT INTO trivia_user_cache (snowflake_id, username, discriminator, icon) VALUES('?', '?', '?', '?') ON DUPLICATE KEY UPDATE username = '?', discriminator = '?', icon = '?'",
-			{user_id, _user->get_username(), _user->get_discriminator(), _user->get_avatar(), _user->get_username(), _user->get_discriminator(), _user->get_avatar()});
+			{user_id, _user->username, _user->discriminator, _user->avatar.to_string(), _user->username, _user->discriminator, _user->avatar.to_string()});
 
 	db::query("INSERT INTO trivia_guild_cache (snowflake_id, name, icon, owner_id) VALUES('?', '?', '?', '?') ON DUPLICATE KEY UPDATE name = '?', icon = '?', owner_id = '?', kicked = 0",
-			{guild_id, _guild->get_name(), _guild->get_icon(),  _guild->get_owner().get(), _guild->get_name(), _guild->get_icon(),  _guild->get_owner().get()});
+			{guild_id, _guild->name, _guild->icon.to_string(),  _guild->owner_id, _guild->name, _guild->icon.to_string(),  _guild->owner_id});
 
 	std::string member_roles;
 	std::string comma_roles;
 	for (auto r = gi->roles.begin();r != gi->roles.end(); ++r) {
-		member_roles.append(std::to_string(r->get())).append(" ");
+		member_roles.append(std::to_string(*r)).append(" ");
 	}
 	member_roles = trim(member_roles);
 	db::query("INSERT INTO trivia_guild_membership (guild_id, user_id, roles) VALUES('?', '?', '?') ON DUPLICATE KEY UPDATE roles = '?'",
 			{guild_id, user_id, member_roles, member_roles});
 
-	std::unordered_map<aegis::snowflake, aegis::gateway::objects::role> roles = _guild->get_roles();
-	for (auto n = roles.begin(); n != roles.end(); ++n) {
-		comma_roles.append(std::to_string(n->second.id)).append(",");
-		db::query("INSERT INTO trivia_role_cache (id, guild_id, colour, permissions, position, hoist, managed, mentionable, name) VALUES('?', '?', '?', '?', '?', '?', '?', '?', '?') ON DUPLICATE KEY UPDATE colour = '?', permissions = '?', position = '?', hoist = '?', managed = '?', mentionable = '?', name = '?'",
-			   {
-				   n->second.id, guild_id, n->second.color, n->second._permission, n->second.position, (n->second.hoist ? 1 : 0), (n->second.managed ? 1 : 0), (n->second.mentionable ? 1 : 0), n->second.name,
-				   n->second.color, n->second._permission, n->second.position, (n->second.hoist ? 1 : 0), (n->second.managed ? 1 : 0), (n->second.mentionable ? 1 : 0), n->second.name,
-			   });
+	for (auto n = _guild->roles.begin(); n != _guild->roles.end(); ++n) {
+		dpp::role* r = dpp::find_role(*n);
+		if (r) {
+			comma_roles.append(std::to_string(r->id)).append(",");
+			db::query("INSERT INTO trivia_role_cache (id, guild_id, colour, permissions, position, hoist, managed, mentionable, name) VALUES('?', '?', '?', '?', '?', '?', '?', '?', '?') ON DUPLICATE KEY UPDATE colour = '?', permissions = '?', position = '?', hoist = '?', managed = '?', mentionable = '?', name = '?'",
+			{
+				r->id, guild_id, r->colour, r->permissions, r->position, (r->is_hoisted() ? 1 : 0), (r->is_managed() ? 1 : 0), (r->is_mentionable() ? 1 : 0), r->name,
+				r->colour, r->permissions, r->position, (r->is_hoisted() ? 1 : 0), (r->is_managed() ? 1 : 0), (r->is_mentionable() ? 1 : 0), r->name,
+			});
+		}
 	}
 	comma_roles = trim(comma_roles.substr(0, comma_roles.length() - 1));
 	/* Delete any that have been deleted from discord */
@@ -507,7 +510,7 @@ question_t question_t::fetch(int64_t id, int64_t guild_id, const guild_settings_
 	}
 	catch (const std::exception &e) {
 		if (bot) {
-			bot->core.log->error("Exception: {}", e.what());
+			bot->core->log(dpp::ll_error, fmt::format("Exception: {}", e.what()));
 		} else {
 			std::cout << "Exception: " << e.what() << std::endl;
 		}
@@ -579,7 +582,7 @@ std::vector<std::string> fetch_insane_round(int64_t &question_id, int64_t guild_
 	return list;
 }
 
-/* Send a DM hint to a user. Because of promise crashing issues in aegis, we don't do this in-bot and we farm it out to API */
+/* Send a DM hint to a user. TODO: Make D++ do this directly now its stable there */
 void send_hint(int64_t snowflake_id, const std::string &hint, uint32_t remaining)
 {
 	later(fmt::format("?opt=customhint&user_id={}&hint={}&remaining={}", snowflake_id, url_encode(hint), remaining), "");

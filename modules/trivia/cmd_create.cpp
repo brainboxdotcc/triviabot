@@ -20,6 +20,8 @@
  *
  ************************************************************************************/
 
+#include <dpp/dpp.h>
+#include <fmt/format.h>
 #include <sporks/modules.h>
 #include <sporks/regex.h>
 #include <string>
@@ -36,7 +38,7 @@
 
 command_create_t::command_create_t(class TriviaModule* _creator, const std::string &_base_command) : command_t(_creator, _base_command) { }
 
-void command_create_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_settings_t &settings, const std::string &username, bool is_moderator, aegis::channel* c, aegis::user* user)
+void command_create_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_settings_t &settings, const std::string &username, bool is_moderator, dpp::channel* c, dpp::user* user)
 {
 	std::string newteamname;
 	std::getline(tokens, newteamname);
@@ -46,7 +48,7 @@ void command_create_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_
 		newteamname = create_new_team(newteamname);
 		if (newteamname != "__NO__") {
 			join_team(cmd.author_id, newteamname, cmd.channel_id);
-			creator->SimpleEmbed(settings, ":busts_in_silhouette:", fmt::format(_("CREATED", settings), newteamname, username), c->get_id().get(), _("ZELDAREFERENCE", settings));
+			creator->SimpleEmbed(settings, ":busts_in_silhouette:", fmt::format(_("CREATED", settings), newteamname, username), c->id, _("ZELDAREFERENCE", settings));
 		} else {
 			creator->SimpleEmbed(settings, ":warning:", fmt::format(_("CANTCREATE", settings), username), cmd.channel_id);
 		}

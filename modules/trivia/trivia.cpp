@@ -20,6 +20,9 @@
  *
  ************************************************************************************/
 
+#include <dpp/dpp.h>
+#include <fmt/format.h>
+#include <nlohmann/json.hpp>
 #include <sporks/modules.h>
 #include <sporks/regex.h>
 #include <string>
@@ -35,12 +38,14 @@
 #include "piglatin.h"
 #include "wlower.h"
 
+using json = nlohmann::json;
+
 TriviaModule::TriviaModule(Bot* instigator, ModuleLoader* ml) : Module(instigator, ml), terminating(false), booted(false)
 {
 	/* TODO: Move to something better like mt-rand */
 	srand(time(NULL) * time(NULL));
 
-	/* Attach aegis events to module */
+	/* Attach D++ events to module */
 	ml->Attach({ I_OnMessage, I_OnPresenceUpdate, I_OnChannelDelete, I_OnGuildDelete, I_OnAllShardsReady, I_OnGuildCreate }, this);
 
 	/* Various regular expressions */
@@ -57,7 +62,7 @@ TriviaModule::TriviaModule(Bot* instigator, ModuleLoader* ml) : Module(instigato
 	if (Bot::GetConfig("apikey") == "") {
 		throw "TriviaBot API key missing";
 	}
-	set_io_context(bot->io, Bot::GetConfig("apikey"), bot, this);
+	set_io_context(Bot::GetConfig("apikey"), bot, this);
 
 	/* Create threads */
 	presence_update = new std::thread(&TriviaModule::UpdatePresenceLine, this);
@@ -69,7 +74,7 @@ TriviaModule::TriviaModule(Bot* instigator, ModuleLoader* ml) : Module(instigato
 	{
 		std::lock_guard<std::mutex> cmd_list_lock(cmds_mutex);
 		api_commands = get_api_command_names();
-		bot->core.log->info("Initial API command count: {}", api_commands.size());
+		bot->core->log(dpp::ll_info, fmt::format("Initial API command count: {}", api_commands.size()));
 	}
 	{
 		std::lock_guard<std::mutex> cmd_list_lock(lang_mutex);
@@ -77,14 +82,14 @@ TriviaModule::TriviaModule(Bot* instigator, ModuleLoader* ml) : Module(instigato
 		std::ifstream langfile("../lang.json");
 		lang = new json();
 		langfile >> *lang;
-		bot->core.log->info("Language strings count: {}", lang->size());
+		bot->core->log(dpp::ll_info, fmt::format("Language strings count: {}", lang->size()));
 	}
 
 	/* Setup built in commands */
 	SetupCommands();
 }
 
-void TriviaModule::queue_command(const std::string &message, int64_t author, int64_t channel, int64_t guild, bool mention, const std::string &username, bool from_dashboard)
+void TriviaModule::queue_command(const std::string &message, dpp::snowflake author, dpp::snowflake channel, dpp::snowflake guild, bool mention, const std::string &username, bool from_dashboard)
 {
 	//std::lock_guard<std::mutex> cmd_lock(cmdmutex);
 	handle_command(in_cmd(message, author, channel, guild, mention, username, from_dashboard));
@@ -144,25 +149,25 @@ TriviaModule::~TriviaModule()
 bool TriviaModule::OnPresenceUpdate()
 {
 	/* Note: Only updates this cluster's shards! */
-	const aegis::shards::shard_mgr& s = bot->core.get_shard_mgr();
-	const std::vector<std::unique_ptr<aegis::shards::shard>>& shards = s.get_shards();
+	const dpp::shard_list& shards = bot->core->get_shards();
 	for (auto i = shards.begin(); i != shards.end(); ++i) {
-		const aegis::shards::shard* shard = i->get();
+		dpp::DiscordClient* shard = i->second;
+		uint64_t uptime = shard->Uptime().secs + (shard->Uptime().mins * 60) + (shard->Uptime().hours * 60 * 60) + (shard->Uptime().days * 60 * 60 * 24);
 		db::query("INSERT INTO infobot_shard_status (id, cluster_id, connected, online, uptime, transfer, transfer_compressed) VALUES('?','?','?','?','?','?','?') ON DUPLICATE KEY UPDATE cluster_id = '?', connected = '?', online = '?', uptime = '?', transfer = '?', transfer_compressed = '?'",
 			{
-				shard->get_id(),
+				shard->shard_id,
 				bot->GetClusterID(),
-				shard->is_connected(),
-				shard->is_online(),
-				shard->uptime(),
-				shard->get_transfer_u(),
-				shard->get_transfer(),
+				shard->IsConnected(),
+				shard->IsConnected(),
+				uptime,
+				(uint64_t)(shard->GetDeompressedBytesIn() + shard->GetBytesOut()),
+				(uint64_t)(shard->GetBytesIn() + shard->GetBytesOut()),
 				bot->GetClusterID(),
-				shard->is_connected(),
-				shard->is_online(),
-				shard->uptime(),
-				shard->get_transfer_u(),
-				shard->get_transfer()
+				shard->IsConnected(),
+				shard->IsConnected(),
+				uptime,
+				(uint64_t)(shard->GetDeompressedBytesIn() + shard->GetBytesOut()),
+				(uint64_t)(shard->GetBytesIn() + shard->GetBytesOut())
 			}
 		);
 	}
@@ -189,19 +194,10 @@ std::string TriviaModule::_(const std::string &k, const guild_settings_t& settin
 	return k;
 }
 
-bool TriviaModule::OnGuildCreate(const modevent::guild_create &guild)
+bool TriviaModule::OnGuildCreate(const dpp::guild_create_t &guild)
 {
-	/*guild_cache_queued_t gq;
-	gq.guild_id = guild.guild.id.get();
-	gq.name = guild.guild.name;
-	gq.icon = guild.guild.icon;
-	gq.owner_id = guild.guild.owner_id.get();
-	{
-		std::lock_guard<std::mutex> guild_queue_lock(guildqueuemutex);
-		guilds_to_update.push_back(gq);
-	}*/
-	if (guild.guild.unavailable) {
-		bot->core.log->error("Guild ID {} is unavailable due to an outage!", guild.guild.id.get());
+	if (guild.created->is_unavailable()) {
+		bot->core->log(dpp::ll_error, fmt::format("Guild ID {} is unavailable due to an outage!", guild.created->id));
 	}
 	return true;
 }
@@ -218,10 +214,10 @@ bool TriviaModule::OnAllShardsReady()
 
 	if (bot->IsTestMode()) {
 		/* Don't resume games in test mode */
-		bot->core.log->debug("Not resuming games in test mode");
+		bot->core->log(dpp::ll_debug, fmt::format("Not resuming games in test mode"));
 		return true;
 	} else {
-		bot->core.log->debug("Resuming {} games...", active.size());
+		bot->core->log(dpp::ll_debug, fmt::format("Resuming {} games...", active.size()));
 	}
 
 	/* Iterate all active games for this cluster id */
@@ -231,7 +227,7 @@ bool TriviaModule::OnAllShardsReady()
 		bool quickfire = (*game)["quickfire"].get<std::string>() == "1";
 		int64_t channel_id = from_string<int64_t>((*game)["channel_id"].get<std::string>(), std::dec);
 
-		bot->core.log->info("Resuming id {}", channel_id);
+		bot->core->log(dpp::ll_info, fmt::format("Resuming id {}", channel_id));
 
 		/* XXX: Note: The mutex here is VITAL to thread safety of the state list! DO NOT move it! */
 		{
@@ -275,26 +271,26 @@ bool TriviaModule::OnAllShardsReady()
 					states[channel_id].do_normal_round(true);
 				}
 
-				bot->core.log->info("Resumed game on guild {}, channel {}, {} questions [{}]", guild_id, channel_id, states[channel_id].numquestions, quickfire ? "quickfire" : "normal");
+				bot->core->log(dpp::ll_info, fmt::format("Resumed game on guild {}, channel {}, {} questions [{}]", guild_id, channel_id, states[channel_id].numquestions, quickfire ? "quickfire" : "normal"));
 			}
 		}
 	}
 	return true;
 }
 
-bool TriviaModule::OnChannelDelete(const modevent::channel_delete &cd)
+bool TriviaModule::OnChannelDelete(const dpp::channel_delete_t &cd)
 {
 	return true;
 }
 
-bool TriviaModule::OnGuildDelete(const modevent::guild_delete &gd)
+bool TriviaModule::OnGuildDelete(const dpp::guild_delete_t &gd)
 {
 	/* Unavailable guilds means an outage. We don't remove them if it's just an outage */
-	if (!gd.unavailable) {
-		db::query("UPDATE trivia_guild_cache SET kicked = 1 WHERE snowflake_id = ?", {gd.guild_id.get()});
-		bot->core.log->info("Kicked from guild id {}", gd.guild_id.get());
+	if (!gd.deleted->is_unavailable()) {
+		db::query("UPDATE trivia_guild_cache SET kicked = 1 WHERE snowflake_id = ?", {gd.deleted->id});
+		bot->core->log(dpp::ll_info, fmt::format("Kicked from guild id {}", gd.deleted->id));
 	} else {
-		bot->core.log->info("Outage on guild id {}", gd.guild_id.get());
+		bot->core->log(dpp::ll_info, fmt::format("Outage on guild id {}", gd.deleted->id));
 	}
 	return true;
 }
@@ -358,7 +354,7 @@ int64_t TriviaModule::GetChannelTotal()
 
 
 
-guild_settings_t TriviaModule::GetGuildSettings(int64_t guild_id)
+guild_settings_t TriviaModule::GetGuildSettings(dpp::snowflake guild_id)
 {
 	db::resultset r = db::query("SELECT * FROM bot_guild_settings WHERE snowflake_id = ?", {guild_id});
 	if (!r.empty()) {
@@ -379,7 +375,7 @@ guild_settings_t TriviaModule::GetGuildSettings(int64_t guild_id)
 std::string TriviaModule::GetVersion()
 {
 	/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-	std::string version = "$ModVer 80$";
+	std::string version = "$ModVer 81$";
 	return "3.0." + version.substr(8,version.length() - 9);
 }
 
@@ -401,10 +397,10 @@ void TriviaModule::UpdatePresenceLine()
 				ticks = 0;
 			}
 			bot->counters["activegames"] = GetActiveLocalGames();
-			std::string presence = fmt::format("Trivia! {} questions, {} active games on {} servers through {} shards, cluster {}", Comma(questions), Comma(GetActiveGames()), Comma(this->GetGuildTotal()), Comma(bot->core.shard_max_count), bot->GetClusterID());
-			bot->core.log->debug("PRESENCE: {}", presence);
+			std::string presence = fmt::format("Trivia! {} questions, {} active games on {} servers through {} shards, cluster {}", Comma(questions), Comma(GetActiveGames()), Comma(this->GetGuildTotal()), Comma(bot->core->get_shards().size()), bot->GetClusterID());
+			bot->core->log(dpp::ll_debug, fmt::format("PRESENCE: {}", presence));
 			/* Can't translate this, it's per-shard! */
-			bot->core.update_presence(presence, aegis::gateway::objects::activity::Game);
+			bot->core->set_presence(dpp::presence(dpp::ps_online, dpp::at_game, presence));
 	
 			if (!bot->IsTestMode()) {
 				/* Don't handle shard reconnects or queued starts in test mode */
@@ -413,10 +409,10 @@ void TriviaModule::UpdatePresenceLine()
 			}
 		}
 		catch (std::exception &e) {
-			bot->core.log->error("Exception in UpdatePresenceLine: {}", e.what());
+			bot->core->log(dpp::ll_error, fmt::format("Exception in UpdatePresenceLine: {}", e.what()));
 		}
 	}
-	bot->core.log->debug("Presence thread exited.");
+	bot->core->log(dpp::ll_debug, fmt::format("Presence thread exited."));
 }
 
 std::string TriviaModule::letterlong(std::string text, const guild_settings_t &settings)
@@ -435,7 +431,7 @@ std::string TriviaModule::vowelcount(const std::string &text, const guild_settin
 	return fmt::format(_("HINT_VOWELCOUNT", settings), counts.second, counts.first);
 }
 
-void TriviaModule::show_stats(int64_t guild_id, int64_t channel_id)
+void TriviaModule::show_stats(dpp::snowflake guild_id, dpp::snowflake channel_id)
 {
 	std::vector<std::string> topten = get_top_ten(guild_id);
 	size_t count = 1;
@@ -477,7 +473,7 @@ void TriviaModule::Tick()
 
 			for (auto & s : states) {
 				if (now >= s.second.next_tick) {
-					bot->core.log->trace("Ticking state id {} (now={}, next_tick={})", s.first, now, s.second.next_tick);
+					bot->core->log(dpp::ll_trace, fmt::format("Ticking state id {} (now={}, next_tick={})", s.first, now, s.second.next_tick));
 					s.second.tick();
 					if (s.second.terminating) {
 						expired.push_back(s.first);
@@ -486,12 +482,12 @@ void TriviaModule::Tick()
 			}
 
 			for (auto e : expired) {
-				bot->core.log->debug("Terminating state id {}", e);
+				bot->core->log(dpp::ll_debug, fmt::format("Terminating state id {}", e));
 				states.erase(e);
 			}
 		}
 		catch (const std::exception &e) {
-			bot->core.log->warn("Uncaught std::exception in TriviaModule::Tick(): {}", e.what());
+			bot->core->log(dpp::ll_warning, fmt::format("Uncaught std::exception in TriviaModule::Tick(): {}", e.what()));
 		}
 	}
 }
@@ -516,7 +512,7 @@ void TriviaModule::CheckForQueuedStarts()
 	for (auto r = rs.begin(); r != rs.end(); ++r) {
 		uint64_t guild_id = from_string<uint64_t>((*r)["guild_id"], std::dec);
 		/* Check that this guild is on this cluster, if so we can start this game */
-		aegis::guild* g = bot->core.find_guild(guild_id);
+		dpp::guild* g = dpp::find_guild(guild_id);
 		if (g) {
 
 			uint64_t channel_id = from_string<uint64_t>((*r)["channel_id"], std::dec);
@@ -526,20 +522,16 @@ void TriviaModule::CheckForQueuedStarts()
 			uint32_t hintless = from_string<uint32_t>((*r)["hintless"], std::dec);
 			std::string category = (*r)["category"];
 
-			bot->core.log->info("Remote start, guild_id={} channel_id={} user_id={} questions={} type={} category='{}'", guild_id, channel_id, user_id, questions, hintless ? "hardcore" : (quickfire ? "quickfire" : "normal"), category);
+			bot->core->log(dpp::ll_info, fmt::format("Remote start, guild_id={} channel_id={} user_id={} questions={} type={} category='{}'", guild_id, channel_id, user_id, questions, hintless ? "hardcore" : (quickfire ? "quickfire" : "normal"), category));
 			guild_settings_t settings = GetGuildSettings(guild_id);
-			aegis::channel* channel = bot->core.find_channel(channel_id);
+			dpp::channel* channel = dpp::find_channel(channel_id);
 
-			aegis::gateway::objects::message m(fmt::format("{}{} {}{}", settings.prefix, (hintless ? "hardcore" : (quickfire ? "quickfire" : "start")), questions, (category.empty() ? "" : (std::string(" ") + category))), channel, g);
+			dpp::message m(channel_id, fmt::format("{}{} {}{}", settings.prefix, (hintless ? "hardcore" : (quickfire ? "quickfire" : "start")), questions, (category.empty() ? "" : (std::string(" ") + category))));
+			m.author = dpp::find_user(user_id);
+			struct dpp::message_create_t msg(nullptr, "");
+			msg.msg = &m;
 
-			struct modevent::message_create msg = {
-				*(bot->core.get_shard_mgr().get_shards()[0]),
-				*(bot->core.find_user(user_id)),
-				*(channel),
-				m
-			};
-
-			RealOnMessage(msg, msg.msg.get_content(), false, {}, user_id);
+			RealOnMessage(msg, m.content, false, {}, user_id);
 	
 			/* Delete just this entry as we've processed it */
 			db::query("DELETE FROM start_queue WHERE channel_id = ?", {channel_id});
@@ -547,42 +539,42 @@ void TriviaModule::CheckForQueuedStarts()
 	}
 }
 
-void TriviaModule::CacheUser(int64_t user, int64_t channel_id)
+void TriviaModule::CacheUser(dpp::snowflake user, dpp::snowflake channel_id)
 {
-	aegis::channel* c = bot->core.find_channel(channel_id);
-	aegis::user* _user = bot->core.find_user(user);
+	dpp::channel* c = dpp::find_channel(channel_id);
+	dpp::user* _user = dpp::find_user(user);
 	if (_user && c) {
-		aegis::user::guild_info& gi = _user->get_guild_info(c->get_guild().get_id());
-		cache_user(_user, &c->get_guild(), &gi);
+		dpp::guild* g = dpp::find_guild(c->guild_id);
+		if (g) {
+			if (g->members.find(user) != g->members.end()) {
+				dpp::guild_member* gm = g->members[user];
+				cache_user(_user, g, gm);
+			}
+		}
 	} else {
-		bot->core.log->debug("Command with no user!");
+		bot->core->log(dpp::ll_debug, "Command with no user!");
 	}
 }
 
-bool TriviaModule::OnMessage(const modevent::message_create &message, const std::string& clean_message, bool mentioned, const std::vector<std::string> &stringmentions)
+bool TriviaModule::OnMessage(const dpp::message_create_t &message, const std::string& clean_message, bool mentioned, const std::vector<std::string> &stringmentions)
 {
 	return RealOnMessage(message, clean_message, mentioned, stringmentions, 0);
 }
 
-bool TriviaModule::RealOnMessage(const modevent::message_create &message, const std::string& clean_message, bool mentioned, const std::vector<std::string> &stringmentions, int64_t _author_id)
+bool TriviaModule::RealOnMessage(const dpp::message_create_t &message, const std::string& clean_message, bool mentioned, const std::vector<std::string> &stringmentions, dpp::snowflake _author_id)
 {
 	std::string username;
-	aegis::gateway::objects::message msg = message.msg;
+	dpp::message msg = *(message.msg);
 	bool is_from_dashboard = (_author_id != 0);
 
 	// Allow overriding of author id from remote start code
-	int64_t author_id = _author_id ? _author_id : msg.get_author_id().get();
+	int64_t author_id = _author_id ? _author_id : msg.author->id;
 
-	bool isbot = msg.author.is_bot();
+	bool isbot = msg.author->is_bot();
 
-	if (!message.has_user()) {
-		bot->core.log->debug("Message has no user! Message id {} author id {}", msg.get_id().get(), author_id);
-		return true;
-	}
-
-	aegis::user* user = bot->core.find_user(author_id);
+	dpp::user* user = dpp::find_user(author_id);
 	if (user) {
-		username = user->get_username();
+		username = user->username;
 		if (isbot) {
 			/* Drop bots here */
 			return true;
@@ -591,37 +583,33 @@ bool TriviaModule::RealOnMessage(const modevent::message_create &message, const 
 	
 	int64_t guild_id = 0;
 	int64_t channel_id = 0;
-	aegis::channel* c = nullptr;
+	dpp::channel* c = nullptr;
 
-	if (msg.has_channel()) {
-		if (msg.get_channel_id().get() == 0) {
-			c = bot->core.find_channel(msg.get_channel().get_id().get());
-		} else {
-			c = bot->core.find_channel(msg.get_channel_id().get());
-		}
+	if (msg.channel_id) {
+		c = dpp::find_channel(msg.channel_id);
 		if (c) {
-			guild_id = c->get_guild().get_id().get();
+			guild_id = c->guild_id;
 		} else {
-			bot->core.log->warn("Channel is missing!!! C:{} A:{}", msg.get_channel_id().get(), author_id);
+			bot->core->log(dpp::ll_warning, fmt::format("Channel is missing!!! C:{} A:{}", msg.channel_id, author_id));
 			return true;
 		}
 	} else {
 		/* No channel! */
-		bot->core.log->debug("Message without channel, M:{} A:{}", msg.get_id().get(), author_id);
+		bot->core->log(dpp::ll_debug, fmt::format("Message without channel, M:{} A:{}", msg.id, author_id));
 		return true;
 	}
 
 	if (c) {
-		channel_id = c->get_id().get();
+		channel_id = c->id;
 	}
 
 	guild_settings_t settings = GetGuildSettings(guild_id);
 
 	if (mentioned && prefix_match->Match(clean_message)) {
 		if (c) {
-			c->create_message(fmt::format(_("PREFIX", settings), settings.prefix, settings.prefix));
+			bot->core->message_create(dpp::message(channel_id, fmt::format(_("PREFIX", settings), settings.prefix, settings.prefix)));
 		}
-		bot->core.log->debug("Respond to prefix request on channel C:{} A:{}", channel_id, author_id);
+		bot->core->log(dpp::ll_debug, fmt::format("Respond to prefix request on channel C:{} A:{}", channel_id, author_id));
 		return false;
 	}
 
@@ -631,9 +619,9 @@ bool TriviaModule::RealOnMessage(const modevent::message_create &message, const 
 		std::string command = clean_message.substr(settings.prefix.length(), clean_message.length() - settings.prefix.length());
 		if (user != nullptr) {
 			queue_command(command, author_id, channel_id, guild_id, mentioned, username, is_from_dashboard);
-			bot->core.log->info("CMD (USER={}, GUILD={}): <{}> {}", author_id, guild_id, username, clean_message);
+			bot->core->log(dpp::ll_info, fmt::format("CMD (USER={}, GUILD={}): <{}> {}", author_id, guild_id, username, clean_message));
 		} else {
-			bot->core.log->debug("User is null when handling command. C:{} A:{}", channel_id, author_id);
+			bot->core->log(dpp::ll_debug, fmt::format("User is null when handling command. C:{} A:{}", channel_id, author_id));
 		}
 
 	}
@@ -645,14 +633,14 @@ bool TriviaModule::RealOnMessage(const modevent::message_create &message, const 
 		if (state) {
 			/* The state_t class handles potential answers, but only when a game is running on this guild */
 			state->queue_message(clean_message, author_id, username, mentioned);
-			bot->core.log->debug("Processed potential answer message from A:{} on C:{}", author_id, channel_id);
+			bot->core->log(dpp::ll_debug, fmt::format("Processed potential answer message from A:{} on C:{}", author_id, channel_id));
 		}
 	}
 
 	return true;
 }
 
-state_t* TriviaModule::GetState(int64_t channel_id) {
+state_t* TriviaModule::GetState(dpp::snowflake channel_id) {
 
 	auto state_iter = states.find(channel_id);
 	if (state_iter != states.end()) {

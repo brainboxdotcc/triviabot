@@ -19,7 +19,9 @@
  * limitations under the License.
  *
  ************************************************************************************/
-
+#include <dpp/dpp.h>
+#include <fmt/format.h>
+#include <nlohmann/json.hpp>
 #include <sporks/modules.h>
 #include <sporks/regex.h>
 #include <string>
@@ -34,6 +36,8 @@
 #include "webrequest.h"
 #include "piglatin.h"
 #include "commands.h"
+
+using json = nlohmann::json;
 
 in_cmd::in_cmd(const std::string &m, int64_t author, int64_t channel, int64_t guild, bool mention, const std::string &user, bool dashboard) : msg(m), author_id(author), channel_id(channel), guild_id(guild), mentions_bot(mention), from_dashboard(dashboard), username(user)
 {
@@ -84,8 +88,8 @@ void TriviaModule::handle_command(const in_cmd &cmd) {
 			std::string base_command;
 			tokens >> base_command;
 	
-			aegis::channel* c = bot->core.find_channel(cmd.channel_id);
-			aegis::user* user = bot->core.find_user(cmd.author_id);
+			dpp::channel* c = dpp::find_channel(cmd.channel_id);
+			dpp::user* user = dpp::find_user(cmd.author_id);
 			if (!c || !user) {
 				return;
 			}
@@ -93,14 +97,18 @@ void TriviaModule::handle_command(const in_cmd &cmd) {
 			guild_settings_t settings = GetGuildSettings(cmd.guild_id);
 	
 			/* Check for moderator status - first check if owner */
-			aegis::guild* g = bot->core.find_guild(cmd.guild_id);
-			bool moderator = (g && g->get_owner() == cmd.author_id);
+			dpp::guild* g = dpp::find_guild(cmd.guild_id);
+			bool moderator = (g && g->owner_id == cmd.author_id);
 			/* Now iterate the list of moderator roles from settings */
 			if (!moderator) {
 				for (auto x = settings.moderator_roles.begin(); x != settings.moderator_roles.end(); ++x) {
-					if (g && g->member_has_role(cmd.author_id, *x)) {
-						moderator = true;
-						break;
+					if (g && g->members.find(cmd.author_id) != g->members.end()) {
+						for (auto y = g->members[cmd.author_id]->roles.begin(); y != g->members[cmd.author_id]->roles.end(); ++y) {
+							if (*y == *x) {
+								moderator = true;
+								break;
+							}
+						}
 					}
 				}
 			}
@@ -131,7 +139,7 @@ void TriviaModule::handle_command(const in_cmd &cmd) {
 				}
 
 				if (can_execute || cmd.from_dashboard) {
-					bot->core.log->debug("command_t '{}' routed to handler", base_command);
+					bot->core->log(dpp::ll_debug, fmt::format("command_t '{}' routed to handler", base_command));
 					command->second->call(cmd, tokens, settings, cmd.username, moderator, c, user);
 				} else {
 					/* Display rate limit message, but only one per rate limit period */
@@ -149,7 +157,7 @@ void TriviaModule::handle_command(const in_cmd &cmd) {
 					if (emit_rl_warning) {
 						SimpleEmbed(settings, ":snail:", fmt::format(_("RATELIMITED", settings), PER_CHANNEL_RATE_LIMIT, base_command), cmd.channel_id, _("WOAHTHERE", settings));
 					}
-					bot->core.log->debug("command_t '{}' NOT routed to handler on channel {}, limiting", base_command, cmd.channel_id);
+					bot->core->log(dpp::ll_debug, fmt::format("command_t '{}' NOT routed to handler on channel {}, limiting", base_command, cmd.channel_id));
 				}
 			} else {
 				/* Custom commands handled completely by the API as a REST call */
@@ -198,28 +206,28 @@ void TriviaModule::handle_command(const in_cmd &cmd) {
 							SimpleEmbed(settings, ":snail:", fmt::format(_("RATELIMITED", settings), PER_CHANNEL_RATE_LIMIT, base_command), cmd.channel_id, _("WOAHTHERE", settings));
 						}
 
-						bot->core.log->debug("Command '{}' not sent to API, rate limited", trim(lowercase(base_command)));
+						bot->core->log(dpp::ll_debug, fmt::format("Command '{}' not sent to API, rate limited", trim(lowercase(base_command))));
 					}
 				} else {
-					bot->core.log->debug("Command '{}' not known to API", trim(lowercase(base_command)));
+					bot->core->log(dpp::ll_debug, fmt::format("Command '{}' not known to API", trim(lowercase(base_command))));
 				}
 			}
 		} else {
-			bot->core.log->debug("Dropped command {} due to test mode", cmd.msg);
+			bot->core->log(dpp::ll_debug, fmt::format("Dropped command {} due to test mode", cmd.msg));
 		}
 	}
 	catch (std::exception &e) {
-		bot->core.log->debug("command_t exception! - {}", e.what());
+		bot->core->log(dpp::ll_debug, fmt::format("command_t exception! - {}", e.what()));
 	}
 	catch (...) {
-		bot->core.log->debug("command_t exception! - non-object");
+		bot->core->log(dpp::ll_debug, "command_t exception! - non-object");
 	}
 }
 
 /**
  * Emit help using a json file in the help/ directory. Missing help files emit a generic error message.
  */
-void TriviaModule::GetHelp(const std::string &section, int64_t channelID, const std::string &botusername, int64_t botid, const std::string &author, int64_t authorid, const guild_settings_t &settings)
+void TriviaModule::GetHelp(const std::string &section, dpp::snowflake channelID, const std::string &botusername, dpp::snowflake botid, const std::string &author, dpp::snowflake authorid, const guild_settings_t &settings)
 {
 	json embed_json;
 	char timestamp[256];
@@ -248,18 +256,18 @@ void TriviaModule::GetHelp(const std::string &section, int64_t channelID, const 
 	}
 	catch (const std::exception &e) {
 		if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == channelID) {
-			if (bot->core.find_channel(channelID)) {
-				bot->core.create_message(channelID, fmt::format(_("HERPDERP", settings), authorid));
+			if (dpp::find_channel(channelID)) {
+				bot->core->message_create(dpp::message(channelID, fmt::format(_("HERPDERP", settings), authorid)));
 				bot->sent_messages++;
 			}
 		}
-		bot->core.log->error("Malformed help file {}.json!", section);
+		bot->core->log(dpp::ll_error, fmt::format("Malformed help file {}.json!", section));
 		return;
 	}
 
 	if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == channelID) {
-		if (bot->core.find_channel(channelID)) {
-			bot->core.create_message_embed(channelID, "", embed_json);
+		if (dpp::find_channel(channelID)) {
+			bot->core->message_create(dpp::message(channelID, dpp::embed(&embed_json)));
 			bot->sent_messages++;
 		}
 	}

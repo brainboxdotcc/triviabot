@@ -20,6 +20,8 @@
  *
  ************************************************************************************/
 
+#include <dpp/dpp.h>
+#include <fmt/format.h>
 #include <sporks/modules.h>
 #include <sporks/regex.h>
 #include <string>
@@ -36,7 +38,7 @@
 
 command_stop_t::command_stop_t(class TriviaModule* _creator, const std::string &_base_command) : command_t(_creator, _base_command) { }
 
-void command_stop_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_settings_t &settings, const std::string &username, bool is_moderator, aegis::channel* c, aegis::user* user)
+void command_stop_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_settings_t &settings, const std::string &username, bool is_moderator, dpp::channel* c, dpp::user* user)
 {
 	std::lock_guard<std::mutex> states_lock(creator->states_mutex);
 	state_t* state = creator->GetState(cmd.channel_id);

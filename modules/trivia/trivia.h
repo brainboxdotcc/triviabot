@@ -22,6 +22,7 @@
 
 #pragma once
 
+#include <dpp/dpp.h>
 #include <sporks/modules.h>
 #include <sporks/regex.h>
 #include <string>
@@ -43,7 +44,7 @@
 // Number of seconds between allowed API-bound calls, per channel
 #define PER_CHANNEL_RATE_LIMIT 4
 
-typedef std::map<int64_t, int64_t> teamlist_t;
+typedef std::map<dpp::snowflake, dpp::snowflake> teamlist_t;
 
 struct field_t
 {
@@ -54,10 +55,10 @@ struct field_t
 
 struct guild_cache_queued_t
 {
-	uint64_t guild_id;
+	dpp::snowflake guild_id;
 	std::string name;
 	std::string icon;
-	uint64_t owner_id;
+	dpp::snowflake owner_id;
 };
 
 /**
@@ -72,8 +73,8 @@ class TriviaModule : public Module
 	PCRE* number_tidy_positive;
 	PCRE* number_tidy_negative;
 	PCRE* prefix_match;
-	std::unordered_map<int64_t, time_t> limits;
-	std::unordered_map<int64_t, time_t> last_rl_warning;
+	std::unordered_map<dpp::snowflake, time_t> limits;
+	std::unordered_map<dpp::snowflake, time_t> last_rl_warning;
 	std::vector<std::string> api_commands;
 	std::thread* presence_update;
 	bool terminating;
@@ -95,20 +96,20 @@ public:
 	time_t startup;
 	json* lang;
 	std::mutex states_mutex;
-	std::map<int64_t, state_t> states;
+	std::map<dpp::snowflake, state_t> states;
 	TriviaModule(Bot* instigator, ModuleLoader* ml);
 	Bot* GetBot();
 	virtual ~TriviaModule();
 	void SetupCommands();
-	void queue_command(const std::string &message, int64_t author, int64_t channel, int64_t guild, bool mention, const std::string &username, bool from_dashboard = false);
+	void queue_command(const std::string &message, dpp::snowflake author, dpp::snowflake channel, dpp::snowflake guild, bool mention, const std::string &username, bool from_dashboard = false);
 	void handle_command(const in_cmd &cmd);
 	void ProcessCommands();
 	void ProcessGuildQueue();
 	virtual bool OnPresenceUpdate();
 	std::string _(const std::string &k, const guild_settings_t& settings);
 	virtual bool OnAllShardsReady();
-	virtual bool OnChannelDelete(const modevent::channel_delete &cd);
-	virtual bool OnGuildDelete(const modevent::guild_delete &gd);
+	virtual bool OnChannelDelete(const dpp::channel_delete_t &cd);
+	virtual bool OnGuildDelete(const dpp::guild_delete_t &gd);
 
 	/* Returns a local count */
 	int64_t GetActiveLocalGames();
@@ -119,11 +120,11 @@ public:
 	int64_t GetMemberTotal();
 	int64_t GetChannelTotal();
 
-	guild_settings_t GetGuildSettings(int64_t guild_id);
+	guild_settings_t GetGuildSettings(dpp::snowflake guild_id);
 	std::string escape_json(const std::string &s);
-	void ProcessEmbed(const class guild_settings_t& settings, const std::string &embed_json, int64_t channelID);
-	void SimpleEmbed(const class guild_settings_t& settings, const std::string &emoji, const std::string &text, int64_t channelID, const std::string &title = "", const std::string &image = "", const std::string &thumbnail = "");
-	void EmbedWithFields(const class guild_settings_t& settings, const std::string &title, std::vector<field_t> fields, int64_t channelID, const std::string &url = "", const std::string &image = "", const std::string &thumbnail = "");
+	void ProcessEmbed(const class guild_settings_t& settings, const std::string &embed_json, dpp::snowflake channelID);
+	void SimpleEmbed(const class guild_settings_t& settings, const std::string &emoji, const std::string &text, dpp::snowflake channelID, const std::string &title = "", const std::string &image = "", const std::string &thumbnail = "");
+	void EmbedWithFields(const class guild_settings_t& settings, const std::string &title, std::vector<field_t> fields, dpp::snowflake channelID, const std::string &url = "", const std::string &image = "", const std::string &thumbnail = "");
 	virtual std::string GetVersion();
 	virtual std::string GetDescription();
 	int random(int min, int max);
@@ -140,15 +141,15 @@ public:
 	int levenstein(std::string str1, std::string str2);
 	bool is_number(const std::string &s);
 	std::string MakeFirstHint(const std::string &s, const guild_settings_t &settings,  bool indollars = false);
-	void show_stats(int64_t guild_id, int64_t channel_id);
+	void show_stats(dpp::snowflake guild_id, dpp::snowflake channel_id);
 	void Tick();
 	void DisposeThread(std::thread* t);
 	void CheckForQueuedStarts();
-	virtual bool OnMessage(const modevent::message_create &message, const std::string& clean_message, bool mentioned, const std::vector<std::string> &stringmentions);
-	virtual bool OnGuildCreate(const modevent::guild_create &guild);
-	bool RealOnMessage(const modevent::message_create &message, const std::string& clean_message, bool mentioned, const std::vector<std::string> &stringmentions, int64_t author_id = 0);
-	void GetHelp(const std::string &section, int64_t channelID, const std::string &botusername, int64_t botid, const std::string &author, int64_t authorid, const guild_settings_t &settings);
-	void CacheUser(int64_t user, int64_t channel_id);
+	virtual bool OnMessage(const dpp::message_create_t &message, const std::string& clean_message, bool mentioned, const std::vector<std::string> &stringmentions);
+	virtual bool OnGuildCreate(const dpp::guild_create_t &guild);
+	bool RealOnMessage(const dpp::message_create_t &message, const std::string& clean_message, bool mentioned, const std::vector<std::string> &stringmentions, dpp::snowflake author_id = 0);
+	void GetHelp(const std::string &section, dpp::snowflake channelID, const std::string &botusername, dpp::snowflake botid, const std::string &author, dpp::snowflake authorid, const guild_settings_t &settings);
+	void CacheUser(dpp::snowflake user, dpp::snowflake channel_id);
 	void CheckReconnects();
 
 	/** DO NOT CALL THIS METHOD without wrapping it with the states_mutex.
@@ -158,6 +159,6 @@ public:
 	 *
 	 * Returns nullptr if there is no active game on the given channel id.
 	 */
-	state_t* GetState(int64_t channel_id);
+	state_t* GetState(dpp::snowflake channel_id);
 };
 

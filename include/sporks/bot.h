@@ -62,6 +62,8 @@ class Bot {
 
 	uint32_t my_cluster_id;
 
+	uint32_t maxclusters;
+
 	uint32_t shard_init_count;
 
 	/* Thread handlers */

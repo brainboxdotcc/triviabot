@@ -31,25 +31,4 @@
 
 void TriviaModule::ProcessGuildQueue()
 {
-	while (!terminating) {
-		std::vector<guild_cache_queued_t> to_process;
-		{
-
-			std::lock_guard<std::mutex> guild_queue_lock(guildqueuemutex);
-			if (guilds_to_update.size()) {
-				for (auto& g : guilds_to_update) {
-					to_process.push_back(g);
-				}
-				guilds_to_update.clear();
-			}
-		}
-		if (to_process.size() > 0) {
-			bot->core.log->debug("Processing guild queue of {} entries", to_process.size());
-			for (auto& g : to_process) {
-				db::query("INSERT INTO trivia_guild_cache (snowflake_id, name, icon, owner_id) VALUES('?', '?', '?', '?') ON DUPLICATE KEY UPDATE name = '?', icon = '?', owner_id = '?', kicked = 0", {g.guild_id, g.name, g.icon,  g.owner_id, g.name, g.icon,  g.owner_id});
-			}
-		} else {
-			std::this_thread::sleep_for(std::chrono::milliseconds(100));
-		}
-	}
 }

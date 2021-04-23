@@ -20,6 +20,9 @@
  *
  ************************************************************************************/
 
+#include <dpp/dpp.h>
+#include <fmt/format.h>
+#include <nlohmann/json.hpp>
 #include <string>
 #include <cstdint>
 #include <fstream>
@@ -30,6 +33,8 @@
 #include <sporks/database.h>
 #include "trivia.h"
 #include "webrequest.h"
+
+using json = nlohmann::json;
 
 /* Make a string safe to send as a JSON literal */
 std::string TriviaModule::escape_json(const std::string &s) {
@@ -56,45 +61,42 @@ std::string TriviaModule::escape_json(const std::string &s) {
 }
 
 /* Create an embed from a JSON string and send it to a channel */
-void TriviaModule::ProcessEmbed(const guild_settings_t& settings, const std::string &embed_json, int64_t channelID)
+void TriviaModule::ProcessEmbed(const guild_settings_t& settings, const std::string &embed_json, dpp::snowflake channelID)
 {
-	aegis::channel* c = bot->core.find_channel(channelID);
-	if (c) {
-		json embed;
-		std::string cleaned_json = embed_json;
-		/* Put unicode zero-width spaces in @everyone and @here */
-		cleaned_json = ReplaceString(cleaned_json, "@everyone", "@‎everyone");
-		cleaned_json = ReplaceString(cleaned_json, "@here", "@‎here");
-		try {
-			/* Tabs to spaces */
-			cleaned_json = ReplaceString(cleaned_json, "\t", " ");
-			embed = json::parse(cleaned_json);
-		}
-		catch (const std::exception &e) {
-			if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == channelID) {
-				try {
-					c->create_message(fmt::format(_("EMBED_ERROR_1", settings), cleaned_json, e.what()));
-				}
-				catch (const std::exception &e) {
-					bot->core.log->error("MALFORMED UNICODE: {}", e.what());
-				}
-				bot->sent_messages++;
-			}
-		}
+	json embed;
+	std::string cleaned_json = embed_json;
+	/* Put unicode zero-width spaces in @everyone and @here */
+	cleaned_json = ReplaceString(cleaned_json, "@everyone", "@‎everyone");
+	cleaned_json = ReplaceString(cleaned_json, "@here", "@‎here");
+	try {
+		/* Tabs to spaces */
+		cleaned_json = ReplaceString(cleaned_json, "\t", " ");
+		embed = json::parse(cleaned_json);
+	}
+	catch (const std::exception &e) {
 		if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == channelID) {
-			/* Check if this channel has a webhook. If it does, use it! */
-			db::resultset rs = db::query("SELECT * FROM channel_webhooks WHERE channel_id = ?", {channelID});
-			if (rs.size()) {
-				PostWebhook(rs[0]["webhook"], embed.dump(), channelID);
-			} else {
-				c->create_message_embed("", embed);
+			try {
+				bot->core->message_create(dpp::message(channelID, fmt::format(_("EMBED_ERROR_1", settings), cleaned_json, e.what())));
+			}
+			catch (const std::exception &e) {
+				bot->core->log(dpp::ll_error, fmt::format("MALFORMED UNICODE: {}", e.what()));
 			}
 			bot->sent_messages++;
 		}
 	}
+	if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == channelID) {
+		/* Check if this channel has a webhook. If it does, use it! */
+		db::resultset rs = db::query("SELECT * FROM channel_webhooks WHERE channel_id = ?", {channelID});
+		if (rs.size()) {
+			PostWebhook(rs[0]["webhook"], embed.dump(), channelID);
+		} else {
+			bot->core->message_create(dpp::message(channelID, dpp::embed(&embed)));
+		}
+		bot->sent_messages++;
+	}
 }
 
-void TriviaModule::SimpleEmbed(const guild_settings_t& settings, const std::string &emoji, const std::string &text, int64_t channelID, const std::string &title, const std::string &image, const std::string &thumbnail)
+void TriviaModule::SimpleEmbed(const guild_settings_t& settings, const std::string &emoji, const std::string &text, dpp::snowflake channelID, const std::string &title, const std::string &image, const std::string &thumbnail)
 {
 	uint32_t colour = settings.embedcolour;
 	std::string imageinfo;
@@ -115,7 +117,7 @@ void TriviaModule::SimpleEmbed(const guild_settings_t& settings, const std::stri
 }
 
 /* Send an embed containing one or more fields */
-void TriviaModule::EmbedWithFields(const guild_settings_t& settings, const std::string &title, std::vector<field_t> fields, int64_t channelID, const std::string &url, const std::string &image, const std::string &thumbnail)
+void TriviaModule::EmbedWithFields(const guild_settings_t& settings, const std::string &title, std::vector<field_t> fields, dpp::snowflake channelID, const std::string &url, const std::string &image, const std::string &thumbnail)
 {
 		uint32_t colour = settings.embedcolour;
 		std::string json = fmt::format("{{" + (!url.empty() ? "\"url\":\"" + escape_json(url) + "\"," : "") + "\"title\":\"{}\",\"color\":{},\"fields\":[", escape_json(title), colour);

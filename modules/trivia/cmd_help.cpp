@@ -35,11 +35,11 @@
 
 command_help_t::command_help_t(class TriviaModule* _creator, const std::string &_base_command) : command_t(_creator, _base_command) { }
 
-void command_help_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_settings_t &settings, const std::string &username, bool is_moderator, aegis::channel* c, aegis::user* user)
+void command_help_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_settings_t &settings, const std::string &username, bool is_moderator, dpp::channel* c, dpp::user* user)
 {
 	std::string section;
 	tokens >> section;
-	creator->GetHelp(section, cmd.channel_id, creator->bot->user.username, creator->bot->user.id.get(), username, cmd.author_id, settings);
+	creator->GetHelp(section, cmd.channel_id, creator->GetBot()->user.username, creator->GetBot()->user.id, username, cmd.author_id, settings);
 	creator->CacheUser(cmd.author_id, cmd.channel_id);
 }
 
