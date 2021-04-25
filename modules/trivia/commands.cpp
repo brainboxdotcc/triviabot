@@ -256,20 +256,16 @@ void TriviaModule::GetHelp(const std::string &section, dpp::snowflake channelID,
 	}
 	catch (const std::exception &e) {
 		if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == channelID) {
-			if (dpp::find_channel(channelID)) {
-				bot->core->message_create(dpp::message(channelID, fmt::format(_("HERPDERP", settings), authorid)));
-				bot->sent_messages++;
-			}
+			bot->core->message_create(dpp::message(channelID, fmt::format(_("HERPDERP", settings), authorid)));
+			bot->sent_messages++;
 		}
 		bot->core->log(dpp::ll_error, fmt::format("Malformed help file {}.json!", section));
 		return;
 	}
 
 	if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == channelID) {
-		if (dpp::find_channel(channelID)) {
-			bot->core->message_create(dpp::message(channelID, dpp::embed(&embed_json)));
-			bot->sent_messages++;
-		}
+		bot->core->message_create(dpp::message(channelID, dpp::embed(&embed_json)));
+		bot->sent_messages++;
 	}
 }
 

@@ -375,7 +375,7 @@ guild_settings_t TriviaModule::GetGuildSettings(dpp::snowflake guild_id)
 std::string TriviaModule::GetVersion()
 {
 	/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-	std::string version = "$ModVer 81$";
+	std::string version = "$ModVer 82$";
 	return "3.0." + version.substr(8,version.length() - 9);
 }
 
@@ -524,8 +524,6 @@ void TriviaModule::CheckForQueuedStarts()
 
 			bot->core->log(dpp::ll_info, fmt::format("Remote start, guild_id={} channel_id={} user_id={} questions={} type={} category='{}'", guild_id, channel_id, user_id, questions, hintless ? "hardcore" : (quickfire ? "quickfire" : "normal"), category));
 			guild_settings_t settings = GetGuildSettings(guild_id);
-			dpp::channel* channel = dpp::find_channel(channel_id);
-
 			dpp::message m(channel_id, fmt::format("{}{} {}{}", settings.prefix, (hintless ? "hardcore" : (quickfire ? "quickfire" : "start")), questions, (category.empty() ? "" : (std::string(" ") + category))));
 			m.author = dpp::find_user(user_id);
 			struct dpp::message_create_t msg(nullptr, "");
@@ -581,41 +579,25 @@ bool TriviaModule::RealOnMessage(const dpp::message_create_t &message, const std
 		}
 	}
 	
-	int64_t guild_id = 0;
-	int64_t channel_id = 0;
-	dpp::channel* c = nullptr;
+	dpp::snowflake guild_id = message.msg->guild_id;
+	dpp::snowflake channel_id = message.msg->channel_id;
 
-	if (msg.channel_id) {
-		c = dpp::find_channel(msg.channel_id);
-		if (c) {
-			guild_id = c->guild_id;
-		} else {
-			bot->core->log(dpp::ll_warning, fmt::format("Channel is missing!!! C:{} A:{}", msg.channel_id, author_id));
-			return true;
-		}
-	} else {
+	if (msg.channel_id == 0) {
 		/* No channel! */
 		bot->core->log(dpp::ll_debug, fmt::format("Message without channel, M:{} A:{}", msg.id, author_id));
 		return true;
 	}
 
-	if (c) {
-		channel_id = c->id;
-	}
-
 	guild_settings_t settings = GetGuildSettings(guild_id);
 
 	if (mentioned && prefix_match->Match(clean_message)) {
-		if (c) {
-			bot->core->message_create(dpp::message(channel_id, fmt::format(_("PREFIX", settings), settings.prefix, settings.prefix)));
-		}
+		bot->core->message_create(dpp::message(channel_id, fmt::format(_("PREFIX", settings), settings.prefix, settings.prefix)));
 		bot->core->log(dpp::ll_debug, fmt::format("Respond to prefix request on channel C:{} A:{}", channel_id, author_id));
 		return false;
 	}
 
 	// Commands
 	if (lowercase(clean_message.substr(0, settings.prefix.length())) == lowercase(settings.prefix)) {
-
 		std::string command = clean_message.substr(settings.prefix.length(), clean_message.length() - settings.prefix.length());
 		if (user != nullptr) {
 			queue_command(command, author_id, channel_id, guild_id, mentioned, username, is_from_dashboard);
@@ -623,7 +605,6 @@ bool TriviaModule::RealOnMessage(const dpp::message_create_t &message, const std
 		} else {
 			bot->core->log(dpp::ll_debug, fmt::format("User is null when handling command. C:{} A:{}", channel_id, author_id));
 		}
-
 	}
 	
 	// Answers for active games
