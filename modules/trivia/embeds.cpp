@@ -74,7 +74,7 @@ void TriviaModule::ProcessEmbed(const guild_settings_t& settings, const std::str
 		embed = json::parse(cleaned_json);
 	}
 	catch (const std::exception &e) {
-		if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == channelID) {
+		if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == settings.guild_id) {
 			try {
 				bot->core->message_create(dpp::message(channelID, fmt::format(_("EMBED_ERROR_1", settings), cleaned_json, e.what())));
 			}
@@ -84,7 +84,7 @@ void TriviaModule::ProcessEmbed(const guild_settings_t& settings, const std::str
 			bot->sent_messages++;
 		}
 	}
-	if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == channelID) {
+	if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == settings.guild_id) {
 		/* Check if this channel has a webhook. If it does, use it! */
 		db::resultset rs = db::query("SELECT * FROM channel_webhooks WHERE channel_id = ?", {channelID});
 		if (rs.size()) {

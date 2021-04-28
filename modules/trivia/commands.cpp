@@ -82,7 +82,7 @@ void TriviaModule::SetupCommands()
 void TriviaModule::handle_command(const in_cmd &cmd) {
 
 	try {
-		if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == cmd.channel_id) {
+		if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == cmd.guild_id) {
 	
 			std::stringstream tokens(cmd.msg);
 			std::string base_command;
@@ -258,7 +258,7 @@ void TriviaModule::GetHelp(const std::string &section, dpp::snowflake channelID,
 		embed_json = json::parse(json);
 	}
 	catch (const std::exception &e) {
-		if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == channelID) {
+		if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == settings.guild_id) {
 			bot->core->message_create(dpp::message(channelID, fmt::format(_("HERPDERP", settings), authorid)));
 			bot->sent_messages++;
 		}
@@ -266,7 +266,7 @@ void TriviaModule::GetHelp(const std::string &section, dpp::snowflake channelID,
 		return;
 	}
 
-	if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == channelID) {
+	if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == settings.guild_id) {
 		bot->core->message_create(dpp::message(channelID, dpp::embed(&embed_json)));
 		bot->sent_messages++;
 	}
