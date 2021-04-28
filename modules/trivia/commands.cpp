@@ -101,12 +101,15 @@ void TriviaModule::handle_command(const in_cmd &cmd) {
 			bool moderator = (g && g->owner_id == cmd.author_id);
 			/* Now iterate the list of moderator roles from settings */
 			if (!moderator) {
-				for (auto x = settings.moderator_roles.begin(); x != settings.moderator_roles.end(); ++x) {
-					if (g && g->members.find(cmd.author_id) != g->members.end()) {
-						for (auto y = g->members[cmd.author_id]->roles.begin(); y != g->members[cmd.author_id]->roles.end(); ++y) {
-							if (*y == *x) {
-								moderator = true;
-								break;
+				if (g) {
+					for (auto x = settings.moderator_roles.begin(); x != settings.moderator_roles.end(); ++x) {
+						auto i = g->members->find(cmd.author_id);
+						if (i != g->members->end()) {
+							for (auto y = i->second->roles.begin(); y != i->second->roles.end(); ++y) {
+								if (*y == *x) {
+									moderator = true;
+									break;
+								}
 							}
 						}
 					}
