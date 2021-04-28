@@ -103,8 +103,8 @@ void TriviaModule::handle_command(const in_cmd &cmd) {
 			if (!moderator) {
 				if (g) {
 					for (auto x = settings.moderator_roles.begin(); x != settings.moderator_roles.end(); ++x) {
-						auto i = g->members->find(cmd.author_id);
-						if (i != g->members->end()) {
+						auto i = g->members.find(cmd.author_id);
+						if (i != g->members.end()) {
 							for (auto y = i->second->roles.begin(); y != i->second->roles.end(); ++y) {
 								if (*y == *x) {
 									moderator = true;
