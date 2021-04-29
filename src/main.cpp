@@ -158,18 +158,18 @@ void Bot::onReady(const dpp::ready_t& ready) {
 	/* Event broadcast when all shards are ready */
 	shard_init_count++;
 
-	core->log(dpp::ll_debug, fmt::format("onReady({}/{})", shard_init_count, core->numshards / (maxclusters ? maxclusters : 1)));
+	core->log(dpp::ll_debug, fmt::format("onReady({}/{})", shard_init_count, core->numshards / (core->maxclusters ? core->maxclusters : 1)));
 
 	/* Event broadcast when all shards are ready */
 	/* BUGFIX: In a clustered environment, the shard max is divided by the number of clusters */
-	if (shard_init_count == core->numshards / (maxclusters ? maxclusters : 1)) {
+	if (shard_init_count == core->numshards / (core->maxclusters ? core->maxclusters : 1)) {
 		core->log(dpp::ll_debug, fmt::format("OnAllShardsReady()!"));
 		FOREACH_MOD(I_OnAllShardsReady, OnAllShardsReady());
 	}
 }
 
 uint32_t Bot::GetMaxClusters() {
-       return maxclusters;
+       return core->maxclusters;
 }
 
 /**
