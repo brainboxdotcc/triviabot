@@ -45,7 +45,6 @@ void command_info_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_se
 	std::stringstream s;
 	dpp::utility::uptime ut = creator->GetBot()->core->uptime();
 
-	/* TODO: Make these cluster-safe */
 	int64_t servers = creator->GetGuildTotal();
 	int64_t users = creator->GetMemberTotal();
 
@@ -61,13 +60,13 @@ void command_info_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_se
 		statusfield(_("ONLINEUSERS", settings), Comma(users)),
 		statusfield(_("UPTIME", settings), ut.to_string()),
 		statusfield(_("CLUSTER", settings), Comma(creator->GetBot()->GetClusterID())),
-		statusfield(_("SHARDS", settings), Comma(creator->GetBot()->core->get_shards().size())),
+		statusfield(_("SHARDS", settings), Comma(creator->GetBot()->core->maxclusters)),
 		statusfield(_("MEMBERINTENT", settings), _((creator->GetBot()->HasMemberIntents() ? "TICKYES" : "CROSSNO"), settings)),
 		statusfield(_("TESTMODE", settings), _((creator->GetBot()->IsTestMode() ? "TICKYES" : "CROSSNO"), settings)),
 		statusfield(_("DEVMODE", settings), _((creator->GetBot()->IsDevMode() ? "TICKYES" : "CROSSNO"), settings)),
 		statusfield(_("MYPREFIX", settings), "``" + creator->escape_json(settings.prefix) + "``"),
 		statusfield(_("BOTVER", settings), std::string(creator->GetVersion())),
-		statusfield(_("LIBVER", settings), std::string(DPP_VERSION_TEXT)),
+		statusfield(_("LIBVER", settings), "[<:D_:830553370792165376> " + std::string(DPP_VERSION_TEXT) + "](https://dpp.brainbox.cc/)"),
 		statusfield("", "")
 	};
 
