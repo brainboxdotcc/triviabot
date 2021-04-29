@@ -188,10 +188,8 @@ void TriviaModule::handle_command(const in_cmd &cmd) {
 						std::getline(tokens, rest);
 						rest = trim(rest);
 						CacheUser(cmd.author_id, cmd.channel_id);
-						std::string reply = trim(custom_command(base_command, trim(rest), cmd.author_id, cmd.channel_id, cmd.guild_id));
-						if (!reply.empty()) {
-							ProcessEmbed(settings, reply, cmd.channel_id);
-						}
+						std::cout << "tm X: " << std::hex << (uint64_t)this << std::dec << "\n";
+						custom_command(settings, this, base_command, trim(rest), cmd.author_id, cmd.channel_id, cmd.guild_id);
 					} else {
 						/* Display rate limit message, but only one per rate limit period */
 						bool emit_rl_warning = false;

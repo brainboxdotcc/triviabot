@@ -23,6 +23,7 @@
 #pragma once
 #include <dpp/dpp.h>
 #include <string>
+#include "trivia.h"
 
 /* Live API endpoint URL */
 #define BACKEND_HOST_LIVE	"triviabot.co.uk"
@@ -67,7 +68,7 @@ void change_streak(int64_t snowflake_id, int64_t guild_id, int score);
 std::vector<std::string> get_api_command_names();
 
 // These execute external PHP scripts, through a special handler. They bypass REST.
-std::string custom_command(const std::string &command, const std::string &parameters, int64_t user_id, int64_t channel_id, int64_t guild_id);
+void custom_command(const guild_settings_t& settings, TriviaModule* tm, const std::string &command, const std::string &parameters, int64_t user_id, int64_t channel_id, int64_t guild_id);
 
 // These functions query the REST API and are not as performant as the functions above. Some of these cannot
 // currently be rewritten as direct queries, as they use external apis like neutrino, or are hooked into the
@@ -77,6 +78,6 @@ std::string create_new_team(const std::string &teamname);
 void send_hint(int64_t snowflake_id, const std::string &hint, uint32_t remaining);
 json get_active(const std::string &hostname, int64_t cluster_id);
 void check_achievement(const std::string &when, uint64_t user_id, uint64_t guild_id);
-void CheckCreateWebhook(uint64_t channel_id);
+void CheckCreateWebhook(const guild_settings_t & s, TriviaModule* t, uint64_t channel_id);
 void PostWebhook(const std::string &webhook_url, const std::string &embed, uint64_t channel_id);
 
