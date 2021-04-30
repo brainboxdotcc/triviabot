@@ -608,7 +608,6 @@ void runcli(guild_settings_t settings, const std::string &command, uint64_t guil
  */
 void custom_command(const guild_settings_t& settings, TriviaModule* tm, const std::string &command, const std::string &parameters, int64_t user_id, int64_t channel_id, int64_t guild_id)
 {
-	std::cout << "tm 0: " << std::hex << (uint64_t)tm << std::dec << "\n";
 	runcli(settings, command, guild_id, user_id, channel_id, parameters);
 }
 
