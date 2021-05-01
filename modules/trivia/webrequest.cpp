@@ -310,6 +310,9 @@ std::string web_request(const std::string &_host, const std::string &_path, cons
 				} else {
 					if (bot) {
 						bot->core->log(dpp::ll_warning, fmt::format("HTTP Error {} on POST {}/{} (channel_id={})", res->status, _host, _path, channel_id));
+						if (res->status == 404) {
+							db::query("DELETE FROM channel_webhooks WHERE channel_id = ?", {channel_id});
+						}
 					}
 				}
 
