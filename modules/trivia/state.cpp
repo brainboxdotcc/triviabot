@@ -38,7 +38,7 @@
 #include "piglatin.h"
 #include "time.h"
 
-in_msg::in_msg(const std::string &m, int64_t author, bool mention, const std::string &_username) : msg(m), author_id(author), mentions_bot(mention), username(_username)
+in_msg::in_msg(const std::string &m, uint64_t author, bool mention, const std::string &_username) : msg(m), author_id(author), mentions_bot(mention), username(_username)
 {
 }
 
@@ -46,7 +46,7 @@ state_t::state_t()
 {
 }
 
-state_t::state_t(TriviaModule* _creator, uint32_t questions, uint32_t currstreak, int64_t lastanswered, uint32_t question_index, uint32_t _interval, int64_t _channel_id, bool _hintless, const std::vector<std::string> &_shuffle_list, trivia_state_t startstate,  int64_t _guild_id) :
+state_t::state_t(TriviaModule* _creator, uint32_t questions, uint32_t currstreak, uint64_t lastanswered, uint32_t question_index, uint32_t _interval, uint64_t _channel_id, bool _hintless, const std::vector<std::string> &_shuffle_list, trivia_state_t startstate,  uint64_t _guild_id) :
 
 	next_tick(time(NULL)),
 	creator(_creator),
@@ -78,7 +78,7 @@ std::string state_t::_(const std::string &k, const guild_settings_t& settings)
 	return creator->_(k, settings);
 }
 
-void state_t::queue_message(const std::string &message, int64_t author_id, const std::string &username, bool mentions_bot)
+void state_t::queue_message(const std::string &message, uint64_t author_id, const std::string &username, bool mentions_bot)
 {
 	// FIX: Check termination atomic flag to avoid race where object is deleted but its handle_message gets called
 	if (!terminating) {
@@ -173,8 +173,8 @@ void state_t::handle_message(const in_msg& m)
 				} else {
 					creator->SimpleEmbed(settings, ":thumbsup:", fmt::format(_("INSANE_CORRECT", settings), m.username, homoglyph(m.msg), this->insane_left, this->insane_num), channel_id);
 				}
-				update_score_only(m.author_id, guild_id, 1, channel_id);
 				creator->CacheUser(m.author_id, channel_id);
+				update_score_only(m.author_id, guild_id, 1, channel_id);
 
 				if (done) {
 					do_insane_board();
@@ -217,7 +217,7 @@ void state_t::handle_message(const in_msg& m)
 				double time_to_answer = time_f() - this->asktime;
 				std::string pts = (this->score > 1 ? _("POINTS", settings) : _("POINT", settings));
 				double submit_time = question.recordtime;
-				int32_t score = this->score;
+				uint32_t score = this->score;
 
 				std::string ans_message;
 
@@ -226,13 +226,13 @@ void state_t::handle_message(const in_msg& m)
 					ans_message.append(fmt::format(_("RECORD_TIME", settings), m.username));
 					submit_time = time_to_answer;
 				}
-				int32_t newscore = update_score(m.author_id, guild_id, submit_time, question.id, score);
+				uint32_t newscore = update_score(m.author_id, guild_id, submit_time, question.id, score);
 				ans_message.append(fmt::format(_("SCORE_UPDATE", settings), m.username, newscore ? newscore : score));
 
 				std::string teamname = get_current_team(m.author_id);
 				if (!empty(teamname)) {
 					add_team_points(teamname, score, m.author_id);
-					int32_t newteamscore = get_team_points(teamname);
+					uint32_t newteamscore = get_team_points(teamname);
 					ans_message.append(fmt::format(_("TEAM_SCORE", settings), teamname, score, pts, newteamscore));
 				}
 
@@ -433,7 +433,7 @@ void state_t::do_normal_round(bool silent)
 	guild_settings_t settings = creator->GetGuildSettings(guild_id);
 
 	creator->GetBot()->core->log(dpp::ll_debug, fmt::format("do_normal_round: fetch_question: '{}'", shuffle_list[round - 1]));
-	question = question_t::fetch(from_string<int64_t>(shuffle_list[round - 1], std::dec), guild_id, settings);
+	question = question_t::fetch(from_string<uint64_t>(shuffle_list[round - 1], std::dec), guild_id, settings);
 
 	if (question.id == 0) {
 		gamestate = TRIV_END;
@@ -462,7 +462,7 @@ void state_t::do_normal_round(bool silent)
 			if (creator->is_number(question.answer)) {
 				question.customhint1 = creator->MakeFirstHint(question.answer, settings);
 			} else {
-				int32_t r = creator->random(1, 12);
+				uint32_t r = creator->random(1, 12);
 				if (settings.language == "bg") {
 					question.customhint1 = fmt::format(_("SCRAMBLED_ANSWER", settings), question.shuffle1);
 				} else {
@@ -494,18 +494,18 @@ void state_t::do_normal_round(bool silent)
 					currency = "$";
 				}
 				question.customhint2 = currency + question.customhint2;
-				int32_t r = creator->random(1, 13);
-				if ((r < 3 && from_string<int32_t>(question.customhint2, std::dec) <= 10000)) {
+				uint32_t r = creator->random(1, 13);
+				if ((r < 3 && from_string<uint32_t>(question.customhint2, std::dec) <= 10000)) {
 					question.customhint2 = creator->dec_to_roman(from_string<unsigned int>(question.customhint2, std::dec), settings);
-				} else if ((r >= 3 && r < 6) || from_string<int32_t>(question.customhint2, std::dec) > 10000) {
-					question.customhint2 = fmt::format(_("HEX", settings), from_string<int32_t>(question.customhint2, std::dec));
+				} else if ((r >= 3 && r < 6) || from_string<uint32_t>(question.customhint2, std::dec) > 10000) {
+					question.customhint2 = fmt::format(_("HEX", settings), from_string<uint32_t>(question.customhint2, std::dec));
 				} else if (r >= 6 && r <= 10) {
-					question.customhint2 = fmt::format(_("OCT", settings), from_string<int32_t>(question.customhint2, std::dec));
+					question.customhint2 = fmt::format(_("OCT", settings), from_string<uint32_t>(question.customhint2, std::dec));
 				} else {
-					question.customhint2 = fmt::format(_("BIN", settings), from_string<int32_t>(question.customhint2, std::dec));
+					question.customhint2 = fmt::format(_("BIN", settings), from_string<uint32_t>(question.customhint2, std::dec));
 				}
 			} else {
-				int32_t r = creator->random(1, 12);
+				uint32_t r = creator->random(1, 12);
 				if (r <= 4 && settings.language != "bg") {
 					/* Transpose only the vowels */
 					question.customhint2 = question.answer;
@@ -572,7 +572,7 @@ void state_t::do_insane_board() {
 	std::string desc;
 	uint32_t i = 1;
 	for (auto sc = insane_stats.begin(); sc != insane_stats.end(); ++sc) {
-		desc += fmt::format("**#{0}** `{1}#{2:04d}` (*{3}*) {4}\n", i, (*sc)["username"], from_string<uint32_t>((*sc)["discriminator"], std::dec), Comma(from_string<int32_t>((*sc)["score"], std::dec)), (*sc)["emojis"]);
+		desc += fmt::format("**#{0}** `{1}#{2:04d}` (*{3}*) {4}\n", i, (*sc)["username"], from_string<uint32_t>((*sc)["discriminator"], std::dec), Comma(from_string<uint32_t>((*sc)["score"], std::dec)), (*sc)["emojis"]);
 		i++;
 	}
 	if (!desc.empty()) {
@@ -614,7 +614,7 @@ void state_t::do_time_up()
 	{
 		if (is_insane_round()) {
 			/* Insane round */
-			int32_t found = insane_num - insane_left;
+			uint32_t found = insane_num - insane_left;
 			content += fmt::format(_("INSANE_FOUND", settings), found);
 			title = _("TIME_UP", settings);
 			do_insane_board();

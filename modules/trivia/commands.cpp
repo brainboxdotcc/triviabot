@@ -39,7 +39,7 @@
 
 using json = nlohmann::json;
 
-in_cmd::in_cmd(const std::string &m, int64_t author, int64_t channel, int64_t guild, bool mention, const std::string &user, bool dashboard) : msg(m), author_id(author), channel_id(channel), guild_id(guild), mentions_bot(mention), from_dashboard(dashboard), username(user)
+in_cmd::in_cmd(const std::string &m, uint64_t author, uint64_t channel, uint64_t guild, bool mention, const std::string &user, bool dashboard) : msg(m), author_id(author), channel_id(channel), guild_id(guild), mentions_bot(mention), from_dashboard(dashboard), username(user)
 {
 }
 

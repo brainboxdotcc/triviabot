@@ -75,7 +75,7 @@ uint32_t interface_index = 0;
 std::thread* ft[FIRE_AND_FORGET_QUEUES] = { nullptr };
 std::thread* statdumper;
 
-std::map<uint64_t, std::pair<int64_t, time_t> > channellock;
+std::map<uint64_t, std::pair<uint64_t, time_t> > channellock;
 
 
 std::map<std::string, std::map<uint32_t, uint64_t> > statuscodes;
@@ -86,7 +86,7 @@ std::string web_request(const std::string &_host, const std::string &_path, cons
 std::string fetch_page(const std::string &_endpoint, const std::string &body = "");
 std::vector<std::string> getinterfaces();
 
-question_t::question_t(int64_t _id, const std::string &_question, const std::string &_answer, const std::string &_hint1, const std::string &_hint2, const std::string &_catname, time_t _lastasked, int32_t _timesasked,
+question_t::question_t(uint64_t _id, const std::string &_question, const std::string &_answer, const std::string &_hint1, const std::string &_hint2, const std::string &_catname, time_t _lastasked, uint32_t _timesasked,
 	const std::string &_lastcorrect, double _record_time, const std::string &_shuffle1, const std::string &_shuffle2, const std::string &_question_image, const std::string &_answer_image) :
 	id(_id), question(_question), answer(_answer), customhint1(_hint1), customhint2(_hint2), catname(_catname), lastasked(_lastasked), timesasked(_timesasked), lastcorrect(_lastcorrect), recordtime(_record_time),
 	shuffle1(_shuffle1), shuffle2(_shuffle2), question_image(_question_image), answer_image(_answer_image)
@@ -246,7 +246,7 @@ std::string web_request(const std::string &_host, const std::string &_path, cons
 	{
 		/* Check that another queue isn't waiting on rate limit for this channel or interface */
 		time_t when = 0;
-		int64_t seconds = 0;
+		uint64_t seconds = 0;
 
 		/* Check for existing rate limits that other queue threads have flagged */
 		std::string type;
@@ -314,9 +314,9 @@ std::string web_request(const std::string &_host, const std::string &_path, cons
 				}
 
 				/* Check rate limits, global and per channel */
-				if (res->get_header_value("X-RateLimit-Remaining") != "" && from_string<int64_t>(res->get_header_value("X-RateLimit-Remaining"), std::dec) == 0) {
+				if (res->get_header_value("X-RateLimit-Remaining") != "" && from_string<uint64_t>(res->get_header_value("X-RateLimit-Remaining"), std::dec) == 0) {
 
-					int64_t seconds = 0;
+					uint64_t seconds = 0;
 					/* If there's a retry-after (global ratelimit) we always prefer that over reset-after */
 					if (res->get_header_value("X-RateLimit-Retry-After") != "") {
 						seconds = from_string<time_t>(res->get_header_value("X-RateLimit-Retry-After"), std::dec);;
@@ -441,8 +441,8 @@ void cache_user(const dpp::user *_user, const dpp::guild *_guild, const dpp::gui
 {
 	// Replaced with direct db query for perforamance increase - 27Dec20
 
-	int64_t user_id = _user->id;
-	int64_t guild_id = _guild->id;
+	uint64_t user_id = _user->id;
+	uint64_t guild_id = _guild->id;
 	db::query("START TRANSACTION", {});
 
 	db::query("INSERT INTO trivia_user_cache (snowflake_id, username, discriminator, icon) VALUES('?', '?', '?', '?') ON DUPLICATE KEY UPDATE username = '?', discriminator = '?', icon = '?'",
@@ -478,7 +478,7 @@ void cache_user(const dpp::user *_user, const dpp::guild *_guild, const dpp::gui
 }
 
 /* Fetch a question by ID from the database */
-question_t question_t::fetch(int64_t id, int64_t guild_id, const guild_settings_t &settings)
+question_t question_t::fetch(uint64_t id, uint64_t guild_id, const guild_settings_t &settings)
 {
 	try {
 		db::query("INSERT INTO stats (id, lastasked, timesasked, lastcorrect, record_time) VALUES('?',UNIX_TIMESTAMP(),1,NULL,60000) ON DUPLICATE KEY UPDATE lastasked = UNIX_TIMESTAMP(), timesasked = timesasked + 1 ", {id});
@@ -491,14 +491,14 @@ question_t question_t::fetch(int64_t id, int64_t guild_id, const guild_settings_
 		if (question.size() > 0) {
 			db::query("UPDATE counters SET asked = asked + 1", {});
 				return question_t(
-			from_string<int64_t>(question[0]["id"], std::dec),
+			from_string<uint64_t>(question[0]["id"], std::dec),
 				homoglyph(question[0]["question"]),
 				question[0]["answer"],
 				question[0]["hint1"],
 				question[0]["hint2"],
 				question[0]["catname"],
 				from_string<time_t>(question[0]["lastasked"], std::dec),
-				from_string<int32_t>(question[0]["timesasked"], std::dec),
+				from_string<uint32_t>(question[0]["timesasked"], std::dec),
 				question[0]["lastcorrect"],
 				from_string<double>(question[0]["record_time"], std::dec),
 				utf8shuffle(question[0]["answer"]),
@@ -548,7 +548,7 @@ std::vector<std::string> get_api_command_names()
 }
 
 /* Fetch a shuffled list of question IDs from the API, which is dependant upon some statistics for the guild and the category selected. */
-std::vector<std::string> fetch_shuffle_list(int64_t guild_id, const std::string &category)
+std::vector<std::string> fetch_shuffle_list(uint64_t guild_id, const std::string &category)
 {
 	if (category.empty()) {
 		return to_list(fetch_page(fmt::format("?opt=shuffle&guild_id={}",guild_id)));
@@ -558,7 +558,7 @@ std::vector<std::string> fetch_shuffle_list(int64_t guild_id, const std::string 
 }
 
 /* Fetch a random insane round from the database, setting the question_id parameter and returning the question and all answers in a vector */
-std::vector<std::string> fetch_insane_round(int64_t &question_id, int64_t guild_id, const guild_settings_t &settings)
+std::vector<std::string> fetch_insane_round(uint64_t &question_id, uint64_t guild_id, const guild_settings_t &settings)
 {
 	std::vector<std::string> list;
 	db::resultset answers;
@@ -571,7 +571,7 @@ std::vector<std::string> fetch_insane_round(int64_t &question_id, int64_t guild_
 		answers = db::query("select id, trans_" + settings.language + " answer from insane_answers where question_id = ?", {question[0]["id"]});
 	}
 
-	question_id = from_string<int64_t>(question[0]["id"], std::dec);
+	question_id = from_string<uint64_t>(question[0]["id"], std::dec);
 	list.push_back(homoglyph(question[0]["question"]));
 
 	for (auto a = answers.begin(); a != answers.end(); ++a) {
@@ -583,7 +583,7 @@ std::vector<std::string> fetch_insane_round(int64_t &question_id, int64_t guild_
 }
 
 /* Send a DM hint to a user. TODO: Make D++ do this directly now its stable there */
-void send_hint(int64_t snowflake_id, const std::string &hint, uint32_t remaining)
+void send_hint(uint64_t snowflake_id, const std::string &hint, uint32_t remaining)
 {
 	later(fmt::format("?opt=customhint&user_id={}&hint={}&remaining={}", snowflake_id, url_encode(hint), remaining), "");
 }
@@ -606,13 +606,13 @@ void runcli(guild_settings_t settings, const std::string &command, uint64_t guil
 /* Farm out a custom command to the API to be handled completely via a PHP script. Some things are better done this way as the code is cleaner and more stable, e.g. the !rank/!globalrank command
  * Note: These are now directly executed via commandline NOT via a REST reqeust, bypassing apache as this is a ton faster.
  */
-void custom_command(const guild_settings_t& settings, TriviaModule* tm, const std::string &command, const std::string &parameters, int64_t user_id, int64_t channel_id, int64_t guild_id)
+void custom_command(const guild_settings_t& settings, TriviaModule* tm, const std::string &command, const std::string &parameters, uint64_t user_id, uint64_t channel_id, uint64_t guild_id)
 {
 	runcli(settings, command, guild_id, user_id, channel_id, parameters);
 }
 
 /* Update the score only, for a user during insane round */
-void update_score_only(int64_t snowflake_id, int64_t guild_id, int score, int64_t channel_id)
+void update_score_only(uint64_t snowflake_id, uint64_t guild_id, int score, uint64_t channel_id)
 {
 	// Replaced with direct db query for perforamance increase - 27Dec20
 	db::query("INSERT INTO scores (name, guild_id, score, dayscore, weekscore, monthscore) VALUES('?', '?', '?', '?', '?', '?') ON DUPLICATE KEY UPDATE score = score + ?, weekscore = weekscore + ?, monthscore = monthscore + ?, dayscore = dayscore + ?",
@@ -627,7 +627,7 @@ void check_achievement(const std::string &when, uint64_t user_id, uint64_t guild
 }
 
 /* Log the start of a game to the database via the API, used for resuming of games on crash or restart, plus the dashboard active games list */
-void log_game_start(int64_t guild_id, int64_t channel_id, int64_t number_questions, bool quickfire, const std::string &channel_name, int64_t user_id, const std::vector<std::string> &questions, bool hintless)
+void log_game_start(uint64_t guild_id, uint64_t channel_id, uint64_t number_questions, bool quickfire, const std::string &channel_name, uint64_t user_id, const std::vector<std::string> &questions, bool hintless)
 {
 	char hostname[1024];
 	hostname[1023] = '\0';
@@ -642,7 +642,7 @@ void log_game_start(int64_t guild_id, int64_t channel_id, int64_t number_questio
 }
 
 /* Log the end of a game, used for resuming games on crash or restart, plus the dashboard active games list */
-void log_game_end(int64_t guild_id, int64_t channel_id)
+void log_game_end(uint64_t guild_id, uint64_t channel_id)
 {
 	char hostname[1024];
 	hostname[1023] = '\0';
@@ -668,7 +668,7 @@ void log_game_end(int64_t guild_id, int64_t channel_id)
 }
 
 /* Update current question of a game, used for resuming games on crash or restart, plus the dashboard active games list */
-bool log_question_index(int64_t guild_id, int64_t channel_id, int32_t index, uint32_t streak, int64_t lastanswered, uint32_t state, int32_t qid)
+bool log_question_index(uint64_t guild_id, uint64_t channel_id, uint32_t index, uint32_t streak, uint64_t lastanswered, uint32_t state, uint32_t qid)
 {
 	char hostname[1024];
 	hostname[1023] = '\0';
@@ -690,7 +690,7 @@ bool log_question_index(int64_t guild_id, int64_t channel_id, int32_t index, uin
 		db::resultset ques = db::query("SELECT * FROM questions WHERE id = '?'", {qid});
 		db::query("UPDATE counters SET asked_15_min = asked_15_min + 1", {});
 		if (ques.size() > 0) {
-			int32_t category_id = from_string<int32_t>(ques[0]["category"], std::dec);
+			uint32_t category_id = from_string<uint32_t>(ques[0]["category"], std::dec);
 			db::query("UPDATE categories SET questions_asked = questions_asked + 1 WHERE id = '?'", {category_id});
 		}
 	}
@@ -699,7 +699,7 @@ bool log_question_index(int64_t guild_id, int64_t channel_id, int32_t index, uin
 }
 
 /* Update the score for a user and their team, during non-insane round */
-int32_t update_score(int64_t snowflake_id, int64_t guild_id, double recordtime, int64_t id, int score)
+uint32_t update_score(uint64_t snowflake_id, uint64_t guild_id, double recordtime, uint64_t id, int score)
 {
 	// Replaced with direct db query for perforamance increase - 27Dec20
 	db::query("UPDATE stats SET lastcorrect='?', record_time='?' WHERE id = ?", {snowflake_id, recordtime, id});
@@ -709,25 +709,25 @@ int32_t update_score(int64_t snowflake_id, int64_t guild_id, double recordtime, 
 
 	db::resultset r = db::query("SELECT dayscore FROM scores WHERE name = '?' AND guild_id = '?'", {snowflake_id, guild_id});
 	if (r.size()) {
-		return from_string<int32_t>(r[0]["dayscore"], std::dec);
+		return from_string<uint32_t>(r[0]["dayscore"], std::dec);
 	} else {
 		return 0;
 	}
 }
 
 /* Return a list of active games from the API, used for resuming on crash or restart and by the dashboard, populated by log_game_start(), log_game_end() and log_question_index() */
-json get_active(const std::string &hostname, int64_t cluster_id)
+json get_active(const std::string &hostname, uint64_t cluster_id)
 {
 	std::string active = fetch_page(fmt::format("?opt=getactive&hostname={}&cluster={}", hostname, cluster_id));
 	return json::parse(active);
 }
 
 /* Return a total count of questions from the database. The query can be expensive, avoid calling too frequently */
-int32_t get_total_questions()
+uint32_t get_total_questions()
 {
 	// Replaced with direct db query for perforamance increase - 27Dec20
 	db::resultset r = db::query("SELECT count(id) as total FROM questions", {});
-	return from_string<int32_t>(r[0]["total"], std::dec);
+	return from_string<uint32_t>(r[0]["total"], std::dec);
 }
 
 /* Return the current top ten players for the day for a guild, plus their scores */
@@ -743,7 +743,7 @@ std::vector<std::string> get_top_ten(uint64_t guild_id)
 }
 
 /* Return the current team name for a player, or an empty string */
-std::string get_current_team(int64_t snowflake_id)
+std::string get_current_team(uint64_t snowflake_id)
 {
 	// Replaced with direct db query for perforamance increase - 27Dec20
 	db::resultset r = db::query("SELECT team FROM team_membership WHERE nick = '?'", {snowflake_id});
@@ -755,14 +755,14 @@ std::string get_current_team(int64_t snowflake_id)
 }
 
 /* Make a player leave the current team if they are in one. REMOVES THE RECORD of their individual score contribution! */
-void leave_team(int64_t snowflake_id)
+void leave_team(uint64_t snowflake_id)
 {
 	// Replaced with direct db query for perforamance increase - 27Dec20
 	db::query("DELETE FROM team_membership WHERE nick = '?'", {snowflake_id});
 }
 
 /* Make a player join a team */
-bool join_team(int64_t snowflake_id, const std::string &team, int64_t channel_id)
+bool join_team(uint64_t snowflake_id, const std::string &team, uint64_t channel_id)
 {
 	if (check_team_exists(team)) {
 		std::string r = trim(fetch_page(fmt::format("?opt=setteam&nick={}&team={}&channel_id={}", snowflake_id, url_encode(team), channel_id)));
@@ -777,14 +777,14 @@ bool join_team(int64_t snowflake_id, const std::string &team, int64_t channel_id
 }
 
 /* Update the streak for a player on a guild */
-void change_streak(int64_t snowflake_id, int64_t guild_id, int score)
+void change_streak(uint64_t snowflake_id, uint64_t guild_id, int score)
 {
 	db::query("INSERT INTO streaks (nick, guild_id, streak) VALUES('?','?','?') ON DUPLICATE KEY UPDATE streak='?'", {snowflake_id, guild_id, score, score});
 	check_achievement("streak", snowflake_id, guild_id);
 }
 
 /* Get the current streak details for a player on a guild, and the best streak for the guild at present */
-streak_t get_streak(int64_t snowflake_id, int64_t guild_id)
+streak_t get_streak(uint64_t snowflake_id, uint64_t guild_id)
 {
 	// Replaced with direct db query for perforamance increase - 27Dec20
 	streak_t s;
@@ -818,7 +818,7 @@ bool check_team_exists(const std::string &team)
 }
 
 /* Add points to a team */
-void add_team_points(const std::string &team, int points, int64_t snowflake_id)
+void add_team_points(const std::string &team, int points, uint64_t snowflake_id)
 {
 	// Replaced with direct db query for perforamance increase - 27Dec20
 	db::query("UPDATE teams SET score = score + ? WHERE name = '?'", {points, team});
@@ -829,12 +829,12 @@ void add_team_points(const std::string &team, int points, int64_t snowflake_id)
 }
 
 /* Get the points of a team */
-int32_t get_team_points(const std::string &team)
+uint32_t get_team_points(const std::string &team)
 {
 	// Replaced with direct db query for performance increase - 27Dec20
 	db::resultset r = db::query("SELECT score FROM teams WHERE name = '?'", {team});
 	if (r.size()) {
-		return from_string<int32_t>(r[0]["score"], std::dec);
+		return from_string<uint32_t>(r[0]["score"], std::dec);
 	} else {
 		return 0;
 	}

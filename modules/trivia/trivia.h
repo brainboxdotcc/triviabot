@@ -112,13 +112,13 @@ public:
 	virtual bool OnGuildDelete(const dpp::guild_delete_t &gd);
 
 	/* Returns a local count */
-	int64_t GetActiveLocalGames();
+	uint64_t GetActiveLocalGames();
 
 	/* These return a sum across all clusters using the database */
-	int64_t GetActiveGames();
-	int64_t GetGuildTotal();
-	int64_t GetMemberTotal();
-	int64_t GetChannelTotal();
+	uint64_t GetActiveGames();
+	uint64_t GetGuildTotal();
+	uint64_t GetMemberTotal();
+	uint64_t GetChannelTotal();
 
 	guild_settings_t GetGuildSettings(dpp::snowflake guild_id);
 	std::string escape_json(const std::string &s);
@@ -134,9 +134,9 @@ public:
 	std::string conv_num(std::string datain, const guild_settings_t &settings);
 	std::string letterlong(std::string text, const guild_settings_t &settings);
 	std::string vowelcount(const std::string &text, const guild_settings_t &settings);
-	std::string numbertoname(int64_t number, const guild_settings_t& settings);
-	std::string GetNearestNumber(int64_t number, const guild_settings_t& settings);
-	int64_t GetNearestNumberVal(int64_t number, const guild_settings_t& settings);
+	std::string numbertoname(uint64_t number, const guild_settings_t& settings);
+	std::string GetNearestNumber(uint64_t number, const guild_settings_t& settings);
+	uint64_t GetNearestNumberVal(uint64_t number, const guild_settings_t& settings);
 	int min3(int x, int y, int z);
 	int levenstein(std::string str1, std::string str2);
 	bool is_number(const std::string &s);

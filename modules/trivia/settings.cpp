@@ -23,18 +23,18 @@
 
 #include "settings.h"
 
-guild_settings_t::guild_settings_t(int64_t _guild_id,
+guild_settings_t::guild_settings_t(uint64_t _guild_id,
 		const std::string &_prefix,
-		const std::vector<int64_t> &_moderator_roles,
+		const std::vector<uint64_t> &_moderator_roles,
 		uint32_t _embedcolour,
 		bool _premium,
 		bool _only_mods_stop,
 		bool _only_mods_start,
 		bool _role_reward_enabled,
-		int64_t _role_reward_id,
+		uint64_t _role_reward_id,
 		const std::string &_custom_url,
 		const std::string &_language,
-		int32_t _question_interval,
+		uint32_t _question_interval,
 		uint32_t max_normal,
 		uint32_t max_quickfire,
 		uint32_t max_hardcore,

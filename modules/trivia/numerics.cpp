@@ -155,7 +155,7 @@ std::string TriviaModule::conv_num(std::string datain, const guild_settings_t &s
 	return currency + std::to_string(initial);
 }
 
-std::string TriviaModule::numbertoname(int64_t number, const guild_settings_t& settings)
+std::string TriviaModule::numbertoname(uint64_t number, const guild_settings_t& settings)
 {
 	/* If there are multiple names for this number, this will randomly pick one */
 	db::resultset rs = db::query("SELECT * FROM numstrs WHERE value = ? ORDER BY rand() LIMIT 1", {number});
@@ -168,20 +168,20 @@ std::string TriviaModule::numbertoname(int64_t number, const guild_settings_t& s
 	return std::to_string(number);
 }
 
-std::string TriviaModule::GetNearestNumber(int64_t number, const guild_settings_t& settings)
+std::string TriviaModule::GetNearestNumber(uint64_t number, const guild_settings_t& settings)
 {
 	db::resultset rs = db::query("SELECT * FROM numstrs WHERE value <= ? ORDER BY value DESC LIMIT 1", {number});
 	if (rs.size()) {
-		return numbertoname(from_string<int64_t>(rs[0]["value"], std::dec), settings);
+		return numbertoname(from_string<uint64_t>(rs[0]["value"], std::dec), settings);
 	}
 	return "0";
 }
 
-int64_t TriviaModule::GetNearestNumberVal(int64_t number, const guild_settings_t& settings)
+uint64_t TriviaModule::GetNearestNumberVal(uint64_t number, const guild_settings_t& settings)
 {
 	db::resultset rs = db::query("SELECT value FROM numstrs WHERE value <= ? ORDER BY value DESC LIMIT 1", {number});
 	if (rs.size()) {
-		return from_string<int64_t>(rs[0]["value"], std::dec);
+		return from_string<uint64_t>(rs[0]["value"], std::dec);
 	}
 	return 0;
 }
@@ -196,7 +196,7 @@ std::string TriviaModule::MakeFirstHint(const std::string &s, const guild_settin
 	std::string Q;
 	if (is_number(s)) {
 		std::string plus = _("COMMA_PLUS_SPACE", settings);
-		int64_t n = from_string<int64_t>(s, std::dec);
+		uint64_t n = from_string<uint64_t>(s, std::dec);
 		while (GetNearestNumberVal(n, settings) != 0 && n > 0) {
 			Q.append(GetNearestNumber(n, settings)).append(plus);
 			n -= GetNearestNumberVal(n, settings);
