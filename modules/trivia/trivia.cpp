@@ -375,7 +375,7 @@ guild_settings_t TriviaModule::GetGuildSettings(dpp::snowflake guild_id)
 std::string TriviaModule::GetVersion()
 {
 	/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-	std::string version = "$ModVer 85$";
+	std::string version = "$ModVer 86$";
 	return "3.0." + version.substr(8,version.length() - 9);
 }
 
@@ -516,6 +516,7 @@ void TriviaModule::CheckForQueuedStarts()
 		if (g) {
 
 			uint64_t channel_id = from_string<uint64_t>((*r)["channel_id"], std::dec);
+			uint64_t guild_id = from_string<uint64_t>((*r)["guild_id"], std::dec);
 			uint64_t user_id = from_string<uint64_t>((*r)["user_id"], std::dec);
 			uint32_t questions = from_string<uint32_t>((*r)["questions"], std::dec);
 			uint32_t quickfire = from_string<uint32_t>((*r)["quickfire"], std::dec);
@@ -526,6 +527,7 @@ void TriviaModule::CheckForQueuedStarts()
 			guild_settings_t settings = GetGuildSettings(guild_id);
 			dpp::message m(channel_id, fmt::format("{}{} {}{}", settings.prefix, (hintless ? "hardcore" : (quickfire ? "quickfire" : "start")), questions, (category.empty() ? "" : (std::string(" ") + category))));
 			m.author = dpp::find_user(user_id);
+			m.guild_id = guild_id;
 			struct dpp::message_create_t msg(nullptr, "");
 			msg.msg = &m;
 
