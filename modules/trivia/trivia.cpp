@@ -375,7 +375,7 @@ guild_settings_t TriviaModule::GetGuildSettings(dpp::snowflake guild_id)
 std::string TriviaModule::GetVersion()
 {
 	/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-	std::string version = "$ModVer 87$";
+	std::string version = "$ModVer 88$";
 	return "3.0." + version.substr(8,version.length() - 9);
 }
 
@@ -506,6 +506,8 @@ void state_t::StopGame(const guild_settings_t &settings)
 	}
 }
 
+dpp::user dummyuser;
+
 void TriviaModule::CheckForQueuedStarts()
 {
 	db::resultset rs = db::query("SELECT * FROM start_queue ORDER BY queuetime", {});
@@ -523,15 +525,9 @@ void TriviaModule::CheckForQueuedStarts()
 			std::string category = (*r)["category"];
 
 			bot->core->log(dpp::ll_info, fmt::format("Remote start, guild_id={} channel_id={} user_id={} questions={} type={} category='{}'", guild_id, channel_id, user_id, questions, hintless ? "hardcore" : (quickfire ? "quickfire" : "normal"), category));
-			guild_settings_t settings = GetGuildSettings(guild_id);
-			dpp::message m(channel_id, fmt::format("{}{} {}{}", settings.prefix, (hintless ? "hardcore" : (quickfire ? "quickfire" : "start")), questions, (category.empty() ? "" : (std::string(" ") + category))));
-			m.author = dpp::find_user(user_id);
-			m.guild_id = guild_id;
-			struct dpp::message_create_t msg(nullptr, "");
-			msg.msg = &m;
 
-			RealOnMessage(msg, m.content, false, {}, user_id);
-	
+			queue_command(fmt::format("{} {}{}", (hintless ? "hardcore" : (quickfire ? "quickfire" : "start")), questions, (category.empty() ? "" : (std::string(" ") + category))), user_id, channel_id, guild_id, false, "Dashboard", true);
+
 			/* Delete just this entry as we've processed it */
 			db::query("DELETE FROM start_queue WHERE channel_id = ?", {channel_id});
 		}

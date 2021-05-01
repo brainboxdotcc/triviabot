@@ -470,7 +470,7 @@ void cache_user(const dpp::user *_user, const dpp::guild *_guild, const dpp::gui
 			db::query("INSERT INTO trivia_role_cache (id, guild_id, colour, permissions, position, hoist, managed, mentionable, name) VALUES('?', '?', '?', '?', '?', '?', '?', '?', '?') ON DUPLICATE KEY UPDATE colour = '?', permissions = '?', position = '?', hoist = '?', managed = '?', mentionable = '?', name = '?'",
 			{
 				r->id, guild_id, r->colour, r->permissions, r->position, (r->is_hoisted() ? 1 : 0), (r->is_managed() ? 1 : 0), (r->is_mentionable() ? 1 : 0), r->name,
-				r->colour, r->permissions, r->position, (r->is_hoisted() ? 1 : 0), (r->is_managed() ? 1 : 0), (r->is_mentionable() ? 1 : 0), r->name,
+				r->colour, r->permissions, r->position, (r->is_hoisted() ? 1 : 0), (r->is_managed() ? 1 : 0), (r->is_mentionable() ? 1 : 0), r->name
 			});
 		}
 	}

@@ -79,6 +79,8 @@ void TriviaModule::SetupCommands()
 	};
 }
 
+dpp::user dashboard_dummy;
+
 void TriviaModule::handle_command(const in_cmd &cmd) {
 
 	try {
@@ -90,6 +92,11 @@ void TriviaModule::handle_command(const in_cmd &cmd) {
 	
 			dpp::channel* c = dpp::find_channel(cmd.channel_id);
 			dpp::user* user = dpp::find_user(cmd.author_id);
+			if (cmd.from_dashboard) {
+				dashboard_dummy.username = "Dashboard";
+				dashboard_dummy.flags = 0;
+				user = &dashboard_dummy;
+			}
 			if (!c || !user) {
 				return;
 			}
@@ -98,7 +105,7 @@ void TriviaModule::handle_command(const in_cmd &cmd) {
 	
 			/* Check for moderator status - first check if owner */
 			dpp::guild* g = dpp::find_guild(cmd.guild_id);
-			bool moderator = (g && g->owner_id == cmd.author_id);
+			bool moderator = (g && (cmd.from_dashboard || g->owner_id == cmd.author_id));
 			/* Now iterate the list of moderator roles from settings */
 			if (!moderator) {
 				if (g) {
