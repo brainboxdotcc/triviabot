@@ -303,14 +303,15 @@ int main(int argc, char** argv) {
 	std::ifstream configfile("../config.json");
 	configfile >> configdocument;
 
-	/* Get the correct token from config file for either development or production environment */
-	std::string token = (dev ? Bot::GetConfig("devtoken") : Bot::GetConfig("livetoken"));
-
 	/* Connect to SQL database */
 	if (!db::connect(Bot::GetConfig("dbhost"), Bot::GetConfig("dbuser"), Bot::GetConfig("dbpass"), Bot::GetConfig("dbname"), from_string<uint32_t>(Bot::GetConfig("dbport"), std::dec))) {
 		std::cerr << "Database connection failed\n";
 		exit(2);
 	}
+
+
+	/* Get the correct token from config file for either development or production environment */
+	std::string token = (dev ? Bot::GetConfig("devtoken") : Bot::GetConfig("livetoken"));
 
 	/* It's go time! */
 	while (true) {

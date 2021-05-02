@@ -37,6 +37,7 @@
 #include "webrequest.h"
 #include "piglatin.h"
 #include "wlower.h"
+#include "time.h"
 
 using json = nlohmann::json;
 
@@ -153,7 +154,7 @@ bool TriviaModule::OnPresenceUpdate()
 	for (auto i = shards.begin(); i != shards.end(); ++i) {
 		dpp::DiscordClient* shard = i->second;
 		uint64_t uptime = shard->Uptime().secs + (shard->Uptime().mins * 60) + (shard->Uptime().hours * 60 * 60) + (shard->Uptime().days * 60 * 60 * 24);
-		db::query("INSERT INTO infobot_shard_status (id, cluster_id, connected, online, uptime, transfer, transfer_compressed) VALUES('?','?','?','?','?','?','?') ON DUPLICATE KEY UPDATE cluster_id = '?', connected = '?', online = '?', uptime = '?', transfer = '?', transfer_compressed = '?'",
+		db::backgroundquery("INSERT INTO infobot_shard_status (id, cluster_id, connected, online, uptime, transfer, transfer_compressed) VALUES('?','?','?','?','?','?','?') ON DUPLICATE KEY UPDATE cluster_id = '?', connected = '?', online = '?', uptime = '?', transfer = '?', transfer_compressed = '?'",
 			{
 				shard->shard_id,
 				bot->GetClusterID(),
@@ -287,7 +288,7 @@ bool TriviaModule::OnGuildDelete(const dpp::guild_delete_t &gd)
 {
 	/* Unavailable guilds means an outage. We don't remove them if it's just an outage */
 	if (!gd.deleted->is_unavailable()) {
-		db::query("UPDATE trivia_guild_cache SET kicked = 1 WHERE snowflake_id = ?", {gd.deleted->id});
+		db::backgroundquery("UPDATE trivia_guild_cache SET kicked = 1 WHERE snowflake_id = ?", {gd.deleted->id});
 		bot->core->log(dpp::ll_info, fmt::format("Kicked from guild id {}", gd.deleted->id));
 	} else {
 		bot->core->log(dpp::ll_info, fmt::format("Outage on guild id {}", gd.deleted->id));
@@ -386,7 +387,7 @@ const guild_settings_t& TriviaModule::GetGuildSettings(dpp::snowflake guild_id)
 		}
 		return *gs;
 	} else {
-		db::query("INSERT INTO bot_guild_settings (snowflake_id) VALUES('?')", {guild_id});
+		db::backgroundquery("INSERT INTO bot_guild_settings (snowflake_id) VALUES('?')", {guild_id});
 		guild_settings_t* gs = new guild_settings_t(time(NULL), guild_id, "!", {}, 3238819, false, false, false, false, 0, "", "en", 20, 200, 15, 200, false);
 		{
 			 std::lock_guard<std::mutex> locker(settingcache_mutex);
@@ -399,7 +400,7 @@ const guild_settings_t& TriviaModule::GetGuildSettings(dpp::snowflake guild_id)
 std::string TriviaModule::GetVersion()
 {
 	/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-	std::string version = "$ModVer 89$";
+	std::string version = "$ModVer 90$";
 	return "3.0." + version.substr(8,version.length() - 9);
 }
 
@@ -586,6 +587,7 @@ bool TriviaModule::RealOnMessage(const dpp::message_create_t &message, const std
 	std::string username;
 	dpp::message msg = *(message.msg);
 	bool is_from_dashboard = (_author_id != 0);
+	double start = time_f();
 
 	// Allow overriding of author id from remote start code
 	uint64_t author_id = _author_id ? _author_id : msg.author->id;
@@ -607,36 +609,47 @@ bool TriviaModule::RealOnMessage(const dpp::message_create_t &message, const std
 	if (msg.channel_id == 0) {
 		/* No channel! */
 		bot->core->log(dpp::ll_debug, fmt::format("Message without channel, M:{} A:{}", msg.id, author_id));
-		return true;
-	}
+	} else {
 
-	guild_settings_t settings = GetGuildSettings(guild_id);
-
-	if (mentioned && prefix_match->Match(clean_message)) {
-		bot->core->message_create(dpp::message(channel_id, fmt::format(_("PREFIX", settings), settings.prefix, settings.prefix)));
-		bot->core->log(dpp::ll_debug, fmt::format("Respond to prefix request on channel C:{} A:{}", channel_id, author_id));
-		return false;
-	}
-
-	// Commands
-	if (lowercase(clean_message.substr(0, settings.prefix.length())) == lowercase(settings.prefix)) {
-		std::string command = clean_message.substr(settings.prefix.length(), clean_message.length() - settings.prefix.length());
-		if (user != nullptr) {
-			queue_command(command, author_id, channel_id, guild_id, mentioned, username, is_from_dashboard);
-			bot->core->log(dpp::ll_info, fmt::format("CMD (USER={}, GUILD={}): <{}> {}", author_id, guild_id, username, clean_message));
+		guild_settings_t settings = GetGuildSettings(guild_id);
+	
+		if (mentioned && prefix_match->Match(clean_message)) {
+			bot->core->message_create(dpp::message(channel_id, fmt::format(_("PREFIX", settings), settings.prefix, settings.prefix)));
+			bot->core->log(dpp::ll_debug, fmt::format("Respond to prefix request on channel C:{} A:{}", channel_id, author_id));
 		} else {
-			bot->core->log(dpp::ll_debug, fmt::format("User is null when handling command. C:{} A:{}", channel_id, author_id));
+
+			// Commands
+			if (lowercase(clean_message.substr(0, settings.prefix.length())) == lowercase(settings.prefix)) {
+				std::string command = clean_message.substr(settings.prefix.length(), clean_message.length() - settings.prefix.length());
+				if (user != nullptr) {
+					queue_command(command, author_id, channel_id, guild_id, mentioned, username, is_from_dashboard);
+					bot->core->log(dpp::ll_info, fmt::format("CMD (USER={}, GUILD={}): <{}> {}", author_id, guild_id, username, clean_message));
+				} else {
+					bot->core->log(dpp::ll_debug, fmt::format("User is null when handling command. C:{} A:{}", channel_id, author_id));
+				}
+			}
+		
+			// Answers for active games
+			{
+				std::lock_guard<std::mutex> states_lock(states_mutex);
+				state_t* state = GetState(channel_id);
+				if (state) {
+					/* The state_t class handles potential answers, but only when a game is running on this guild */
+					state->queue_message(clean_message, author_id, username, mentioned);
+					bot->core->log(dpp::ll_debug, fmt::format("Processed potential answer message from A:{} on C:{}", author_id, channel_id));
+				}
+			}
 		}
 	}
-	
-	// Answers for active games
-	{
-		std::lock_guard<std::mutex> states_lock(states_mutex);
-		state_t* state = GetState(channel_id);
-		if (state) {
-			/* The state_t class handles potential answers, but only when a game is running on this guild */
-			state->queue_message(clean_message, author_id, username, mentioned);
-			bot->core->log(dpp::ll_debug, fmt::format("Processed potential answer message from A:{} on C:{}", author_id, channel_id));
+
+	double end = time_f();
+	double time_taken = end - start;
+
+	if (bot->IsDevMode()) {
+		bot->core->log(dpp::ll_debug, fmt::format("Message processing took {:.4f} seconds, channel: {}", time_taken, msg.channel_id));
+	} else {
+		if (time_taken > 0.1) {
+			 bot->core->log(dpp::ll_warning, fmt::format("Message processing took {:.4f} seconds!!! Channel: {}", time_taken, msg.channel_id));
 		}
 	}
 

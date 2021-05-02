@@ -49,6 +49,7 @@ namespace db {
 	bool close();
 	/* Issue a database query and return results */
 	resultset query(const std::string &format, const paramlist &parameters);
+	void backgroundquery(const std::string &format, const paramlist &parameters);
 	/* Returns the last error string */
 	const std::string& error();
 };
