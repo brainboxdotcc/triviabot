@@ -263,14 +263,15 @@ void state_t::handle_message(const in_msg& m)
 				if (coin) {
 					/* Player got a coin drop! */
 					thumbnail = "https://triviabot.co.uk/images/coin.gif";
-					/* TODO: Award coin */
-					db::query("INSERT INTO coins (user_id, balance) VALUES(?, 1) ON DUPLICATE KEY UPDATE balance = balance + 1", {m.author_id});
+					/* TODO: Award 100 + rand coins */
+					uint32_t coins = 100 + creator->random(0, 50);
+					db::query("INSERT INTO coins (user_id, balance) VALUES(?, ?) ON DUPLICATE KEY UPDATE balance = balance + ?", {m.author_id, coins});
 					db::resultset rs = db::query("SELECT * FROM coins WHERE user_id = ?", {m.author_id});
 					uint64_t current = 0;
 					if (rs.size()) {
 						current = from_string<uint64_t>(rs[0]["balance"], std::dec);
 					}
-					ans_message.append("\n\n**").append(fmt::format(_(std::string("COIN_DROP_") + std::to_string(creator->random(1, 4)), settings), m.username, current)).append("**");
+					ans_message.append("\n\n**").append(fmt::format(_(std::string("COIN_DROP_") + std::to_string(creator->random(1, 4)), settings), m.username, coins, current)).append("**");
 
 				}
 

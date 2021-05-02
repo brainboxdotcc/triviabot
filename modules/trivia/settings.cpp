@@ -23,7 +23,7 @@
 
 #include "settings.h"
 
-guild_settings_t::guild_settings_t(uint64_t _guild_id,
+guild_settings_t::guild_settings_t(time_t now, uint64_t _guild_id,
 		const std::string &_prefix,
 		const std::vector<uint64_t> &_moderator_roles,
 		uint32_t _embedcolour,
@@ -40,6 +40,7 @@ guild_settings_t::guild_settings_t(uint64_t _guild_id,
 		uint32_t max_hardcore,
 		bool disableinsane)
 	        :
+			time(now),
 			guild_id(_guild_id),
 			prefix(_prefix),
 			moderator_roles(_moderator_roles),

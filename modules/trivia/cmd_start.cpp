@@ -124,6 +124,25 @@ void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 				}
 			}
 		}
+	} else {
+		size_t number_of_games = 0;
+		std::lock_guard<std::mutex> states_lock(creator->states_mutex);
+		for (auto j = creator->states.begin(); j != creator->states.end(); ++j) {
+			if (j->second.guild_id == cmd.guild_id) {
+				if (cmd.from_dashboard && j->second.gamestate != TRIV_END && j->second.channel_id != cmd.channel_id) {
+					creator->SimpleEmbed(settings, ":octagonal_sign:", _("DASH_STOP", settings), j->first, _("STOPPING", settings));
+					log_game_end(cmd.guild_id, j->first);
+					creator->states.erase(j);
+					break;
+				} else {
+					number_of_games++;
+				}
+			}
+		}
+		if (number_of_games >= 2) {
+			creator->SimpleEmbed(settings, ":octagonal_sign:", _("TOO_MANY_PREM", settings), cmd.channel_id);
+			return;
+		}
 	}
 
 	/* Stop and REPLACE existing games if from dashboard */

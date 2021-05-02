@@ -120,7 +120,7 @@ public:
 	uint64_t GetMemberTotal();
 	uint64_t GetChannelTotal();
 
-	guild_settings_t GetGuildSettings(dpp::snowflake guild_id);
+	const guild_settings_t& GetGuildSettings(dpp::snowflake guild_id);
 	std::string escape_json(const std::string &s);
 	void ProcessEmbed(const class guild_settings_t& settings, const std::string &embed_json, dpp::snowflake channelID);
 	void SimpleEmbed(const class guild_settings_t& settings, const std::string &emoji, const std::string &text, dpp::snowflake channelID, const std::string &title = "", const std::string &image = "", const std::string &thumbnail = "");
