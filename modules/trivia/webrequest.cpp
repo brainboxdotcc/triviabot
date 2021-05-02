@@ -681,6 +681,15 @@ bool log_question_index(uint64_t guild_id, uint64_t channel_id, uint32_t index, 
 	guild_settings_t settings = module->GetGuildSettings(guild_id);
 	bool should_stop = false;
 
+	{
+		std::lock_guard<std::mutex> locker(module->cs_mutex);
+		last_streak_t t;
+		t.lastanswered = lastanswered;
+		t.streak = streak;
+		t.time = time(NULL);
+		module->last_channel_streaks[channel_id] = t;
+	}
+
 	/* Update game details */
 	db::query("UPDATE active_games SET cluster_id = '?', question_index = '?', streak = '?', lastanswered = '?', state = '?' WHERE guild_id = '?' AND channel_id = '?' AND hostname = '?'",
 			{cluster_id, index, streak, lastanswered, state, guild_id, channel_id, std::string(hostname)});

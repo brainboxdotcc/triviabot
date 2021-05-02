@@ -61,6 +61,12 @@ struct guild_cache_queued_t
 	dpp::snowflake owner_id;
 };
 
+struct last_streak_t {
+	uint32_t streak;
+	time_t time;
+	dpp::snowflake lastanswered;
+};
+
 /**
  * Module class for trivia system
  */
@@ -97,6 +103,10 @@ public:
 	json* lang;
 	std::mutex states_mutex;
 	std::map<dpp::snowflake, state_t> states;
+
+	std::mutex cs_mutex;	
+	std::unordered_map<dpp::snowflake, last_streak_t> last_channel_streaks;
+
 	TriviaModule(Bot* instigator, ModuleLoader* ml);
 	Bot* GetBot();
 	virtual ~TriviaModule();

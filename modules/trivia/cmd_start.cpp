@@ -226,6 +226,24 @@ void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 			}
 
 			CheckCreateWebhook(settings, creator, cmd.channel_id);
+
+			uint32_t currstreak = 1;
+			uint64_t lastanswered = 0;
+
+			{
+				std::lock_guard<std::mutex> locker(creator->cs_mutex);
+				auto i = creator->last_channel_streaks.find(cmd.channel_id);
+				if (i != creator->last_channel_streaks.end()) {
+					if (time(NULL) < i->second.time + 600) {
+						lastanswered = i->second.lastanswered;
+						currstreak = i->second.streak;
+						creator->GetBot()->core->log(dpp::ll_debug, fmt::format("Carrying over streak from previous game on channel id {}, last to answer: {}, streak: {}", cmd.channel_id, lastanswered, currstreak));
+					} else {
+						creator->last_channel_streaks.erase(i);
+						creator->GetBot()->core->log(dpp::ll_debug, fmt::format("Streak for channel id {} not carried over, as it is over 10 minutes old", cmd.channel_id));
+					}
+				}
+			}
 			
 			{
 				std::lock_guard<std::mutex> states_lock(creator->states_mutex);
@@ -233,8 +251,8 @@ void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 				creator->states[cmd.channel_id] = state_t(
 					creator,
 					questions+1,
-					1,
-					0,
+					currstreak,
+					lastanswered,
 					1,
 					(quickfire ? (TRIV_INTERVAL / 4) : TRIV_INTERVAL),
 					cmd.channel_id,
