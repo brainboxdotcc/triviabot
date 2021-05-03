@@ -320,7 +320,7 @@ void state_t::handle_message(const in_msg& m)
 					if (rs.size()) {
 						current = from_string<uint64_t>(rs[0]["balance"], std::dec);
 					}
-					ans_message.append("\n\n**").append(fmt::format(_(std::string("COIN_DROP_") + std::to_string(creator->random(1, 4)), settings), m.username, current + coins, current)).append("**");
+					ans_message.append("\n\n**").append(fmt::format(_(std::string("COIN_DROP_") + std::to_string(creator->random(1, 4)), settings), m.username, coins, current + coins)).append("**");
 
 				}
 
