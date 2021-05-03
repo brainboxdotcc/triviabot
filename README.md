@@ -25,14 +25,10 @@ Currently only **Linux** is supported, but other UNIX-style platforms should bui
 
 * [cmake](https://cmake.org/) (version 3.13+)
 * [g++](https://gcc.gnu.org) (version 8+)
-* gdb for debugging on development servers (any recent version)
-* [aegis.cpp](https://github.com/zeroxs/aegis.cpp) (development branch)
-* [asio](https://think-async.com/Asio/) (included with aegis.cpp)
-* [websocketpp](https://github.com/zaphoyd/websocketpp) (included with aegis.cpp)
-* [nlohmann::json](https://github.com/nlohmann/json) (included with aegis.cpp)
+* [D++](https://github.com/brainboxdotcc/DPP) (development branch)
 * [PCRE](https://www.pcre.org/) (whichever -dev package comes with your OS)
 * [MySQL Client Libraries](https://dev.mysql.com/downloads/c-api/) (whichever -dev package comes with your OS)
-* [ZLib](https://www.zlib.net/) (whichever -dev package comes with your OS)
+* [spdlog](https://github.com/gabime/spdlog)
 
 # Setup
 
@@ -101,4 +97,5 @@ run.sh will restart the bot executable continually if it dies. If the bot quits,
 | 1.0 / 2004      | IRC                            | [WinBot](https://www.winbot.co.uk) 2.3             | WinBotScript (WBS)  | Discontinued |
 | 2.0 / 2005      | IRC                            | [WinBot](https://www.winbot.co.uk) 2.3             | PlugPerl (Perl 5.6) | Discontinued |
 | 3.0 / 2005      | IRC                            | [Botnix](https://www.botnix.org) 1.0 Beta 1        | Perl 5.6            | Discontinued |
-| 4.0 / 2020      | [Discord](https://discord.com) | [Sporks](https://sporks.gg), [aegis.cpp](https://github.com/zeroxs/aegis.cpp)   | C++17               | Active       |
+| 4.0 / 2020      | [Discord](https://discord.com) | [Sporks](https://sporks.gg), [aegis.cpp](https://github.com/zeroxs/aegis.cpp)   | C++17               | Discontinued |
+| 5.0 / 2021      | [Discord](https://discord.com) | [Sporks](https://sporks.gg), [D++](https://github.com/brainboxdotcc/DPP)   | C++17               | Active       |
