@@ -82,6 +82,8 @@ class state_t
 	bool hintless;
 	std::map<std::string, bool> insane;
 	std::map<uint64_t, time_t> activity;
+	std::unordered_map<dpp::snowflake, uint64_t> scores;
+	std::unordered_map<dpp::snowflake, uint32_t> insane_round_stats;
 
 	state_t(const state_t &) = default;
 	state_t();
@@ -100,5 +102,10 @@ class state_t
 	void do_end_game();
 	void StopGame(const guild_settings_t &settings);
 	bool is_insane_round();
+	uint64_t get_score(dpp::snowflake uid);
+	void set_score(dpp::snowflake uid, uint64_t score);
+	void add_score(dpp::snowflake uid, uint64_t addition);
+	void clear_insane_stats();
+	void add_insane_stats(dpp::snowflake uid);
 };
 

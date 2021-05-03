@@ -717,12 +717,7 @@ uint32_t update_score(uint64_t snowflake_id, uint64_t guild_id, double recordtim
 			{snowflake_id, guild_id, score, score, score, score, score, score, score, score});
 	db::backgroundquery("INSERT INTO scores_lastgame (guild_id, user_id, score) VALUES('?', '?', '?') ON DUPLICATE KEY UPDATE score = score + ?", {guild_id, snowflake_id, score, score});
 
-	db::resultset r = db::query("SELECT dayscore FROM scores WHERE name = '?' AND guild_id = '?'", {snowflake_id, guild_id});
-	if (r.size()) {
-		return from_string<uint32_t>(r[0]["dayscore"], std::dec);
-	} else {
-		return 0;
-	}
+	return 0;
 }
 
 /* Return a list of active games from the API, used for resuming on crash or restart and by the dashboard, populated by log_game_start(), log_game_end() and log_question_index() */

@@ -71,7 +71,51 @@ state_t::state_t(TriviaModule* _creator, uint32_t questions, uint32_t currstreak
 {
 	creator->GetBot()->core->log(dpp::ll_debug, fmt::format("state_t::state_t()"));
 	insane.clear();
+	db::resultset rs = db::query("SELECT name, dayscore FROM scores WHERE guild_id = ? AND dayscore > 0", {guild_id});
+	if (rs.size()) {
+		for (auto s = rs.begin(); s != rs.end(); ++s) {
+			scores[from_string<uint64_t>((*s)["name"], std::dec)] = from_string<uint64_t>((*s)["dayscore"], std::dec);
+		}
+		creator->GetBot()->core->log(dpp::ll_debug, fmt::format("Cached {} guild scores for game on channel {}", rs.size(), channel_id));
+	}
 }
+
+uint64_t state_t::get_score(dpp::snowflake uid)
+{
+	auto i = scores.find(uid);
+	if (i != scores.end()) {
+		return i->second;
+	} else {
+		return 0;
+	}
+}
+
+void state_t::set_score(dpp::snowflake uid, uint64_t score)
+{
+	scores[uid] = score;
+}
+
+void state_t::add_score(dpp::snowflake uid, uint64_t addition)
+{
+	uint64_t oldscore = get_score(uid);
+	set_score(uid, oldscore + addition);
+}
+
+void state_t::clear_insane_stats()
+{
+	insane_round_stats = {};
+}
+
+void state_t::add_insane_stats(dpp::snowflake uid)
+{
+	auto i = insane_round_stats.find(uid);
+	if (i != insane_round_stats.end()) {
+		insane_round_stats[uid] = i->second + 1;
+	} else {
+		insane_round_stats[uid] = 1;
+	}
+}
+
 
 std::string state_t::_(const std::string &k, const guild_settings_t& settings)
 {
@@ -175,9 +219,12 @@ void state_t::handle_message(const in_msg& m)
 				}
 				creator->CacheUser(m.author_id, channel_id);
 				update_score_only(m.author_id, guild_id, 1, channel_id);
+				add_score(m.author_id, 1);
+				add_insane_stats(m.author_id);
 
 				if (done) {
 					do_insane_board();
+					clear_insane_stats();
 					/* Only save state if all answers have been found */
 					if (log_question_index(guild_id, channel_id, round, streak, last_to_answer, gamestate, 0)) {
 						StopGame(settings);
@@ -226,7 +273,9 @@ void state_t::handle_message(const in_msg& m)
 					ans_message.append(fmt::format(_("RECORD_TIME", settings), m.username));
 					submit_time = time_to_answer;
 				}
-				uint32_t newscore = update_score(m.author_id, guild_id, submit_time, question.id, score);
+				update_score(m.author_id, guild_id, submit_time, question.id, score);
+				add_score(m.author_id, score);
+				uint64_t newscore = get_score(m.author_id);
 				ans_message.append(fmt::format(_("SCORE_UPDATE", settings), m.username, newscore ? newscore : score));
 
 				std::string teamname = get_current_team(m.author_id);
@@ -569,18 +618,20 @@ void state_t::do_first_hint()
 
 void state_t::do_insane_board() {
 	/* Last round was an insane round, display insane round score table embed if there were any participants */
-	db::resultset insane_stats = db::query("SELECT *, get_emojis(trivia_user_cache.snowflake_id) as emojis FROM insane_round_statistics INNER JOIN trivia_user_cache ON trivia_user_cache.snowflake_id = insane_round_statistics.user_id WHERE channel_id = '?' ORDER BY score DESC", {channel_id});
 	std::string desc;
 	uint32_t i = 1;
-	for (auto sc = insane_stats.begin(); sc != insane_stats.end(); ++sc) {
-		desc += fmt::format("**#{0}** `{1}#{2:04d}` (*{3}*) {4}\n", i, (*sc)["username"], from_string<uint32_t>((*sc)["discriminator"], std::dec), Comma(from_string<uint32_t>((*sc)["score"], std::dec)), (*sc)["emojis"]);
+	for (auto sc = insane_round_stats.begin(); sc != insane_round_stats.end(); ++sc) {
+		db::resultset info = db::query("SELECT username, discriminator, get_emojis(trivia_user_cache.snowflake_id) as emojis FROM trivia_user_cache WHERE snowflake_id = ?", {sc->first});
+		if (info.size()) {
+			desc += fmt::format("**#{0}** `{1}#{2:04d}` (*{3}*) {4}\n", i, info[0]["username"], from_string<uint32_t>(info[0]["discriminator"], std::dec), Comma(sc->second), info[0]["emojis"]);
+		}
 		i++;
 	}
 	if (!desc.empty()) {
 		guild_settings_t settings = creator->GetGuildSettings(guild_id);
 		creator->SimpleEmbed(settings, "", desc, channel_id, _("INSANESTATS", settings));
 	}
-	db::query("DELETE FROM insane_round_statistics WHERE channel_id = '?'", {channel_id});
+	db::backgroundquery("DELETE FROM insane_round_statistics WHERE channel_id = '?'", {channel_id});
 }
 
 /* State machine event for second hint */
@@ -619,6 +670,7 @@ void state_t::do_time_up()
 			content += fmt::format(_("INSANE_FOUND", settings), found);
 			title = _("TIME_UP", settings);
 			do_insane_board();
+			clear_insane_stats();
 
 		} else if (question.answer != "") {
 			/* Not insane round */
