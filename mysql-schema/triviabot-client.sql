@@ -1,19 +1,7 @@
-SET FOREIGN_KEY_CHECKS=0;
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET AUTOCOMMIT = 0;
-START TRANSACTION;
 SET time_zone = "+00:00";
 
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
-
-CREATE DATABASE IF NOT EXISTS `triviabot` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
-USE `triviabot`;
-
 DELIMITER $$
-DROP PROCEDURE IF EXISTS `add_question`$$
 CREATE DEFINER=`admin`@`localhost` PROCEDURE `add_question` (IN `_question` VARCHAR(255) CHARSET utf8mb4, IN `_answer` VARCHAR(255) CHARSET utf8mb4, IN `_category_id` INT(20) UNSIGNED, IN `_hint1` VARCHAR(255) CHARSET utf8mb4, IN `_hint2` VARCHAR(255) CHARSET utf8mb4, IN `_question_img` VARCHAR(255) CHARSET latin1, IN `_answer_img` VARCHAR(255) CHARSET latin1)  MODIFIES SQL DATA
     SQL SECURITY INVOKER
 BEGIN
@@ -27,7 +15,6 @@ UPDATE counters SET qcount = qcount + 1;
 COMMIT;
 END$$
 
-DROP FUNCTION IF EXISTS `count_remaining`$$
 CREATE DEFINER=`admin`@`localhost` FUNCTION `count_remaining` (`_guild_id` BIGINT(20) UNSIGNED) RETURNS BIGINT(20) UNSIGNED READS SQL DATA
     SQL SECURITY INVOKER
     COMMENT 'Counts remaining enabled questions'
@@ -38,7 +25,6 @@ RETURN
 (SELECT SUM(IF(guild_id IS NULL, 0, (SELECT COUNT(*) FROM questions WHERE category = categories.id))) AS total_disabled FROM categories LEFT JOIN disabled_categories ON categories.id = disabled_categories.category_id AND guild_id = _guild_id WHERE disabled != 1);
 END$$
 
-DROP FUNCTION IF EXISTS `find_list_in_list`$$
 CREATE DEFINER=`admin`@`localhost` FUNCTION `find_list_in_list` (`list1` VARCHAR(8192) CHARSET ascii, `list2` VARCHAR(8192) CHARSET ascii) RETURNS TINYINT(1) UNSIGNED NO SQL
     DETERMINISTIC
     SQL SECURITY INVOKER
@@ -59,9 +45,27 @@ END IF;
 return 0;
 END$$
 
-DROP FUNCTION IF EXISTS `is_admin`$$
+CREATE DEFINER=`admin`@`localhost` FUNCTION `get_all_emojis` (`_user_id` BIGINT(20) UNSIGNED) RETURNS TEXT CHARSET utf8mb4 READS SQL DATA
+    DETERMINISTIC
+    SQL SECURITY INVOKER
+    COMMENT 'Returns all emojis for a player which they''ve purchased'
+RETURN (SELECT GROUP_CONCAT(JSON_VALUE(object_data, '$.emoji')  SEPARATOR '') AS tat FROM shop WHERE object_type = 'tat' AND id IN (SELECT shop_id FROM inventory WHERE user_id = _user_id))$$
+
+CREATE DEFINER=`admin`@`localhost` FUNCTION `get_emojis` (`_user_id` BIGINT(20) UNSIGNED) RETURNS TEXT CHARSET utf8mb4 READS SQL DATA
+    DETERMINISTIC
+    SQL SECURITY INVOKER
+    COMMENT 'Returns the emojis for a player which they''ve purchased'
+RETURN (SELECT GROUP_CONCAT(JSON_VALUE(object_data, '$.emoji')  SEPARATOR '' LIMIT 3) AS tat FROM shop WHERE object_type = 'tat' AND id IN (SELECT shop_id FROM inventory WHERE user_id = _user_id AND display = 1))$$
+
+CREATE DEFINER=`admin`@`localhost` FUNCTION `get_images` (`_user_id` BIGINT(20) UNSIGNED) RETURNS TEXT CHARSET utf8mb4 READS SQL DATA
+    DETERMINISTIC
+    SQL SECURITY INVOKER
+    COMMENT 'Returns the emojis for a player which they''ve purchased'
+RETURN (SELECT GROUP_CONCAT(JSON_VALUE(object_data, '$.url') SEPARATOR '' LIMIT 3) AS tat FROM shop WHERE object_type = 'tat' AND id IN (SELECT shop_id FROM inventory WHERE user_id = _user_id AND display = 1))$$
+
 CREATE DEFINER=`admin`@`localhost` FUNCTION `is_admin` (`_user_id` BIGINT(20) UNSIGNED, `_guild_id` BIGINT(20) UNSIGNED) RETURNS TINYINT(1) UNSIGNED BEGIN
 declare admin_roles int;
+declare list varchar(200);
 declare owner int;
 
 set @owner = (select count(snowflake_id) from trivia_guild_cache where snowflake_id = _guild_id AND owner_id = _user_id);
@@ -70,12 +74,29 @@ IF @owner > 0 THEN
 RETURN @owner;
 END IF;
 
-set @admin_roles = (select count(id) from trivia_role_cache where guild_id = _guild_id AND id RLIKE (SELECT group_concat(ltrim(rtrim(replace(roles,' ','|'))) separator '|') FROM `trivia_guild_membership` where user_id = _user_id and guild_id = _guild_id) AND (permissions & 0x08) = 0x08);
+set @list = (SELECT group_concat(ltrim(rtrim(replace(roles,' ','|'))) separator '|') FROM `trivia_guild_membership` where user_id = _user_id and guild_id = _guild_id);
 
-RETURN @admin_roles;
+if @list != '' THEN
+  set @admin_roles = (select count(id) from trivia_role_cache where guild_id = _guild_id AND id RLIKE @list AND (permissions & 0x08) = 0x08);
+  RETURN @admin_roles;
+END IF;
+
+RETURN 0;
+
 END$$
 
-DROP FUNCTION IF EXISTS `percent_disabled`$$
+CREATE DEFINER=`admin`@`localhost` FUNCTION `ordinal` (`number` BIGINT) RETURNS VARCHAR(64) CHARSET utf8mb4 BEGIN
+  DECLARE ord VARCHAR(64);
+  SET ord = (SELECT CONCAT(number, CASE
+    WHEN number%100 BETWEEN 11 AND 13 THEN "th"
+    WHEN number%10 = 1 THEN "st"
+    WHEN number%10 = 2 THEN "nd"
+    WHEN number%10 = 3 THEN "rd"
+    ELSE "th"
+  END));
+  RETURN ord;
+END$$
+
 CREATE DEFINER=`admin`@`localhost` FUNCTION `percent_disabled` (`_guild_id` BIGINT(20) UNSIGNED) RETURNS FLOAT UNSIGNED READS SQL DATA
     SQL SECURITY INVOKER
     COMMENT 'Returns the percentage of questions a guild has disabled'
@@ -86,7 +107,6 @@ RETURN
 * 100;
 END$$
 
-DROP FUNCTION IF EXISTS `random_string`$$
 CREATE DEFINER=`admin`@`localhost` FUNCTION `random_string` (`length` SMALLINT(3), `seed` VARCHAR(255)) RETURNS VARCHAR(255) CHARSET utf8 NO SQL
 BEGIN
     SET @output = '';
@@ -103,7 +123,6 @@ BEGIN
     RETURN @output;
 END$$
 
-DROP FUNCTION IF EXISTS `replace_ci`$$
 CREATE DEFINER=`admin`@`localhost` FUNCTION `replace_ci` (`str` TEXT, `needle` CHAR(255), `str_rep` CHAR(255)) RETURNS TEXT CHARSET utf8mb4 BEGIN
 DECLARE return_str TEXT DEFAULT '';
 DECLARE lower_str TEXT;
@@ -130,14 +149,12 @@ END$$
 
 DELIMITER ;
 
-DROP TABLE IF EXISTS `achievements`;
 CREATE TABLE `achievements` (
   `user_id` bigint(20) UNSIGNED NOT NULL,
   `achievement_id` int(10) UNSIGNED NOT NULL,
   `unlocked` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-DROP TABLE IF EXISTS `active_games`;
 CREATE TABLE `active_games` (
   `guild_id` bigint(20) UNSIGNED NOT NULL,
   `channel_id` bigint(20) UNSIGNED NOT NULL,
@@ -157,14 +174,12 @@ CREATE TABLE `active_games` (
   `stop` tinyint(1) UNSIGNED NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-DROP TABLE IF EXISTS `active_roles_rewarded`;
 CREATE TABLE `active_roles_rewarded` (
   `guild_id` bigint(20) UNSIGNED NOT NULL,
   `user_id` bigint(20) UNSIGNED NOT NULL,
   `role_id` bigint(20) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-DROP TABLE IF EXISTS `answers`;
 CREATE TABLE `answers` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `answer` longtext DEFAULT NULL,
@@ -183,10 +198,17 @@ CREATE TABLE `answers` (
   `trans_ko` text DEFAULT NULL,
   `trans_bg` text DEFAULT NULL,
   `trans_zh` text DEFAULT NULL,
-  `trans_ar` text DEFAULT NULL
+  `trans_ar` text DEFAULT NULL,
+  `trans_nl` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-DROP TABLE IF EXISTS `bot_guild_settings`;
+CREATE TABLE `bans` (
+  `snowflake_id` bigint(20) UNSIGNED NOT NULL,
+  `moderator_id` bigint(20) UNSIGNED NOT NULL,
+  `reason` text NOT NULL,
+  `ban_date` datetime NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 CREATE TABLE `bot_guild_settings` (
   `snowflake_id` bigint(20) UNSIGNED NOT NULL COMMENT 'PK',
   `prefix` varchar(64) NOT NULL DEFAULT '!' COMMENT 'Server''s prefix',
@@ -202,10 +224,13 @@ CREATE TABLE `bot_guild_settings` (
   `points_reward_threshold` int(10) UNSIGNED DEFAULT NULL,
   `points_reward_role_id` bigint(20) UNSIGNED DEFAULT NULL,
   `language` varchar(20) DEFAULT 'en',
-  `question_interval` int(8) UNSIGNED DEFAULT 20 COMMENT 'Amount of time between questions in non-quickfire rounds'
+  `question_interval` int(8) UNSIGNED DEFAULT 20 COMMENT 'Amount of time between questions in non-quickfire rounds',
+  `max_normal_round` int(10) UNSIGNED DEFAULT NULL,
+  `max_hardcore_round` int(10) UNSIGNED DEFAULT NULL,
+  `max_quickfire_round` int(10) UNSIGNED DEFAULT NULL,
+  `disable_insane_rounds` tinyint(1) UNSIGNED NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Stores guild specific settings';
 
-DROP TABLE IF EXISTS `categories`;
 CREATE TABLE `categories` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `name` varchar(256) NOT NULL DEFAULT 'unknown',
@@ -228,30 +253,70 @@ CREATE TABLE `categories` (
   `trans_ko` text DEFAULT NULL,
   `trans_bg` text DEFAULT NULL,
   `trans_zh` text DEFAULT NULL,
-  `trans_ar` text DEFAULT NULL
+  `trans_ar` text DEFAULT NULL,
+  `trans_nl` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-DROP TABLE IF EXISTS `counters`;
+CREATE TABLE `channel_webhooks` (
+  `channel_id` bigint(20) NOT NULL,
+  `webhook_id` bigint(20) UNSIGNED NOT NULL,
+  `webhook` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `channel_whitelist` (
+  `guild_id` bigint(20) UNSIGNED NOT NULL,
+  `channel_id` bigint(20) UNSIGNED NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `coins` (
+  `user_id` bigint(20) UNSIGNED NOT NULL,
+  `balance` bigint(20) UNSIGNED NOT NULL,
+  `spent` bigint(20) UNSIGNED NOT NULL,
+  `earned` bigint(20) UNSIGNED NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+DELIMITER $$
+CREATE TRIGGER `insert_coins` BEFORE INSERT ON `coins` FOR EACH ROW BEGIN
+IF @COIN_LOG_DISABLED IS NULL OR @COIN_LOG_DISABLED = 0 THEN
+SET new.earned = new.balance;
+SET new.spent = 0;
+ELSE
+SET new.earned = 0;
+SET new.spent = 0;
+END IF;
+END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `update_coins` BEFORE UPDATE ON `coins` FOR EACH ROW BEGIN
+IF @COIN_LOG_DISABLED IS NULL OR @COIN_LOG_DISABLED = 0 THEN
+IF new.balance < old.balance THEN
+SET new.spent = old.spent + (old.balance - new.balance);
+END IF;
+IF new.balance > old.balance THEN
+SET new.earned = old.earned + (new.balance - old.balance);
+END IF;
+END IF;
+END
+$$
+DELIMITER ;
+
 CREATE TABLE `counters` (
   `qcount` bigint(20) DEFAULT NULL,
   `asked` bigint(20) UNSIGNED NOT NULL DEFAULT 0,
   `asked_15_min` bigint(20) UNSIGNED DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-DROP TABLE IF EXISTS `disabled_categories`;
 CREATE TABLE `disabled_categories` (
   `guild_id` bigint(20) UNSIGNED NOT NULL,
   `category_id` bigint(20) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-DROP TABLE IF EXISTS `dm_queue`;
 CREATE TABLE `dm_queue` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `snowflake_id` bigint(20) UNSIGNED NOT NULL,
   `json_message` longtext NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-DROP TABLE IF EXISTS `feedback`;
 CREATE TABLE `feedback` (
   `id` bigint(20) UNSIGNED NOT NULL COMMENT 'primary key',
   `question_id` bigint(20) UNSIGNED DEFAULT NULL COMMENT 'normal question id',
@@ -263,7 +328,6 @@ CREATE TABLE `feedback` (
   `mod_notes` text DEFAULT NULL COMMENT 'moderator notes'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-DROP TABLE IF EXISTS `game_score_history`;
 CREATE TABLE `game_score_history` (
   `url_key` varchar(10) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
   `guild_id` bigint(20) UNSIGNED NOT NULL,
@@ -271,13 +335,11 @@ CREATE TABLE `game_score_history` (
   `timefinished` datetime NOT NULL,
   `scores` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-DROP TRIGGER IF EXISTS `set_url_key`;
 DELIMITER $$
 CREATE TRIGGER `set_url_key` BEFORE INSERT ON `game_score_history` FOR EACH ROW SET new.url_key = random_string(10, '')
 $$
 DELIMITER ;
 
-DROP TABLE IF EXISTS `hints`;
 CREATE TABLE `hints` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `hint1` longtext DEFAULT NULL,
@@ -311,16 +373,35 @@ CREATE TABLE `hints` (
   `trans1_zh` text DEFAULT NULL,
   `trans2_zh` text DEFAULT NULL,
   `trans1_ar` text DEFAULT NULL,
-  `trans2_ar` text DEFAULT NULL
+  `trans2_ar` text DEFAULT NULL,
+  `trans1_nl` text DEFAULT NULL,
+  `trans2_nl` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-DROP TABLE IF EXISTS `infobot_bandwidth`;
+CREATE TABLE `http_ratelimit` (
+  `interface` varchar(20) NOT NULL,
+  `rl_when` bigint(20) UNSIGNED NOT NULL,
+  `rl_seconds` int(10) UNSIGNED NOT NULL
+) ENGINE=MEMORY DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `http_requests` (
+  `interface` varchar(20) NOT NULL,
+  `hard_errors` bigint(20) UNSIGNED NOT NULL,
+  `requests` bigint(20) UNSIGNED NOT NULL,
+  `failure_rate` decimal(5,2) GENERATED ALWAYS AS (`hard_errors` / `requests` * 100) VIRTUAL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `http_status_codes` (
+  `interface` varchar(20) NOT NULL,
+  `status_code` int(3) UNSIGNED NOT NULL,
+  `requests` bigint(20) UNSIGNED NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 CREATE TABLE `infobot_bandwidth` (
   `logdate` timestamp NOT NULL DEFAULT current_timestamp(),
   `kbps_in` double NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-DROP TABLE IF EXISTS `infobot_discord_counts`;
 CREATE TABLE `infobot_discord_counts` (
   `shard_id` bigint(20) UNSIGNED NOT NULL COMMENT 'Shard ID',
   `cluster_id` int(10) UNSIGNED NOT NULL DEFAULT 0,
@@ -337,7 +418,6 @@ CREATE TABLE `infobot_discord_counts` (
   `last_restart_intervention` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Counts of users/servers on a per-shard basis';
 
-DROP TABLE IF EXISTS `infobot_discord_list_sites`;
 CREATE TABLE `infobot_discord_list_sites` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `name` varchar(255) NOT NULL,
@@ -354,7 +434,6 @@ CREATE TABLE `infobot_discord_list_sites` (
   `post_type` enum('json','post') NOT NULL DEFAULT 'json'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-DROP TABLE IF EXISTS `infobot_shard_status`;
 CREATE TABLE `infobot_shard_status` (
   `id` int(10) UNSIGNED NOT NULL,
   `cluster_id` int(10) UNSIGNED DEFAULT 0,
@@ -373,7 +452,6 @@ CREATE TABLE `infobot_shard_status` (
   `down_since` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Contains details of all active shards';
 
-DROP TABLE IF EXISTS `infobot_votes`;
 CREATE TABLE `infobot_votes` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `snowflake_id` bigint(20) UNSIGNED NOT NULL,
@@ -382,21 +460,18 @@ CREATE TABLE `infobot_votes` (
   `dm_hints` tinyint(2) UNSIGNED NOT NULL DEFAULT 8
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-DROP TABLE IF EXISTS `infobot_vote_counters`;
 CREATE TABLE `infobot_vote_counters` (
   `snowflake_id` bigint(20) UNSIGNED NOT NULL,
   `vote_count` bigint(20) UNSIGNED NOT NULL DEFAULT 0,
   `last_vote` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Counters of votes cast';
 
-DROP TABLE IF EXISTS `infobot_vote_links`;
 CREATE TABLE `infobot_vote_links` (
   `site` varchar(80) NOT NULL,
   `vote_url` varchar(256) NOT NULL,
   `sortorder` float NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Voting URLs for the sites which have webhooks';
 
-DROP TABLE IF EXISTS `insane`;
 CREATE TABLE `insane` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `question` text DEFAULT NULL,
@@ -416,10 +491,10 @@ CREATE TABLE `insane` (
   `trans_ko` text DEFAULT NULL,
   `trans_bg` text DEFAULT NULL,
   `trans_zh` text DEFAULT NULL,
-  `trans_ar` text DEFAULT NULL
+  `trans_ar` text DEFAULT NULL,
+  `trans_nl` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-DROP TABLE IF EXISTS `insane_answers`;
 CREATE TABLE `insane_answers` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `question_id` bigint(20) UNSIGNED DEFAULT NULL,
@@ -439,10 +514,15 @@ CREATE TABLE `insane_answers` (
   `trans_ko` text DEFAULT NULL,
   `trans_bg` text DEFAULT NULL,
   `trans_zh` text DEFAULT NULL,
-  `trans_ar` text DEFAULT NULL
+  `trans_ar` text DEFAULT NULL,
+  `trans_nl` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-DROP TABLE IF EXISTS `insane_round_statistics`;
+CREATE TABLE `insane_cooldown` (
+  `guild_id` bigint(20) UNSIGNED NOT NULL,
+  `last_started` bigint(20) UNSIGNED NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 CREATE TABLE `insane_round_statistics` (
   `guild_id` bigint(20) UNSIGNED NOT NULL,
   `channel_id` bigint(20) UNSIGNED NOT NULL,
@@ -450,7 +530,14 @@ CREATE TABLE `insane_round_statistics` (
   `score` int(10) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-DROP TABLE IF EXISTS `languages`;
+CREATE TABLE `inventory` (
+  `id` bigint(20) NOT NULL,
+  `user_id` bigint(20) UNSIGNED NOT NULL,
+  `shop_id` bigint(20) UNSIGNED NOT NULL,
+  `purchase_date` datetime DEFAULT current_timestamp(),
+  `display` tinyint(1) UNSIGNED NOT NULL DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 CREATE TABLE `languages` (
   `id` bigint(20) NOT NULL,
   `isocode` char(2) CHARACTER SET ascii NOT NULL,
@@ -461,7 +548,6 @@ CREATE TABLE `languages` (
   `emoji` varchar(30) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-DROP TABLE IF EXISTS `new_daywinners`;
 CREATE TABLE `new_daywinners` (
   `guild_id` bigint(20) UNSIGNED NOT NULL,
   `datestamp` date NOT NULL,
@@ -469,7 +555,6 @@ CREATE TABLE `new_daywinners` (
   `score` int(10) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-DROP TABLE IF EXISTS `numstrs`;
 CREATE TABLE `numstrs` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `value` bigint(20) UNSIGNED NOT NULL,
@@ -489,10 +574,10 @@ CREATE TABLE `numstrs` (
   `trans_ko` text DEFAULT NULL,
   `trans_bg` text DEFAULT NULL,
   `trans_zh` text DEFAULT NULL,
-  `trans_ar` text DEFAULT NULL
+  `trans_ar` text DEFAULT NULL,
+  `trans_nl` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-DROP TABLE IF EXISTS `premium_credits`;
 CREATE TABLE `premium_credits` (
   `user_id` bigint(20) UNSIGNED NOT NULL COMMENT 'Discord snowflake ID',
   `subscription_id` varchar(255) CHARACTER SET ascii NOT NULL COMMENT 'Subscription ID from chargebee',
@@ -500,10 +585,12 @@ CREATE TABLE `premium_credits` (
   `active` tinyint(1) UNSIGNED NOT NULL DEFAULT 1 COMMENT 'True if the subscription is currently active',
   `since` datetime NOT NULL DEFAULT current_timestamp() COMMENT 'Date of subscription start',
   `plan_id` varchar(250) CHARACTER SET ascii NOT NULL COMMENT 'Plan associated with the subscription',
-  `cancel_date` datetime DEFAULT NULL
+  `cancel_date` datetime DEFAULT NULL,
+  `manual_expiry_date` date DEFAULT NULL COMMENT 'If set forces the premium to expire on this date. DOES NOT STOP BILLING!',
+  `payment_failed` tinyint(1) UNSIGNED NOT NULL DEFAULT 0 COMMENT 'Set to 1 on payment failed, cleared by payment success',
+  `payment_failed_date` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-DROP TABLE IF EXISTS `premium_plans`;
 CREATE TABLE `premium_plans` (
   `id` varchar(250) CHARACTER SET ascii NOT NULL COMMENT 'From chargebee',
   `lifetime` tinyint(1) UNSIGNED NOT NULL DEFAULT 0 COMMENT 'True if the plan is charged only once',
@@ -515,7 +602,6 @@ CREATE TABLE `premium_plans` (
   `cache_date` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Plans cached from chargebee API';
 
-DROP TABLE IF EXISTS `questions`;
 CREATE TABLE `questions` (
   `id` bigint(20) UNSIGNED NOT NULL DEFAULT 0,
   `category` bigint(20) UNSIGNED NOT NULL,
@@ -542,10 +628,10 @@ CREATE TABLE `questions` (
   `trans_ko` text DEFAULT NULL,
   `trans_bg` text DEFAULT NULL,
   `trans_zh` text DEFAULT NULL,
-  `trans_ar` text DEFAULT NULL
+  `trans_ar` text DEFAULT NULL,
+  `trans_nl` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-DROP TABLE IF EXISTS `question_queue`;
 CREATE TABLE `question_queue` (
   `id` bigint(20) NOT NULL,
   `snowflake_id` bigint(20) UNSIGNED NOT NULL COMMENT 'User who requested addition of the question',
@@ -559,7 +645,6 @@ CREATE TABLE `question_queue` (
   `dateadded` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-DROP TABLE IF EXISTS `role_change_queue`;
 CREATE TABLE `role_change_queue` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `guild_id` bigint(20) UNSIGNED NOT NULL,
@@ -568,7 +653,13 @@ CREATE TABLE `role_change_queue` (
   `adding` tinyint(1) UNSIGNED NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-DROP TABLE IF EXISTS `scheduled_games`;
+CREATE TABLE `rolling_restart` (
+  `current_cluster` int(10) UNSIGNED NOT NULL,
+  `total_clusters` int(10) UNSIGNED NOT NULL,
+  `in_progress` tinyint(1) UNSIGNED NOT NULL DEFAULT 0,
+  `started` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 CREATE TABLE `scheduled_games` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `guild_id` bigint(20) UNSIGNED NOT NULL,
@@ -586,7 +677,6 @@ CREATE TABLE `scheduled_games` (
   `announce_time` time GENERATED ALWAYS AS (cast(from_unixtime(time_to_sec(`start_time`) + 82800 - 60 * `announce_mins`) as time)) VIRTUAL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-DROP TABLE IF EXISTS `scores`;
 CREATE TABLE `scores` (
   `name` bigint(20) UNSIGNED NOT NULL COMMENT 'PK snowflake ID',
   `guild_id` bigint(20) UNSIGNED NOT NULL COMMENT 'Guild id of score',
@@ -596,21 +686,32 @@ CREATE TABLE `scores` (
   `monthscore` bigint(20) UNSIGNED NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-DROP TABLE IF EXISTS `scores_lastgame`;
 CREATE TABLE `scores_lastgame` (
   `guild_id` bigint(20) UNSIGNED NOT NULL,
   `user_id` bigint(20) UNSIGNED NOT NULL,
   `score` int(10) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-DROP TABLE IF EXISTS `start_log`;
+CREATE TABLE `shop` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `name` varchar(128) NOT NULL,
+  `description` text DEFAULT NULL,
+  `object_type` enum('tat','badge','rankcard') NOT NULL,
+  `object_data` longtext DEFAULT NULL,
+  `image` varchar(256) NOT NULL,
+  `cost` int(10) UNSIGNED NOT NULL,
+  `start_date` date DEFAULT NULL,
+  `end_date` date DEFAULT NULL,
+  `available` tinyint(1) UNSIGNED NOT NULL DEFAULT 1,
+  `quantity` int(10) UNSIGNED DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 CREATE TABLE `start_log` (
   `user_id` bigint(20) UNSIGNED NOT NULL,
   `last_started` datetime NOT NULL,
   `consecutive` int(10) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Stores the time and date and number of consecutive days a user has started trivia, so that we can check for achievements';
 
-DROP TABLE IF EXISTS `start_queue`;
 CREATE TABLE `start_queue` (
   `guild_id` bigint(20) UNSIGNED NOT NULL,
   `channel_id` bigint(20) UNSIGNED NOT NULL,
@@ -622,23 +723,32 @@ CREATE TABLE `start_queue` (
   `category` varchar(250) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-DROP TABLE IF EXISTS `stats`;
 CREATE TABLE `stats` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `lastasked` bigint(20) DEFAULT 0,
-  `timesasked` bigint(20) DEFAULT NULL,
+  `timesasked` bigint(20) UNSIGNED DEFAULT NULL,
   `lastcorrect` bigint(20) UNSIGNED DEFAULT NULL,
-  `record_time` bigint(20) DEFAULT NULL
+  `record_time` decimal(20,4) DEFAULT NULL,
+  `fastest_user_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `lastasked_ts` datetime GENERATED ALWAYS AS (from_unixtime(`lastasked`)) VIRTUAL,
+  `timescorrect` bigint(20) UNSIGNED DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+DELIMITER $$
+CREATE TRIGGER `update_fastest_user` BEFORE UPDATE ON `stats` FOR EACH ROW BEGIN
+IF new.record_time < old.record_time THEN 
+  SET new.fastest_user_id = new.lastcorrect;
+  SET new.timescorrect = old.timescorrect + 1;
+END IF;
+END
+$$
+DELIMITER ;
 
-DROP TABLE IF EXISTS `streaks`;
 CREATE TABLE `streaks` (
   `nick` bigint(20) UNSIGNED NOT NULL,
   `guild_id` bigint(20) UNSIGNED NOT NULL,
   `streak` bigint(20) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-DROP TABLE IF EXISTS `teams`;
 CREATE TABLE `teams` (
   `url_key` varchar(10) CHARACTER SET ascii COLLATE ascii_bin DEFAULT NULL,
   `name` varchar(128) NOT NULL DEFAULT '',
@@ -654,13 +764,11 @@ CREATE TABLE `teams` (
   `team_url` varchar(128) DEFAULT NULL,
   `qualifying_score` int(10) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-DROP TRIGGER IF EXISTS `set_key`;
 DELIMITER $$
 CREATE TRIGGER `set_key` BEFORE INSERT ON `teams` FOR EACH ROW SET new.url_key = random_string(10, '')
 $$
 DELIMITER ;
 
-DROP TABLE IF EXISTS `team_membership`;
 CREATE TABLE `team_membership` (
   `nick` bigint(20) UNSIGNED NOT NULL,
   `team` varchar(128) NOT NULL,
@@ -670,7 +778,6 @@ CREATE TABLE `team_membership` (
   `team_manager` tinyint(1) UNSIGNED NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-DROP TABLE IF EXISTS `trivia_access`;
 CREATE TABLE `trivia_access` (
   `id` bigint(20) UNSIGNED NOT NULL COMMENT 'PK',
   `api_key` varchar(256) CHARACTER SET ascii DEFAULT NULL COMMENT 'API Key',
@@ -685,7 +792,6 @@ CREATE TABLE `trivia_access` (
   `rename_category` tinyint(1) UNSIGNED NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-DROP TABLE IF EXISTS `trivia_channel_cache`;
 CREATE TABLE `trivia_channel_cache` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `guild_id` bigint(20) UNSIGNED NOT NULL,
@@ -693,10 +799,10 @@ CREATE TABLE `trivia_channel_cache` (
   `name` varchar(512) NOT NULL,
   `modified` datetime NOT NULL DEFAULT current_timestamp(),
   `type` int(11) UNSIGNED NOT NULL,
-  `position` int(11) UNSIGNED NOT NULL
+  `position` int(11) UNSIGNED NOT NULL,
+  `permission_overwrites` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-DROP TABLE IF EXISTS `trivia_graphs`;
 CREATE TABLE `trivia_graphs` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `entry_date` datetime NOT NULL,
@@ -715,7 +821,6 @@ CREATE TABLE `trivia_graphs` (
   `question_total` bigint(20) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-DROP TABLE IF EXISTS `trivia_guild_cache`;
 CREATE TABLE `trivia_guild_cache` (
   `snowflake_id` bigint(20) UNSIGNED NOT NULL COMMENT 'Snowflake ID PK',
   `name` text NOT NULL,
@@ -726,7 +831,6 @@ CREATE TABLE `trivia_guild_cache` (
   `introsent` tinyint(1) UNSIGNED NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-DROP TABLE IF EXISTS `trivia_guild_membership`;
 CREATE TABLE `trivia_guild_membership` (
   `user_id` bigint(20) UNSIGNED NOT NULL,
   `guild_id` bigint(20) UNSIGNED NOT NULL,
@@ -734,7 +838,6 @@ CREATE TABLE `trivia_guild_membership` (
   `roles` text CHARACTER SET ascii DEFAULT NULL COMMENT 'Space separated list of roles for the user on the guild'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-DROP TABLE IF EXISTS `trivia_role_cache`;
 CREATE TABLE `trivia_role_cache` (
   `id` bigint(20) UNSIGNED NOT NULL COMMENT 'Role snowflake ID (PK)',
   `guild_id` bigint(20) UNSIGNED NOT NULL,
@@ -747,37 +850,47 @@ CREATE TABLE `trivia_role_cache` (
   `name` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Cache of guild roles';
 
-DROP TABLE IF EXISTS `trivia_user_cache`;
 CREATE TABLE `trivia_user_cache` (
   `snowflake_id` bigint(20) UNSIGNED NOT NULL COMMENT 'Snowflake ID PK',
   `username` varchar(700) NOT NULL,
   `discriminator` int(4) UNSIGNED ZEROFILL NOT NULL,
-  `icon` varchar(256) NOT NULL
+  `icon` varchar(256) NOT NULL,
+  `rankcard_theme` bigint(20) UNSIGNED DEFAULT NULL COMMENT 'Rankcard theme, a shop item id or null for default'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-DROP VIEW IF EXISTS `vw_activity`;
+
+CREATE TABLE `vote_streak` (
+  `user_id` bigint(20) UNSIGNED NOT NULL,
+  `last_voted` datetime NOT NULL,
+  `vote_count` int(10) UNSIGNED NOT NULL DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 CREATE TABLE `vw_activity` (
 `guild_id` bigint(20) unsigned
 ,`name` text
 ,`weekly_score` decimal(42,0)
 );
-DROP VIEW IF EXISTS `vw_biggest_servers`;
 CREATE TABLE `vw_biggest_servers` (
 `guild_id` bigint(20) unsigned
 ,`NAME` text
 ,`joindate` datetime
 ,`player_count` bigint(21)
 );
-DROP VIEW IF EXISTS `vw_change_per_15_minutes`;
+CREATE TABLE `vw_brainbox_schedule` (
+`start_time` time
+,`round_type` varchar(9)
+,`category` varchar(250)
+);
 CREATE TABLE `vw_change_per_15_minutes` (
 `entry_date` datetime
 ,`daily_change` bigint(21)
 );
-DROP VIEW IF EXISTS `vw_change_per_day`;
 CREATE TABLE `vw_change_per_day` (
 `entry_date` datetime
 ,`daily_change` decimal(42,0)
 );
-DROP VIEW IF EXISTS `vw_consolidated_graph`;
+CREATE TABLE `vw_coin_purchases` (
+`date` date
+,`purchases` bigint(21)
+);
 CREATE TABLE `vw_consolidated_graph` (
 `entry_date` datetime
 ,`server_count` decimal(19,0)
@@ -794,7 +907,6 @@ CREATE TABLE `vw_consolidated_graph` (
 ,`questions` decimal(20,0)
 ,`question_total` decimal(20,0)
 );
-DROP VIEW IF EXISTS `vw_consolidate_day`;
 CREATE TABLE `vw_consolidate_day` (
 `entry_date` datetime
 ,`server_count` bigint(20)
@@ -811,7 +923,6 @@ CREATE TABLE `vw_consolidate_day` (
 ,`questions` bigint(20) unsigned
 ,`question_total` bigint(20) unsigned
 );
-DROP VIEW IF EXISTS `vw_consolidate_hour`;
 CREATE TABLE `vw_consolidate_hour` (
 `entry_date` datetime
 ,`server_count` bigint(20)
@@ -828,7 +939,6 @@ CREATE TABLE `vw_consolidate_hour` (
 ,`questions` bigint(20) unsigned
 ,`question_total` bigint(20) unsigned
 );
-DROP VIEW IF EXISTS `vw_consolidate_month`;
 CREATE TABLE `vw_consolidate_month` (
 `entry_date` datetime
 ,`server_count` bigint(20)
@@ -845,16 +955,13 @@ CREATE TABLE `vw_consolidate_month` (
 ,`questions` bigint(20) unsigned
 ,`question_total` bigint(20) unsigned
 );
-DROP VIEW IF EXISTS `vw_contributions`;
 CREATE TABLE `vw_contributions` (
 `username` varchar(700)
 ,`count(id)` bigint(21)
 );
-DROP VIEW IF EXISTS `vw_conversion`;
 CREATE TABLE `vw_conversion` (
 `conversion_percent` decimal(27,4)
 );
-DROP VIEW IF EXISTS `vw_feedback`;
 CREATE TABLE `vw_feedback` (
 `id` bigint(20) unsigned
 ,`question_id` bigint(20) unsigned
@@ -868,28 +975,32 @@ CREATE TABLE `vw_feedback` (
 ,`category` varchar(20)
 ,`type` varchar(6)
 );
-DROP VIEW IF EXISTS `vw_global_score`;
 CREATE TABLE `vw_global_score` (
 `score` decimal(42,0)
 ,`username` varchar(700)
 ,`discriminator` int(4) unsigned zerofill
 );
-DROP VIEW IF EXISTS `vw_lang_use`;
+CREATE TABLE `vw_http_codes` (
+`status_code` int(3) unsigned
+,`requests` decimal(42,0)
+,`percent` varchar(11)
+);
+CREATE TABLE `vw_http_rates` (
+`http_failure_rate` decimal(46,4)
+,`http_success_rate` decimal(47,4)
+);
 CREATE TABLE `vw_lang_use` (
 `language` varchar(255)
 ,`total` bigint(21)
 );
-DROP VIEW IF EXISTS `vw_monthly_totals`;
 CREATE TABLE `vw_monthly_totals` (
 `score` decimal(42,0)
 ,`name` bigint(20) unsigned
 );
-DROP VIEW IF EXISTS `vw_prefix_use`;
 CREATE TABLE `vw_prefix_use` (
 `prefix` varchar(64)
 ,`count` bigint(21)
 );
-DROP VIEW IF EXISTS `vw_qsearch`;
 CREATE TABLE `vw_qsearch` (
 `id` bigint(20) unsigned
 ,`question` varchar(512)
@@ -899,34 +1010,27 @@ CREATE TABLE `vw_qsearch` (
 ,`hint2` longtext
 ,`category_name` varchar(256)
 );
-DROP VIEW IF EXISTS `vw_scorechart`;
 CREATE TABLE `vw_scorechart` (
 `score` decimal(42,0)
 ,`name` bigint(20) unsigned
 );
-DROP VIEW IF EXISTS `vw_seven_day_retention`;
 CREATE TABLE `vw_seven_day_retention` (
 `retention` decimal(28,4)
 );
-DROP VIEW IF EXISTS `vw_totals`;
 CREATE TABLE `vw_totals` (
 `score` decimal(42,0)
 ,`name` bigint(20) unsigned
 );
-DROP VIEW IF EXISTS `vw_translate_percent`;
 CREATE TABLE `vw_translate_percent` (
 `completion` decimal(27,4)
 );
-DROP VIEW IF EXISTS `vw_translate_percent_ia`;
 CREATE TABLE `vw_translate_percent_ia` (
 `completion` decimal(27,4)
 );
-DROP VIEW IF EXISTS `vw_weekly_active_guild_count`;
 CREATE TABLE `vw_weekly_active_guild_count` (
 `active_guilds` bigint(21)
 );
 
-DROP TABLE IF EXISTS `warnings`;
 CREATE TABLE `warnings` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `user_id` bigint(20) UNSIGNED NOT NULL,
@@ -945,12 +1049,18 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`admin`@`localhost` SQL SECURITY INVOKER VIEW
 DROP TABLE IF EXISTS `vw_biggest_servers`;
 
 CREATE ALGORITHM=UNDEFINED DEFINER=`admin`@`localhost` SQL SECURITY INVOKER VIEW `vw_biggest_servers`  AS  select `trivia_guild_membership`.`guild_id` AS `guild_id`,`trivia_guild_cache`.`name` AS `NAME`,`trivia_guild_cache`.`joindate` AS `joindate`,count(`trivia_guild_membership`.`user_id`) AS `player_count` from (`trivia_guild_membership` join `trivia_guild_cache` on(`trivia_guild_membership`.`guild_id` = `trivia_guild_cache`.`snowflake_id`)) where `trivia_guild_cache`.`kicked` = 0 group by `trivia_guild_membership`.`guild_id` order by count(`trivia_guild_membership`.`user_id`) desc limit 25 ;
+DROP TABLE IF EXISTS `vw_brainbox_schedule`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`admin`@`localhost` SQL SECURITY DEFINER VIEW `vw_brainbox_schedule`  AS  select `scheduled_games`.`start_time` AS `start_time`,if(`scheduled_games`.`hintless`,'hardcore',if(`scheduled_games`.`quickfire`,'quickfire','normal')) AS `round_type`,`scheduled_games`.`category` AS `category` from `scheduled_games` where `scheduled_games`.`channel_id` = 717141356371378246 order by `scheduled_games`.`start_time` ;
 DROP TABLE IF EXISTS `vw_change_per_15_minutes`;
 
 CREATE ALGORITHM=UNDEFINED DEFINER=`admin`@`localhost` SQL SECURITY DEFINER VIEW `vw_change_per_15_minutes`  AS  select `trivia_graphs`.`entry_date` AS `entry_date`,`trivia_graphs`.`server_count` - lag(`trivia_graphs`.`server_count`,1) over ( order by `trivia_graphs`.`entry_date`) AS `daily_change` from `trivia_graphs` where `trivia_graphs`.`entry_date` > current_timestamp() - interval 3 month ;
 DROP TABLE IF EXISTS `vw_change_per_day`;
 
 CREATE ALGORITHM=UNDEFINED DEFINER=`admin`@`localhost` SQL SECURITY INVOKER VIEW `vw_change_per_day`  AS  select `vw_change_per_15_minutes`.`entry_date` AS `entry_date`,sum(`vw_change_per_15_minutes`.`daily_change`) AS `daily_change` from `vw_change_per_15_minutes` group by unix_timestamp(`vw_change_per_15_minutes`.`entry_date`) DIV 86400 order by `vw_change_per_15_minutes`.`entry_date` ;
+DROP TABLE IF EXISTS `vw_coin_purchases`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`admin`@`localhost` SQL SECURITY INVOKER VIEW `vw_coin_purchases`  AS  select cast(`inventory`.`purchase_date` as date) AS `date`,count(0) AS `purchases` from `inventory` group by cast(`inventory`.`purchase_date` as date) order by cast(`inventory`.`purchase_date` as date) ;
 DROP TABLE IF EXISTS `vw_consolidated_graph`;
 
 CREATE ALGORITHM=UNDEFINED DEFINER=`admin`@`localhost` SQL SECURITY INVOKER VIEW `vw_consolidated_graph`  AS  select `trivia_graphs`.`entry_date` AS `entry_date`,ceiling(`trivia_graphs`.`server_count`) AS `server_count`,ceiling(`trivia_graphs`.`user_count`) AS `user_count`,ceiling(`trivia_graphs`.`channel_count`) AS `channel_count`,`trivia_graphs`.`cpu` AS `cpu`,`trivia_graphs`.`memory_usage` AS `memory_usage`,ceiling(`trivia_graphs`.`games`) AS `games`,`trivia_graphs`.`discord_ping` AS `discord_ping`,`trivia_graphs`.`trivia_ping` AS `trivia_ping`,`trivia_graphs`.`db_ping` AS `db_ping`,ceiling(`trivia_graphs`.`kicks`) AS `kicks`,ceiling(`trivia_graphs`.`commands`) AS `commands`,ceiling(`trivia_graphs`.`questions`) AS `questions`,ceiling(`trivia_graphs`.`question_total`) AS `question_total` from `trivia_graphs` where unix_timestamp(`trivia_graphs`.`entry_date`) between unix_timestamp() - 86400 and unix_timestamp() union select `vw_consolidate_hour`.`entry_date` AS `entry_date`,ceiling(`vw_consolidate_hour`.`server_count`) AS `server_count`,ceiling(`vw_consolidate_hour`.`user_count`) AS `user_count`,ceiling(`vw_consolidate_hour`.`channel_count`) AS `channel_count`,`vw_consolidate_hour`.`cpu` AS `cpu`,`vw_consolidate_hour`.`memory_usage` AS `memory_usage`,ceiling(`vw_consolidate_hour`.`games`) AS `games`,`vw_consolidate_hour`.`discord_ping` AS `discord_ping`,`vw_consolidate_hour`.`trivia_ping` AS `trivia_ping`,`vw_consolidate_hour`.`db_ping` AS `db_ping`,ceiling(`vw_consolidate_hour`.`kicks`) AS `kicks`,ceiling(`vw_consolidate_hour`.`commands`) AS `commands`,ceiling(`vw_consolidate_hour`.`questions`) AS `questions`,ceiling(`vw_consolidate_hour`.`question_total`) AS `question_total` from `vw_consolidate_hour` where unix_timestamp(`vw_consolidate_hour`.`entry_date`) between unix_timestamp() - 86400 * 7 and unix_timestamp() - 86400 union select `vw_consolidate_day`.`entry_date` AS `entry_date`,ceiling(`vw_consolidate_day`.`server_count`) AS `server_count`,ceiling(`vw_consolidate_day`.`user_count`) AS `user_count`,ceiling(`vw_consolidate_day`.`channel_count`) AS `channel_count`,`vw_consolidate_day`.`cpu` AS `cpu`,`vw_consolidate_day`.`memory_usage` AS `memory_usage`,ceiling(`vw_consolidate_day`.`games`) AS `games`,`vw_consolidate_day`.`discord_ping` AS `discord_ping`,`vw_consolidate_day`.`trivia_ping` AS `trivia_ping`,`vw_consolidate_day`.`db_ping` AS `db_ping`,ceiling(`vw_consolidate_day`.`kicks`) AS `kicks`,ceiling(`vw_consolidate_day`.`commands`) AS `commands`,ceiling(`vw_consolidate_day`.`questions`) AS `questions`,ceiling(`vw_consolidate_day`.`question_total`) AS `question_total` from `vw_consolidate_day` where unix_timestamp(`vw_consolidate_day`.`entry_date`) between unix_timestamp() - 86400 * 90 and unix_timestamp() - 86400 * 7 union select `vw_consolidate_month`.`entry_date` AS `entry_date`,ceiling(`vw_consolidate_month`.`server_count`) AS `server_count`,ceiling(`vw_consolidate_month`.`user_count`) AS `user_count`,ceiling(`vw_consolidate_month`.`channel_count`) AS `channel_count`,`vw_consolidate_month`.`cpu` AS `cpu`,`vw_consolidate_month`.`memory_usage` AS `memory_usage`,ceiling(`vw_consolidate_month`.`games`) AS `games`,`vw_consolidate_month`.`discord_ping` AS `discord_ping`,`vw_consolidate_month`.`trivia_ping` AS `trivia_ping`,`vw_consolidate_month`.`db_ping` AS `db_ping`,ceiling(`vw_consolidate_month`.`kicks`) AS `kicks`,ceiling(`vw_consolidate_month`.`commands`) AS `commands`,ceiling(`vw_consolidate_month`.`questions`) AS `questions`,ceiling(`vw_consolidate_month`.`question_total`) AS `question_total` from `vw_consolidate_month` where unix_timestamp(`vw_consolidate_month`.`entry_date`) <= unix_timestamp() - 86400 * 90 order by `entry_date` ;
@@ -975,6 +1085,12 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`admin`@`localhost` SQL SECURITY INVOKER VIEW
 DROP TABLE IF EXISTS `vw_global_score`;
 
 CREATE ALGORITHM=UNDEFINED DEFINER=`admin`@`localhost` SQL SECURITY DEFINER VIEW `vw_global_score`  AS  select `vw_totals`.`score` AS `score`,`trivia_user_cache`.`username` AS `username`,`trivia_user_cache`.`discriminator` AS `discriminator` from (`vw_totals` join `trivia_user_cache` on(`trivia_user_cache`.`snowflake_id` = `vw_totals`.`name`)) order by `vw_totals`.`score` desc ;
+DROP TABLE IF EXISTS `vw_http_codes`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`admin`@`localhost` SQL SECURITY INVOKER VIEW `vw_http_codes`  AS  select `http_status_codes`.`status_code` AS `status_code`,sum(`http_status_codes`.`requests`) AS `requests`,concat(cast(sum(`http_status_codes`.`requests`) / (select sum(`h`.`requests`) from `http_status_codes` `h`) * 100 as decimal(8,2)),'%') AS `percent` from `http_status_codes` group by `http_status_codes`.`status_code` order by `http_status_codes`.`status_code`,sum(`http_status_codes`.`requests`) desc ;
+DROP TABLE IF EXISTS `vw_http_rates`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`admin`@`localhost` SQL SECURITY INVOKER VIEW `vw_http_rates`  AS  select (select sum(`http_status_codes`.`requests`) from `http_status_codes` where `http_status_codes`.`status_code` >= 400) / (select sum(`http_status_codes`.`requests`) from `http_status_codes`) AS `http_failure_rate`,100 - (select sum(`http_status_codes`.`requests`) from `http_status_codes` where `http_status_codes`.`status_code` < 400) / (select sum(`http_status_codes`.`requests`) from `http_status_codes`) AS `http_success_rate` ;
 DROP TABLE IF EXISTS `vw_lang_use`;
 
 CREATE ALGORITHM=UNDEFINED DEFINER=`admin`@`localhost` SQL SECURITY INVOKER VIEW `vw_lang_use`  AS  select `languages`.`name` AS `language`,count(`bot_guild_settings`.`snowflake_id`) AS `total` from ((`bot_guild_settings` join `languages` on(`languages`.`isocode` = `bot_guild_settings`.`language`)) join `trivia_guild_cache` on(`trivia_guild_cache`.`snowflake_id` = `bot_guild_settings`.`snowflake_id`)) where `bot_guild_settings`.`language` <> 'en' and `trivia_guild_cache`.`kicked` = 0 group by `languages`.`name` order by `languages`.`name` ;
@@ -998,10 +1114,10 @@ DROP TABLE IF EXISTS `vw_totals`;
 CREATE ALGORITHM=UNDEFINED DEFINER=`admin`@`localhost` SQL SECURITY DEFINER VIEW `vw_totals`  AS  select sum(`scores`.`score`) AS `score`,`scores`.`name` AS `name` from `scores` group by `scores`.`name` ;
 DROP TABLE IF EXISTS `vw_translate_percent`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`admin`@`localhost` SQL SECURITY DEFINER VIEW `vw_translate_percent`  AS  select count(`questions`.`id`) / (select count(0) from `questions`) * 100 AS `completion` from `questions` where `questions`.`trans_zh` is not null ;
+CREATE ALGORITHM=UNDEFINED DEFINER=`admin`@`localhost` SQL SECURITY DEFINER VIEW `vw_translate_percent`  AS  select count(`questions`.`id`) / (select count(0) from `questions`) * 100 AS `completion` from `questions` where `questions`.`trans_nl` is not null ;
 DROP TABLE IF EXISTS `vw_translate_percent_ia`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`admin`@`localhost` SQL SECURITY DEFINER VIEW `vw_translate_percent_ia`  AS  select count(`insane_answers`.`id`) / (select count(0) from `insane_answers`) * 100 AS `completion` from `insane_answers` where `insane_answers`.`trans_zh` is not null ;
+CREATE ALGORITHM=UNDEFINED DEFINER=`admin`@`localhost` SQL SECURITY DEFINER VIEW `vw_translate_percent_ia`  AS  select count(`insane_answers`.`id`) / (select count(0) from `insane_answers`) * 100 AS `completion` from `insane_answers` where `insane_answers`.`trans_nl` is not null ;
 DROP TABLE IF EXISTS `vw_weekly_active_guild_count`;
 
 CREATE ALGORITHM=UNDEFINED DEFINER=`admin`@`localhost` SQL SECURITY INVOKER VIEW `vw_weekly_active_guild_count`  AS  select count(`vw_activity`.`guild_id`) AS `active_guilds` from `vw_activity` where `vw_activity`.`weekly_score` > 0 ;
@@ -1030,6 +1146,11 @@ ALTER TABLE `answers`
   ADD PRIMARY KEY (`id`),
   ADD KEY `index2` (`answer_img_url`);
 
+ALTER TABLE `bans`
+  ADD PRIMARY KEY (`snowflake_id`),
+  ADD KEY `moderator_id` (`moderator_id`),
+  ADD KEY `ban_date` (`ban_date`);
+
 ALTER TABLE `bot_guild_settings`
   ADD PRIMARY KEY (`snowflake_id`),
   ADD UNIQUE KEY `custom_url` (`custom_url`),
@@ -1046,6 +1167,20 @@ ALTER TABLE `categories`
   ADD KEY `disabled` (`disabled`),
   ADD KEY `weight` (`weight`),
   ADD KEY `translation_dirty` (`translation_dirty`);
+
+ALTER TABLE `channel_webhooks`
+  ADD PRIMARY KEY (`channel_id`),
+  ADD UNIQUE KEY `webhook_id` (`webhook_id`);
+
+ALTER TABLE `channel_whitelist`
+  ADD PRIMARY KEY (`guild_id`,`channel_id`),
+  ADD KEY `channel_id_idx` (`channel_id`);
+
+ALTER TABLE `coins`
+  ADD PRIMARY KEY (`user_id`),
+  ADD KEY `balance` (`balance`),
+  ADD KEY `spent` (`spent`),
+  ADD KEY `earned` (`earned`);
 
 ALTER TABLE `disabled_categories`
   ADD PRIMARY KEY (`guild_id`,`category_id`),
@@ -1072,6 +1207,15 @@ ALTER TABLE `game_score_history`
 
 ALTER TABLE `hints`
   ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `http_ratelimit`
+  ADD PRIMARY KEY (`interface`);
+
+ALTER TABLE `http_requests`
+  ADD PRIMARY KEY (`interface`);
+
+ALTER TABLE `http_status_codes`
+  ADD PRIMARY KEY (`interface`,`status_code`);
 
 ALTER TABLE `infobot_bandwidth`
   ADD PRIMARY KEY (`logdate`);
@@ -1121,11 +1265,22 @@ ALTER TABLE `insane_answers`
   ADD KEY `fk_qi` (`question_id`),
   ADD KEY `translation_dirty` (`translation_dirty`);
 
+ALTER TABLE `insane_cooldown`
+  ADD PRIMARY KEY (`guild_id`);
+
 ALTER TABLE `insane_round_statistics`
   ADD PRIMARY KEY (`guild_id`,`user_id`) USING BTREE,
   ADD KEY `score` (`score`),
   ADD KEY `channel_id` (`channel_id`),
   ADD KEY `user_id` (`user_id`);
+
+ALTER TABLE `inventory`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `user_id_2` (`user_id`,`shop_id`),
+  ADD KEY `user_id` (`user_id`),
+  ADD KEY `shop_id` (`shop_id`),
+  ADD KEY `purchase_date` (`purchase_date`),
+  ADD KEY `display_order` (`display`);
 
 ALTER TABLE `languages`
   ADD PRIMARY KEY (`id`),
@@ -1148,7 +1303,10 @@ ALTER TABLE `premium_credits`
   ADD KEY `active` (`active`),
   ADD KEY `since` (`since`),
   ADD KEY `fk_plan` (`plan_id`),
-  ADD KEY `guild_id` (`guild_id`) USING BTREE;
+  ADD KEY `guild_id` (`guild_id`) USING BTREE,
+  ADD KEY `manual_expiry_date` (`manual_expiry_date`),
+  ADD KEY `payment_failed` (`payment_failed`),
+  ADD KEY `payment_failed_date` (`payment_failed_date`);
 
 ALTER TABLE `premium_plans`
   ADD PRIMARY KEY (`id`),
@@ -1205,6 +1363,14 @@ ALTER TABLE `scores_lastgame`
   ADD KEY `user_id` (`user_id`),
   ADD KEY `guild_id_2` (`guild_id`,`user_id`,`score`);
 
+ALTER TABLE `shop`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `cost` (`cost`),
+  ADD KEY `available` (`available`),
+  ADD KEY `start_date` (`start_date`,`end_date`),
+  ADD KEY `quantity` (`quantity`),
+  ADD KEY `object_type` (`object_type`);
+
 ALTER TABLE `start_log`
   ADD PRIMARY KEY (`user_id`),
   ADD KEY `last_started` (`last_started`);
@@ -1216,7 +1382,8 @@ ALTER TABLE `start_queue`
 
 ALTER TABLE `stats`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `lastcorrect` (`lastcorrect`);
+  ADD KEY `lastcorrect` (`lastcorrect`),
+  ADD KEY `fastest_user_id` (`fastest_user_id`);
 
 ALTER TABLE `streaks`
   ADD PRIMARY KEY (`nick`,`guild_id`) USING BTREE,
@@ -1281,12 +1448,19 @@ ALTER TABLE `trivia_guild_membership`
 ALTER TABLE `trivia_role_cache`
   ADD PRIMARY KEY (`id`),
   ADD KEY `guild_id` (`guild_id`),
-  ADD KEY `position` (`position`);
+  ADD KEY `position` (`position`),
+  ADD KEY `managed` (`managed`),
+  ADD KEY `name` (`name`);
 
 ALTER TABLE `trivia_user_cache`
   ADD PRIMARY KEY (`snowflake_id`),
   ADD KEY `username` (`username`,`discriminator`),
-  ADD KEY `username_2` (`username`);
+  ADD KEY `username_2` (`username`),
+  ADD KEY `rankcard_theme` (`rankcard_theme`);
+
+ALTER TABLE `vote_streak`
+  ADD PRIMARY KEY (`user_id`),
+  ADD KEY `last_voted` (`last_voted`);
 
 ALTER TABLE `warnings`
   ADD PRIMARY KEY (`id`),
@@ -1318,6 +1492,9 @@ ALTER TABLE `insane`
 ALTER TABLE `insane_answers`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
+ALTER TABLE `inventory`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+
 ALTER TABLE `languages`
   MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
 
@@ -1333,6 +1510,9 @@ ALTER TABLE `role_change_queue`
 ALTER TABLE `scheduled_games`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
+ALTER TABLE `shop`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
 ALTER TABLE `trivia_access`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'PK';
 
@@ -1346,10 +1526,6 @@ ALTER TABLE `warnings`
 ALTER TABLE `achievements`
   ADD CONSTRAINT `achievements_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `trivia_user_cache` (`snowflake_id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
-ALTER TABLE `active_games`
-  ADD CONSTRAINT `active_games_ibfk_1` FOREIGN KEY (`guild_id`) REFERENCES `trivia_guild_cache` (`snowflake_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `active_games_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `trivia_user_cache` (`snowflake_id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
-
 ALTER TABLE `active_roles_rewarded`
   ADD CONSTRAINT `active_roles_rewarded_ibfk_1` FOREIGN KEY (`guild_id`) REFERENCES `trivia_guild_cache` (`snowflake_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `active_roles_rewarded_ibfk_2` FOREIGN KEY (`role_id`) REFERENCES `trivia_role_cache` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
@@ -1357,6 +1533,14 @@ ALTER TABLE `active_roles_rewarded`
 
 ALTER TABLE `answers`
   ADD CONSTRAINT `fk_q` FOREIGN KEY (`id`) REFERENCES `questions` (`id`);
+
+ALTER TABLE `bans`
+  ADD CONSTRAINT `bans_ibfk_1` FOREIGN KEY (`moderator_id`) REFERENCES `trivia_access` (`user_id`),
+  ADD CONSTRAINT `bans_ibfk_2` FOREIGN KEY (`snowflake_id`) REFERENCES `trivia_user_cache` (`snowflake_id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+ALTER TABLE `channel_whitelist`
+  ADD CONSTRAINT `channel_whitelist_ibfk_1` FOREIGN KEY (`guild_id`) REFERENCES `trivia_guild_cache` (`snowflake_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `channel_whitelist_ibfk_2` FOREIGN KEY (`channel_id`) REFERENCES `trivia_channel_cache` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 ALTER TABLE `disabled_categories`
   ADD CONSTRAINT `disabled_categories_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`),
@@ -1377,15 +1561,25 @@ ALTER TABLE `game_score_history`
 ALTER TABLE `hints`
   ADD CONSTRAINT `fk_a` FOREIGN KEY (`id`) REFERENCES `answers` (`id`);
 
+ALTER TABLE `http_status_codes`
+  ADD CONSTRAINT `http_status_codes_ibfk_1` FOREIGN KEY (`interface`) REFERENCES `http_requests` (`interface`);
+
 ALTER TABLE `infobot_votes`
   ADD CONSTRAINT `infobot_votes_ibfk_1` FOREIGN KEY (`origin`) REFERENCES `infobot_vote_links` (`site`);
 
 ALTER TABLE `insane_answers`
   ADD CONSTRAINT `fk_qi` FOREIGN KEY (`question_id`) REFERENCES `insane` (`id`);
 
+ALTER TABLE `insane_cooldown`
+  ADD CONSTRAINT `insane_cooldown_ibfk_1` FOREIGN KEY (`guild_id`) REFERENCES `trivia_guild_cache` (`snowflake_id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
 ALTER TABLE `insane_round_statistics`
   ADD CONSTRAINT `insane_round_statistics_ibfk_1` FOREIGN KEY (`guild_id`) REFERENCES `trivia_guild_cache` (`snowflake_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `insane_round_statistics_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `trivia_user_cache` (`snowflake_id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+ALTER TABLE `inventory`
+  ADD CONSTRAINT `inventory_ibfk_1` FOREIGN KEY (`shop_id`) REFERENCES `shop` (`id`),
+  ADD CONSTRAINT `inventory_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `trivia_user_cache` (`snowflake_id`);
 
 ALTER TABLE `new_daywinners`
   ADD CONSTRAINT `new_daywinners_ibfk_1` FOREIGN KEY (`guild_id`) REFERENCES `trivia_guild_cache` (`snowflake_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
@@ -1418,8 +1612,17 @@ ALTER TABLE `scheduled_games`
 ALTER TABLE `scores`
   ADD CONSTRAINT `scores_ibfk_1` FOREIGN KEY (`guild_id`) REFERENCES `trivia_guild_cache` (`snowflake_id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
+ALTER TABLE `scores_lastgame`
+  ADD CONSTRAINT `scores_lastgame_ibfk_1` FOREIGN KEY (`guild_id`) REFERENCES `trivia_guild_cache` (`snowflake_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `scores_lastgame_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `trivia_user_cache` (`snowflake_id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
 ALTER TABLE `start_log`
   ADD CONSTRAINT `start_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `trivia_user_cache` (`snowflake_id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+ALTER TABLE `stats`
+  ADD CONSTRAINT `stats_ibfk_1` FOREIGN KEY (`fastest_user_id`) REFERENCES `trivia_user_cache` (`snowflake_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `stats_ibfk_2` FOREIGN KEY (`lastcorrect`) REFERENCES `trivia_user_cache` (`snowflake_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `stats_ibfk_3` FOREIGN KEY (`id`) REFERENCES `questions` (`id`);
 
 ALTER TABLE `streaks`
   ADD CONSTRAINT `fk_guild_id` FOREIGN KEY (`guild_id`) REFERENCES `trivia_guild_cache` (`snowflake_id`),
@@ -1438,23 +1641,11 @@ ALTER TABLE `trivia_access`
 ALTER TABLE `trivia_channel_cache`
   ADD CONSTRAINT `trivia_channel_cache_ibfk_1` FOREIGN KEY (`parent_id`) REFERENCES `trivia_channel_cache` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
-ALTER TABLE `trivia_guild_membership`
-  ADD CONSTRAINT `fk_guild` FOREIGN KEY (`guild_id`) REFERENCES `trivia_guild_cache` (`snowflake_id`),
-  ADD CONSTRAINT `fk_user` FOREIGN KEY (`user_id`) REFERENCES `trivia_user_cache` (`snowflake_id`);
-
-ALTER TABLE `trivia_role_cache`
-  ADD CONSTRAINT `trivia_role_cache_ibfk_1` FOREIGN KEY (`guild_id`) REFERENCES `trivia_guild_cache` (`snowflake_id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE `trivia_user_cache`
+  ADD CONSTRAINT `trivia_user_cache_ibfk_1` FOREIGN KEY (`rankcard_theme`) REFERENCES `shop` (`id`);
 
 ALTER TABLE `warnings`
   ADD CONSTRAINT `warnings_ibfk_1` FOREIGN KEY (`insane_id`) REFERENCES `insane` (`id`),
   ADD CONSTRAINT `warnings_ibfk_2` FOREIGN KEY (`question_id`) REFERENCES `questions` (`id`),
   ADD CONSTRAINT `warnings_ibfk_3` FOREIGN KEY (`user_id`) REFERENCES `trivia_user_cache` (`snowflake_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `warnings_ibfk_4` FOREIGN KEY (`warned_by_id`) REFERENCES `trivia_user_cache` (`snowflake_id`);
-
-SET FOREIGN_KEY_CHECKS=1;
-COMMIT;
-
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-
