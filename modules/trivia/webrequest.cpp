@@ -595,7 +595,11 @@ void runcli(guild_settings_t settings, const std::string &command, uint64_t guil
 
 	guild_settings_t* s = new guild_settings_t(settings);
 
-	dpp::utility::exec("/usr/bin/php", { fmt::format("{}/www/cli-run.php", home), command, std::to_string(guild_id), std::to_string(user_id), std::to_string(channel_id), parameters }, [channel_id, s](const std::string &output) {
+	/* IMPORTANT: dpp::utility::exec makes parameters safe */
+	dpp::utility::exec("/usr/bin/php", { fmt::format("{}/www/cli-run.php", home), command, std::to_string(guild_id), std::to_string(user_id), std::to_string(channel_id), parameters }, [channel_id, guild_id, s](const std::string &output) {
+		/* Force re-cache of guild settings in case external command changed them */
+		module->GetGuildSettings(guild_id, true);
+		/* Output response as embed */
 		std::string reply = trim(output);
 		if (!reply.empty()) {
 			module->ProcessEmbed(*s, reply, channel_id);

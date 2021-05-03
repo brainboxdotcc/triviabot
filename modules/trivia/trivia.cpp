@@ -356,10 +356,10 @@ uint64_t TriviaModule::GetChannelTotal()
 std::mutex settingcache_mutex;
 std::unordered_map<dpp::snowflake, guild_settings_t*> settings_cache;
 
-const guild_settings_t& TriviaModule::GetGuildSettings(dpp::snowflake guild_id)
+const guild_settings_t& TriviaModule::GetGuildSettings(dpp::snowflake guild_id, bool ignore_cache)
 {
 	db::resultset r;
-	{
+	if (!ignore_cache) {
 		std::lock_guard<std::mutex> locker(settingcache_mutex);
 		auto i = settings_cache.find(guild_id);
 		if (i != settings_cache.end()) {
@@ -400,7 +400,7 @@ const guild_settings_t& TriviaModule::GetGuildSettings(dpp::snowflake guild_id)
 std::string TriviaModule::GetVersion()
 {
 	/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-	std::string version = "$ModVer 90$";
+	std::string version = "$ModVer 91$";
 	return "3.0." + version.substr(8,version.length() - 9);
 }
 
