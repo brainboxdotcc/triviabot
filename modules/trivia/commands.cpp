@@ -270,9 +270,6 @@ void TriviaModule::GetHelp(const std::string &section, dpp::snowflake channelID,
 		return;
 	}
 
-	if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == settings.guild_id) {
-		bot->core->message_create(dpp::message(channelID, dpp::embed(&embed_json)));
-		bot->sent_messages++;
-	}
+	ProcessEmbed(settings, json, channelID);
 }
 

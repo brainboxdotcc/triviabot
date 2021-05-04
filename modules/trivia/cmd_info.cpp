@@ -81,17 +81,7 @@ void command_info_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_se
 	}
 	s << "],\"description\":\"" << (settings.premium ? _("YAYPREMIUM", settings) : "") << "\"}";
 
-	json embed_json;
-	try {
-		embed_json = json::parse(s.str());
-	}
-	catch (const std::exception &e) {
-		creator->GetBot()->core->log(dpp::ll_error, fmt::format("Malformed json created when reporting info: {}", s.str()));
-	}
-	if (!creator->GetBot()->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == cmd.guild_id) {
-		creator->GetBot()->core->message_create(dpp::message(cmd.channel_id, dpp::embed(&embed_json)));
-		creator->GetBot()->sent_messages++;
-	}
+	creator->ProcessEmbed(settings, s.str(), cmd.channel_id);
 	creator->CacheUser(cmd.author_id, cmd.channel_id);
 }
 
