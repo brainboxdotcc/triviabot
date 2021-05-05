@@ -620,10 +620,15 @@ void state_t::do_insane_board() {
 	/* Last round was an insane round, display insane round score table embed if there were any participants */
 	std::string desc;
 	uint32_t i = 1;
-	for (auto sc = insane_round_stats.begin(); sc != insane_round_stats.end(); ++sc) {
-		db::resultset info = db::query("SELECT username, discriminator, get_emojis(trivia_user_cache.snowflake_id) as emojis FROM trivia_user_cache WHERE snowflake_id = ?", {sc->first});
+	std::multimap<uint64_t, dpp::snowflake> ordered;
+	/* Sort by largest first */
+	for (auto s = insane_round_stats.begin(); s != insane_round_stats.end(); ++s) {
+		ordered.insert(std::make_pair(s->second, s->first));
+	}
+	for (std::multimap<uint64_t, dpp::snowflake>::reverse_iterator sc = ordered.rbegin(); sc != ordered.rend(); ++sc) {
+		db::resultset info = db::query("SELECT username, discriminator, get_emojis(trivia_user_cache.snowflake_id) as emojis FROM trivia_user_cache WHERE snowflake_id = ?", {sc->second});
 		if (info.size()) {
-			desc += fmt::format("**#{0}** `{1}#{2:04d}` (*{3}*) {4}\n", i, info[0]["username"], from_string<uint32_t>(info[0]["discriminator"], std::dec), Comma(sc->second), info[0]["emojis"]);
+			desc += fmt::format("**#{0}** `{1}#{2:04d}` (*{3}*) {4}\n", i, info[0]["username"], from_string<uint32_t>(info[0]["discriminator"], std::dec), Comma(sc->first), info[0]["emojis"]);
 		}
 		i++;
 	}

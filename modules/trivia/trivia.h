@@ -104,8 +104,10 @@ public:
 	std::mutex states_mutex;
 	std::map<dpp::snowflake, state_t> states;
 
-	std::mutex cs_mutex;	
+	std::mutex cs_mutex;
+	std::mutex wh_mutex;
 	std::unordered_map<dpp::snowflake, last_streak_t> last_channel_streaks;
+	std::unordered_map<dpp::snowflake, std::string> webhooks;
 
 	TriviaModule(Bot* instigator, ModuleLoader* ml);
 	Bot* GetBot();
