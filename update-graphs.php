@@ -62,8 +62,9 @@ $cmds = 0;
 
 /* Collate logs from all clusters */
 for ($n = 0; $n < $clusters; ++$n) {
-	if (file_exists("build/log/aegis-$n.log")) {
-		$fh = fopen("build/log/aegis-$n.log", "r");
+	$fn = sprintf("%02d", $n);
+	if (file_exists("build/logs/triviabot$fn.log")) {
+		$fh = fopen("build/logs/triviabot$fn.log", "r");
 		while (!feof($fh)) {
 			$l = trim(fgets($fh));
 			$m = [];
