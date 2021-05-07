@@ -311,7 +311,14 @@ std::string web_request(const std::string &_host, const std::string &_path, cons
 					if (bot) {
 						bot->core->log(dpp::ll_warning, fmt::format("HTTP Error {} on POST {}/{} (channel_id={})", res->status, _host, _path, channel_id));
 						if (res->status == 404) {
-							db::query("DELETE FROM channel_webhooks WHERE channel_id = ?", {channel_id});
+							{
+								std::lock_guard<std::mutex> lock(module->wh_mutex);
+								auto i = module->webhooks.find(channel_id);
+								if (i != module->webhooks.end()) {
+									module->webhooks.erase(i);
+								}
+							}
+							db::backgroundquery("DELETE FROM channel_webhooks WHERE channel_id = ?", {channel_id});
 						}
 					}
 				}
@@ -701,12 +708,8 @@ bool log_question_index(uint64_t guild_id, uint64_t channel_id, uint32_t index, 
 	should_stop = (st.size() > 0);
 
 	if (state == TRIV_ASK_QUESTION) {
-		db::resultset ques = db::query("SELECT * FROM questions WHERE id = '?'", {qid});
 		db::backgroundquery("UPDATE counters SET asked_15_min = asked_15_min + 1", {});
-		if (ques.size() > 0) {
-			uint32_t category_id = from_string<uint32_t>(ques[0]["category"], std::dec);
-			db::backgroundquery("UPDATE categories SET questions_asked = questions_asked + 1 WHERE id = '?'", {category_id});
-		}
+		db::backgroundquery("UPDATE categories SET questions_asked = questions_asked + 1 WHERE id = (SELECT category FROM questions WHERE id = '?' LIMIT 1)", {qid});
 	}
 
 	return should_stop;
@@ -767,7 +770,7 @@ std::string get_current_team(uint64_t snowflake_id)
 void leave_team(uint64_t snowflake_id)
 {
 	// Replaced with direct db query for perforamance increase - 27Dec20
-	db::query("DELETE FROM team_membership WHERE nick = '?'", {snowflake_id});
+	db::backgroundquery("DELETE FROM team_membership WHERE nick = '?'", {snowflake_id});
 }
 
 /* Make a player join a team */
