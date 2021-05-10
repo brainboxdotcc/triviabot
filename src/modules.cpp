@@ -19,7 +19,7 @@
  ************************************************************************************/
 
 #include <dpp/dpp.h>
-#include <nlohmann/json.hpp>
+#include <dpp/nlohmann/json.hpp>
 #include <fmt/format.h>
 #include <sporks/modules.h>
 #ifndef _GNU_SOURCE

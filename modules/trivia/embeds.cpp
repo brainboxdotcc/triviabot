@@ -22,7 +22,7 @@
 
 #include <dpp/dpp.h>
 #include <fmt/format.h>
-#include <nlohmann/json.hpp>
+#include <dpp/nlohmann/json.hpp>
 #include <string>
 #include <cstdint>
 #include <fstream>

@@ -22,7 +22,7 @@
 
 #include <dpp/dpp.h>
 #include <fmt/format.h>
-#include <nlohmann/json.hpp>
+#include <dpp/nlohmann/json.hpp>
 #include <sporks/modules.h>
 #include <sporks/regex.h>
 #include <string>
@@ -400,7 +400,7 @@ const guild_settings_t& TriviaModule::GetGuildSettings(dpp::snowflake guild_id, 
 std::string TriviaModule::GetVersion()
 {
 	/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-	std::string version = "$ModVer 91$";
+	std::string version = "$ModVer 92$";
 	return "3.0." + version.substr(8,version.length() - 9);
 }
 

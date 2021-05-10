@@ -20,7 +20,7 @@
 
 #define SPDLOG_FMT_EXTERNAL
 #include <dpp/dpp.h>
-#include <nlohmann/json.hpp>
+#include <dpp/nlohmann/json.hpp>
 #include <fmt/format.h>
 #include <spdlog/spdlog.h>
 #include <spdlog/async.h>

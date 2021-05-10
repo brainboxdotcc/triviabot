@@ -86,7 +86,7 @@ public:
 	virtual std::string GetVersion()
 	{
 		/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-		std::string version = "$ModVer 31$";
+		std::string version = "$ModVer 32$";
 		return "1.0." + version.substr(8,version.length() - 9);
 	}
 
@@ -282,7 +282,7 @@ public:
 						for (auto i = shards.begin(); i != shards.end(); ++i) {
 							dpp::DiscordClient* shard = i->second;
 							count += shard->GetBytesIn() + shard->GetBytesOut();
-							u_count += shard->GetDeompressedBytesIn() + shard->GetBytesOut();
+							u_count += shard->GetDecompressedBytesIn() + shard->GetBytesOut();
 						}
 
 						w << fmt::format("  Total transfer: {} (U: {} | {:.2f}%) Memory usage: {}\n", dpp::utility::bytes(count), dpp::utility::bytes(u_count), (count / (double)u_count)*100, dpp::utility::bytes(GetRSS()));

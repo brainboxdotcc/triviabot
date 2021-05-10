@@ -21,7 +21,7 @@
  ************************************************************************************/
 #include <dpp/dpp.h>
 #include <fmt/format.h>
-#include <nlohmann/json.hpp>
+#include <dpp/nlohmann/json.hpp>
 #include <sporks/modules.h>
 #include <sporks/regex.h>
 #include <string>
