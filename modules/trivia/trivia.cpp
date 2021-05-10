@@ -161,13 +161,13 @@ bool TriviaModule::OnPresenceUpdate()
 				shard->IsConnected(),
 				shard->IsConnected(),
 				uptime,
-				(uint64_t)(shard->GetDeompressedBytesIn() + shard->GetBytesOut()),
+				(uint64_t)(shard->GetDecompressedBytesIn() + shard->GetBytesOut()),
 				(uint64_t)(shard->GetBytesIn() + shard->GetBytesOut()),
 				bot->GetClusterID(),
 				shard->IsConnected(),
 				shard->IsConnected(),
 				uptime,
-				(uint64_t)(shard->GetDeompressedBytesIn() + shard->GetBytesOut()),
+				(uint64_t)(shard->GetDecompressedBytesIn() + shard->GetBytesOut()),
 				(uint64_t)(shard->GetBytesIn() + shard->GetBytesOut())
 			}
 		);
@@ -400,7 +400,7 @@ const guild_settings_t& TriviaModule::GetGuildSettings(dpp::snowflake guild_id, 
 std::string TriviaModule::GetVersion()
 {
 	/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-	std::string version = "$ModVer 92$";
+	std::string version = "$ModVer 93$";
 	return "3.0." + version.substr(8,version.length() - 9);
 }
 
