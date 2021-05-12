@@ -78,7 +78,7 @@ namespace db {
 			}
 			while (!bg_copy.empty()) {
 				background_query q = bg_copy.front();
-				real_query(db_mutex, connection, q.format, q.parameters);
+				real_query(b_db_query_mutex, background_connection, q.format, q.parameters);
 				bg_copy.pop();
 			}
 		}
@@ -95,9 +95,7 @@ namespace db {
 			mysql_options(&connection, MYSQL_INIT_COMMAND, CONNECT_STRING);
 			char reconnect = 1;
 			if (mysql_options(&connection, MYSQL_OPT_RECONNECT, &reconnect) == 0) {
-				return (mysql_real_connect(&connection, host.c_str(), user.c_str(), pass.c_str(), db.c_str(), port, NULL, CLIENT_MULTI_RESULTS | CLIENT_MULTI_STATEMENTS));
-
-				/*
+				if (mysql_real_connect(&connection, host.c_str(), user.c_str(), pass.c_str(), db.c_str(), port, NULL, CLIENT_MULTI_RESULTS | CLIENT_MULTI_STATEMENTS)) {
 					if (mysql_init(&background_connection) != nullptr) {
 						mysql_options(&background_connection, MYSQL_SET_CHARSET_NAME, "utf8mb4");
 						mysql_options(&background_connection, MYSQL_INIT_COMMAND, CONNECT_STRING);
@@ -108,7 +106,7 @@ namespace db {
 							return mysql_real_connect(&background_connection, host.c_str(), user.c_str(), pass.c_str(), db.c_str(), port, NULL, CLIENT_MULTI_RESULTS | CLIENT_MULTI_STATEMENTS);
 						}
 					}
-				}*/
+				}
 			}
 		}
 		_error = "db::connect() failed";
@@ -146,7 +144,7 @@ namespace db {
 	 */
 	resultset query(const std::string &format, const paramlist &parameters) {
 
-		return real_query(db_mutex, connection, format, parameters);
+		return real_query(b_db_mutex, connection, format, parameters);
 	}
 
 	resultset real_query(std::mutex& mutex, MYSQL &conn, const std::string &format, const paramlist &parameters) {
