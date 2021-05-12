@@ -151,9 +151,7 @@ void statdump()
 				}
 				requests[i] = 0;
 				errors[i] = 0;
-				if (e != 0 && r != 0) {
-					db::query("INSERT INTO http_requests (interface, hard_errors, requests) VALUES('?', ?, ?) ON DUPLICATE KEY UPDATE hard_errors = hard_errors + ?, requests = requests + ?", {i, e, r, e, r});
-				}
+				db::query("INSERT INTO http_requests (interface, hard_errors, requests) VALUES('?', ?, ?) ON DUPLICATE KEY UPDATE hard_errors = hard_errors + ?, requests = requests + ?", {i, e, r, e, r});
 				if (statuscodes.find(i) != statuscodes.end()) {
 					for (auto & codes : statuscodes[i]) {
 						db::query("INSERT INTO http_status_codes (interface, status_code, requests) VALUES('?', ?, ?) ON DUPLICATE KEY UPDATE requests = requests + ?", {i, codes.first, codes.second, codes.second});
