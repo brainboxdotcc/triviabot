@@ -47,7 +47,7 @@ public:
 	virtual std::string GetVersion()
 	{
 		/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-		std::string version = "$ModVer 9$";
+		std::string version = "$ModVer 10$";
 		return "1.0." + version.substr(8,version.length() - 9);
 	}
 
@@ -75,9 +75,9 @@ public:
 	{
 		int64_t users = 0, channel_count = 0, servers = 0;
 		for (auto & s : bot->core->get_shards()) {
-			users += s.second->GetMemberCount();
-			channel_count += s.second->GetChannelCount();
-			servers += s.second->GetGuildCount();
+			users += s.second->get_member_count();
+			channel_count += s.second->get_channel_count();
+			servers += s.second->get_guild_count();
 		}
 		int64_t ram = GetRSS();
 		int64_t games = bot->counters.find("activegames") != bot->counters.end() ?  bot->counters["activegames"] : 0;

@@ -86,7 +86,7 @@ public:
 	virtual std::string GetVersion()
 	{
 		/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-		std::string version = "$ModVer 32$";
+		std::string version = "$ModVer 33$";
 		return "1.0." + version.substr(8,version.length() - 9);
 	}
 
@@ -280,9 +280,9 @@ public:
 						uint64_t count = 0, u_count = 0;
 						auto& shards = bot->core->get_shards();
 						for (auto i = shards.begin(); i != shards.end(); ++i) {
-							dpp::DiscordClient* shard = i->second;
-							count += shard->GetBytesIn() + shard->GetBytesOut();
-							u_count += shard->GetDecompressedBytesIn() + shard->GetBytesOut();
+							dpp::discord_client* shard = i->second;
+							count += shard->get_bytes_in() + shard->get_bytes_out();
+							u_count += shard->get_decompressed_bytes_in() + shard->get_bytes_out();
 						}
 
 						w << fmt::format("  Total transfer: {} (U: {} | {:.2f}%) Memory usage: {}\n", dpp::utility::bytes(count), dpp::utility::bytes(u_count), (count / (double)u_count)*100, dpp::utility::bytes(GetRSS()));
@@ -292,18 +292,18 @@ public:
 
 						for (auto i = shards.begin(); i != shards.end(); ++i)
 						{
-							dpp::DiscordClient* s = i->second;
-							if (s->IsConnected())
+							dpp::discord_client* s = i->second;
+							if (s->is_connected())
 								w << "+ ";
 							else
 								w << "  ";
 							w << fmt::format("|{:6}|{:10}|{:7}|{:7}|{:>16}|{:>11}|{:10}|",
 											 s->shard_id,
 											 s->last_seq,
-											 s->GetGuildCount(),
-											 s->GetMemberCount(),
-											 s->Uptime().to_string(),
-											 dpp::utility::bytes(s->GetBytesIn() + s->GetBytesOut()),
+											 s->get_guild_count(),
+											 s->get_member_count(),
+											 s->get_uptime().to_string(),
+											 dpp::utility::bytes(s->get_bytes_in() + s->get_bytes_out()),
 											 0);
 							if (message.from->shard_id == s->shard_id) {
 								w << " *\n";

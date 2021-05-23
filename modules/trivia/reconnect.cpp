@@ -39,7 +39,7 @@ void TriviaModule::CheckReconnects() {
 		for (auto r = rs.begin(); r != rs.end(); ++r) {
 			try {
 				bool reconnected = false;
-				dpp::DiscordClient* s = bot->core->get_shard(from_string<uint32_t>((*r)["id"], std::dec));
+				dpp::discord_client* s = bot->core->get_shard(from_string<uint32_t>((*r)["id"], std::dec));
 				if (s) {
 					bot->core->log(dpp::ll_info, fmt::format("Forced reconnection of shard {}", (*r)["id"]));
 					db::query("UPDATE infobot_shard_status SET reconnect_status = '?' WHERE id = ?", {std::string("Disconnecting..."), (*r)["id"]});

@@ -152,23 +152,23 @@ bool TriviaModule::OnPresenceUpdate()
 	/* Note: Only updates this cluster's shards! */
 	const dpp::shard_list& shards = bot->core->get_shards();
 	for (auto i = shards.begin(); i != shards.end(); ++i) {
-		dpp::DiscordClient* shard = i->second;
-		uint64_t uptime = shard->Uptime().secs + (shard->Uptime().mins * 60) + (shard->Uptime().hours * 60 * 60) + (shard->Uptime().days * 60 * 60 * 24);
+		dpp::discord_client* shard = i->second;
+		uint64_t uptime = shard->get_uptime().secs + (shard->get_uptime().mins * 60) + (shard->get_uptime().hours * 60 * 60) + (shard->get_uptime().days * 60 * 60 * 24);
 		db::backgroundquery("INSERT INTO infobot_shard_status (id, cluster_id, connected, online, uptime, transfer, transfer_compressed) VALUES('?','?','?','?','?','?','?') ON DUPLICATE KEY UPDATE cluster_id = '?', connected = '?', online = '?', uptime = '?', transfer = '?', transfer_compressed = '?'",
 			{
 				shard->shard_id,
 				bot->GetClusterID(),
-				shard->IsConnected(),
-				shard->IsConnected(),
+				shard->is_connected(),
+				shard->is_connected(),
 				uptime,
-				(uint64_t)(shard->GetDecompressedBytesIn() + shard->GetBytesOut()),
-				(uint64_t)(shard->GetBytesIn() + shard->GetBytesOut()),
+				(uint64_t)(shard->get_decompressed_bytes_in() + shard->get_bytes_out()),
+				(uint64_t)(shard->get_bytes_in() + shard->get_bytes_out()),
 				bot->GetClusterID(),
-				shard->IsConnected(),
-				shard->IsConnected(),
+				shard->is_connected(),
+				shard->is_connected(),
 				uptime,
-				(uint64_t)(shard->GetDecompressedBytesIn() + shard->GetBytesOut()),
-				(uint64_t)(shard->GetBytesIn() + shard->GetBytesOut())
+				(uint64_t)(shard->get_decompressed_bytes_in() + shard->get_bytes_out()),
+				(uint64_t)(shard->get_bytes_in() + shard->get_bytes_out())
 			}
 		);
 	}
@@ -400,7 +400,7 @@ const guild_settings_t& TriviaModule::GetGuildSettings(dpp::snowflake guild_id, 
 std::string TriviaModule::GetVersion()
 {
 	/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-	std::string version = "$ModVer 93$";
+	std::string version = "$ModVer 94$";
 	return "3.0." + version.substr(8,version.length() - 9);
 }
 

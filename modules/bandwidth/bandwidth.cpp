@@ -49,7 +49,7 @@ public:
 	virtual std::string GetVersion()
 	{
 		/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-		std::string version = "$ModVer 4$";
+		std::string version = "$ModVer 5$";
 		return "1.0." + version.substr(8,version.length() - 9);
 	}
 
@@ -66,8 +66,8 @@ public:
 			uint64_t bandwidth_websocket = 0;
 			auto& shards = bot->core->get_shards();
 			for (auto i = shards.begin(); i != shards.end(); ++i) {
-				dpp::DiscordClient* shard = i->second;
-				bandwidth_websocket += shard->GetBytesIn() + shard->GetBytesOut();
+				dpp::discord_client* shard = i->second;
+				bandwidth_websocket += shard->get_bytes_in() + shard->get_bytes_out();
 			}
 			uint64_t bandwidth_last_60_seconds = bandwidth_websocket - last_bandwidth_websocket;
 			last_bandwidth_websocket = bandwidth_websocket;
