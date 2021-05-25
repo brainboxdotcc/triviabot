@@ -400,7 +400,7 @@ const guild_settings_t& TriviaModule::GetGuildSettings(dpp::snowflake guild_id, 
 std::string TriviaModule::GetVersion()
 {
 	/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-	std::string version = "$ModVer 94$";
+	std::string version = "$ModVer 95$";
 	return "3.0." + version.substr(8,version.length() - 9);
 }
 
@@ -568,8 +568,7 @@ void TriviaModule::CacheUser(dpp::snowflake user, dpp::snowflake channel_id)
 		if (g) {
 			auto i = g->members.find(user);
 			if (i != g->members.end()) {
-				dpp::guild_member* gm = i->second;
-				cache_user(_user, g, gm);
+				cache_user(_user, g, &(i->second));
 			}
 		}
 	} else {
