@@ -66,7 +66,7 @@ void command_info_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_se
 		statusfield(_("DEVMODE", settings), _((creator->GetBot()->IsDevMode() ? "TICKYES" : "CROSSNO"), settings)),
 		statusfield(_("MYPREFIX", settings), "``" + creator->escape_json(settings.prefix) + "``"),
 		statusfield(_("BOTVER", settings), std::string(creator->GetVersion())),
-		statusfield(_("LIBVER", settings), "[<:D_:830553370792165376> " + std::string(DPP_VERSION_TEXT) + "](https://dpp.brainbox.cc/)"),
+		statusfield(_("LIBVER", settings), "[<:DPP1:847152435399360583><:DPP2:847152435343523881> " + std::string(DPP_VERSION_TEXT) + "](https://dpp.brainbox.cc/)"),
 		statusfield("", "")
 	};
 
