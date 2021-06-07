@@ -353,25 +353,9 @@ uint64_t TriviaModule::GetChannelTotal()
 	}
 }
 
-std::mutex settingcache_mutex;
-std::unordered_map<dpp::snowflake, guild_settings_t*> settings_cache;
-
-const guild_settings_t& TriviaModule::GetGuildSettings(dpp::snowflake guild_id, bool ignore_cache)
+const guild_settings_t TriviaModule::GetGuildSettings(dpp::snowflake guild_id)
 {
-	db::resultset r;
-	if (!ignore_cache) {
-		std::lock_guard<std::mutex> locker(settingcache_mutex);
-		auto i = settings_cache.find(guild_id);
-		if (i != settings_cache.end()) {
-			if (time(NULL) > i->second->time + 60) {
-				delete i->second;
-				settings_cache.erase(i);
-			} else {
-				return *(i->second);
-			}
-		}
-	}
-	r = db::query("SELECT * FROM bot_guild_settings WHERE snowflake_id = ?", {guild_id});
+	db::resultset r = db::query("SELECT * FROM bot_guild_settings WHERE snowflake_id = ?", {guild_id});
 	if (!r.empty()) {
 		std::stringstream s(r[0]["moderator_roles"]);
 		uint64_t role_id;
@@ -380,27 +364,17 @@ const guild_settings_t& TriviaModule::GetGuildSettings(dpp::snowflake guild_id, 
 			role_list.push_back(role_id);
 		}
 		std::string max_n = r[0]["max_normal_round"], max_q = r[0]["max_quickfire_round"], max_h = r[0]["max_hardcore_round"];
-		guild_settings_t* gs = new guild_settings_t(time(NULL), from_string<uint64_t>(r[0]["snowflake_id"], std::dec), r[0]["prefix"], role_list, from_string<uint32_t>(r[0]["embedcolour"], std::dec), (r[0]["premium"] == "1"), (r[0]["only_mods_stop"] == "1"), (r[0]["only_mods_start"] == "1"), (r[0]["role_reward_enabled"] == "1"), from_string<uint64_t>(r[0]["role_reward_id"], std::dec), r[0]["custom_url"], r[0]["language"], from_string<uint32_t>(r[0]["question_interval"], std::dec), max_n.empty() ? 200 : from_string<uint32_t>(max_n, std::dec), max_q.empty() ? (r[0]["premium"] == "1" ? 200 : 15) : from_string<uint32_t>(max_q, std::dec), max_h.empty() ? 200 : from_string<uint32_t>(max_h, std::dec), r[0]["disable_insane_rounds"] == "1");
-		{
-			std::lock_guard<std::mutex> locker(settingcache_mutex);
-			settings_cache[guild_id] = gs;
-		}
-		return *gs;
+		return guild_settings_t(time(NULL), from_string<uint64_t>(r[0]["snowflake_id"], std::dec), r[0]["prefix"], role_list, from_string<uint32_t>(r[0]["embedcolour"], std::dec), (r[0]["premium"] == "1"), (r[0]["only_mods_stop"] == "1"), (r[0]["only_mods_start"] == "1"), (r[0]["role_reward_enabled"] == "1"), from_string<uint64_t>(r[0]["role_reward_id"], std::dec), r[0]["custom_url"], r[0]["language"], from_string<uint32_t>(r[0]["question_interval"], std::dec), max_n.empty() ? 200 : from_string<uint32_t>(max_n, std::dec), max_q.empty() ? (r[0]["premium"] == "1" ? 200 : 15) : from_string<uint32_t>(max_q, std::dec), max_h.empty() ? 200 : from_string<uint32_t>(max_h, std::dec), r[0]["disable_insane_rounds"] == "1");
 	} else {
 		db::backgroundquery("INSERT INTO bot_guild_settings (snowflake_id) VALUES('?')", {guild_id});
-		guild_settings_t* gs = new guild_settings_t(time(NULL), guild_id, "!", {}, 3238819, false, false, false, false, 0, "", "en", 20, 200, 15, 200, false);
-		{
-			 std::lock_guard<std::mutex> locker(settingcache_mutex);
-			 settings_cache[guild_id] = gs;
-		}
-		return *gs;
+		return guild_settings_t(time(NULL), guild_id, "!", {}, 3238819, false, false, false, false, 0, "", "en", 20, 200, 15, 200, false);
 	}
 }
 
 std::string TriviaModule::GetVersion()
 {
 	/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-	std::string version = "$ModVer 95$";
+	std::string version = "$ModVer 96$";
 	return "3.0." + version.substr(8,version.length() - 9);
 }
 
