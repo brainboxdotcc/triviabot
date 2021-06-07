@@ -38,6 +38,8 @@
 #include "piglatin.h"
 #include "time.h"
 
+std::unordered_map<uint64_t, bool> banlist;
+
 in_msg::in_msg(const std::string &m, uint64_t author, bool mention, const std::string &_username) : msg(m), author_id(author), mentions_bot(mention), username(_username)
 {
 }
@@ -77,6 +79,13 @@ state_t::state_t(TriviaModule* _creator, uint32_t questions, uint32_t currstreak
 			scores[from_string<uint64_t>((*s)["name"], std::dec)] = from_string<uint64_t>((*s)["dayscore"], std::dec);
 		}
 		creator->GetBot()->core->log(dpp::ll_debug, fmt::format("Cached {} guild scores for game on channel {}", rs.size(), channel_id));
+	}
+	db::resultset rs2 = db::query("SELECT * FROM bans WHERE play_ban = 1", {});
+	if (rs2.size()) {
+		banlist.clear();
+		for (auto s = rs2.begin(); s != rs2.end(); ++s) {
+			banlist[from_string<uint64_t>((*s)["snowflake_id"], std::dec)] = true;
+		}
 	}
 }
 
@@ -183,11 +192,20 @@ void state_t::record_activity(uint64_t user_id)
 	activity[user_id] = time(NULL);		
 }
 
+bool state_t::user_banned(uint64_t user_id)
+{
+	return (banlist.find(user_id) != banlist.end());
+}
+
 /* Handle inbound message */
 void state_t::handle_message(const in_msg& m)
 {
 	if (this->terminating || !creator)
 		return;
+
+	if (user_banned(m.author_id)) {
+		return;
+	}
 
 	if (gamestate == TRIV_ASK_QUESTION || gamestate == TRIV_FIRST_HINT || gamestate == TRIV_SECOND_HINT || gamestate == TRIV_TIME_UP) {
 		guild_settings_t settings = creator->GetGuildSettings(guild_id);

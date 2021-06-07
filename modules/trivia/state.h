@@ -107,5 +107,6 @@ class state_t
 	void add_score(dpp::snowflake uid, uint64_t addition);
 	void clear_insane_stats();
 	void add_insane_stats(dpp::snowflake uid);
+	bool user_banned(uint64_t user_id);
 };
 
