@@ -50,7 +50,6 @@ TriviaModule::TriviaModule(Bot* instigator, ModuleLoader* ml) : Module(instigato
 	ml->Attach({ I_OnMessage, I_OnPresenceUpdate, I_OnChannelDelete, I_OnGuildDelete, I_OnAllShardsReady, I_OnGuildCreate }, this);
 
 	/* Various regular expressions */
-	notvowel = new PCRE("/[^aeiou_]/", true);
 	number_tidy_dollars = new PCRE("^([\\d\\,]+)\\s+dollars$");
 	number_tidy_nodollars = new PCRE("^([\\d\\,]+)\\s+(.+?)$");
 	number_tidy_positive = new PCRE("^[\\d\\,]+$");
@@ -137,7 +136,6 @@ TriviaModule::~TriviaModule()
 	states.clear();
 
 	/* Delete these misc pointers, mostly regexps */
-	delete notvowel;
 	delete number_tidy_dollars;
 	delete number_tidy_nodollars;
 	delete number_tidy_positive;
@@ -374,7 +372,7 @@ const guild_settings_t TriviaModule::GetGuildSettings(dpp::snowflake guild_id)
 std::string TriviaModule::GetVersion()
 {
 	/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-	std::string version = "$ModVer 96$";
+	std::string version = "$ModVer 97$";
 	return "3.0." + version.substr(8,version.length() - 9);
 }
 

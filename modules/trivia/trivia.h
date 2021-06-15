@@ -73,7 +73,6 @@ struct last_streak_t {
 
 class TriviaModule : public Module
 {
-	PCRE* notvowel;
 	PCRE* number_tidy_dollars;
 	PCRE* number_tidy_nodollars;
 	PCRE* number_tidy_positive;

@@ -315,7 +315,7 @@ int main(int argc, char** argv) {
 
 	/* It's go time! */
 	while (true) {
-		dpp::cluster bot(token, intents, dev ? 1 : from_string<uint32_t>(Bot::GetConfig("shardcount"), std::dec), clusterid, maxclusters, true);
+		dpp::cluster bot(token, intents, dev ? 1 : from_string<uint32_t>(Bot::GetConfig("shardcount"), std::dec), clusterid, maxclusters, true, dpp::cp_lazy);
 
 		/* Set up spdlog logger */
 		std::shared_ptr<spdlog::logger> log;
