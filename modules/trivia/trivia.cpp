@@ -351,8 +351,23 @@ uint64_t TriviaModule::GetChannelTotal()
 	}
 }
 
+std::mutex settingcache_mutex;
+std::unordered_map<dpp::snowflake, guild_settings_t> settings_cache;
+
 const guild_settings_t TriviaModule::GetGuildSettings(dpp::snowflake guild_id)
 {
+	{
+		std::lock_guard<std::mutex> locker(settingcache_mutex);
+		auto i = settings_cache.find(guild_id);
+		if (i != settings_cache.end()) {
+			if (time(NULL) > i->second.time + 60) {
+				settings_cache.erase(i);
+			} else {
+				return i->second;
+			}
+		}
+	}
+	
 	db::resultset r = db::query("SELECT * FROM bot_guild_settings WHERE snowflake_id = ?", {guild_id});
 	if (!r.empty()) {
 		std::stringstream s(r[0]["moderator_roles"]);
@@ -362,17 +377,27 @@ const guild_settings_t TriviaModule::GetGuildSettings(dpp::snowflake guild_id)
 			role_list.push_back(role_id);
 		}
 		std::string max_n = r[0]["max_normal_round"], max_q = r[0]["max_quickfire_round"], max_h = r[0]["max_hardcore_round"];
-		return guild_settings_t(time(NULL), from_string<uint64_t>(r[0]["snowflake_id"], std::dec), r[0]["prefix"], role_list, from_string<uint32_t>(r[0]["embedcolour"], std::dec), (r[0]["premium"] == "1"), (r[0]["only_mods_stop"] == "1"), (r[0]["only_mods_start"] == "1"), (r[0]["role_reward_enabled"] == "1"), from_string<uint64_t>(r[0]["role_reward_id"], std::dec), r[0]["custom_url"], r[0]["language"], from_string<uint32_t>(r[0]["question_interval"], std::dec), max_n.empty() ? 200 : from_string<uint32_t>(max_n, std::dec), max_q.empty() ? (r[0]["premium"] == "1" ? 200 : 15) : from_string<uint32_t>(max_q, std::dec), max_h.empty() ? 200 : from_string<uint32_t>(max_h, std::dec), r[0]["disable_insane_rounds"] == "1");
+		guild_settings_t gs(time(NULL), from_string<uint64_t>(r[0]["snowflake_id"], std::dec), r[0]["prefix"], role_list, from_string<uint32_t>(r[0]["embedcolour"], std::dec), (r[0]["premium"] == "1"), (r[0]["only_mods_stop"] == "1"), (r[0]["only_mods_start"] == "1"), (r[0]["role_reward_enabled"] == "1"), from_string<uint64_t>(r[0]["role_reward_id"], std::dec), r[0]["custom_url"], r[0]["language"], from_string<uint32_t>(r[0]["question_interval"], std::dec), max_n.empty() ? 200 : from_string<uint32_t>(max_n, std::dec), max_q.empty() ? (r[0]["premium"] == "1" ? 200 : 15) : from_string<uint32_t>(max_q, std::dec), max_h.empty() ? 200 : from_string<uint32_t>(max_h, std::dec), r[0]["disable_insane_rounds"] == "1");
+		{
+			std::lock_guard<std::mutex> locker(settingcache_mutex);
+			settings_cache.insert(std::make_pair(guild_id, gs));
+		}
+		return gs;
 	} else {
 		db::backgroundquery("INSERT INTO bot_guild_settings (snowflake_id) VALUES('?')", {guild_id});
-		return guild_settings_t(time(NULL), guild_id, "!", {}, 3238819, false, false, false, false, 0, "", "en", 20, 200, 15, 200, false);
+		guild_settings_t gs(time(NULL), guild_id, "!", {}, 3238819, false, false, false, false, 0, "", "en", 20, 200, 15, 200, false);
+		{
+			std::lock_guard<std::mutex> locker(settingcache_mutex);
+			settings_cache.insert(std::make_pair(guild_id, gs));
+		}
+		return gs;
 	}
 }
 
 std::string TriviaModule::GetVersion()
 {
 	/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-	std::string version = "$ModVer 97$";
+	std::string version = "$ModVer 98$";
 	return "3.0." + version.substr(8,version.length() - 9);
 }
 
@@ -582,12 +607,13 @@ bool TriviaModule::RealOnMessage(const dpp::message_create_t &message, const std
 		bot->core->log(dpp::ll_debug, fmt::format("Message without channel, M:{} A:{}", msg.id, author_id));
 	} else {
 
-		guild_settings_t settings = GetGuildSettings(guild_id);
-	
 		if (mentioned && prefix_match->Match(clean_message)) {
+			guild_settings_t settings = GetGuildSettings(guild_id);
 			bot->core->message_create(dpp::message(channel_id, fmt::format(_("PREFIX", settings), settings.prefix, settings.prefix)));
 			bot->core->log(dpp::ll_debug, fmt::format("Respond to prefix request on channel C:{} A:{}", channel_id, author_id));
 		} else {
+
+			guild_settings_t settings = GetGuildSettings(guild_id);
 
 			// Commands
 			if (lowercase(clean_message.substr(0, settings.prefix.length())) == lowercase(settings.prefix)) {
