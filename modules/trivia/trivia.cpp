@@ -282,10 +282,17 @@ bool TriviaModule::OnChannelDelete(const dpp::channel_delete_t &cd)
 	return true;
 }
 
+std::mutex settingcache_mutex;
+std::unordered_map<dpp::snowflake, guild_settings_t> settings_cache;
+
 bool TriviaModule::OnGuildDelete(const dpp::guild_delete_t &gd)
 {
 	/* Unavailable guilds means an outage. We don't remove them if it's just an outage */
 	if (!gd.deleted->is_unavailable()) {
+		{
+			std::lock_guard<std::mutex> locker(settingcache_mutex);
+			settings_cache.erase(gd.deleted->id);
+		}
 		db::backgroundquery("UPDATE trivia_guild_cache SET kicked = 1 WHERE snowflake_id = ?", {gd.deleted->id});
 		bot->core->log(dpp::ll_info, fmt::format("Kicked from guild id {}", gd.deleted->id));
 	} else {
@@ -351,9 +358,6 @@ uint64_t TriviaModule::GetChannelTotal()
 	}
 }
 
-std::mutex settingcache_mutex;
-std::unordered_map<dpp::snowflake, guild_settings_t> settings_cache;
-
 const guild_settings_t TriviaModule::GetGuildSettings(dpp::snowflake guild_id)
 {
 	{
@@ -397,7 +401,7 @@ const guild_settings_t TriviaModule::GetGuildSettings(dpp::snowflake guild_id)
 std::string TriviaModule::GetVersion()
 {
 	/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-	std::string version = "$ModVer 98$";
+	std::string version = "$ModVer 99$";
 	return "3.0." + version.substr(8,version.length() - 9);
 }
 
