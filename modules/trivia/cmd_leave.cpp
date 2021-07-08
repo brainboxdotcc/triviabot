@@ -46,6 +46,6 @@ void command_leave_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 		leave_team(cmd.author_id);
 		creator->SimpleEmbed(settings, ":busts_in_silhouette:", fmt::format(_("LEFTTEAM", settings), username, teamname), cmd.channel_id, _("COMEBACK", settings));
 	}
-	creator->CacheUser(cmd.author_id, cmd.channel_id);
+	creator->CacheUser(cmd.author_id, cmd.user, cmd.member, cmd.channel_id);
 }
 

@@ -300,6 +300,7 @@ int main(int argc, char** argv) {
 		exit(2);
 	}
 
+	/* Load configuration file */
 	std::ifstream configfile("../config.json");
 	configfile >> configdocument;
 
@@ -309,13 +310,21 @@ int main(int argc, char** argv) {
 		exit(2);
 	}
 
-
 	/* Get the correct token from config file for either development or production environment */
 	std::string token = (dev ? Bot::GetConfig("devtoken") : Bot::GetConfig("livetoken"));
 
 	/* It's go time! */
 	while (true) {
-		dpp::cluster bot(token, intents, dev ? 1 : from_string<uint32_t>(Bot::GetConfig("shardcount"), std::dec), clusterid, maxclusters, true, dpp::cp_lazy);
+
+		/* Set cache policy for D++ library
+		 * --------------------------------
+		 * User caching:  none
+		 * Emoji caching: none
+		 * Role caching:  aggressive
+		*/
+		dpp::cache_policy_t cp = { dpp::cp_none, dpp::cp_none, dpp::cp_aggressive };
+		/* Construct cluster */
+		dpp::cluster bot(token, intents, dev ? 1 : from_string<uint32_t>(Bot::GetConfig("shardcount"), std::dec), clusterid, maxclusters, true, cp);
 
 		/* Set up spdlog logger */
 		std::shared_ptr<spdlog::logger> log;

@@ -55,6 +55,6 @@ void command_create_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_
 	} else {
 		creator->SimpleEmbed(settings, ":warning:", fmt::format(_("ALREADYMEMBER", settings), username, teamname), cmd.channel_id);
 	}
-	creator->CacheUser(cmd.author_id, cmd.channel_id);
+	creator->CacheUser(cmd.author_id, cmd.user, cmd.member, cmd.channel_id);
 }
 

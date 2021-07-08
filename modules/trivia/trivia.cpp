@@ -89,10 +89,10 @@ TriviaModule::TriviaModule(Bot* instigator, ModuleLoader* ml) : Module(instigato
 	SetupCommands();
 }
 
-void TriviaModule::queue_command(const std::string &message, dpp::snowflake author, dpp::snowflake channel, dpp::snowflake guild, bool mention, const std::string &username, bool from_dashboard)
+void TriviaModule::queue_command(const std::string &message, dpp::snowflake author, dpp::snowflake channel, dpp::snowflake guild, bool mention, const std::string &username, bool from_dashboard, dpp::user u, dpp::guild_member gm)
 {
 	//std::lock_guard<std::mutex> cmd_lock(cmdmutex);
-	handle_command(in_cmd(message, author, channel, guild, mention, username, from_dashboard));
+	handle_command(in_cmd(message, author, channel, guild, mention, username, from_dashboard, u, gm));
 }
 
 void TriviaModule::ProcessCommands()
@@ -401,7 +401,7 @@ const guild_settings_t TriviaModule::GetGuildSettings(dpp::snowflake guild_id)
 std::string TriviaModule::GetVersion()
 {
 	/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-	std::string version = "$ModVer 99$";
+	std::string version = "$ModVer 100$";
 	return "3.0." + version.substr(8,version.length() - 9);
 }
 
@@ -552,7 +552,7 @@ void TriviaModule::CheckForQueuedStarts()
 
 			bot->core->log(dpp::ll_info, fmt::format("Remote start, guild_id={} channel_id={} user_id={} questions={} type={} category='{}'", guild_id, channel_id, user_id, questions, hintless ? "hardcore" : (quickfire ? "quickfire" : "normal"), category));
 
-			queue_command(fmt::format("{} {}{}", (hintless ? "hardcore" : (quickfire ? "quickfire" : "start")), questions, (category.empty() ? "" : (std::string(" ") + category))), user_id, channel_id, guild_id, false, "Dashboard", true);
+			queue_command(fmt::format("{} {}{}", (hintless ? "hardcore" : (quickfire ? "quickfire" : "start")), questions, (category.empty() ? "" : (std::string(" ") + category))), user_id, channel_id, guild_id, false, "Dashboard", true, dpp::user(), dpp::guild_member());
 
 			/* Delete just this entry as we've processed it */
 			db::query("DELETE FROM start_queue WHERE channel_id = ?", {channel_id});
@@ -560,17 +560,13 @@ void TriviaModule::CheckForQueuedStarts()
 	}
 }
 
-void TriviaModule::CacheUser(dpp::snowflake user, dpp::snowflake channel_id)
+void TriviaModule::CacheUser(dpp::snowflake user, dpp::user _user, dpp::guild_member gm, dpp::snowflake channel_id)
 {
 	dpp::channel* c = dpp::find_channel(channel_id);
-	dpp::user* _user = dpp::find_user(user);
-	if (_user && c) {
+	if (c) {
 		dpp::guild* g = dpp::find_guild(c->guild_id);
 		if (g) {
-			auto i = g->members.find(user);
-			if (i != g->members.end()) {
-				cache_user(_user, g, &(i->second));
-			}
+			cache_user(&_user, g, &gm);
 		}
 	} else {
 		bot->core->log(dpp::ll_debug, "Command with no user!");
@@ -594,7 +590,7 @@ bool TriviaModule::RealOnMessage(const dpp::message_create_t &message, const std
 
 	bool isbot = msg.author->is_bot();
 
-	dpp::user* user = dpp::find_user(author_id);
+	dpp::user* user = message.msg->author;
 	if (user) {
 		username = user->username;
 		if (isbot) {
@@ -605,6 +601,7 @@ bool TriviaModule::RealOnMessage(const dpp::message_create_t &message, const std
 	
 	dpp::snowflake guild_id = message.msg->guild_id;
 	dpp::snowflake channel_id = message.msg->channel_id;
+	dpp::guild_member gm = message.msg->member;
 
 	if (msg.channel_id == 0) {
 		/* No channel! */
@@ -623,7 +620,7 @@ bool TriviaModule::RealOnMessage(const dpp::message_create_t &message, const std
 			if (lowercase(clean_message.substr(0, settings.prefix.length())) == lowercase(settings.prefix)) {
 				std::string command = clean_message.substr(settings.prefix.length(), clean_message.length() - settings.prefix.length());
 				if (user != nullptr) {
-					queue_command(command, author_id, channel_id, guild_id, mentioned, username, is_from_dashboard);
+					queue_command(command, author_id, channel_id, guild_id, mentioned, username, is_from_dashboard, *user, gm);
 					bot->core->log(dpp::ll_info, fmt::format("CMD (USER={}, GUILD={}): <{}> {}", author_id, guild_id, username, clean_message));
 				} else {
 					bot->core->log(dpp::ll_debug, fmt::format("User is null when handling command. C:{} A:{}", channel_id, author_id));
@@ -636,7 +633,7 @@ bool TriviaModule::RealOnMessage(const dpp::message_create_t &message, const std
 				state_t* state = GetState(channel_id);
 				if (state) {
 					/* The state_t class handles potential answers, but only when a game is running on this guild */
-					state->queue_message(clean_message, author_id, username, mentioned);
+					state->queue_message(clean_message, author_id, username, mentioned, *user, gm);
 					bot->core->log(dpp::ll_debug, fmt::format("Processed potential answer message from A:{} on C:{}", author_id, channel_id));
 				}
 			}

@@ -22,7 +22,9 @@ class in_msg
 	std::string username;
 	uint64_t author_id;
 	bool mentions_bot;
-	in_msg(const std::string &m, uint64_t author, bool mention, const std::string &username);
+	dpp::user user;
+	dpp::guild_member member;
+	in_msg(const std::string &m, uint64_t author, bool mention, const std::string &username, dpp::user u, dpp::guild_member gm);
 };
 
 struct question_t
@@ -90,7 +92,7 @@ class state_t
 	state_t(class TriviaModule* _creator, uint32_t questions, uint32_t currstreak, uint64_t lastanswered, uint32_t question_index, uint32_t _interval, uint64_t channel_id, bool hintless, const std::vector<std::string> &shuffle_list, trivia_state_t startstate,  uint64_t guild_id);
 	~state_t();
 	void tick();
-	void queue_message(const std::string &message, uint64_t author_id, const std::string &username, bool mentions_bot = false);
+	void queue_message(const std::string &message, uint64_t author_id, const std::string &username, bool mentions_bot, dpp::user u, dpp::guild_member gm);
 	void handle_message(const in_msg& m);
 	bool is_valid();
 	void do_insane_round(bool silent);

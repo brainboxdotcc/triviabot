@@ -280,7 +280,7 @@ void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 			fields.push_back({_("HOWPLAY", settings), _("INSTRUCTIONS", settings), false});
 			creator->EmbedWithFields(settings, fmt::format(_((hintless ? "NEWROUND_NH" : "NEWROUND"), settings), (hintless ? "**HARDCORE** " : (quickfire ? "**QUICKFIRE** " : "")),  _("STARTED", settings), username), fields, cmd.channel_id);
 
-			creator->CacheUser(cmd.author_id, cmd.channel_id);
+			creator->CacheUser(cmd.author_id, cmd.user, cmd.member, cmd.channel_id);
 			log_game_start(cmd.guild_id, cmd.channel_id, questions, quickfire, c->name, cmd.author_id, sl, hintless);
 			creator->GetBot()->core->log(dpp::ll_debug, fmt::format("returning from start game"));
 			return;

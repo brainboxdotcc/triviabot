@@ -48,6 +48,6 @@ void command_join_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_se
 	} else {
 		creator->SimpleEmbed(settings, ":warning:", fmt::format(_("CANTJOIN", settings), username), cmd.channel_id);
 	}
-	creator->CacheUser(cmd.author_id, cmd.channel_id);
+	creator->CacheUser(cmd.author_id, cmd.user, cmd.member, cmd.channel_id);
 }
 

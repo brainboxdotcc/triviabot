@@ -82,6 +82,6 @@ void command_info_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_se
 	s << "],\"description\":\"" << (settings.premium ? _("YAYPREMIUM", settings) : "") << "\"}";
 
 	creator->ProcessEmbed(settings, s.str(), cmd.channel_id);
-	creator->CacheUser(cmd.author_id, cmd.channel_id);
+	creator->CacheUser(cmd.author_id, cmd.user, cmd.member, cmd.channel_id);
 }
 

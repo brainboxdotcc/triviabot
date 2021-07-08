@@ -112,7 +112,7 @@ public:
 	Bot* GetBot();
 	virtual ~TriviaModule();
 	void SetupCommands();
-	void queue_command(const std::string &message, dpp::snowflake author, dpp::snowflake channel, dpp::snowflake guild, bool mention, const std::string &username, bool from_dashboard = false);
+	void queue_command(const std::string &message, dpp::snowflake author, dpp::snowflake channel, dpp::snowflake guild, bool mention, const std::string &username, bool from_dashboard, dpp::user u, dpp::guild_member gm);
 	void handle_command(const in_cmd &cmd);
 	void ProcessCommands();
 	void ProcessGuildQueue();
@@ -160,7 +160,7 @@ public:
 	virtual bool OnGuildCreate(const dpp::guild_create_t &guild);
 	bool RealOnMessage(const dpp::message_create_t &message, const std::string& clean_message, bool mentioned, const std::vector<std::string> &stringmentions, dpp::snowflake author_id = 0);
 	void GetHelp(const std::string &section, dpp::snowflake channelID, const std::string &botusername, dpp::snowflake botid, const std::string &author, dpp::snowflake authorid, const guild_settings_t &settings);
-	void CacheUser(dpp::snowflake user, dpp::snowflake channel_id);
+	void CacheUser(dpp::snowflake user, dpp::user _user, dpp::guild_member gm, dpp::snowflake channel_id);
 	void CheckReconnects();
 
 	/** DO NOT CALL THIS METHOD without wrapping it with the states_mutex.

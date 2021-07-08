@@ -40,7 +40,7 @@
 
 std::unordered_map<uint64_t, bool> banlist;
 
-in_msg::in_msg(const std::string &m, uint64_t author, bool mention, const std::string &_username) : msg(m), author_id(author), mentions_bot(mention), username(_username)
+in_msg::in_msg(const std::string &m, uint64_t author, bool mention, const std::string &_username, dpp::user u, dpp::guild_member gm) : msg(m), author_id(author), mentions_bot(mention), username(_username), user(u), member(gm)
 {
 }
 
@@ -131,11 +131,11 @@ std::string state_t::_(const std::string &k, const guild_settings_t& settings)
 	return creator->_(k, settings);
 }
 
-void state_t::queue_message(const std::string &message, uint64_t author_id, const std::string &username, bool mentions_bot)
+void state_t::queue_message(const std::string &message, uint64_t author_id, const std::string &username, bool mentions_bot, dpp::user u, dpp::guild_member gm)
 {
 	// FIX: Check termination atomic flag to avoid race where object is deleted but its handle_message gets called
 	if (!terminating) {
-		handle_message(in_msg(message, author_id, mentions_bot, username));
+		handle_message(in_msg(message, author_id, mentions_bot, username, u, gm));
 	}
 }
 
@@ -235,7 +235,7 @@ void state_t::handle_message(const in_msg& m)
 				} else {
 					creator->SimpleEmbed(settings, ":thumbsup:", fmt::format(_("INSANE_CORRECT", settings), m.username, homoglyph(m.msg), this->insane_left, this->insane_num), channel_id);
 				}
-				creator->CacheUser(m.author_id, channel_id);
+				creator->CacheUser(m.author_id, m.user, m.member, channel_id);
 				update_score_only(m.author_id, guild_id, 1, channel_id);
 				add_score(m.author_id, 1);
 				add_insane_stats(m.author_id);
@@ -278,7 +278,7 @@ void state_t::handle_message(const in_msg& m)
 
 				/* Correct answer */
 				gamestate = TRIV_ANSWER_CORRECT;
-				creator->CacheUser(m.author_id, channel_id);
+				creator->CacheUser(m.author_id, m.user, m.member, channel_id);
 				double time_to_answer = time_f() - this->asktime;
 				std::string pts = (this->score > 1 ? _("POINTS", settings) : _("POINT", settings));
 				double submit_time = question.recordtime;

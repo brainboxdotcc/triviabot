@@ -39,7 +39,7 @@
 
 using json = nlohmann::json;
 
-in_cmd::in_cmd(const std::string &m, uint64_t author, uint64_t channel, uint64_t guild, bool mention, const std::string &user, bool dashboard) : msg(m), author_id(author), channel_id(channel), guild_id(guild), mentions_bot(mention), from_dashboard(dashboard), username(user)
+in_cmd::in_cmd(const std::string &m, uint64_t author, uint64_t channel, uint64_t guild, bool mention, const std::string &_user, bool dashboard, dpp::user u, dpp::guild_member gm) : msg(m), author_id(author), channel_id(channel), guild_id(guild), mentions_bot(mention), from_dashboard(dashboard), username(_user), user(u), member(gm)
 {
 }
 
@@ -91,13 +91,13 @@ void TriviaModule::handle_command(const in_cmd &cmd) {
 			tokens >> base_command;
 	
 			dpp::channel* c = dpp::find_channel(cmd.channel_id);
-			dpp::user* user = dpp::find_user(cmd.author_id);
+			dpp::user* user = (dpp::user*)&cmd.user;
 			if (cmd.from_dashboard) {
 				dashboard_dummy.username = "Dashboard";
 				dashboard_dummy.flags = 0;
 				user = &dashboard_dummy;
 			}
-			if (!c || !user) {
+			if (!c) {
 				return;
 			}
 	
@@ -194,7 +194,7 @@ void TriviaModule::handle_command(const in_cmd &cmd) {
 						std::string rest;
 						std::getline(tokens, rest);
 						rest = trim(rest);
-						CacheUser(cmd.author_id, cmd.channel_id);
+						CacheUser(cmd.author_id, cmd.user, cmd.member, cmd.channel_id);
 						custom_command(settings, this, base_command, trim(rest), cmd.author_id, cmd.channel_id, cmd.guild_id);
 					} else {
 						/* Display rate limit message, but only one per rate limit period */
