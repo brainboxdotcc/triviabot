@@ -2337,7 +2337,7 @@
         "nl": "Er loopt hier geen trivia-ronde, **{0}**!"
     },
     "VOTEAD": {
-        "en": "[Vote for the bot every 12 hours](https:\/\/top.gg\/bot\/{0}\/vote) to get eight uses of the `{1}votehint` command, which gives you a personal hint via direct message!\n\n**Every seventh vote will also grant you a brainbucks coin!**",
+        "en": "[Vote for the bot every 12 hours](https:\/\/top.gg\/bot\/{0}\/vote) to get eight uses of the `{1}votehint` command, which gives you a personal hint via direct message!\n\n**Every vote will also grant you some brainbucks coins!**",
         "fr": "[Votez pour le bot toutes les 12 heures](https:\/\/top.gg\/bot\/{0}\/vote) pour obtenir huit utilisations de la commande `{1} votehint`, qui vous donne un indice personnel par message direct!\n\n**Chaque septième vote vous donnera également une pièce brainbucks!**",
         "pt": "[Vote no bot a cada 12 horas](https:\/\/top.gg\/bot\/{0}\/vote) para obter oito usos do comando `{1} votehint`, que fornece uma dica pessoal por meio de mensagem direta!\n\n**Cada sétimo voto também concederá a você uma moeda brainbucks!**",
         "tr": "Doğrudan mesaj yoluyla size kişisel bir ipucu veren `{1}votehint` komutunun sekiz kez kullanılması için [12 saatte bir bot için oy verin](https:\/\/top.gg\/bot\/{0}\/votka)!\n\n**Her yedinci oyda size ayrıca bir brainbucks jetonu verilecek!**",
