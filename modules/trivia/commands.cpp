@@ -43,7 +43,7 @@ in_cmd::in_cmd(const std::string &m, uint64_t author, uint64_t channel, uint64_t
 {
 }
 
-command_t::command_t(class TriviaModule* _creator, const std::string &_base_command) : creator(_creator), base_command(_base_command)
+command_t::command_t(class TriviaModule* _creator, const std::string &_base_command, const std::string& descr, std::vector<dpp::command_option> options) : creator(_creator), base_command(_base_command), description(descr), opts(options)
 {
 }
 
@@ -56,27 +56,164 @@ std::string command_t::_(const std::string &str, const guild_settings_t &setting
 	return creator->_(str, settings);
 }
 
+/* Register slash commands and build the array of standard message commands */
 void TriviaModule::SetupCommands()
 {
+	/* This is a list of commands which are handled by both the message based oldschool command
+	 * handler and also via slash commands. Any entry here with an empty description is a message
+	 * command alias, and won't be registered as a slash command (no point - we have tab completion there)
+	 */
 	commands = {
-		{"start", new command_start_t(this, "start")},
-		{"quickfire", new command_start_t(this, "quickfire")},
-		{"qf", new command_start_t(this, "quickfire")},
-		{"hardcore", new command_start_t(this, "hardcore")},
-		{"hc", new command_start_t(this, "hardcore")},
-		{"trivia", new command_start_t(this, "start")},
-		{"stop", new command_stop_t(this, "stop")},
-		{"vote", new command_vote_t(this, "vote")},
-		{"votehint", new command_votehint_t(this, "votehint")},
-		{"vh", new command_votehint_t(this, "vh")},
-		{"stats", new command_stats_t(this, "stats")},
-		{"leaderboard", new command_stats_t(this, "stats")},
-		{"info", new command_info_t(this, "info")},
-		{"join", new command_join_t(this, "join")},
-		{"create", new command_create_t(this, "create")},
-		{"leave", new command_leave_t(this, "leave")},
-		{"help", new command_help_t(this, "help")}
+		{
+			"start", new command_start_t(this, "start", "Start a game of trivia",
+			{
+				dpp::command_option(dpp::co_integer, "questions", "Number of questions", false),
+				dpp::command_option(dpp::co_string, "categories", "Category list", false)	
+			}
+		)},
+		{
+			"quickfire", new command_start_t(this, "quickfire", "Start a quickfire game of trivia",
+			{
+				dpp::command_option(dpp::co_integer, "questions", "Number of questions", false),
+				dpp::command_option(dpp::co_string, "categories", "Category list", false)	
+			}
+		)},
+		{
+			"qf", new command_start_t(this, "quickfire", "", {})
+		},
+		{
+			"hardcore", new command_start_t(this, "hardcore", "Start a hardcore game of trivia",
+			{
+				dpp::command_option(dpp::co_integer, "questions", "Number of questions", false),
+				dpp::command_option(dpp::co_string, "categories", "Category list", false)	
+			}
+		)},
+		{
+			"hc", new command_start_t(this, "hardcore", "", { })
+		},
+		{
+			"trivia", new command_start_t(this, "start", "", { })
+		},
+		{
+			"stop", new command_stop_t(this, "stop", "Stop a game of trivia",
+			{
+			}
+		)},
+		{"vote", new command_vote_t(this, "vote", "Information on how to vote for TriviaBot", { })},
+		{"votehint", new command_votehint_t(this, "votehint", "Use a vote hint", { })},
+		{"vh", new command_votehint_t(this, "vh", "", { } )},
+		{"stats", new command_stats_t(this, "stats", "Show today's scores", { })},
+		{"leaderboard", new command_stats_t(this, "stats", "", { })},
+		{"info", new command_info_t(this, "info", "Show information about TriviaBot", { })},
+		{
+			"join", new command_join_t(this, "join", "Join a Trivia team",
+			{
+				dpp::command_option(dpp::co_string, "team", "Team name to join", true)	
+			}
+		)},
+		{
+			"create", new command_create_t(this, "create", "Create a new Trivia team",
+			{
+				dpp::command_option(dpp::co_string, "team", "Team name to create", true)	
+			}
+		)},
+		{"leave", new command_leave_t(this, "leave", "Leave your current Trivia Team", { })},
+		{
+			"help", new command_help_t(this, "help", "Show help for TriviaBot",
+			{
+				dpp::command_option(dpp::co_string, "topic", "Help topic", false),
+			}
+		)}
 	};
+
+	if (bot->GetClusterID() == 0) {
+
+		/* Two lists, one for the main set of global commands, and one for admin commands */
+		std::vector<dpp::slashcommand> slashcommands;
+		std::vector<dpp::slashcommand> adminslash;
+
+		/* Iterate the list and build dpp::slashcommand object vector */
+		for (auto & c : commands) {
+			if (!c.second->description.empty()) {
+				dpp::slashcommand sc;
+				sc.set_name(c.first).set_description(c.second->description).set_application_id(from_string<uint64_t>(bot->GetConfig("application_id"), std::dec));
+				for (auto & o : c.second->opts) {
+					sc.add_option(o);
+				}
+				slashcommands.push_back(sc);
+			}
+		}
+
+		/* Add externals */
+		DoExternalCommands(slashcommands, adminslash);
+
+		/* Now register all the commands */
+		if (bot->IsDevMode()) {
+			/*
+			 * Development mode - all commands are guild commands, and all are attached to the test server.
+			 */
+			bot->core->guild_bulk_command_create(slashcommands, from_string<uint64_t>(bot->GetConfig("test_server"), std::dec), [this](const dpp::confirmation_callback_t &callback) {
+				if (callback.is_error()) {
+					this->bot->core->log(dpp::ll_error, fmt::format("Failed to register guild slash commands (dev mode, main set): {}", callback.http_info.body));
+				}
+			});
+			bot->core->guild_bulk_command_create(adminslash, from_string<uint64_t>(bot->GetConfig("test_server"), std::dec), [this](const dpp::confirmation_callback_t &callback) {
+				if (callback.is_error()) {
+					this->bot->core->log(dpp::ll_error, fmt::format("Failed to register guild slash commands (dev mode, admin set): {}", callback.http_info.body));
+				}
+			});
+		} else {
+			/*
+			 * Live mode/test mode - main set are global slash commands (with their related cache delay, ew)
+			 Admin set are guild commands attached to the support server.
+			 */
+			bot->core->global_bulk_command_create(slashcommands, [this](const dpp::confirmation_callback_t &callback) {
+				if (callback.is_error()) {
+					this->bot->core->log(dpp::ll_error, fmt::format("Failed to register global slash commands (live mode, main set): {}", callback.http_info.body));
+				}
+			});
+			bot->core->guild_bulk_command_create(adminslash, from_string<uint64_t>(bot->GetConfig("home"), std::dec), [this](const dpp::confirmation_callback_t &callback) {
+				if (callback.is_error()) {
+					this->bot->core->log(dpp::ll_error, fmt::format("Failed to register guild slash commands (live mode, admin set): {}", callback.http_info.body));
+				}
+			});
+		}
+
+	}
+}
+
+void TriviaModule::DoExternalCommands(std::vector<dpp::slashcommand>& normal, std::vector<dpp::slashcommand>& admin) {
+	/* This adds commands to the slash command system that are external to the bot's executable */
+	std::string path(getenv("HOME"));
+	path += "/www/api/commands/commands.json";
+	json commandlist;
+	std::ifstream slashfile(path);
+	slashfile >> commandlist;
+	/* Iterate all commands */
+	for (auto & command : commandlist) {
+		dpp::slashcommand sc;
+		sc.set_name(command["name"].get<std::string>()).set_description(command["description"].get<std::string>()).set_application_id(from_string<uint64_t>(bot->GetConfig("application_id"), std::dec));
+		for (auto & o : command["params"]) {
+			dpp::command_option_type cot = dpp::co_string;
+			std::string stringtype = o["type"].get<std::string>();
+			/* Transpose minimal supported set of types */
+			if (stringtype == "number") {
+				cot = dpp::co_integer;
+			} else if (stringtype == "string") {
+				cot = dpp::co_string;
+			} else if (stringtype == "user") {
+				cot = dpp::co_user;
+			}
+			dpp::command_option opt(cot, o["name"].get<std::string>(), o["description"].get<std::string>(), o["required"].get<bool>());
+			sc.add_option(opt);
+		}
+		/* Add command to correct set */
+		if (command["admin"].get<bool>() == true) {
+			admin.push_back(sc);
+		} else {
+			normal.push_back(sc);
+		}
+	}
 }
 
 dpp::user dashboard_dummy;

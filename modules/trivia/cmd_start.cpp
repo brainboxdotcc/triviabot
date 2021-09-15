@@ -38,7 +38,7 @@
 
 using json = nlohmann::json;
 
-command_start_t::command_start_t(class TriviaModule* _creator, const std::string &_base_command) : command_t(_creator, _base_command) { }
+command_start_t::command_start_t(class TriviaModule* _creator, const std::string &_base_command, const std::string& descr, std::vector<dpp::command_option> options) : command_t(_creator, _base_command, descr, options) { }
 
 std::vector<uint64_t> GetChannelWhitelist(uint64_t guild_id)
 {
