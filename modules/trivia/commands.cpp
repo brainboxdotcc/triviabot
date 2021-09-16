@@ -39,7 +39,7 @@
 
 using json = nlohmann::json;
 
-in_cmd::in_cmd(const std::string &m, uint64_t author, uint64_t channel, uint64_t guild, bool mention, const std::string &_user, bool dashboard, dpp::user u, dpp::guild_member gm) : msg(m), author_id(author), channel_id(channel), guild_id(guild), mentions_bot(mention), from_dashboard(dashboard), username(_user), user(u), member(gm)
+in_cmd::in_cmd(const std::string &m, uint64_t author, uint64_t channel, uint64_t guild, bool mention, const std::string &_user, bool dashboard, dpp::user u, dpp::guild_member gm) : msg(m), author_id(author), channel_id(channel), guild_id(guild), mentions_bot(mention), from_dashboard(dashboard), username(_user), user(u), member(gm), interaction_token(""), command_id(0)
 {
 }
 
@@ -147,20 +147,22 @@ void TriviaModule::SetupCommands()
 		/* Add externals */
 		DoExternalCommands(slashcommands, adminslash);
 
+		bot->core->log(dpp::ll_info, fmt::format("Registering {} global and {} local slash commands", slashcommands.size(), adminslash.size()));
+
 		/* Now register all the commands */
 		if (bot->IsDevMode()) {
 			/*
 			 * Development mode - all commands are guild commands, and all are attached to the test server.
 			 */
+			std::copy(std::begin(adminslash), std::end(adminslash), std::back_inserter(slashcommands));
 			bot->core->guild_bulk_command_create(slashcommands, from_string<uint64_t>(bot->GetConfig("test_server"), std::dec), [this](const dpp::confirmation_callback_t &callback) {
 				if (callback.is_error()) {
 					this->bot->core->log(dpp::ll_error, fmt::format("Failed to register guild slash commands (dev mode, main set): {}", callback.http_info.body));
+				} else {
+					dpp::slashcommand_map sm = std::get<dpp::slashcommand_map>(callback.value);
+					this->bot->core->log(dpp::ll_info, fmt::format("Registered {} guild commands to test server", sm.size()));
 				}
-			});
-			bot->core->guild_bulk_command_create(adminslash, from_string<uint64_t>(bot->GetConfig("test_server"), std::dec), [this](const dpp::confirmation_callback_t &callback) {
-				if (callback.is_error()) {
-					this->bot->core->log(dpp::ll_error, fmt::format("Failed to register guild slash commands (dev mode, admin set): {}", callback.http_info.body));
-				}
+
 			});
 		} else {
 			/*
@@ -170,16 +172,53 @@ void TriviaModule::SetupCommands()
 			bot->core->global_bulk_command_create(slashcommands, [this](const dpp::confirmation_callback_t &callback) {
 				if (callback.is_error()) {
 					this->bot->core->log(dpp::ll_error, fmt::format("Failed to register global slash commands (live mode, main set): {}", callback.http_info.body));
+				} else {
+					dpp::slashcommand_map sm = std::get<dpp::slashcommand_map>(callback.value);
+					this->bot->core->log(dpp::ll_info, fmt::format("Registered {} global commands", sm.size()));
 				}
 			});
 			bot->core->guild_bulk_command_create(adminslash, from_string<uint64_t>(bot->GetConfig("home"), std::dec), [this](const dpp::confirmation_callback_t &callback) {
 				if (callback.is_error()) {
 					this->bot->core->log(dpp::ll_error, fmt::format("Failed to register guild slash commands (live mode, admin set): {}", callback.http_info.body));
+				} else {
+					dpp::slashcommand_map sm = std::get<dpp::slashcommand_map>(callback.value);
+					this->bot->core->log(dpp::ll_info, fmt::format("Registered {} guild commands to support server", sm.size()));
 				}
 			});
 		}
 
 	}
+
+	/* Hook interaction event */
+	bot->core->on_interaction_create(std::bind(&TriviaModule::HandleInteraction, this, std::placeholders::_1));
+}
+
+void TriviaModule::HandleInteraction(const dpp::interaction_create_t& event) {
+	dpp::command_interaction cmd_interaction = std::get<dpp::command_interaction>(event.command.data);
+
+	std::stringstream message;
+	/* Set 'thinking' state */
+	dpp::message msg;
+	msg.content = "*";
+	msg.guild_id = event.command.guild_id;
+	msg.channel_id = event.command.channel_id;
+	bot->core->interaction_response_create(event.command.id, event.command.token, dpp::interaction_response(dpp::ir_deferred_channel_message_with_source, msg));
+
+	message << cmd_interaction.name;
+	for (auto & p : cmd_interaction.options) {
+		if (std::holds_alternative<int32_t>(p.value)) {
+			message << " " << std::get<int32_t>(p.value);
+		} else if (std::holds_alternative<dpp::snowflake>(p.value)) {
+			message << " <@" << std::get<dpp::snowflake>(p.value) << ">";
+		} else if (std::holds_alternative<std::string>(p.value)) {
+			message << " " << std::get<std::string>(p.value);
+		}
+	}
+
+	in_cmd cmd(message.str(), event.command.usr.id, event.command.channel_id, event.command.guild_id, false, event.command.usr.username, false, event.command.usr, event.command.member);
+	cmd.command_id = event.command.id;
+	cmd.interaction_token = event.command.token;
+	this->handle_command(cmd);
 }
 
 void TriviaModule::DoExternalCommands(std::vector<dpp::slashcommand>& normal, std::vector<dpp::slashcommand>& admin) {
@@ -305,7 +344,7 @@ void TriviaModule::handle_command(const in_cmd &cmd) {
 						last_rl_warning[cmd.channel_id] = time(NULL) + PER_CHANNEL_RATE_LIMIT;
 					}
 					if (emit_rl_warning) {
-						SimpleEmbed(settings, ":snail:", fmt::format(_("RATELIMITED", settings), PER_CHANNEL_RATE_LIMIT, base_command), cmd.channel_id, _("WOAHTHERE", settings));
+						SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":snail:", fmt::format(_("RATELIMITED", settings), PER_CHANNEL_RATE_LIMIT, base_command), cmd.channel_id, _("WOAHTHERE", settings));
 					}
 					bot->core->log(dpp::ll_debug, fmt::format("command_t '{}' NOT routed to handler on channel {}, limiting", base_command, cmd.channel_id));
 				}
@@ -335,7 +374,7 @@ void TriviaModule::handle_command(const in_cmd &cmd) {
 						std::getline(tokens, rest);
 						rest = trim(rest);
 						CacheUser(cmd.author_id, cmd.user, cmd.member, cmd.channel_id);
-						custom_command(settings, this, base_command, trim(rest), cmd.author_id, cmd.channel_id, cmd.guild_id);
+						custom_command(cmd.interaction_token, cmd.command_id, settings, this, base_command, trim(rest), cmd.author_id, cmd.channel_id, cmd.guild_id);
 					} else {
 						/* Display rate limit message, but only one per rate limit period */
 						bool emit_rl_warning = false;
@@ -350,7 +389,7 @@ void TriviaModule::handle_command(const in_cmd &cmd) {
 							last_rl_warning[cmd.channel_id] = time(NULL) + PER_CHANNEL_RATE_LIMIT;
 						}
 						if (emit_rl_warning) {
-							SimpleEmbed(settings, ":snail:", fmt::format(_("RATELIMITED", settings), PER_CHANNEL_RATE_LIMIT, base_command), cmd.channel_id, _("WOAHTHERE", settings));
+							SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":snail:", fmt::format(_("RATELIMITED", settings), PER_CHANNEL_RATE_LIMIT, base_command), cmd.channel_id, _("WOAHTHERE", settings));
 						}
 
 						bot->core->log(dpp::ll_debug, fmt::format("Command '{}' not sent to API, rate limited", trim(lowercase(base_command))));
@@ -374,7 +413,7 @@ void TriviaModule::handle_command(const in_cmd &cmd) {
 /**
  * Emit help using a json file in the help/ directory. Missing help files emit a generic error message.
  */
-void TriviaModule::GetHelp(const std::string &section, dpp::snowflake channelID, const std::string &botusername, dpp::snowflake botid, const std::string &author, dpp::snowflake authorid, const guild_settings_t &settings)
+void TriviaModule::GetHelp(const std::string& interaction_token, dpp::snowflake command_id, const std::string &section, dpp::snowflake channelID, const std::string &botusername, dpp::snowflake botid, const std::string &author, dpp::snowflake authorid, const guild_settings_t &settings)
 {
 	json embed_json;
 	char timestamp[256];
@@ -410,6 +449,6 @@ void TriviaModule::GetHelp(const std::string &section, dpp::snowflake channelID,
 		return;
 	}
 
-	ProcessEmbed(settings, json, channelID);
+	ProcessEmbed(interaction_token, command_id, settings, json, channelID);
 }
 

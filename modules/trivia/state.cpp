@@ -758,7 +758,7 @@ void state_t::do_end_game()
 	guild_settings_t settings = creator->GetGuildSettings(guild_id);
 	creator->GetBot()->core->log(dpp::ll_info, fmt::format("End of game on guild {}, channel {} after {} seconds", guild_id, channel_id, time(NULL) - start_time));
 	creator->SimpleEmbed(settings, ":stop_button:", fmt::format(_("END1", settings), numquestions - 1), channel_id, _("END_TITLE", settings));
-	creator->show_stats(guild_id, channel_id);
+	creator->show_stats("", 0, guild_id, channel_id);
 
 	terminating = true;
 }

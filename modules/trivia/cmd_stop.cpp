@@ -46,11 +46,11 @@ void command_stop_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_se
 	if (state) {
 		if (settings.only_mods_stop) {
 			if (!is_moderator) {
-				creator->SimpleEmbed(settings, ":warning:", fmt::format(_("CANTSTOPMEIMTHEGINGERBREADMAN", settings), username), cmd.channel_id);
+				creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":warning:", fmt::format(_("CANTSTOPMEIMTHEGINGERBREADMAN", settings), username), cmd.channel_id);
 				return;
 			}
 		}
-		creator->SimpleEmbed(settings, ":octagonal_sign:", fmt::format(_("STOPOK", settings), username), cmd.channel_id);
+		creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":octagonal_sign:", fmt::format(_("STOPOK", settings), username), cmd.channel_id);
 		{
 			auto i = creator->states.find(cmd.channel_id);
 			if (i != creator->states.end()) {
@@ -62,7 +62,7 @@ void command_stop_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_se
 		creator->CacheUser(cmd.author_id, cmd.user, cmd.member, cmd.channel_id);
 		log_game_end(cmd.guild_id, cmd.channel_id);
 	} else {
-		creator->SimpleEmbed(settings, ":warning:", fmt::format(_("NOTRIVIA", settings), username), cmd.channel_id);
+		creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":warning:", fmt::format(_("NOTRIVIA", settings), username), cmd.channel_id);
 	}
 }
 

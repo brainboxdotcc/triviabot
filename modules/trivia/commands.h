@@ -18,6 +18,8 @@ class in_cmd
 	uint64_t guild_id;
 	bool mentions_bot;
 	bool from_dashboard;
+	std::string interaction_token;
+	dpp::snowflake command_id;
 	in_cmd(const std::string &m, uint64_t author, uint64_t channel, uint64_t guild, bool mention, const std::string &username, bool dashboard, dpp::user u, dpp::guild_member gm);
 };
 

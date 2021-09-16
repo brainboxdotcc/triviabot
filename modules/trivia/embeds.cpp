@@ -63,6 +63,12 @@ std::string TriviaModule::escape_json(const std::string &s) {
 /* Create an embed from a JSON string and send it to a channel */
 void TriviaModule::ProcessEmbed(const guild_settings_t& settings, const std::string &embed_json, dpp::snowflake channelID)
 {
+	ProcessEmbed("", 0, settings, embed_json, channelID);
+}
+
+/* Create an embed from a JSON string and send it to a channel */
+void TriviaModule::ProcessEmbed(const std::string& interaction_token, dpp::snowflake command_id, const guild_settings_t& settings, const std::string &embed_json, dpp::snowflake channelID)
+{
 	json embed;
 	std::string cleaned_json = embed_json;
 	/* Put unicode zero-width spaces in @everyone and @here */
@@ -76,7 +82,15 @@ void TriviaModule::ProcessEmbed(const guild_settings_t& settings, const std::str
 	catch (const std::exception &e) {
 		if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == settings.guild_id) {
 			try {
-				bot->core->message_create(dpp::message(channelID, fmt::format(_("EMBED_ERROR_1", settings), cleaned_json, e.what())));
+
+				if (!interaction_token.empty() && command_id != 0) {
+					dpp::message msg(channelID, fmt::format(_("EMBED_ERROR_1", settings), cleaned_json, e.what()));
+					msg.guild_id = settings.guild_id;
+					msg.channel_id = channelID;
+					bot->core->interaction_response_edit(interaction_token, msg);
+				} else {
+					bot->core->message_create(dpp::message(channelID, fmt::format(_("EMBED_ERROR_1", settings), cleaned_json, e.what())));
+				}
 			}
 			catch (const std::exception &e) {
 				bot->core->log(dpp::ll_error, fmt::format("MALFORMED UNICODE: {}", e.what()));
@@ -85,6 +99,22 @@ void TriviaModule::ProcessEmbed(const guild_settings_t& settings, const std::str
 		}
 	}
 	if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == settings.guild_id) {
+
+		if (!interaction_token.empty() && command_id != 0) {
+			dpp::message msg;			
+			msg.content = "";
+			msg.guild_id = settings.guild_id;
+			msg.channel_id = channelID;
+			msg.add_embed(dpp::embed(&embed));
+			bot->core->interaction_response_edit(interaction_token, msg, [this](const dpp::confirmation_callback_t &callback) {
+				if (callback.is_error()) {
+					this->bot->core->log(dpp::ll_error, fmt::format("Can't edit interaction response: {}", callback.http_info.body));
+				}
+			});
+			bot->sent_messages++;
+			return;
+		}
+
 		/* Check if this channel has a webhook. If it does, use it! */
 		std::string webhook_id;
 		{
@@ -113,6 +143,11 @@ void TriviaModule::ProcessEmbed(const guild_settings_t& settings, const std::str
 
 void TriviaModule::SimpleEmbed(const guild_settings_t& settings, const std::string &emoji, const std::string &text, dpp::snowflake channelID, const std::string &title, const std::string &image, const std::string &thumbnail)
 {
+	SimpleEmbed("", 0, settings, emoji, text, channelID, title, image,thumbnail);
+}
+
+void TriviaModule::SimpleEmbed(const std::string& interaction_token, dpp::snowflake command_id, const guild_settings_t& settings, const std::string &emoji, const std::string &text, dpp::snowflake channelID, const std::string &title, const std::string &image, const std::string &thumbnail)
+{
 	uint32_t colour = settings.embedcolour;
 	std::string imageinfo;
 	/* Add image if there is one */
@@ -124,15 +159,21 @@ void TriviaModule::SimpleEmbed(const guild_settings_t& settings, const std::stri
 	}
 	if (!title.empty()) {
 		/* With title */
-		ProcessEmbed(settings, fmt::format("{{\"title\":\"{}\",\"color\":{},\"description\":\"{} {}\"{}}}", escape_json(title), colour, emoji, escape_json(text), imageinfo), channelID);
+		ProcessEmbed(interaction_token, command_id, settings, fmt::format("{{\"title\":\"{}\",\"color\":{},\"description\":\"{} {}\"{}}}", escape_json(title), colour, emoji, escape_json(text), imageinfo), channelID);
 	} else {
 		/* Without title */
-		ProcessEmbed(settings, fmt::format("{{\"color\":{},\"description\":\"{} {}\"{}}}", colour, emoji, escape_json(text), imageinfo), channelID);
+		ProcessEmbed(interaction_token, command_id, settings, fmt::format("{{\"color\":{},\"description\":\"{} {}\"{}}}", colour, emoji, escape_json(text), imageinfo), channelID);
 	}
 }
 
 /* Send an embed containing one or more fields */
 void TriviaModule::EmbedWithFields(const guild_settings_t& settings, const std::string &title, std::vector<field_t> fields, dpp::snowflake channelID, const std::string &url, const std::string &image, const std::string &thumbnail)
+{
+	EmbedWithFields("", 0, settings, title, fields, channelID, url, image, thumbnail);
+}
+
+/* Send an embed containing one or more fields */
+void TriviaModule::EmbedWithFields(const std::string& interaction_token, dpp::snowflake command_id, const guild_settings_t& settings, const std::string &title, std::vector<field_t> fields, dpp::snowflake channelID, const std::string &url, const std::string &image, const std::string &thumbnail)
 {
 		uint32_t colour = settings.embedcolour;
 		std::string json = fmt::format("{{" + (!url.empty() ? "\"url\":\"" + escape_json(url) + "\"," : "") + "\"title\":\"{}\",\"color\":{},\"fields\":[", escape_json(title), colour);
@@ -153,6 +194,6 @@ void TriviaModule::EmbedWithFields(const guild_settings_t& settings, const std::
 		}
 		/* Footer, 'powered by' detail, icon */
 		json += "\"footer\":{\"link\":\"https://triviabot.co.uk/\",\"text\":\"" + _("POWERED_BY", settings) + "\",\"icon_url\":\"https:\\/\\/triviabot.co.uk\\/images\\/triviabot_tl_icon.png\"}}";
-		ProcessEmbed(settings, json, channelID);
+		ProcessEmbed(interaction_token, command_id, settings, json, channelID);
 }
 

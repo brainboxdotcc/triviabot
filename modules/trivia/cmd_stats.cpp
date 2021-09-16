@@ -38,7 +38,7 @@ command_stats_t::command_stats_t(class TriviaModule* _creator, const std::string
 
 void command_stats_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_settings_t &settings, const std::string &username, bool is_moderator, dpp::channel* c, dpp::user* user)
 {
-	creator->show_stats(cmd.guild_id, cmd.channel_id);
+	creator->show_stats(cmd.interaction_token, cmd.command_id, cmd.guild_id, cmd.channel_id);
 	creator->CacheUser(cmd.author_id, cmd.user, cmd.member, cmd.channel_id);
 }
 

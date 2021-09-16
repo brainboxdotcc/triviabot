@@ -596,17 +596,17 @@ void send_hint(uint64_t snowflake_id, const std::string &hint, uint32_t remainin
 	later(fmt::format("?opt=customhint&user_id={}&hint={}&remaining={}", snowflake_id, url_encode(hint), remaining), "");
 }
 
-void runcli(guild_settings_t settings, const std::string &command, uint64_t guild_id, uint64_t user_id, uint64_t channel_id, const std::string &parameters)
+void runcli(guild_settings_t settings, const std::string &command, uint64_t guild_id, uint64_t user_id, uint64_t channel_id, const std::string &parameters, const std::string& interaction_token, dpp::snowflake command_id)
 {
 	std::string home(getenv("HOME"));
 
 	/* IMPORTANT: dpp::utility::exec makes parameters safe */
-	dpp::utility::exec("/usr/bin/php", { fmt::format("{}/www/cli-run.php", home), command, std::to_string(guild_id), std::to_string(user_id), std::to_string(channel_id), parameters }, [channel_id, guild_id](const std::string &output) {
+	dpp::utility::exec("/usr/bin/php", { fmt::format("{}/www/cli-run.php", home), command, std::to_string(guild_id), std::to_string(user_id), std::to_string(channel_id), parameters }, [channel_id, guild_id, interaction_token, command_id](const std::string &output) {
 		guild_settings_t s = module->GetGuildSettings(guild_id);
 		/* Output response as embed */
 		std::string reply = trim(output);
 		if (!reply.empty()) {
-			module->ProcessEmbed(s, reply, channel_id);
+			module->ProcessEmbed(interaction_token, command_id, s, reply, channel_id);
 		}
 	});
 }
@@ -614,9 +614,9 @@ void runcli(guild_settings_t settings, const std::string &command, uint64_t guil
 /* Farm out a custom command to the API to be handled completely via a PHP script. Some things are better done this way as the code is cleaner and more stable, e.g. the !rank/!globalrank command
  * Note: These are now directly executed via commandline NOT via a REST reqeust, bypassing apache as this is a ton faster.
  */
-void custom_command(const guild_settings_t& settings, TriviaModule* tm, const std::string &command, const std::string &parameters, uint64_t user_id, uint64_t channel_id, uint64_t guild_id)
+void custom_command(const std::string& interaction_token, dpp::snowflake command_id, const guild_settings_t& settings, TriviaModule* tm, const std::string &command, const std::string &parameters, uint64_t user_id, uint64_t channel_id, uint64_t guild_id)
 {
-	runcli(settings, command, guild_id, user_id, channel_id, parameters);
+	runcli(settings, command, guild_id, user_id, channel_id, parameters, interaction_token, command_id);
 }
 
 /* Update the score only, for a user during insane round */
@@ -851,7 +851,7 @@ uint32_t get_team_points(const std::string &team)
 void CheckCreateWebhook(const guild_settings_t & s, TriviaModule* t, uint64_t channel_id)
 {
 	/* Create webhook */
-	runcli(s, "createwebhook", 0, 0, channel_id, "");
+	runcli(s, "createwebhook", 0, 0, channel_id, "", "", 0);
 }
 
 void PostWebhook(const std::string &webhook_url, const std::string &embed, uint64_t channel_id)

@@ -68,7 +68,7 @@ void change_streak(uint64_t snowflake_id, uint64_t guild_id, int score);
 std::vector<std::string> get_api_command_names();
 
 // These execute external PHP scripts, through a special handler. They bypass REST.
-void custom_command(const guild_settings_t& settings, TriviaModule* tm, const std::string &command, const std::string &parameters, uint64_t user_id, uint64_t channel_id, uint64_t guild_id);
+void custom_command(const std::string& interaction_token, dpp::snowflake command_id, const guild_settings_t& settings, TriviaModule* tm, const std::string &command, const std::string &parameters, uint64_t user_id, uint64_t channel_id, uint64_t guild_id);
 
 // These functions query the REST API and are not as performant as the functions above. Some of these cannot
 // currently be rewritten as direct queries, as they use external apis like neutrino, or are hooked into the

@@ -41,10 +41,10 @@ void command_leave_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 {
 	std::string teamname = get_current_team(cmd.author_id);
 	if (teamname.empty()) {
-		creator->SimpleEmbed(settings, ":warning:", fmt::format(_("YOULONER", settings), username, settings.prefix), cmd.channel_id);
+		creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":warning:", fmt::format(_("YOULONER", settings), username, settings.prefix), cmd.channel_id);
 	} else {
 		leave_team(cmd.author_id);
-		creator->SimpleEmbed(settings, ":busts_in_silhouette:", fmt::format(_("LEFTTEAM", settings), username, teamname), cmd.channel_id, _("COMEBACK", settings));
+		creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":busts_in_silhouette:", fmt::format(_("LEFTTEAM", settings), username, teamname), cmd.channel_id, _("COMEBACK", settings));
 	}
 	creator->CacheUser(cmd.author_id, cmd.user, cmd.member, cmd.channel_id);
 }

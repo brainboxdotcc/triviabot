@@ -49,7 +49,7 @@ void command_votehint_t::call(const in_cmd &cmd, std::stringstream &tokens, guil
 			db::resultset rs = db::query("SELECT *,(unix_timestamp(vote_time) + 43200 - unix_timestamp()) as remaining FROM infobot_votes WHERE snowflake_id = ? AND now() < vote_time + interval 12 hour", {cmd.author_id});
 			if (rs.size() == 0) {
 				std::string a = fmt::format(_("VOTEAD", settings), creator->GetBot()->user.id, settings.prefix);
-				creator->SimpleEmbed(settings, "<:wc_rs:667695516737470494>", _("NOTVOTED", settings) + "\n" + a, cmd.channel_id);
+				creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, "<:wc_rs:667695516737470494>", _("NOTVOTED", settings) + "\n" + a, cmd.channel_id);
 				return;
 			} else {
 				int64_t remaining_hints = from_string<int64_t>(rs[0]["dm_hints"], std::dec);
@@ -59,13 +59,13 @@ void command_votehint_t::call(const in_cmd &cmd, std::stringstream &tokens, guil
 				if (remaining_hints < 1) {
 					std::string a = fmt::format(_("NOMOREHINTS", settings), username);
 					std::string b = fmt::format(_("VOTEAD", settings), creator->GetBot()->user.id, settings.prefix);
-					creator->SimpleEmbed(settings, ":warning:", a + "\n" + b, cmd.channel_id);
+					creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":warning:", a + "\n" + b, cmd.channel_id);
 				} else {
 					remaining_hints--;
 					if (remaining_hints > 0) {
-						creator->SimpleEmbed(settings, ":white_check_mark:", fmt::format(_("VH1", settings), username, remaining_hints, hours, mins), cmd.channel_id);
+						creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":white_check_mark:", fmt::format(_("VH1", settings), username, remaining_hints, hours, mins), cmd.channel_id);
 					} else {
-						creator->SimpleEmbed(settings, ":white_check_mark:", fmt::format(_("VH2", settings), username, hours, mins), cmd.channel_id);
+						creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":white_check_mark:", fmt::format(_("VH2", settings), username, hours, mins), cmd.channel_id);
 					}
 					std::string personal_hint = state->question.answer;
 					personal_hint = lowercase(personal_hint);

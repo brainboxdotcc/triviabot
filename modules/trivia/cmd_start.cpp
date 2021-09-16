@@ -75,14 +75,14 @@ void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 	for (auto entry = shitlist.begin(); entry != shitlist.end(); ++entry) {
 		int64_t sl_guild_id = from_string<int64_t>(entry->get<std::string>(), std::dec);
 		if (cmd.channel_id == sl_guild_id) {
-			creator->SimpleEmbed(settings, ":warning:", fmt::format(_("SHITLISTED", settings), username, creator->GetBot()->user.id), cmd.channel_id);
+			creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":warning:", fmt::format(_("SHITLISTED", settings), username, creator->GetBot()->user.id), cmd.channel_id);
 			return;
 		}
 	}
 
 	if (!cmd.from_dashboard && settings.only_mods_start) {
 		if (!is_moderator) {
-			creator->SimpleEmbed(settings, ":warning:", fmt::format(_("AREYOUSTARTINGSOMETHING", settings), username), cmd.channel_id);
+			creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":warning:", fmt::format(_("AREYOUSTARTINGSOMETHING", settings), username), cmd.channel_id);
 			return;
 		}
 	}
@@ -101,7 +101,7 @@ void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 	}
 
 	if (!allowed) {
-		creator->SimpleEmbed(settings, ":warning:", fmt::format(_("NOTINWHITELIST", settings), whitelist_str), cmd.channel_id);
+		creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":warning:", fmt::format(_("NOTINWHITELIST", settings), whitelist_str), cmd.channel_id);
 		return;
 	}
 
@@ -116,7 +116,7 @@ void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 					creator->states.erase(j);
 					break;
 				} else {
-					creator->EmbedWithFields(settings, _("NOWAY", settings), {
+					creator->EmbedWithFields(cmd.interaction_token, cmd.command_id, settings, _("NOWAY", settings), {
 						{_("ALREADYACTIVE", settings), fmt::format(_("CHANNELREF", settings), j->first), false},
 						{_("GETPREMIUM", settings), _("PREMDETAIL1", settings), false}
 					}, cmd.channel_id);
@@ -140,7 +140,7 @@ void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 			}
 		}
 		if (number_of_games >= 2) {
-			creator->SimpleEmbed(settings, ":octagonal_sign:", _("TOO_MANY_PREM", settings), cmd.channel_id);
+			creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":octagonal_sign:", _("TOO_MANY_PREM", settings), cmd.channel_id);
 			return;
 		}
 	}
@@ -167,12 +167,12 @@ void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 		if ((!quickfire && (questions < 5 || questions > max_normal)) || (quickfire && (questions < 5 || questions > max_quickfire))) {
 			if (quickfire) {
 				if (questions > max_quickfire && !settings.premium) {
-					creator->EmbedWithFields(settings, _("MAX15", settings), {{_("GETPREMIUM", settings), _("PREMDETAIL2", settings), false}}, cmd.channel_id);
+					creator->EmbedWithFields(cmd.interaction_token, cmd.command_id, settings, _("MAX15", settings), {{_("GETPREMIUM", settings), _("PREMDETAIL2", settings), false}}, cmd.channel_id);
 				} else {
-					creator->SimpleEmbed(settings, ":warning:", fmt::format(_("MAX15DETAIL", settings), username, max_quickfire), cmd.channel_id);
+					creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":warning:", fmt::format(_("MAX15DETAIL", settings), username, max_quickfire), cmd.channel_id);
 				}
 			} else {
-				creator->SimpleEmbed(settings, ":warning:", fmt::format(_("MAX200", settings), username), cmd.channel_id);
+				creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":warning:", fmt::format(_("MAX200", settings), username), cmd.channel_id);
 			}
 			return;
 		}
@@ -199,14 +199,14 @@ void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 		std::vector<std::string> sl = fetch_shuffle_list(cmd.guild_id, category);
 		if (sl.size() == 1) {
 			if (sl[0] == "*** No such category ***") {
-				creator->SimpleEmbed(settings, ":warning:", _("START_BAD_CATEGORY", settings), cmd.channel_id);
+				creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":warning:", _("START_BAD_CATEGORY", settings), cmd.channel_id);
 			} else if (sl[0] == "*** Category too small ***") {
-				creator->SimpleEmbed(settings, ":warning:", _((settings.premium ? "START_TOO_SMALL_PREM" : "START_TOO_SMALL"), settings), cmd.channel_id);
+				creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":warning:", _((settings.premium ? "START_TOO_SMALL_PREM" : "START_TOO_SMALL"), settings), cmd.channel_id);
 			}
 			return;
 		}
 		if (sl.size() < 50) {
-			creator->SimpleEmbed(settings, ":warning:", fmt::format(_("SPOOPY2", settings), username), cmd.channel_id, _("BROKED", settings));
+			creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":warning:", fmt::format(_("SPOOPY2", settings), username), cmd.channel_id, _("BROKED", settings));
 			return;
 		} else  {
 
@@ -218,7 +218,7 @@ void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 						int64_t seconds = 900 - (time(NULL) - last_insane_time);
 						int64_t minutes = floor((float)seconds / 60.0f);
 						seconds = seconds % 60;
-						creator->SimpleEmbed(settings, ":warning:", fmt::format(_("INSANE_COOLDOWN", settings), minutes, seconds), cmd.channel_id);
+						creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":warning:", fmt::format(_("INSANE_COOLDOWN", settings), minutes, seconds), cmd.channel_id);
 						return;
 					}
 				}
@@ -278,7 +278,7 @@ void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 			}
 			fields.push_back({_("GETREADY", settings), _("FIRSTCOMING", settings), false});
 			fields.push_back({_("HOWPLAY", settings), _("INSTRUCTIONS", settings), false});
-			creator->EmbedWithFields(settings, fmt::format(_((hintless ? "NEWROUND_NH" : "NEWROUND"), settings), (hintless ? "**HARDCORE** " : (quickfire ? "**QUICKFIRE** " : "")),  _("STARTED", settings), username), fields, cmd.channel_id);
+			creator->EmbedWithFields(cmd.interaction_token, cmd.command_id, settings, fmt::format(_((hintless ? "NEWROUND_NH" : "NEWROUND"), settings), (hintless ? "**HARDCORE** " : (quickfire ? "**QUICKFIRE** " : "")),  _("STARTED", settings), username), fields, cmd.channel_id);
 
 			creator->CacheUser(cmd.author_id, cmd.user, cmd.member, cmd.channel_id);
 			log_game_start(cmd.guild_id, cmd.channel_id, questions, quickfire, c->name, cmd.author_id, sl, hintless);
@@ -286,7 +286,7 @@ void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 			return;
 		}
 	} else {
-		creator->SimpleEmbed(settings, ":warning:", fmt::format(_("ALREADYRUN", settings), username), cmd.channel_id);
+		creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":warning:", fmt::format(_("ALREADYRUN", settings), username), cmd.channel_id);
 		return;
 	}
 }

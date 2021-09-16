@@ -39,7 +39,7 @@ void command_help_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_se
 {
 	std::string section;
 	tokens >> section;
-	creator->GetHelp(section, cmd.channel_id, creator->GetBot()->user.username, creator->GetBot()->user.id, username, cmd.author_id, settings);
+	creator->GetHelp(cmd.interaction_token, cmd.command_id, section, cmd.channel_id, creator->GetBot()->user.username, creator->GetBot()->user.id, username, cmd.author_id, settings);
 	creator->CacheUser(cmd.author_id, cmd.user, cmd.member, cmd.channel_id);
 }
 

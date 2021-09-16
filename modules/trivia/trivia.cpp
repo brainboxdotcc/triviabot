@@ -401,7 +401,7 @@ const guild_settings_t TriviaModule::GetGuildSettings(dpp::snowflake guild_id)
 std::string TriviaModule::GetVersion()
 {
 	/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-	std::string version = "$ModVer 100$";
+	std::string version = "$ModVer 101$";
 	return "3.0." + version.substr(8,version.length() - 9);
 }
 
@@ -457,7 +457,7 @@ std::string TriviaModule::vowelcount(const std::string &text, const guild_settin
 	return fmt::format(_("HINT_VOWELCOUNT", settings), counts.second, counts.first);
 }
 
-void TriviaModule::show_stats(dpp::snowflake guild_id, dpp::snowflake channel_id)
+void TriviaModule::show_stats(const std::string& interaction_token, dpp::snowflake command_id, dpp::snowflake guild_id, dpp::snowflake channel_id)
 {
 	std::vector<std::string> topten = get_top_ten(guild_id);
 	size_t count = 1;
@@ -481,9 +481,9 @@ void TriviaModule::show_stats(dpp::snowflake guild_id, dpp::snowflake channel_id
 	}
 	guild_settings_t settings = GetGuildSettings(guild_id);
 	if (settings.premium && !settings.custom_url.empty()) {
-		EmbedWithFields(settings, _("LEADERBOARD", settings), {{_("TOP_TEN", settings), msg, false}, {_("MORE_INFO", settings), fmt::format(_("LEADER_LINK", settings), settings.custom_url), false}}, channel_id);
+		EmbedWithFields(interaction_token, command_id, settings, _("LEADERBOARD", settings), {{_("TOP_TEN", settings), msg, false}, {_("MORE_INFO", settings), fmt::format(_("LEADER_LINK", settings), settings.custom_url), false}}, channel_id);
 	} else {
-		EmbedWithFields(settings, _("LEADERBOARD", settings), {{_("TOP_TEN", settings), msg, false}, {_("MORE_INFO", settings), fmt::format(_("LEADER_LINK", settings), guild_id), false}}, channel_id);
+		EmbedWithFields(interaction_token, command_id, settings, _("LEADERBOARD", settings), {{_("TOP_TEN", settings), msg, false}, {_("MORE_INFO", settings), fmt::format(_("LEADER_LINK", settings), guild_id), false}}, channel_id);
 	}
 }
 

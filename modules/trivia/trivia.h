@@ -113,6 +113,7 @@ public:
 	virtual ~TriviaModule();
 	void SetupCommands();
 	void DoExternalCommands(std::vector<dpp::slashcommand>& normal, std::vector<dpp::slashcommand>& admin);
+	void HandleInteraction(const dpp::interaction_create_t& event);
 	void queue_command(const std::string &message, dpp::snowflake author, dpp::snowflake channel, dpp::snowflake guild, bool mention, const std::string &username, bool from_dashboard, dpp::user u, dpp::guild_member gm);
 	void handle_command(const in_cmd &cmd);
 	void ProcessCommands();
@@ -134,9 +135,15 @@ public:
 
 	const guild_settings_t GetGuildSettings(dpp::snowflake guild_id);
 	std::string escape_json(const std::string &s);
+
 	void ProcessEmbed(const class guild_settings_t& settings, const std::string &embed_json, dpp::snowflake channelID);
 	void SimpleEmbed(const class guild_settings_t& settings, const std::string &emoji, const std::string &text, dpp::snowflake channelID, const std::string &title = "", const std::string &image = "", const std::string &thumbnail = "");
 	void EmbedWithFields(const class guild_settings_t& settings, const std::string &title, std::vector<field_t> fields, dpp::snowflake channelID, const std::string &url = "", const std::string &image = "", const std::string &thumbnail = "");
+
+	void ProcessEmbed(const std::string& interaction_token, dpp::snowflake command_id, const class guild_settings_t& settings, const std::string &embed_json, dpp::snowflake channelID);
+	void SimpleEmbed(const std::string& interaction_token, dpp::snowflake command_id, const class guild_settings_t& settings, const std::string &emoji, const std::string &text, dpp::snowflake channelID, const std::string &title = "", const std::string &image = "", const std::string &thumbnail = "");
+	void EmbedWithFields(const std::string& interaction_token, dpp::snowflake command_id, const class guild_settings_t& settings, const std::string &title, std::vector<field_t> fields, dpp::snowflake channelID, const std::string &url = "", const std::string &image = "", const std::string &thumbnail = "");
+
 	virtual std::string GetVersion();
 	virtual std::string GetDescription();
 	int random(int min, int max);
@@ -153,14 +160,14 @@ public:
 	int levenstein(std::string str1, std::string str2);
 	bool is_number(const std::string &s);
 	std::string MakeFirstHint(const std::string &s, const guild_settings_t &settings,  bool indollars = false);
-	void show_stats(dpp::snowflake guild_id, dpp::snowflake channel_id);
+	void show_stats(const std::string& interaction_token, dpp::snowflake command_id, dpp::snowflake guild_id, dpp::snowflake channel_id);
 	void Tick();
 	void DisposeThread(std::thread* t);
 	void CheckForQueuedStarts();
 	virtual bool OnMessage(const dpp::message_create_t &message, const std::string& clean_message, bool mentioned, const std::vector<std::string> &stringmentions);
 	virtual bool OnGuildCreate(const dpp::guild_create_t &guild);
 	bool RealOnMessage(const dpp::message_create_t &message, const std::string& clean_message, bool mentioned, const std::vector<std::string> &stringmentions, dpp::snowflake author_id = 0);
-	void GetHelp(const std::string &section, dpp::snowflake channelID, const std::string &botusername, dpp::snowflake botid, const std::string &author, dpp::snowflake authorid, const guild_settings_t &settings);
+	void GetHelp(const std::string& interaction_token, dpp::snowflake command_id, const std::string &section, dpp::snowflake channelID, const std::string &botusername, dpp::snowflake botid, const std::string &author, dpp::snowflake authorid, const guild_settings_t &settings);
 	void CacheUser(dpp::snowflake user, dpp::user _user, dpp::guild_member gm, dpp::snowflake channel_id);
 	void CheckReconnects();
 
