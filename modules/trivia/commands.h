@@ -56,5 +56,6 @@ DECLARE_COMMAND_CLASS(command_privacy_t);
 DECLARE_COMMAND_CLASS(command_invite_t);
 DECLARE_COMMAND_CLASS(command_coins_t);
 DECLARE_COMMAND_CLASS(command_language_t);
+DECLARE_COMMAND_CLASS(command_prefix_t);
 
 typedef std::map<std::string, command_t*> command_list_t;

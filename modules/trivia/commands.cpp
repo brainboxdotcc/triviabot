@@ -108,6 +108,12 @@ void TriviaModule::SetupCommands()
 		{"vh", new command_votehint_t(this, "votehint", false, "", { } )},
 		{"stats", new command_stats_t(this, "stats", false, "Show today's scores", { })},
 		{"leaderboard", new command_stats_t(this, "stats", false, "", { })},
+		{
+			"prefix", new command_prefix_t(this, "prefix", false, "Set the prefix for message based commands",
+			{
+				dpp::command_option(dpp::co_string, "prefix", "Command prefix to set", true)
+			}
+		)},
 		{"info", new command_info_t(this, "info", false, "Show information about TriviaBot", { })},
 		{
 			"language", new command_language_t(this, "language", false, "Set TriviaBot's language",
