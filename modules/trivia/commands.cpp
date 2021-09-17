@@ -103,6 +103,7 @@ void TriviaModule::SetupCommands()
 		{"global", new command_global_t(this, "global", "Show a link to the global leaderboard", { })},
 		{"dash", new command_dashboard_t(this, "dashboard", "", { } )},
 		{"vote", new command_vote_t(this, "vote", "Information on how to vote for TriviaBot", { })},
+		{"invite", new command_invite_t(this, "invite", "Show TriviaBot's invite link", { })},
 		{"votehint", new command_votehint_t(this, "votehint", "Use a vote hint", { })},
 		{"vh", new command_votehint_t(this, "votehint", "", { } )},
 		{"stats", new command_stats_t(this, "stats", "Show today's scores", { })},
@@ -112,6 +113,18 @@ void TriviaModule::SetupCommands()
 			"enable", new command_enable_t(this, "enable", "Enable a trivia category",
 			{
 				dpp::command_option(dpp::co_string, "category", "Category name to enable", true)	
+			}
+		)},
+		{
+			"coins", new command_coins_t(this, "coins", "Show coin balance of a user",
+			{
+				dpp::command_option(dpp::co_user, "user", "User's balance to show", false)
+			}
+		)},
+		{
+			"privacy", new command_privacy_t(this, "privacy", "Enable or disable team privacy for your username",
+			{
+				dpp::command_option(dpp::co_boolean, "enable", "Enable or disable privacy", true)	
 			}
 		)},
 		{

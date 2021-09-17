@@ -51,5 +51,8 @@ DECLARE_COMMAND_CLASS(command_dashboard_t);
 DECLARE_COMMAND_CLASS(command_global_t);
 DECLARE_COMMAND_CLASS(command_enable_t);
 DECLARE_COMMAND_CLASS(command_disable_t);
+DECLARE_COMMAND_CLASS(command_privacy_t);
+DECLARE_COMMAND_CLASS(command_invite_t);
+DECLARE_COMMAND_CLASS(command_coins_t);
 
 typedef std::map<std::string, command_t*> command_list_t;

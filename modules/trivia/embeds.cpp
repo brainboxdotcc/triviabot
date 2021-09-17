@@ -157,6 +157,7 @@ void TriviaModule::SimpleEmbed(const std::string& interaction_token, dpp::snowfl
 	if (!thumbnail.empty()) {
 		imageinfo += ",\"thumbnail\":{\"url\":\"" + escape_json(thumbnail) + "\"}";
 	}
+	imageinfo += ",\"footer\":{\"text\":\"" + escape_json(_("POWERED_BY", settings)) + "\",\"icon_url\":\"https://triviabot.co.uk/images/triviabot_tl_icon.png\"}";
 	if (!title.empty()) {
 		/* With title */
 		ProcessEmbed(interaction_token, command_id, settings, fmt::format("{{\"title\":\"{}\",\"color\":{},\"description\":\"{} {}\"{}}}", escape_json(title), colour, emoji, escape_json(text), imageinfo), channelID);
