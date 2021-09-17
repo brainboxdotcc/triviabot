@@ -47,5 +47,7 @@ DECLARE_COMMAND_CLASS(command_join_t);
 DECLARE_COMMAND_CLASS(command_create_t);
 DECLARE_COMMAND_CLASS(command_leave_t);
 DECLARE_COMMAND_CLASS(command_help_t);
+DECLARE_COMMAND_CLASS(command_dashboard_t);
+DECLARE_COMMAND_CLASS(command_global_t);
 
 typedef std::map<std::string, command_t*> command_list_t;
