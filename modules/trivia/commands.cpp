@@ -158,6 +158,12 @@ void TriviaModule::SetupCommands()
 				dpp::command_option(dpp::co_string, "team", "Team name to create", true)	
 			}
 		)},
+		{
+			"forceleave", new command_forceleave_t(this, "forceleave", true, "Force TriviaBot to leave a guild",
+			{
+				dpp::command_option(dpp::co_string, "guild", "Guild ID to leave", true)
+			}
+		)},
 		{"leave", new command_leave_t(this, "leave", false, "Leave your current Trivia Team", { })},
 		{
 			"help", new command_help_t(this, "help", false, "Show help for TriviaBot",
