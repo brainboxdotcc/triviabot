@@ -107,6 +107,8 @@ void TriviaModule::SetupCommands()
 		{"votehint", new command_votehint_t(this, "votehint", false, "Use a vote hint", { })},
 		{"vh", new command_votehint_t(this, "votehint", false, "", { } )},
 		{"stats", new command_stats_t(this, "stats", false, "Show today's scores", { })},
+		{"topteams", new command_topteams_t(this, "topteams", false, "Show the leaderboard of teams", { })},
+		{"top", new command_topteams_t(this, "topteams", false, "", { })},
 		{"leaderboard", new command_stats_t(this, "stats", false, "", { })},
 		{
 			"prefix", new command_prefix_t(this, "prefix", false, "Set the prefix for message based commands",

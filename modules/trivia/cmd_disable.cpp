@@ -46,7 +46,9 @@ void command_disable_t::call(const in_cmd &cmd, std::stringstream &tokens, guild
 	const int MAX_PERCENT_DISABLE = 75;
 	const int MIN_QUESTIONS = 1000;
 	std::string namefield = "name";
-	
+
+	creator->CacheUser(cmd.author_id, cmd.user, cmd.member, cmd.channel_id);
+
 	std::getline(tokens, category_name);
 	category_name = trim(category_name);
 	if (settings.language != "en") {

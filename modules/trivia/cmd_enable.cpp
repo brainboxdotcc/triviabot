@@ -44,7 +44,9 @@ void command_enable_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_
 {
 	std::string category_name;
 	std::string namefield = "name";
-	
+
+	creator->CacheUser(cmd.author_id, cmd.user, cmd.member, cmd.channel_id);
+
 	std::getline(tokens, category_name);
 	category_name = trim(category_name);
 	if (settings.language != "en") {

@@ -20,9 +20,6 @@
  *
  ************************************************************************************/
 
-#include <dpp/dpp.h>
-#include <fmt/format.h>
-#include <dpp/nlohmann/json.hpp>
 #include <sporks/modules.h>
 #include <sporks/regex.h>
 #include <string>
@@ -36,24 +33,24 @@
 #include "webrequest.h"
 #include "commands.h"
 
-using json = nlohmann::json;
 
-command_prefix_t::command_prefix_t(class TriviaModule* _creator, const std::string &_base_command, bool adm, const std::string& descr, std::vector<dpp::command_option> options) : command_t(_creator, _base_command, adm, descr, options) { }
+command_stats_t::command_stats_t(class TriviaModule* _creator, const std::string &_base_command, bool adm, const std::string& descr, std::vector<dpp::command_option> options) : command_t(_creator, _base_command, adm, descr, options) { }
 
-void command_prefix_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_settings_t &settings, const std::string &username, bool is_moderator, dpp::channel* c, dpp::user* user)
+void command_stats_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_settings_t &settings, const std::string &username, bool is_moderator, dpp::channel* c, dpp::user* user)
 {
-	std::string prefix;
-	std::getline(tokens, prefix);
-	prefix = trim(prefix);
+	std::string desc;
+	uint8_t rank = 1;
 
-	if (!is_moderator)  {
-		creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":warning:", _("MODONLY", settings), cmd.channel_id);
-		return;
+	db::resultset q = db::query("SELECT * FROM teams ORDER BY score DESC LIMIT 10", {});
+	for (auto & team : q) {
+		desc += "**#" + std::to_string(rank) + "** `" + team["name"] + "` (*" + team["score"] + "*)";
+		if (rank++ == 1) {
+			desc += " <:crown:722808671888736306>";
+		}
+		$desc += "\n";
 	}
 
-	if (!prefix.empty()) {
-		db::query("UPDATE bot_guild_settings SET prefix = '?' WHERE snowflake_id = '?'", {prefix, cmd.guild_id});
-		creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":white_check_mark:", fmt::format(_("PREFIXSET", settings), prefix), cmd.channel_id);
-	}
+	creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, "", desc, cmd.channel_id, _("TOP10TEAMS", settings));
 	creator->CacheUser(cmd.author_id, cmd.user, cmd.member, cmd.channel_id);
 }
+

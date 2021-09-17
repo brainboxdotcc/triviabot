@@ -48,6 +48,8 @@ void command_language_t::call(const in_cmd &cmd, std::stringstream &tokens, guil
 	std::getline(tokens, lang_name);
 	lang_name = trim(lang_name);
 
+	creator->CacheUser(cmd.author_id, cmd.user, cmd.member, cmd.channel_id);
+
 	if (lang_name.empty()) {
 		db::resultset langs = db::query("SELECT * FROM languages WHERE live = 1 ORDER BY id", {});
 		std::vector<field_t> fields;
