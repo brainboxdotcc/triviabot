@@ -55,15 +55,30 @@ void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 	int32_t questions;
 	std::string str_q;
 	std::string category;
+	bool categories_only = false;
+
 	tokens >> str_q;
+
 	if (str_q.empty()) {
 		questions = 10;
 	} else {
 		questions = from_string<int32_t>(str_q, std::dec);
+		if (questions == 0) {
+			/* Handle non-numeric or missing inputs */
+			questions = 10;
+			/* In this case the entire parameter string is a category list (or empty) */
+			category = trim(tokens.str());
+			category = trim(category.substr(category.find_first_of(' '), category.length()));
+			categories_only = true;
+			std::cout << "10 q's with categories: '" << category << "'\n";
+		}
 	}
 
-	std::getline(tokens, category);
-	category = trim(category);
+	if (!categories_only) {
+		/* If we don't already have a category list, check second parameter (remaining string) for them */
+		std::getline(tokens, category);
+		category = trim(category);
+	}
 
 	bool quickfire = (base_command == "quickfire" || base_command == "qf");
 	bool hintless = (base_command == "hardcore" || base_command == "hc");

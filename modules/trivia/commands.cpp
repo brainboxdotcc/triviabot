@@ -99,9 +99,12 @@ void TriviaModule::SetupCommands()
 			{
 			}
 		)},
+		{"dashboard", new command_dashboard_t(this, "dashboard", "Show a link to the TriviaBot dashboard", { })},
+		{"global", new command_global_t(this, "global", "Show a link to the global leaderboard", { })},
+		{"dash", new command_dashboard_t(this, "dashboard", "", { } )},
 		{"vote", new command_vote_t(this, "vote", "Information on how to vote for TriviaBot", { })},
 		{"votehint", new command_votehint_t(this, "votehint", "Use a vote hint", { })},
-		{"vh", new command_votehint_t(this, "vh", "", { } )},
+		{"vh", new command_votehint_t(this, "votehint", "", { } )},
 		{"stats", new command_stats_t(this, "stats", "Show today's scores", { })},
 		{"leaderboard", new command_stats_t(this, "stats", "", { })},
 		{"info", new command_info_t(this, "info", "Show information about TriviaBot", { })},
@@ -167,7 +170,7 @@ void TriviaModule::SetupCommands()
 		} else {
 			/*
 			 * Live mode/test mode - main set are global slash commands (with their related cache delay, ew)
-			 Admin set are guild commands attached to the support server.
+			 * Admin set are guild commands attached to the support server.
 			 */
 			bot->core->global_bulk_command_create(slashcommands, [this](const dpp::confirmation_callback_t &callback) {
 				if (callback.is_error()) {

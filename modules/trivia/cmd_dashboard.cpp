@@ -36,12 +36,11 @@
 #include "webrequest.h"
 #include "commands.h"
 
-command_vote_t::command_vote_t(class TriviaModule* _creator, const std::string &_base_command, const std::string& descr, std::vector<dpp::command_option> options) : command_t(_creator, _base_command, descr, options) { }
+command_dashboard_t::command_dashboard_t(class TriviaModule* _creator, const std::string &_base_command, const std::string& descr, std::vector<dpp::command_option> options) : command_t(_creator, _base_command, descr, options) { }
 
-void command_vote_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_settings_t &settings, const std::string &username, bool is_moderator, dpp::channel* c, dpp::user* user)
+void command_dashboard_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_settings_t &settings, const std::string &username, bool is_moderator, dpp::channel* c, dpp::user* user)
 {
-	std::string a = fmt::format(_("VOTEAD", settings), creator->GetBot()->user.id, settings.prefix);
-	std::string b = _("PRIVHINT", settings);
-	creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":white_check_mark:", b + "\n" + a, cmd.channel_id);
+	creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":white_check_mark:", _("DASHBOARDLINK", settings), cmd.channel_id);
 	creator->CacheUser(cmd.author_id, cmd.user, cmd.member, cmd.channel_id);
 }
+
