@@ -109,6 +109,18 @@ void TriviaModule::SetupCommands()
 		{"leaderboard", new command_stats_t(this, "stats", "", { })},
 		{"info", new command_info_t(this, "info", "Show information about TriviaBot", { })},
 		{
+			"enable", new command_enable_t(this, "enable", "Enable a trivia category",
+			{
+				dpp::command_option(dpp::co_string, "category", "Category name to enable", true)	
+			}
+		)},
+		{
+			"disable", new command_disable_t(this, "disable", "Disable a trivia category",
+			{
+				dpp::command_option(dpp::co_string, "category", "Category name to disable", true)	
+			}
+		)},
+		{
 			"join", new command_join_t(this, "join", "Join a Trivia team",
 			{
 				dpp::command_option(dpp::co_string, "team", "Team name to join", true)	

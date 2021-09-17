@@ -70,7 +70,6 @@ void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 			category = trim(tokens.str());
 			category = trim(category.substr(category.find_first_of(' '), category.length()));
 			categories_only = true;
-			std::cout << "10 q's with categories: '" << category << "'\n";
 		}
 	}
 
