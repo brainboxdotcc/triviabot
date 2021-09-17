@@ -117,6 +117,18 @@ void TriviaModule::SetupCommands()
 				dpp::command_option(dpp::co_string, "prefix", "Command prefix to set", true)
 			}
 		)},
+		{
+			"resetprefix", new command_resetprefix_t(this, "resetprefix", true, "Reset the prefix for message based commands",
+			{
+				dpp::command_option(dpp::co_string, "guild", "Guild ID to reset prefix for", true)
+			}
+		)},
+		{
+			"shard", new command_shard_t(this, "shard", false, "Show which shard and cluster a server is on",
+			{
+				dpp::command_option(dpp::co_string, "guild", "Guild ID to show info for", false)
+			}
+		)},
 		{"info", new command_info_t(this, "info", false, "Show information about TriviaBot", { })},
 		{
 			"language", new command_language_t(this, "language", false, "Set TriviaBot's language",
