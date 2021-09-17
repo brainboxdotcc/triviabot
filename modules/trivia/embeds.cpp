@@ -168,16 +168,21 @@ void TriviaModule::SimpleEmbed(const std::string& interaction_token, dpp::snowfl
 }
 
 /* Send an embed containing one or more fields */
-void TriviaModule::EmbedWithFields(const guild_settings_t& settings, const std::string &title, std::vector<field_t> fields, dpp::snowflake channelID, const std::string &url, const std::string &image, const std::string &thumbnail)
+void TriviaModule::EmbedWithFields(const guild_settings_t& settings, const std::string &title, std::vector<field_t> fields, dpp::snowflake channelID, const std::string &url, const std::string &image, const std::string &thumbnail, const std::string &description)
 {
-	EmbedWithFields("", 0, settings, title, fields, channelID, url, image, thumbnail);
+	EmbedWithFields("", 0, settings, title, fields, channelID, url, image, thumbnail, description);
 }
 
 /* Send an embed containing one or more fields */
-void TriviaModule::EmbedWithFields(const std::string& interaction_token, dpp::snowflake command_id, const guild_settings_t& settings, const std::string &title, std::vector<field_t> fields, dpp::snowflake channelID, const std::string &url, const std::string &image, const std::string &thumbnail)
+void TriviaModule::EmbedWithFields(const std::string& interaction_token, dpp::snowflake command_id, const class guild_settings_t& settings, const std::string &title, std::vector<field_t> fields, dpp::snowflake channelID, const std::string &url, const std::string &image, const std::string &thumbnail, const std::string &description)
 {
 		uint32_t colour = settings.embedcolour;
-		std::string json = fmt::format("{{" + (!url.empty() ? "\"url\":\"" + escape_json(url) + "\"," : "") + "\"title\":\"{}\",\"color\":{},\"fields\":[", escape_json(title), colour);
+		std::string json;
+		if (!description.empty()) {
+			json = fmt::format("{{" + (!url.empty() ? "\"url\":\"" + escape_json(url) + "\"," : "") + "\"title\":\"{}\",\"description\":\"{}\",\"color\":{},\"fields\":[", escape_json(title), escape_json(description), colour);
+		} else {
+			json = fmt::format("{{" + (!url.empty() ? "\"url\":\"" + escape_json(url) + "\"," : "") + "\"title\":\"{}\",\"color\":{},\"fields\":[", escape_json(title), colour);
+		}
 		for (auto v = fields.begin(); v != fields.end(); ++v) {
 			json += fmt::format("{{\"name\":\"{}\",\"value\":\"{}\",\"inline\":{}}}", escape_json(v->name), escape_json(v->value), v->_inline ? "true" : "false");
 			auto n = v;

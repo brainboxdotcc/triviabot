@@ -138,11 +138,11 @@ public:
 
 	void ProcessEmbed(const class guild_settings_t& settings, const std::string &embed_json, dpp::snowflake channelID);
 	void SimpleEmbed(const class guild_settings_t& settings, const std::string &emoji, const std::string &text, dpp::snowflake channelID, const std::string &title = "", const std::string &image = "", const std::string &thumbnail = "");
-	void EmbedWithFields(const class guild_settings_t& settings, const std::string &title, std::vector<field_t> fields, dpp::snowflake channelID, const std::string &url = "", const std::string &image = "", const std::string &thumbnail = "");
+	void EmbedWithFields(const class guild_settings_t& settings, const std::string &title, std::vector<field_t> fields, dpp::snowflake channelID, const std::string &url = "", const std::string &image = "", const std::string &thumbnail = "", const std::string &description = "");
 
 	void ProcessEmbed(const std::string& interaction_token, dpp::snowflake command_id, const class guild_settings_t& settings, const std::string &embed_json, dpp::snowflake channelID);
 	void SimpleEmbed(const std::string& interaction_token, dpp::snowflake command_id, const class guild_settings_t& settings, const std::string &emoji, const std::string &text, dpp::snowflake channelID, const std::string &title = "", const std::string &image = "", const std::string &thumbnail = "");
-	void EmbedWithFields(const std::string& interaction_token, dpp::snowflake command_id, const class guild_settings_t& settings, const std::string &title, std::vector<field_t> fields, dpp::snowflake channelID, const std::string &url = "", const std::string &image = "", const std::string &thumbnail = "");
+	void EmbedWithFields(const std::string& interaction_token, dpp::snowflake command_id, const class guild_settings_t& settings, const std::string &title, std::vector<field_t> fields, dpp::snowflake channelID, const std::string &url = "", const std::string &image = "", const std::string &thumbnail = "", const std::string &description = "");
 
 	virtual std::string GetVersion();
 	virtual std::string GetDescription();

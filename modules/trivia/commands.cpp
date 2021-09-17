@@ -43,7 +43,7 @@ in_cmd::in_cmd(const std::string &m, uint64_t author, uint64_t channel, uint64_t
 {
 }
 
-command_t::command_t(class TriviaModule* _creator, const std::string &_base_command, const std::string& descr, std::vector<dpp::command_option> options) : creator(_creator), base_command(_base_command), description(descr), opts(options)
+command_t::command_t(class TriviaModule* _creator, const std::string &_base_command, bool adm, const std::string& descr, std::vector<dpp::command_option> options) : creator(_creator), base_command(_base_command), description(descr), opts(options), admin(adm)
 {
 }
 
@@ -65,89 +65,96 @@ void TriviaModule::SetupCommands()
 	 */
 	commands = {
 		{
-			"start", new command_start_t(this, "start", "Start a game of trivia",
+			"start", new command_start_t(this, "start", false, "Start a game of trivia",
 			{
 				dpp::command_option(dpp::co_integer, "questions", "Number of questions", false),
 				dpp::command_option(dpp::co_string, "categories", "Category list", false)	
 			}
 		)},
 		{
-			"quickfire", new command_start_t(this, "quickfire", "Start a quickfire game of trivia",
+			"quickfire", new command_start_t(this, "quickfire", false, "Start a quickfire game of trivia",
 			{
 				dpp::command_option(dpp::co_integer, "questions", "Number of questions", false),
 				dpp::command_option(dpp::co_string, "categories", "Category list", false)	
 			}
 		)},
 		{
-			"qf", new command_start_t(this, "quickfire", "", {})
+			"qf", new command_start_t(this, "quickfire", false, "", {})
 		},
 		{
-			"hardcore", new command_start_t(this, "hardcore", "Start a hardcore game of trivia",
+			"hardcore", new command_start_t(this, "hardcore", false, "Start a hardcore game of trivia",
 			{
 				dpp::command_option(dpp::co_integer, "questions", "Number of questions", false),
 				dpp::command_option(dpp::co_string, "categories", "Category list", false)	
 			}
 		)},
 		{
-			"hc", new command_start_t(this, "hardcore", "", { })
+			"hc", new command_start_t(this, "hardcore", false, "", { })
 		},
 		{
-			"trivia", new command_start_t(this, "start", "", { })
+			"trivia", new command_start_t(this, "start", false, "", { })
 		},
 		{
-			"stop", new command_stop_t(this, "stop", "Stop a game of trivia",
+			"stop", new command_stop_t(this, "stop", false, "Stop a game of trivia",
 			{
 			}
 		)},
-		{"dashboard", new command_dashboard_t(this, "dashboard", "Show a link to the TriviaBot dashboard", { })},
-		{"global", new command_global_t(this, "global", "Show a link to the global leaderboard", { })},
-		{"dash", new command_dashboard_t(this, "dashboard", "", { } )},
-		{"vote", new command_vote_t(this, "vote", "Information on how to vote for TriviaBot", { })},
-		{"invite", new command_invite_t(this, "invite", "Show TriviaBot's invite link", { })},
-		{"votehint", new command_votehint_t(this, "votehint", "Use a vote hint", { })},
-		{"vh", new command_votehint_t(this, "votehint", "", { } )},
-		{"stats", new command_stats_t(this, "stats", "Show today's scores", { })},
-		{"leaderboard", new command_stats_t(this, "stats", "", { })},
-		{"info", new command_info_t(this, "info", "Show information about TriviaBot", { })},
+		{"dashboard", new command_dashboard_t(this, "dashboard", false, "Show a link to the TriviaBot dashboard", { })},
+		{"global", new command_global_t(this, "global", false, "Show a link to the global leaderboard", { })},
+		{"dash", new command_dashboard_t(this, "dashboard", false, "", { } )},
+		{"vote", new command_vote_t(this, "vote", false, "Information on how to vote for TriviaBot", { })},
+		{"invite", new command_invite_t(this, "invite", false, "Show TriviaBot's invite link", { })},
+		{"votehint", new command_votehint_t(this, "votehint", false, "Use a vote hint", { })},
+		{"vh", new command_votehint_t(this, "votehint", false, "", { } )},
+		{"stats", new command_stats_t(this, "stats", false, "Show today's scores", { })},
+		{"leaderboard", new command_stats_t(this, "stats", false, "", { })},
+		{"info", new command_info_t(this, "info", false, "Show information about TriviaBot", { })},
 		{
-			"enable", new command_enable_t(this, "enable", "Enable a trivia category",
+			"language", new command_language_t(this, "language", false, "Set TriviaBot's language",
+			{
+				dpp::command_option(dpp::co_string, "language", "Language to set", false)	
+			}
+		)},
+		{"lang", new command_language_t(this, "language", false, "", { })},
+		{
+			"enable", new command_enable_t(this, "enable", false, "Enable a trivia category",
 			{
 				dpp::command_option(dpp::co_string, "category", "Category name to enable", true)	
 			}
 		)},
 		{
-			"coins", new command_coins_t(this, "coins", "Show coin balance of a user",
+			"coins", new command_coins_t(this, "coins", false, "Show coin balance of a user",
 			{
 				dpp::command_option(dpp::co_user, "user", "User's balance to show", false)
 			}
 		)},
 		{
-			"privacy", new command_privacy_t(this, "privacy", "Enable or disable team privacy for your username",
+			"privacy", new command_privacy_t(this, "privacy", false, "Enable or disable team privacy for your username",
 			{
 				dpp::command_option(dpp::co_boolean, "enable", "Enable or disable privacy", true)	
 			}
 		)},
 		{
-			"disable", new command_disable_t(this, "disable", "Disable a trivia category",
+			"disable", new command_disable_t(this, "disable", false, "Disable a trivia category",
 			{
 				dpp::command_option(dpp::co_string, "category", "Category name to disable", true)	
 			}
 		)},
 		{
-			"join", new command_join_t(this, "join", "Join a Trivia team",
+			"join", new command_join_t(this, "join", false, "Join a Trivia team",
 			{
 				dpp::command_option(dpp::co_string, "team", "Team name to join", true)	
 			}
 		)},
 		{
-			"create", new command_create_t(this, "create", "Create a new Trivia team",
+			"create", new command_create_t(this, "create", false, "Create a new Trivia team",
 			{
 				dpp::command_option(dpp::co_string, "team", "Team name to create", true)	
 			}
 		)},
-		{"leave", new command_leave_t(this, "leave", "Leave your current Trivia Team", { })},
+		{"leave", new command_leave_t(this, "leave", false, "Leave your current Trivia Team", { })},
 		{
-			"help", new command_help_t(this, "help", "Show help for TriviaBot",
+			"help", new command_help_t(this, "help", false, "Show help for TriviaBot",
 			{
 				dpp::command_option(dpp::co_string, "topic", "Help topic", false),
 			}
@@ -155,6 +162,14 @@ void TriviaModule::SetupCommands()
 	};
 
 	if (bot->GetClusterID() == 0) {
+
+		/* Add options to the language command parameter from the database */
+		command_t* lang_command = commands["language"];
+		db::resultset langs = db::query("SELECT * FROM languages WHERE live = 1 ORDER BY id", {});
+		lang_command->opts[0].choices.clear();
+		for (auto & row : langs) {
+			lang_command->opts[0].add_choice(dpp::command_option_choice(row["name"], row["isocode"]));
+		}
 
 		/* Two lists, one for the main set of global commands, and one for admin commands */
 		std::vector<dpp::slashcommand> slashcommands;
@@ -168,7 +183,11 @@ void TriviaModule::SetupCommands()
 				for (auto & o : c.second->opts) {
 					sc.add_option(o);
 				}
-				slashcommands.push_back(sc);
+				if (c.second->admin) {
+					adminslash.push_back(sc);
+				} else {
+					slashcommands.push_back(sc);
+				}
 			}
 		}
 

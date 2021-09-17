@@ -35,7 +35,7 @@
 #include "webrequest.h"
 #include "commands.h"
 
-command_leave_t::command_leave_t(class TriviaModule* _creator, const std::string &_base_command, const std::string& descr, std::vector<dpp::command_option> options) : command_t(_creator, _base_command, descr, options) { }
+command_leave_t::command_leave_t(class TriviaModule* _creator, const std::string &_base_command, bool adm, const std::string& descr, std::vector<dpp::command_option> options) : command_t(_creator, _base_command, adm, descr, options) { }
 
 void command_leave_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_settings_t &settings, const std::string &username, bool is_moderator, dpp::channel* c, dpp::user* user)
 {
