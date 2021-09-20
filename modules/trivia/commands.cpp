@@ -137,6 +137,12 @@ void TriviaModule::SetupCommands()
 				dpp::command_option(dpp::co_string, "guild", "Guild ID to show info for", false)
 			}
 		)},
+		{
+			"categories", new command_categories_t(this, "categories", false, "Show a list of playable categories",
+			{
+				dpp::command_option(dpp::co_string, "page", "Page number to show", false)
+			}
+		)},
 		{"info", new command_info_t(this, "info", false, "Show information about TriviaBot", { })},
 		{
 			"language", new command_language_t(this, "language", false, "Set TriviaBot's language",
@@ -205,6 +211,18 @@ void TriviaModule::SetupCommands()
 		for (auto & row : langs) {
 			lang_command->opts[0].add_choice(dpp::command_option_choice(row["name"], row["isocode"]));
 		}
+
+		/* Add options to the categories command parameter from the database */
+		command_t* cats_command = commands["categories"];
+		db::resultset q = db::query("SELECT id FROM categories WHERE disabled != 1", {});
+		size_t rows = q.size();
+		uint32_t length = 25;
+		uint32_t pages = ceil((float)rows / (float)length);
+		cats_command->opts[0].choices.clear();
+		for (uint32_t r = 1; r <= pages; ++r) {
+			cats_command->opts[0].add_choice(dpp::command_option_choice(fmt::format("Page {}", r), std::to_string(r)));
+		}
+
 
 		/* Two lists, one for the main set of global commands, and one for admin commands */
 		std::vector<dpp::slashcommand> slashcommands;
