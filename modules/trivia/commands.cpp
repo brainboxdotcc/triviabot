@@ -110,6 +110,7 @@ void TriviaModule::SetupCommands()
 		{"topteams", new command_topteams_t(this, "topteams", false, "Show the leaderboard of teams", { })},
 		{"top", new command_topteams_t(this, "topteams", false, "", { })},
 		{"nitro", new command_nitro_t(this, "nitro", false, "Show the monthly nitro leaderboard", { })},
+		{"queue", new command_queue_t(this, "queue", true, "Show question queue statistics", { })},
 		{"leaderboard", new command_stats_t(this, "stats", false, "", { })},
 		{
 			"prefix", new command_prefix_t(this, "prefix", false, "Set the prefix for message based commands",
