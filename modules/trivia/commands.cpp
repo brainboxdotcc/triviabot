@@ -118,6 +118,13 @@ void TriviaModule::SetupCommands()
 			}
 		)},
 		{
+			"give", new command_give_t(this, "give", false, "Give a user some brainbucks coins",
+			{
+				dpp::command_option(dpp::co_user, "user", "User to give coins to", true),
+				dpp::command_option(dpp::co_integer, "coins", "Number of coins to give", true)
+			}
+		)},
+		{
 			"resetprefix", new command_resetprefix_t(this, "resetprefix", true, "Reset the prefix for message based commands",
 			{
 				dpp::command_option(dpp::co_string, "guild", "Guild ID to reset prefix for", true)

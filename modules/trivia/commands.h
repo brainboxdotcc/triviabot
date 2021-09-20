@@ -62,5 +62,6 @@ DECLARE_COMMAND_CLASS(command_topteams_t);
 DECLARE_COMMAND_CLASS(command_nitro_t);
 DECLARE_COMMAND_CLASS(command_resetprefix_t);
 DECLARE_COMMAND_CLASS(command_shard_t);
+DECLARE_COMMAND_CLASS(command_give_t);
 
 typedef std::map<std::string, command_t*> command_list_t;
