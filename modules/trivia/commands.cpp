@@ -176,6 +176,12 @@ void TriviaModule::SetupCommands()
 			}
 		)},
 		{
+			"team", new command_team_t(this, "team", false, "Show information for a trivia team",
+			{
+				dpp::command_option(dpp::co_string, "name", "Team name to show information for", true)	
+			}
+		)},
+		{
 			"join", new command_join_t(this, "join", false, "Join a Trivia team",
 			{
 				dpp::command_option(dpp::co_string, "team", "Team name to join", true)	

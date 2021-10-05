@@ -65,5 +65,6 @@ DECLARE_COMMAND_CLASS(command_shard_t);
 DECLARE_COMMAND_CLASS(command_give_t);
 DECLARE_COMMAND_CLASS(command_queue_t);
 DECLARE_COMMAND_CLASS(command_categories_t);
+DECLARE_COMMAND_CLASS(command_team_t);
 
 typedef std::map<std::string, command_t*> command_list_t;
