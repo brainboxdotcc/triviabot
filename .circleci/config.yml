@@ -49,6 +49,18 @@ jobs:
           name: Installing spdlog
           command: 'cd spdlog/build && make install'
       - run:
+          name: Cloning fmt
+          command: 'git clone https://github.com/fmtlib/fmt.git'
+      - run:
+          name: Creating fmt build files
+          command: 'cmake  -Hfmt -Bfmt/build'
+      - run:
+          name: Building fmt
+          command: 'cmake --build fmt/build -j 4'
+      - run:
+          name: Installing fmt
+          command: 'cd fmt/build && make install'
+      - run:
           name: Creating Build Files
           command: 'cmake -H. -Bbuild'
       - run:
