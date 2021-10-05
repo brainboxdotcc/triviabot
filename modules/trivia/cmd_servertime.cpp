@@ -42,12 +42,12 @@ void command_servertime_t::call(const in_cmd &cmd, std::stringstream &tokens, gu
 	time_t now_time = time(nullptr);
 	time_t seconds_until_reset = 86400 - (now_time % 86400);
 	time_t reset_time = now_time + seconds_until_reset;
-	std::string sf = fmt::format("{:02d}:{:02d}:{:02d}", secs_until_reset / 60 / 60 % 24, secs_until_reset / 60 % 60, secs_until_reset % 60);
+	std::string sf = fmt::format("{:02d}:{:02d}:{:02d}", seconds_until_reset / 60 / 60 % 24, seconds_until_reset / 60 % 60, seconds_until_reset % 60);
 
 	creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, "",
-		fmt::format(_("TIME_IS", settings), dpp::utility::current_date()) + "\n" + fmt::format(_("TIME_RESET", settings), sf),
-	cmd.channel_id, _("SERVERTIME", settings));
-	creator->CacheUser(cmd.author_id, cmd.user, cmd.member, cmd.channel_id, "", "https://triviabot.co.uk/images/triviabot_tl_icon.png");
+		fmt::format(_("TIME_IS", settings), dpp::utility::current_date_time()) + "\n" + fmt::format(_("TIME_RESET", settings), sf),
+	cmd.channel_id, _("SERVERTIME", settings), "", "https://triviabot.co.uk/images/triviabot_tl_icon.png");
+	creator->CacheUser(cmd.author_id, cmd.user, cmd.member, cmd.channel_id);
 }
 
 /*
