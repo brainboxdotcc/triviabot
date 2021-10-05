@@ -112,6 +112,7 @@ void TriviaModule::SetupCommands()
 		{"nitro", new command_nitro_t(this, "nitro", false, "Show the monthly nitro leaderboard", { })},
 		{"queue", new command_queue_t(this, "queue", true, "Show question queue statistics", { })},
 		{"ping", new command_ping_t(this, "ping", false, "Show bot latency statistics", { })},
+		{"servertime", new command_servertime_t(this, "servertime", false, "Show current server time and how long until scores reset", { })},
 		{"leaderboard", new command_stats_t(this, "stats", false, "", { })},
 		{
 			"prefix", new command_prefix_t(this, "prefix", false, "Set the prefix for message based commands",
