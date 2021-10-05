@@ -305,6 +305,7 @@ void TriviaModule::HandleInteraction(const dpp::interaction_create_t& event) {
 	dpp::command_interaction cmd_interaction = std::get<dpp::command_interaction>(event.command.data);
 
 	std::stringstream message;
+	
 	/* Set 'thinking' state */
 	dpp::message msg;
 	msg.content = "*";

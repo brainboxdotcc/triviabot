@@ -607,6 +607,9 @@ void runcli(guild_settings_t settings, const std::string &command, uint64_t guil
 		std::string reply = trim(output);
 		if (!reply.empty()) {
 			module->ProcessEmbed(interaction_token, command_id, s, reply, channel_id);
+		} else {
+			/* Empty reply but handled. delete "thinking" notification */
+			bot->core->post_rest(API_PATH "/webhooks", std::to_string(bot->core->me.id), dpp::url_encode(interaction_token) + "/messages/@original", dpp::m_delete, "", [&](auto& json, auto& request) {}, "", "");
 		}
 	});
 }
