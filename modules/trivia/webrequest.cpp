@@ -855,6 +855,7 @@ uint32_t get_team_points(const std::string &team)
 void CheckCreateWebhook(const guild_settings_t & s, TriviaModule* t, uint64_t channel_id)
 {
 	/* Create new webhook for a channel, or update existing webhook.
+	 * Store webhook details to database for future use.
 	 * This function checks the existing webhook is usable and if not, creates a new one.
 	 */
 	dpp::cluster* c = t->GetBot()->core;
@@ -865,7 +866,7 @@ void CheckCreateWebhook(const guild_settings_t & s, TriviaModule* t, uint64_t ch
 		dpp::webhook wh;
 		wh.name = "TriviaBot";
 		wh.channel_id = channel_id;
-		wh.load_image(WEBHOOK_ICON, dpp::i_png);
+		wh.load_image(WEBHOOK_ICON, dpp::i_png, true);
 		c->create_webhook(wh, [channel_id, c](const dpp::confirmation_callback_t& data) {
 			if (!data.is_error()) {
 				dpp::webhook new_wh = std::get<dpp::webhook>(data.value);
