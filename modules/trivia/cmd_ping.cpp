@@ -85,7 +85,7 @@ void command_ping_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_se
 			cmd.interaction_token, cmd.command_id, settings,
 			_("PONG", settings), fields, cmd.channel_id,
 			"https://triviabot.co.uk/", "", "",
-			":ping_pong: " + ((shardstatus == true && tb_api_ping < 50 && discord_api_ping < 800 && db_ping < 3 ? _("OKPING", settings) : _("BADPING", settings))) + "\n\n**" + _("PINGKEY", settings) + "**\n<:blank:667278047006949386>"
+			":ping_pong: " + ((shardstatus == true && tb_api_ping < 200 && discord_api_ping < 800 && db_ping < 3 ? _("OKPING", settings) : _("BADPING", settings))) + "\n\n**" + _("PINGKEY", settings) + "**\n<:blank:667278047006949386>"
 		);
 		creator->CacheUser(cmd.author_id, cmd.user, cmd.member, cmd.channel_id);
 	});

@@ -52,6 +52,7 @@
 #include "httplib.h"
 #include "trivia.h"
 #include "wlower.h"
+#include "webhook_icon.h"
 
 using json = nlohmann::json;
 
@@ -607,7 +608,7 @@ void runcli(guild_settings_t settings, const std::string &command, uint64_t guil
 		std::string reply = trim(output);
 		if (!reply.empty()) {
 			module->ProcessEmbed(interaction_token, command_id, s, reply, channel_id);
-		} else {
+		} else if (!interaction_token.empty()) {
 			/* Empty reply but handled. delete "thinking" notification */
 			bot->core->post_rest(API_PATH "/webhooks", std::to_string(bot->core->me.id), dpp::url_encode(interaction_token) + "/messages/@original", dpp::m_delete, "", [&](auto& json, auto& request) {}, "", "");
 		}
@@ -853,8 +854,52 @@ uint32_t get_team_points(const std::string &team)
 
 void CheckCreateWebhook(const guild_settings_t & s, TriviaModule* t, uint64_t channel_id)
 {
-	/* Create webhook */
-	runcli(s, "createwebhook", 0, 0, channel_id, "", "", 0);
+	/* Create new webhook for a channel, or update existing webhook.
+	 * This function checks the existing webhook is usable and if not, creates a new one.
+	 */
+	dpp::cluster* c = t->GetBot()->core;
+
+	c->log(dpp::ll_debug, fmt::format("Create or update webhook for channel {}", channel_id));
+
+	auto create_wh = [c, channel_id]() {
+		dpp::webhook wh;
+		wh.name = "TriviaBot";
+		wh.channel_id = channel_id;
+		wh.load_image(WEBHOOK_ICON, dpp::i_png);
+		c->create_webhook(wh, [channel_id, c](const dpp::confirmation_callback_t& data) {
+			if (!data.is_error()) {
+				dpp::webhook new_wh = std::get<dpp::webhook>(data.value);
+				std::string url = "https://discord.com/api/webhooks/" + std::to_string(new_wh.id) + "/" + dpp::url_encode(new_wh.token);
+				db::query("INSERT INTO channel_webhooks (channel_id, webhook_id, webhook) VALUES('?','?','?') ON DUPLICATE KEY UPDATE webhook_id = '?', webhook = '?'", {new_wh.channel_id, new_wh.id, url, new_wh.id, url});
+				c->log(dpp::ll_debug, fmt::format("New webhook created for channel {}: {}", channel_id, new_wh.id));
+			} else {
+				c->log(dpp::ll_debug, fmt::format("Error creating webhook for channel {}: {}", channel_id, data.get_error().message));
+			}
+		});
+	};
+
+	db::resultset existing_hook = db::query("SELECT * FROM channel_webhooks WHERE channel_id = '?'", {channel_id});
+	if (existing_hook.size()) {
+		c->log(dpp::ll_debug, fmt::format("Existing webhook found for channel {}", channel_id));
+		/* Check if existing webhook is still valid */
+		c->get_webhook(std::stoull(existing_hook[0]["webhook_id"]), [create_wh, channel_id, c](const dpp::confirmation_callback_t& data) {
+			if (!data.is_error()) {
+				dpp::webhook existing_wh = std::get<dpp::webhook>(data.value);
+				db::query("UPDATE channel_webhooks SET webhook = '?' WHERE webhook_id = '?' AND channel_id = '?'", {"https://discord.com/api/webhooks/" + std::to_string(existing_wh.id) + "/" + dpp::url_encode(existing_wh.token), existing_wh.id, existing_wh.channel_id});
+				c->log(dpp::ll_debug, fmt::format("Existing webhook still valid for channel {}", channel_id));
+				return;
+			} else {
+				/* Create new webhook */
+				c->log(dpp::ll_debug, fmt::format("Existing webhook no longer valid for channel {}: {}", channel_id, data.get_error().message));
+				create_wh();
+			}
+
+		});
+	} else {
+		/* No webhook at all, create new webhook */
+		c->log(dpp::ll_debug, fmt::format("No existing webhook for channel {}", channel_id));
+		create_wh();
+	}
 }
 
 void PostWebhook(const std::string &webhook_url, const std::string &embed, uint64_t channel_id)
