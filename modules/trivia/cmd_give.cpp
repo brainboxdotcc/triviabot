@@ -41,7 +41,7 @@ command_give_t::command_give_t(class TriviaModule* _creator, const std::string &
 void command_give_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_settings_t &settings, const std::string &username, bool is_moderator, dpp::channel* c, dpp::user* user)
 {
 	dpp::snowflake user_id;
-	int32_t howmuch = 0;
+	int64_t howmuch = 0;
 	uint64_t balance = 0;
 	std::string message;
 
@@ -65,7 +65,6 @@ void command_give_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_se
 		message = _("NOTENOUGH", settings);
 	} else {
 		message = fmt::format(_("GAVECOINS", settings), howmuch, user_id);
-
 		db::query("SET @COIN_LOG_DISABLED = 1", {});
 		db::query("UPDATE coins SET balance = balance - ? WHERE user_id = ?", {howmuch, cmd.author_id});
 		db::query("INSERT INTO coins (user_id, balance) VALUES('?', '?') ON DUPLICATE KEY UPDATE balance = balance + ?", {user_id, howmuch, howmuch});

@@ -306,8 +306,8 @@ void TriviaModule::HandleInteraction(const dpp::interaction_create_t& event) {
 
 	message << cmd_interaction.name;
 	for (auto & p : cmd_interaction.options) {
-		if (std::holds_alternative<int32_t>(p.value)) {
-			message << " " << std::get<int32_t>(p.value);
+		if (std::holds_alternative<int64_t>(p.value)) {
+			message << " " << std::get<int64_t>(p.value);
 		} else if (std::holds_alternative<dpp::snowflake>(p.value)) {
 			message << " " << std::get<dpp::snowflake>(p.value);
 		} else if (std::holds_alternative<std::string>(p.value)) {

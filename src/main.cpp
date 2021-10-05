@@ -193,13 +193,10 @@ void Bot::onMessage(const dpp::message_create_t &message) {
 		std::string mentions_removed = message.msg->content;
 		std::vector<std::string> stringmentions;
 		for (auto m = message.msg->mentions.begin(); m != message.msg->mentions.end(); ++m) {
-			stringmentions.push_back(std::to_string(*m));
-			dpp::user* u = dpp::find_user(*m);
-			if (u) {
-				mentions_removed = ReplaceString(mentions_removed, std::string("<@") + std::to_string(*m) + ">", u->username);
-				mentions_removed = ReplaceString(mentions_removed, std::string("<@!") + std::to_string(*m) + ">", u->username);
-			}
-			if (*m == user.id) {
+			stringmentions.push_back(std::to_string(m->first.id));
+			mentions_removed = ReplaceString(mentions_removed, std::string("<@") + std::to_string(m->first.id) + ">", m->first.username);
+			mentions_removed = ReplaceString(mentions_removed, std::string("<@!") + std::to_string(m->first.id) + ">", m->first.username);
+			if (m->first.id == user.id) {
 				mentioned = true;
 			}
 		}
