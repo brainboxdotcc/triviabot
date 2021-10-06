@@ -68,5 +68,7 @@ DECLARE_COMMAND_CLASS(command_categories_t);
 DECLARE_COMMAND_CLASS(command_team_t);
 DECLARE_COMMAND_CLASS(command_ping_t);
 DECLARE_COMMAND_CLASS(command_servertime_t);
+DECLARE_COMMAND_CLASS(command_achievements_t);
+DECLARE_COMMAND_CLASS(command_profile_t);
 
 typedef std::map<std::string, command_t*> command_list_t;

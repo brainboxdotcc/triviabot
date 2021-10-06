@@ -100,6 +100,7 @@ class TriviaModule : public Module
 public:
 	time_t startup;
 	json* lang;
+	json* achievements;
 	std::mutex states_mutex;
 	std::map<dpp::snowflake, state_t> states;
 

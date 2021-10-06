@@ -40,7 +40,7 @@ command_coins_t::command_coins_t(class TriviaModule* _creator, const std::string
 
 void command_coins_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_settings_t &settings, const std::string &username, bool is_moderator, dpp::channel* c, dpp::user* user)
 {
-	dpp::snowflake user_id;
+	dpp::snowflake user_id = 0;
 	tokens >> user_id;
 	uint64_t balance = 0;
 	if (!user_id) {

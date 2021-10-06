@@ -40,7 +40,7 @@ command_give_t::command_give_t(class TriviaModule* _creator, const std::string &
 
 void command_give_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_settings_t &settings, const std::string &username, bool is_moderator, dpp::channel* c, dpp::user* user)
 {
-	dpp::snowflake user_id;
+	dpp::snowflake user_id = 0;
 	int64_t howmuch = 0;
 	uint64_t balance = 0;
 	std::string message;

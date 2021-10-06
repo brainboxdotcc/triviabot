@@ -114,6 +114,7 @@ void TriviaModule::SetupCommands()
 		{"ping", new command_ping_t(this, "ping", false, "Show bot latency statistics", { })},
 		{"servertime", new command_servertime_t(this, "servertime", false, "Show current server time and how long until scores reset", { })},
 		{"leaderboard", new command_stats_t(this, "stats", false, "", { })},
+		{"ach", new command_achievements_t(this, "achievements", false, "", { })},
 		{
 			"prefix", new command_prefix_t(this, "prefix", false, "Set the prefix for message based commands",
 			{
@@ -163,6 +164,18 @@ void TriviaModule::SetupCommands()
 			"coins", new command_coins_t(this, "coins", false, "Show coin balance of a user",
 			{
 				dpp::command_option(dpp::co_user, "user", "User's balance to show", false)
+			}
+		)},
+		{
+			"profile", new command_profile_t(this, "profile", false, "Show a user's player profile",
+			{
+				dpp::command_option(dpp::co_user, "user", "User's profile to show", false)
+			}
+		)},
+		{
+			"achievements", new command_achievements_t(this, "coins", false, "Show achievements of a user",
+			{
+				dpp::command_option(dpp::co_user, "user", "User's achievements to show", false)
 			}
 		)},
 		{
@@ -305,7 +318,7 @@ void TriviaModule::HandleInteraction(const dpp::interaction_create_t& event) {
 	dpp::command_interaction cmd_interaction = std::get<dpp::command_interaction>(event.command.data);
 
 	std::stringstream message;
-	
+
 	/* Set 'thinking' state */
 	dpp::message msg;
 	msg.content = "*";

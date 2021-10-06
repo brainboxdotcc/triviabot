@@ -85,6 +85,10 @@ TriviaModule::TriviaModule(Bot* instigator, ModuleLoader* ml) : Module(instigato
 		bot->core->log(dpp::ll_info, fmt::format("Language strings count: {}", lang->size()));
 	}
 
+	achievements = new json();
+	std::ifstream achievements_json("../achievements.json");
+	achievements_json >> *achievements;
+
 	/* Setup built in commands */
 	SetupCommands();
 }
@@ -142,6 +146,7 @@ TriviaModule::~TriviaModule()
 	delete number_tidy_negative;
 	delete prefix_match;
 	delete lang;
+	delete achievements;
 }
 
 
