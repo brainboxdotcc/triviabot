@@ -60,7 +60,7 @@ void command_info_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_se
 		statusfield(_("ONLINEUSERS", settings), Comma(users)),
 		statusfield(_("UPTIME", settings), ut.to_string()),
 		statusfield(_("CLUSTER", settings), Comma(creator->GetBot()->GetClusterID())),
-		statusfield(_("SHARDS", settings), Comma(creator->GetBot()->core->maxclusters)),
+		statusfield(_("SHARDS", settings), Bot::GetConfig("shardcount")),
 		statusfield(_("MEMBERINTENT", settings), _((creator->GetBot()->HasMemberIntents() ? "TICKYES" : "CROSSNO"), settings)),
 		statusfield(_("TESTMODE", settings), _((creator->GetBot()->IsTestMode() ? "TICKYES" : "CROSSNO"), settings)),
 		statusfield(_("DEVMODE", settings), _((creator->GetBot()->IsDevMode() ? "TICKYES" : "CROSSNO"), settings)),
