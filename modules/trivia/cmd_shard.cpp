@@ -45,7 +45,7 @@ void command_shard_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 	if (!guild_id) {
 		guild_id = cmd.guild_id;
 	}
-	uint64_t shard = (guild_id >> 22) % creator->GetBot()->core->get_shards().size();
+	uint64_t shard = (guild_id >> 22) % from_string<uint32_t>(Bot::GetConfig("shardcount"), std::dec);
 	uint64_t cluster = creator->GetBot()->GetClusterID();
 	
 	creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, "",

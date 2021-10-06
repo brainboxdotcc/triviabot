@@ -53,20 +53,22 @@ void command_info_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_se
 	gmtime_r(&creator->startup, &_tm);
 	strftime(startstr, 255, "%x, %I:%M%p", &_tm);
 
+	uint64_t shard = (cmd.guild_id >> 22) % from_string<uint32_t>(Bot::GetConfig("shardcount"), std::dec);
+
 	const statusfield statusfields[] = {
 		statusfield(_("ACTIVEGAMES", settings), Comma(creator->GetActiveGames())),
 		statusfield(_("TOTALSERVERS", settings), Comma(servers)),
 		statusfield(_("CONNSINCE", settings), startstr),
 		statusfield(_("ONLINEUSERS", settings), Comma(users)),
 		statusfield(_("UPTIME", settings), ut.to_string()),
-		statusfield(_("CLUSTER", settings), Comma(creator->GetBot()->GetClusterID())),
-		statusfield(_("SHARDS", settings), Bot::GetConfig("shardcount")),
+		statusfield(_("CLUSTER", settings), Comma(creator->GetBot()->GetClusterID()) + "/" + Comma(creator->GetBot()->GetMaxClusters())),
+		statusfield(_("SHARDS", settings), Comma(shard) + "/" + Bot::GetConfig("shardcount")),
 		statusfield(_("MEMBERINTENT", settings), _((creator->GetBot()->HasMemberIntents() ? "TICKYES" : "CROSSNO"), settings)),
 		statusfield(_("TESTMODE", settings), _((creator->GetBot()->IsTestMode() ? "TICKYES" : "CROSSNO"), settings)),
 		statusfield(_("DEVMODE", settings), _((creator->GetBot()->IsDevMode() ? "TICKYES" : "CROSSNO"), settings)),
 		statusfield(_("MYPREFIX", settings), "``" + creator->escape_json(settings.prefix) + "``"),
 		statusfield(_("BOTVER", settings), std::string(creator->GetVersion())),
-		statusfield(_("LIBVER", settings), "[<:DPP1:847152435399360583><:DPP2:847152435343523881> " + std::string(DPP_VERSION_TEXT) + "](https://dpp.brainbox.cc/)"),
+		statusfield(_("LIBVER", settings), "[<:DPP1:847152435399360583><:DPP2:847152435343523881> " + std::string(DPP_VERSION_TEXT) + "](https://dpp.dev/)"),
 		statusfield("", "")
 	};
 
