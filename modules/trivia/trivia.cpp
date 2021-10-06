@@ -459,21 +459,14 @@ std::string TriviaModule::vowelcount(const std::string &text, const guild_settin
 
 void TriviaModule::show_stats(const std::string& interaction_token, dpp::snowflake command_id, dpp::snowflake guild_id, dpp::snowflake channel_id)
 {
-	std::vector<std::string> topten = get_top_ten(guild_id);
+	db::resultset topten = db::query("SELECT dayscore, name, emojis, trivia_user_cache.* FROM scores LEFT JOIN trivia_user_cache ON snowflake_id = name LEFT JOIN vw_emojis ON name = user_id WHERE guild_id = ? and dayscore > 0 ORDER BY dayscore DESC limit 10", {guild_id});
 	size_t count = 1;
 	std::string msg;
-	std::vector<field_t> fields;
 	for(auto r = topten.begin(); r != topten.end(); ++r) {
-		std::stringstream score(*r);
-		std::string points;
-		uint64_t snowflake_id;
-		score >> points;
-		score >> snowflake_id;
-		db::resultset rs = db::query("SELECT *, get_emojis(?) as emojis FROM trivia_user_cache WHERE snowflake_id = ?", {snowflake_id, snowflake_id});
-		if (rs.size() > 0) {
-			msg.append(fmt::format("{0}. `{1}#{2:04d}` ({3}) {4}\n", count++, rs[0]["username"], from_string<uint32_t>(rs[0]["discriminator"], std::dec), points, rs[0]["emojis"]));
+		if (!r["username"].empty()) {
+			msg.append(fmt::format("{0}. `{1}#{2:04d}` ({3}) {4}\n", count++, r["username"], from_string<uint32_t>(r["discriminator"], std::dec), r["dayscore"], r["emojis"]));
 		} else {
-			msg.append(fmt::format("{}. <@{}> ({})\n", count++, snowflake_id, points));
+			msg.append(fmt::format("{}. <@{}> ({})\n", count++, r["snowflake_id"], r["dayscore"]));
 		}
 	}
 	if (msg.empty()) {

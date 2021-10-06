@@ -742,18 +742,6 @@ uint32_t get_total_questions()
 	return from_string<uint32_t>(r[0]["total"], std::dec);
 }
 
-/* Return the current top ten players for the day for a guild, plus their scores */
-std::vector<std::string> get_top_ten(uint64_t guild_id)
-{
-	// Replaced with direct db query for perforamance increase - 27Dec20
-	std::vector<std::string> result;
-	db::resultset r = db::query("SELECT dayscore, name FROM scores WHERE guild_id = '?' and dayscore > 0 ORDER BY dayscore DESC limit 10", {guild_id});
-	for (auto v = r.begin(); v != r.end(); ++v) {
-		result.push_back((*v)["dayscore"] + " " + (*v)["name"]);
-	}
-	return result;
-}
-
 /* Return the current team name for a player, or an empty string */
 std::string get_current_team(uint64_t snowflake_id)
 {
