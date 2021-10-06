@@ -462,7 +462,7 @@ void TriviaModule::show_stats(const std::string& interaction_token, dpp::snowfla
 	db::resultset topten = db::query("SELECT dayscore, name, emojis, trivia_user_cache.* FROM scores LEFT JOIN trivia_user_cache ON snowflake_id = name LEFT JOIN vw_emojis ON name = user_id WHERE guild_id = ? and dayscore > 0 ORDER BY dayscore DESC limit 10", {guild_id});
 	size_t count = 1;
 	std::string msg;
-	for(auto r = topten.begin(); r != topten.end(); ++r) {
+	for(auto& r : topten) {
 		if (!r["username"].empty()) {
 			msg.append(fmt::format("{0}. `{1}#{2:04d}` ({3}) {4}\n", count++, r["username"], from_string<uint32_t>(r["discriminator"], std::dec), r["dayscore"], r["emojis"]));
 		} else {
