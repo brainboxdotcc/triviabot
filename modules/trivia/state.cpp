@@ -74,21 +74,17 @@ state_t::state_t(TriviaModule* _creator, uint32_t questions, uint32_t currstreak
 	last_to_answer(lastanswered)
 {
 	creator->GetBot()->core->log(dpp::ll_debug, fmt::format("state_t::state_t()"));
-	dpp::cluster* cl = creator->GetBot()->core;
-	db::query("SELECT name, dayscore FROM scores WHERE guild_id = ? AND dayscore > 0", {guild_id}, [this, cl](db::resultset rs, std::string error) {
-		std::lock_guard<std::mutex> s(sm);
-		scores = {};
-		for (auto s = rs.begin(); s != rs.end(); ++s) {
-			this->scores[from_string<uint64_t>((*s)["name"], std::dec)] = from_string<uint64_t>((*s)["dayscore"], std::dec);
-		}
-		cl->log(dpp::ll_debug, fmt::format("Cached {} guild scores for game on channel {}", rs.size(), channel_id));
-	});
 	db::query("SELECT * FROM bans WHERE play_ban = 1", {}, [this](db::resultset rs2, std::string error) {
 		std::lock_guard<std::mutex> bl(blmutex);
 		banlist = {};
 		for (auto s = rs2.begin(); s != rs2.end(); ++s) {
 			banlist[from_string<uint64_t>((*s)["snowflake_id"], std::dec)] = true;
 		}
+		db::query("SELECT name, dayscore FROM scores WHERE guild_id = ? AND dayscore > 0", {guild_id}, [this](db::resultset rs, std::string error) {
+			for (auto s = rs.begin(); s != rs.end(); ++s) {
+				this->set_score(from_string<uint64_t>((*s)["name"], std::dec), from_string<uint64_t>((*s)["dayscore"], std::dec));
+			}
+		});
 	});
 }
 

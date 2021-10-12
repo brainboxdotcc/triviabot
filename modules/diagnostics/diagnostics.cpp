@@ -182,9 +182,23 @@ public:
 							if (bot->Loader->Reload(modfile)) {
 								EmbedSimple("Reloaded module: " + modfile, msg.channel_id);
 							} else {
-								EmbedSimple(std::string("Can't do that: ``") + bot->Loader->GetLastError() + "``", msg.channel_id);
+								EmbedSimple(std::string("Can't do that: `") + bot->Loader->GetLastError() + "`", msg.channel_id);
 							}
 						}
+					} else if (lowercase(subcommand) == "sqlstats") {
+						db::statistics stats = db::get_stats();
+						std::ostringstream statstr;
+						statstr << fmt::format("SQL Statistics\n---------------\n") << "\n";
+						statstr << fmt::format("Queries executed: {:10d}", stats.queries_processed) << "\n";
+						statstr << fmt::format("Queries errored:  {:10d}", stats.queries_errored) << "\n\n";
+						size_t n = 0;
+						statstr << fmt::format("{0:10s} {1:10s}   {2:5s}    ", "Conn#", "Queue Size", "Ready") << "\n";
+						statstr << fmt::format("-------------------------------------\n") << "\n";
+						for (db::connection_info ci : stats.connections) {
+							statstr << fmt::format("{0:02d} {1:18d}   {2:5s}    ", n++, ci.queue_length, ci.ready ? "🟢" : "🔴") << "\n";
+						}
+						bot->core->message_create(dpp::message(msg.channel_id, "```\n" + statstr.str() + "\n```"));
+						bot->sent_messages++;
 					} else if (lowercase(subcommand) == "sql") {
 						std::string sql;
 						std::getline(tokens, sql);
