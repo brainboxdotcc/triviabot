@@ -25,6 +25,7 @@
 #include <iostream>
 #include <mutex>
 #include <sstream>
+#include <spdlog/spdlog.h>
 
 #ifdef MARIADB_VERSION_ID
 	#define CONNECT_STRING "SET NAMES utf8mb4, @@SESSION.max_statement_time=3000"
@@ -38,21 +39,29 @@ namespace db {
 
 	const uint16_t INITIAL_THREADPOOL_SIZE = 20;
 
+	uint64_t processed = 0;
+	uint64_t errored = 0;
+
 	std::mutex queue_mutex;
 	std::vector<sqlconn*> all_conns;
 	std::vector<sqlconn*> busy_conns;
 	std::vector<sqlconn*> ready_conns;
 
+	std::shared_ptr<spdlog::logger> log;
+
 	/**
 	 * Connect all connections to mysql database, returns false if there was an error on any connection.
 	 */
-	bool connect(const std::string &host, const std::string &user, const std::string &pass, const std::string &db, int port) {
+	bool connect(std::shared_ptr<spdlog::logger> logger, const std::string &host, const std::string &user, const std::string &pass, const std::string &db, int port) {
 
 		bool all_connected = true;
 		all_conns.clear();
 		ready_conns.clear();
 		busy_conns.clear();
 
+		log = logger;
+
+		log->info("Creating {} database connections...", INITIAL_THREADPOOL_SIZE);
 		for (uint16_t cid = 0; cid < INITIAL_THREADPOOL_SIZE; ++cid) {
 			sqlconn* c = new sqlconn();
 			std::lock_guard<std::mutex> db_lock(c->mutex);
@@ -63,6 +72,9 @@ namespace db {
 				if (mysql_options(&(c->connection), MYSQL_OPT_RECONNECT, &reconnect) == 0) {
 					if (!mysql_real_connect(&(c->connection), host.c_str(), user.c_str(), pass.c_str(), db.c_str(), port, NULL, CLIENT_MULTI_RESULTS | CLIENT_MULTI_STATEMENTS)) {
 						all_connected = false;
+						std::string error = mysql_error(&(c->connection));
+						log->error("SQL connection error: {}", error);
+
 					} else {
 						std::lock_guard<std::mutex> queue_lock(queue_mutex);
 						all_conns.push_back(c);
@@ -91,10 +103,10 @@ namespace db {
 				std::lock_guard<std::mutex> db_lock(mutex);
 				qry = *(queries.begin());
 				queries.pop_front();
-				//std::cout << "SQLConn " << std::hex << (void*)this << std::dec << ": " << qry.query << "\n";
 			}
 				
 			int result = mysql_query(&connection, qry.query.c_str());
+			processed++;
 			db::resultset rv;
 
 			if (result == 0) {
@@ -122,7 +134,8 @@ namespace db {
 				}
 			} else {
 				error = mysql_error(&connection);
-				std::cout << fmt::format("SQL Error: {} on query {}", error, qry.query) << "\n";
+				errored++;
+				log->error("SQL Error: {} on query {}", error, qry.query);
 			}
 
 			{
@@ -198,6 +211,7 @@ namespace db {
 
 		if (!c) {
 			/* There are no free threads available. Do something! */
+			log->error("No SQL threads available");
 			cb(db::resultset(), "No threads were available for the query");
 			return;
 		}
@@ -224,6 +238,7 @@ namespace db {
 		}
 
 		if (parameters.size() != escaped_parameters.size()) {
+			log->error("Parameter wasn't escaped; error: " + std::string(mysql_error(&(c->connection))));
 			cb(db::resultset(), "Parameter wasn't escaped; error: " + std::string(mysql_error(&(c->connection))));
 			return;
 		}
@@ -254,4 +269,22 @@ namespace db {
 		}
 		c->new_query_ready.notify_one();
 	}
+
+	statistics get_stats() {
+		statistics stats;
+		std::lock_guard<std::mutex> queue_lock(queue_mutex);
+		for (auto c : all_conns) {
+			connection_info ci;
+			ci.ready = (std::find(ready_conns.begin(), ready_conns.end(), c) != ready_conns.end());
+			{
+				std::lock_guard<std::mutex> db_lock(c->mutex);
+				ci.queue_length = c->queries.size();
+			}
+			stats.connections.push_back(ci);
+		}
+		stats.queries_processed = processed;
+		stats.queries_errored = errored;
+		return stats;
+	}
+
 };

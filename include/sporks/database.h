@@ -31,15 +31,9 @@
 #include <condition_variable>
 #include <queue>
 #include <mysql/mysql.h>
+#include <spdlog/fwd.h>
 
-/*
- * db::resultset r = db::query("SELECT * FROM infobot WHERE setby = '?'", {"SKIPDX00"});
- * int t = 0;
- * for (auto q = r.begin(); q != r.end(); ++q) {
- *	 std::cout << (t++) << ": " << (*q)["key_word"] << std::endl;
- * }
- */
-
+/* Database abstraction wrapper for MySQL/MariaDB */
 namespace db {
 
 	/* Definition of a row in a result set*/
@@ -80,8 +74,24 @@ namespace db {
 		~sqlconn();
 	};
 
+	/* Information on a connection for struct statistics */
+	struct connection_info {
+		bool ready;
+		size_t queue_length;
+	};
+
+	/* Connection information */
+	struct statistics {
+		std::vector<connection_info> connections;
+		uint64_t queries_processed = 0;
+		uint64_t queries_errored = 0;
+	};
+
+	/* Get statistics */
+	statistics get_stats();
+
 	/* Connect all connections to the database */
-	bool connect(const std::string &host, const std::string &user, const std::string &pass, const std::string &db, int port);
+	bool connect(std::shared_ptr<spdlog::logger> log, const std::string &host, const std::string &user, const std::string &pass, const std::string &db, int port);
 
 	/* Issue a database query and return results later to the lambda callback */
 	void query(const std::string &format, const paramlist &parameters, callback cb = {});

@@ -301,8 +301,21 @@ int main(int argc, char** argv) {
 	std::ifstream configfile("../config.json");
 	configfile >> configdocument;
 
+	/* Set up spdlog logger */
+	std::shared_ptr<spdlog::logger> log;
+	spdlog::init_thread_pool(8192, 2);
+	std::vector<spdlog::sink_ptr> sinks;
+	auto stdout_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt >();
+	auto rotating = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(fmt::format("logs/triviabot{:02d}.log", clusterid), 1024 * 1024 * 5, 10);
+	sinks.push_back(stdout_sink);
+	sinks.push_back(rotating);
+	log = std::make_shared<spdlog::async_logger>("test", sinks.begin(), sinks.end(), spdlog::thread_pool(), spdlog::async_overflow_policy::block);
+	spdlog::register_logger(log);
+	log->set_pattern("%^%Y-%m-%d %H:%M:%S.%e [%L] [th#%t]%$ : %v");
+	log->set_level(spdlog::level::level_enum::debug);	
+
 	/* Connect to SQL database */
-	if (!db::connect(Bot::GetConfig("dbhost"), Bot::GetConfig("dbuser"), Bot::GetConfig("dbpass"), Bot::GetConfig("dbname"), from_string<uint32_t>(Bot::GetConfig("dbport"), std::dec))) {
+	if (!db::connect(log, Bot::GetConfig("dbhost"), Bot::GetConfig("dbuser"), Bot::GetConfig("dbpass"), Bot::GetConfig("dbname"), from_string<uint32_t>(Bot::GetConfig("dbport"), std::dec))) {
 		std::cerr << "Database connection failed\n";
 		exit(2);
 	}
@@ -322,19 +335,6 @@ int main(int argc, char** argv) {
 		dpp::cache_policy_t cp = { dpp::cp_none, dpp::cp_none, dpp::cp_aggressive };
 		/* Construct cluster */
 		dpp::cluster bot(token, intents, dev ? 1 : from_string<uint32_t>(Bot::GetConfig("shardcount"), std::dec), clusterid, maxclusters, true, cp);
-
-		/* Set up spdlog logger */
-		std::shared_ptr<spdlog::logger> log;
-		spdlog::init_thread_pool(8192, 2);
-		std::vector<spdlog::sink_ptr> sinks;
-		auto stdout_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt >();
-		auto rotating = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(fmt::format("logs/triviabot{:02d}.log", clusterid), 1024 * 1024 * 5, 10);
-		sinks.push_back(stdout_sink);
-		sinks.push_back(rotating);
-		log = std::make_shared<spdlog::async_logger>("test", sinks.begin(), sinks.end(), spdlog::thread_pool(), spdlog::async_overflow_policy::block);
-		spdlog::register_logger(log);
-		log->set_pattern("%^%Y-%m-%d %H:%M:%S.%e [%L] [th#%t]%$ : %v");
-		log->set_level(spdlog::level::level_enum::debug);	
 
 		/* Integrate spdlog logger to D++ log events */
 		bot.on_log([&bot, &log](const dpp::log_t & event) {
