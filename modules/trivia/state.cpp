@@ -73,16 +73,38 @@ state_t::state_t(TriviaModule* _creator, uint32_t questions, uint32_t currstreak
 	hintless(_hintless),
 	last_to_answer(lastanswered)
 {
+	/* BIG FAT WARNING
+	 * ---------------
+	 * Because of copy constructors and the like, the object can move around address-wise within the std::map of states.
+	 * WE CANNOT DIRECTLY ACCESS `this` FROM WITHIN THE LAMBDA AS IT CAN BE INVALIDATED BY THE TIME WE REFERENCE IT.
+	 * Instead, we check again by calling GetState and we specifically save copies of the variables we are going to use
+	 * (namely channel id, guild id, module pointer)
+	 * 
+	 * In short, threading can be awful. Here be dragons!
+	 */
 	creator->GetBot()->core->log(dpp::ll_debug, fmt::format("state_t::state_t()"));
-	db::query("SELECT * FROM bans WHERE play_ban = 1", {}, [this](db::resultset rs2, std::string error) {
+	TriviaModule* cr = _creator;
+	dpp::snowflake cid = channel_id;
+	dpp::snowflake gid = guild_id;
+	db::query("SELECT * FROM bans WHERE play_ban = 1", {}, [cid, cr, gid](db::resultset rs2, std::string error) {
 		std::lock_guard<std::mutex> bl(blmutex);
 		banlist = {};
 		for (auto s = rs2.begin(); s != rs2.end(); ++s) {
 			banlist[from_string<uint64_t>((*s)["snowflake_id"], std::dec)] = true;
 		}
-		db::query("SELECT name, dayscore FROM scores WHERE guild_id = ? AND dayscore > 0", {guild_id}, [this](db::resultset rs, std::string error) {
-			for (auto s = rs.begin(); s != rs.end(); ++s) {
-				this->set_score(from_string<uint64_t>((*s)["name"], std::dec), from_string<uint64_t>((*s)["dayscore"], std::dec));
+		db::query("SELECT name, dayscore FROM scores WHERE guild_id = ? AND dayscore > 0", {gid}, [cid, cr](db::resultset rs, std::string error) {
+			std::unordered_map<dpp::snowflake, uint64_t> scores;
+			if (!rs.empty()) {
+				for (auto s = rs.begin(); s != rs.end(); ++s) {
+					scores[from_string<uint64_t>((*s)["name"], std::dec)] = from_string<uint64_t>((*s)["dayscore"], std::dec);
+				}
+				std::cout << "cid: " << cid << " cr: " << std::hex << cr << std::dec << "\n";
+				state_t* st = cr->GetState(cid);
+				std::cout << "st: " << std::hex << st << std::dec << "\n";
+				if (st != nullptr) {
+					std::lock_guard<std::mutex> s(sm);
+					st->scores = scores;
+				}
 			}
 		});
 	});
