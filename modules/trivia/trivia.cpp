@@ -634,10 +634,10 @@ bool TriviaModule::RealOnMessage(const dpp::message_create_t &message, const std
 	double time_taken = end - start;
 
 	if (bot->IsDevMode()) {
-		bot->core->log(dpp::ll_debug, fmt::format("Message processing took {:.4f} seconds, channel: {}", time_taken, msg.channel_id));
+		bot->core->log(dpp::ll_debug, fmt::format("Message processing took {:.7f} seconds, channel: {}", time_taken, msg.channel_id));
 	} else {
 		if (time_taken > 0.1) {
-			 bot->core->log(dpp::ll_warning, fmt::format("Message processing took {:.4f} seconds!!! Channel: {}", time_taken, msg.channel_id));
+			 bot->core->log(dpp::ll_warning, fmt::format("Message processing took {:.7f} seconds!!! Channel: {}", time_taken, msg.channel_id));
 		}
 	}
 
