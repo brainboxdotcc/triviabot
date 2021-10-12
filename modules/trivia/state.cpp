@@ -98,9 +98,7 @@ state_t::state_t(TriviaModule* _creator, uint32_t questions, uint32_t currstreak
 				for (auto s = rs.begin(); s != rs.end(); ++s) {
 					scores[from_string<uint64_t>((*s)["name"], std::dec)] = from_string<uint64_t>((*s)["dayscore"], std::dec);
 				}
-				std::cout << "cid: " << cid << " cr: " << std::hex << cr << std::dec << "\n";
 				state_t* st = cr->GetState(cid);
-				std::cout << "st: " << std::hex << st << std::dec << "\n";
 				if (st != nullptr) {
 					std::lock_guard<std::mutex> s(sm);
 					st->scores = scores;
