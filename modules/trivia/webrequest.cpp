@@ -483,27 +483,33 @@ void question_t::fetch(uint64_t id, uint64_t guild_id, const guild_settings_t &s
 {
 	// Replaced with asyncronous request and callback - 12Oct21
 
-	std::function<void(db::resultset, std::string)> parse_question_reply = [callback, guild_id](db::resultset question, std::string error) {
-		if (error.empty() && question.size() > 0) {
-			callback(question_t(
-				from_string<uint64_t>(question[0]["id"], std::dec),
-				homoglyph(question[0]["question"]),
-				question[0]["answer"],
-				question[0]["hint1"],
-				question[0]["hint2"],
-				question[0]["catname"],
-				from_string<time_t>(question[0]["lastasked"], std::dec),
-				from_string<uint32_t>(question[0]["timesasked"], std::dec),
-				question[0]["lastcorrect"],
-				from_string<double>(question[0]["record_time"], std::dec),
-				utf8shuffle(question[0]["answer"]),
-				utf8shuffle(question[0]["answer"]),
-				question[0]["question_img_url"],
-				question[0]["answer_img_url"]
-			));
-			db::query("UPDATE counters SET asked = asked + 1", {});
-			db::query("INSERT INTO stats (id, lastasked, timesasked, lastcorrect, record_time) VALUES('?',UNIX_TIMESTAMP(),1,NULL,60000) ON DUPLICATE KEY UPDATE lastasked = UNIX_TIMESTAMP(), timesasked = timesasked + 1 ", {question[0]["id"]});
+	std::function<void(db::resultset, std::string)> parse_question_reply = [id, callback, guild_id](db::resultset question, std::string error) {
+		if (error.empty()) {
+			if (question.size() > 0) {
+				callback(question_t(
+					from_string<uint64_t>(question[0]["id"], std::dec),
+					homoglyph(question[0]["question"]),
+					question[0]["answer"],
+					question[0]["hint1"],
+					question[0]["hint2"],
+					question[0]["catname"],
+					from_string<time_t>(question[0]["lastasked"], std::dec),
+					from_string<uint32_t>(question[0]["timesasked"], std::dec),
+					question[0]["lastcorrect"],
+					from_string<double>(question[0]["record_time"], std::dec),
+					utf8shuffle(question[0]["answer"]),
+					utf8shuffle(question[0]["answer"]),
+					question[0]["question_img_url"],
+					question[0]["answer_img_url"]
+				));
+				db::query("UPDATE counters SET asked = asked + 1", {});
+				db::query("INSERT INTO stats (id, lastasked, timesasked, lastcorrect, record_time) VALUES('?',UNIX_TIMESTAMP(),1,NULL,60000) ON DUPLICATE KEY UPDATE lastasked = UNIX_TIMESTAMP(), timesasked = timesasked + 1 ", {question[0]["id"]});
+			} else {
+				bot->core->log(dpp::ll_error, fmt::format("Question {} returned an empty result", id));
+				callback(question_t());
+			}
 		} else {
+			bot->core->log(dpp::ll_error, "Can't fetch question: " + error);
 			callback(question_t());
 		}
 	};

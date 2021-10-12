@@ -158,7 +158,6 @@ std::string TriviaModule::conv_num(std::string datain, const guild_settings_t &s
 std::string TriviaModule::numbertoname(uint64_t number, const guild_settings_t& settings)
 {
 	/* If there are multiple names for this number, this will randomly pick one */
-	std::lock_guard<std::mutex> lg(this->numstrlock);
 	auto i = numstrs.find(number);
 	if (i != numstrs.end()) {
 		if (settings.language == "en") {
@@ -176,7 +175,7 @@ std::string TriviaModule::GetNearestNumber(uint64_t number, const guild_settings
 	std::lock_guard<std::mutex> lg(this->numstrlock);
 	auto i = std::find_if(numstrs.rbegin(), numstrs.rend(), [number](std::pair<uint64_t, const db::row> r){ return r.first <= number; });
 	if (i != numstrs.rend()) {
-		return std::to_string(i->first);
+		return numbertoname(i->first, settings);
 	} else {
 		return "0";
 	}
@@ -220,7 +219,10 @@ std::string TriviaModule::MakeFirstHint(const std::string &s, const guild_settin
 			n -= GetNearestNumberVal(n, settings);
 		}
 		if (n > 0) {
-			Q.append(numbertoname(n, settings));
+			{
+				std::lock_guard<std::mutex> lg(this->numstrlock);
+				Q.append(numbertoname(n, settings));
+			}
 		}
 		Q = Q.substr(0, Q.length() - plus.length());
 	}

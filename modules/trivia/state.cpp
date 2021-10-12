@@ -493,6 +493,7 @@ void state_t::do_normal_round(bool silent, guild_settings_t settings)
 		}
 
 		if (question.question != "") {
+
 			asktime = dpp::utility::time_f();
 			question.answer = trim(question.answer);
 			original_answer = question.answer;
@@ -503,6 +504,7 @@ void state_t::do_normal_round(bool silent, guild_settings_t settings)
 			question.answer = creator->tidy_num(question.answer);
 			/* Handle hints */
 			if (question.customhint1.empty()) {
+
 				/* No custom first hint, build one */
 				question.customhint1 = "";
 				if (creator->is_number(question.answer)) {
@@ -529,6 +531,7 @@ void state_t::do_normal_round(bool silent, guild_settings_t settings)
 				}
 			}
 			if (question.customhint2.empty()) {
+
 				/* No custom second hint, build one */
 				question.customhint2 = "";
 				if (creator->is_number(question.answer) || PCRE("^\\$(\\d+)$").Match(question.answer)) {
