@@ -45,13 +45,14 @@ void command_create_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_
 	newteamname = trim(newteamname);
 	get_current_team(cmd.author_id, [cmd, this, settings, newteamname, username, c](uint32_t, std::string teamname) {
 		if (teamname.empty()) {
-			std::string ntn = create_new_team(newteamname);
-			if (ntn != "__NO__") {
-				join_team(cmd.author_id, ntn, cmd.channel_id, [](bool done){});
-				creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":busts_in_silhouette:", fmt::format(_("CREATED", settings), newteamname, username), c->id, _("ZELDAREFERENCE", settings));
-			} else {
-				creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":warning:", fmt::format(_("CANTCREATE", settings), username), cmd.channel_id);
-			}
+			create_new_team(newteamname, [this, cmd, settings, newteamname, username, c](std::string ntn) {
+				if (ntn != "__NO__") {
+					join_team(cmd.author_id, ntn, cmd.channel_id, [](bool done){});
+					creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":busts_in_silhouette:", fmt::format(_("CREATED", settings), newteamname, username), c->id, _("ZELDAREFERENCE", settings));
+				} else {
+					creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":warning:", fmt::format(_("CANTCREATE", settings), username), cmd.channel_id);
+				}
+			});
 		} else {
 			creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":warning:", fmt::format(_("ALREADYMEMBER", settings), username, teamname), cmd.channel_id);
 		}

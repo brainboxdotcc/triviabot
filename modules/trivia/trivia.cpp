@@ -215,76 +215,78 @@ bool TriviaModule::OnAllShardsReady()
 	char hostname[1024];
 	hostname[1023] = '\0';
 	gethostname(hostname, 1023);
-	json active = get_active(hostname, bot->GetClusterID());
+	get_active(hostname, bot->GetClusterID(), [this](json active) {
 
-	this->booted = true;
+		this->booted = true;
 
-	if (bot->IsTestMode()) {
-		/* Don't resume games in test mode */
-		bot->core->log(dpp::ll_debug, fmt::format("Not resuming games in test mode"));
-		return true;
-	} else {
-		bot->core->log(dpp::ll_debug, fmt::format("Resuming {} games...", active.size()));
-	}
+		if (bot->IsTestMode()) {
+			/* Don't resume games in test mode */
+			bot->core->log(dpp::ll_debug, fmt::format("Not resuming games in test mode"));
+			return true;
+		} else {
+			bot->core->log(dpp::ll_debug, fmt::format("Resuming {} games...", active.size()));
+		}
 
-	/* Iterate all active games for this cluster id */
-	for (auto game = active.begin(); game != active.end(); ++game) {
+		/* Iterate all active games for this cluster id */
+		for (auto game = active.begin(); game != active.end(); ++game) {
 
-		uint64_t guild_id = from_string<uint64_t>((*game)["guild_id"].get<std::string>(), std::dec);
-		bool quickfire = (*game)["quickfire"].get<std::string>() == "1";
-		uint64_t channel_id = from_string<uint64_t>((*game)["channel_id"].get<std::string>(), std::dec);
+			uint64_t guild_id = from_string<uint64_t>((*game)["guild_id"].get<std::string>(), std::dec);
+			bool quickfire = (*game)["quickfire"].get<std::string>() == "1";
+			uint64_t channel_id = from_string<uint64_t>((*game)["channel_id"].get<std::string>(), std::dec);
 
-		bot->core->log(dpp::ll_info, fmt::format("Resuming id {}", channel_id));
+			bot->core->log(dpp::ll_info, fmt::format("Resuming id {}", channel_id));
 
-		/* XXX: Note: The mutex here is VITAL to thread safety of the state list! DO NOT move it! */
-		{
-			std::lock_guard<std::mutex> states_lock(states_mutex);
+			/* XXX: Note: The mutex here is VITAL to thread safety of the state list! DO NOT move it! */
+			{
+				std::lock_guard<std::mutex> states_lock(states_mutex);
 
-			/* Check that impatient user didn't (re)start the round while bot was synching guilds! */
-			if (states.find(channel_id) == states.end()) {
+				/* Check that impatient user didn't (re)start the round while bot was synching guilds! */
+				if (states.find(channel_id) == states.end()) {
 
-				std::vector<std::string> shuffle_list;
+					std::vector<std::string> shuffle_list;
 
-				/* Get shuffle list from state in db */
-				if (!(*game)["qlist"].get<std::string>().empty()) {
-					json shuffle = json::parse((*game)["qlist"].get<std::string>());
-					for (auto s = shuffle.begin(); s != shuffle.end(); ++s) {
-						shuffle_list.push_back(s->get<std::string>());
+					/* Get shuffle list from state in db */
+					if (!(*game)["qlist"].get<std::string>().empty()) {
+						json shuffle = json::parse((*game)["qlist"].get<std::string>());
+						for (auto s = shuffle.begin(); s != shuffle.end(); ++s) {
+							shuffle_list.push_back(s->get<std::string>());
+						}
 					}
-				} else {
-					/* No shuffle list to resume from, create a new one */
-					shuffle_list = fetch_shuffle_list(from_string<uint64_t>((*game)["guild_id"].get<std::string>(), std::dec));
+					if (!shuffle_list.empty()) {
+						int32_t round = from_string<uint32_t>((*game)["question_index"].get<std::string>(), std::dec);
+
+						json g = (*game);
+						GetGuildSettings(guild_id, [this, g, channel_id, round, quickfire, shuffle_list, guild_id](const guild_settings_t settings) {
+							states[channel_id] = state_t(
+								this,
+								from_string<uint32_t>(g["questions"].get<std::string>(), std::dec) + 1,
+								from_string<uint32_t>(g["streak"].get<std::string>(), std::dec),
+								from_string<uint64_t>(g["lastanswered"].get<std::string>(), std::dec),
+								round,
+								(quickfire ? (TRIV_INTERVAL / 4) : TRIV_INTERVAL),
+								channel_id,
+								(g["hintless"].get<std::string>()) == "1",
+								shuffle_list,
+								(trivia_state_t)from_string<uint32_t>(g["state"].get<std::string>(), std::dec),
+								guild_id
+							);
+
+							/* Force fetching of question */
+							if (states[channel_id].is_insane_round(settings)) {
+								states[channel_id].do_insane_round(true, settings);
+							} else {
+								states[channel_id].do_normal_round(true, settings);
+							}
+
+							bot->core->log(dpp::ll_info, fmt::format("Resumed game on guild {}, channel {}, {} questions [{}]", guild_id, channel_id, states[channel_id].numquestions, quickfire ? "quickfire" : "normal"));
+						});
+					}
 				}
-				int32_t round = from_string<uint32_t>((*game)["question_index"].get<std::string>(), std::dec);
-
-				json g = (*game);
-				GetGuildSettings(guild_id, [this, g, channel_id, round, quickfire, shuffle_list, guild_id](const guild_settings_t settings) {
-					states[channel_id] = state_t(
-						this,
-						from_string<uint32_t>(g["questions"].get<std::string>(), std::dec) + 1,
-						from_string<uint32_t>(g["streak"].get<std::string>(), std::dec),
-						from_string<uint64_t>(g["lastanswered"].get<std::string>(), std::dec),
-						round,
-						(quickfire ? (TRIV_INTERVAL / 4) : TRIV_INTERVAL),
-						channel_id,
-						(g["hintless"].get<std::string>()) == "1",
-						shuffle_list,
-						(trivia_state_t)from_string<uint32_t>(g["state"].get<std::string>(), std::dec),
-						guild_id
-					);
-
-					/* Force fetching of question */
-					if (states[channel_id].is_insane_round(settings)) {
-						states[channel_id].do_insane_round(true, settings);
-					} else {
-						states[channel_id].do_normal_round(true, settings);
-					}
-
-					bot->core->log(dpp::ll_info, fmt::format("Resumed game on guild {}, channel {}, {} questions [{}]", guild_id, channel_id, states[channel_id].numquestions, quickfire ? "quickfire" : "normal"));
-				});
 			}
 		}
-	}
+		return true;
+	});
+
 	return true;
 }
 

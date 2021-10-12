@@ -98,6 +98,15 @@ question_t::question_t() : id(0), lastasked(0), timesasked(0), recordtime(0)
 {
 }
 
+std::string get_api_path(const std::string endpoint)
+{
+	if (bot->IsDevMode()) {
+		return "http://" + std::string(BACKEND_HOST_DEV) + fmt::format(BACKEND_PATH_DEV, endpoint);
+	} else {
+		return "http://" + std::string(BACKEND_HOST_LIVE) + fmt::format(BACKEND_PATH_LIVE, endpoint);
+	}
+}
+
 /* Represents a fire-and-forget REST request. A fire-and-forget request can be executed in the future
  * and expects no result. It goes into a queue and will be executed in at least 100ms time. No guarantee
  * of in-order execution if theyre submitted within the same 100ms.
@@ -555,13 +564,14 @@ std::vector<std::string> get_api_command_names()
 }
 
 /* Fetch a shuffled list of question IDs from the API, which is dependant upon some statistics for the guild and the category selected. */
-std::vector<std::string> fetch_shuffle_list(uint64_t guild_id, const std::string &category)
+void fetch_shuffle_list(uint64_t guild_id, const std::string &category, vector_callback callback)
 {
-	if (category.empty()) {
-		return to_list(fetch_page(fmt::format("?opt=shuffle&guild_id={}",guild_id)));
-	} else {
-		return to_list(fetch_page(fmt::format("?opt=shuffle&guild_id={}&category={}",guild_id, url_encode(category))));
-	}
+	bot->core->request(get_api_path(
+		category.empty() ? fmt::format("?opt=shuffle&guild_id={}", guild_id) : fmt::format("?opt=shuffle&guild_id={}&category={}",guild_id, url_encode(category))
+	), dpp::m_get,
+	[callback](const dpp::http_request_completion_t& reply) {
+		callback(to_list(reply.body));
+	}, "", "text/plain", { {"X-API-Auth", apikey } });
 }
 
 /* Fetch a random insane round from the database, setting the question_id parameter and returning the question and all answers in a vector */
@@ -747,10 +757,14 @@ uint32_t update_score(uint64_t snowflake_id, uint64_t guild_id, double recordtim
 }
 
 /* Return a list of active games from the API, used for resuming on crash or restart and by the dashboard, populated by log_game_start(), log_game_end() and log_question_index() */
-json get_active(const std::string &hostname, uint64_t cluster_id)
+void get_active(const std::string &hostname, uint64_t cluster_id, json_callback callback)
 {
-	std::string active = fetch_page(fmt::format("?opt=getactive&hostname={}&cluster={}", hostname, cluster_id));
-	return json::parse(active);
+	/* Changed to non-blocking HTTPS request 12Oct21 */
+	bot->core->request(get_api_path(fmt::format("?opt=getactive&hostname={}&cluster={}", hostname, cluster_id)), dpp::m_get,
+	[callback](const dpp::http_request_completion_t& reply) {
+		callback(json::parse(reply.body));
+	}, "", "text/plain", { {"X-API-Auth", apikey } });
+
 }
 
 /* Return the current team name and team score for a player, or an empty string and zero */
@@ -774,17 +788,20 @@ void leave_team(uint64_t snowflake_id)
 	db::query("DELETE FROM team_membership WHERE nick = '?'", {snowflake_id});
 }
 
+
 /* Make a player join a team */
 void join_team(uint64_t snowflake_id, const std::string &team, uint64_t channel_id, bool_callback callback)
 {
+	/* HTTPS request made non-blocking 12Oct21 */
 	check_team_exists(team, [callback, snowflake_id, team, channel_id](bool exists) {
 		if (exists) {
-			std::string r = trim(fetch_page(fmt::format("?opt=setteam&nick={}&team={}&channel_id={}", snowflake_id, url_encode(team), channel_id)));
-			callback(r == "__OK__");
+			bot->core->request(get_api_path(fmt::format("?opt=setteam&nick={}&team={}&channel_id={}", snowflake_id, url_encode(team), channel_id)),	dpp::m_get,
+			[callback, snowflake_id, team, channel_id](const dpp::http_request_completion_t& reply) {
+				callback(trim(reply.body) == "__OK__");
+			}, "", "text/plain", { { "X-API-Auth", apikey } });
 		} else {
 			callback(false);
 		}
-
 	});
 }
 
@@ -819,9 +836,12 @@ void get_streak(uint64_t snowflake_id, uint64_t guild_id, streak_callback callba
 }
 
 /* Create a new team, censors the team name using neutrino API */
-std::string create_new_team(const std::string &teamname)
+void create_new_team(const std::string &teamname, string_callback callback)
 {
-	return trim(fetch_page(fmt::format("?opt=createteam&name={}", url_encode(teamname))));
+	bot->core->request(get_api_path(fmt::format("?opt=createteam&name={}", url_encode(teamname))), dpp::m_get,
+	[callback, teamname](const dpp::http_request_completion_t& reply) {
+		callback(trim(reply.body));
+	}, "", "text/plain", { { "X-API-Auth", apikey} });
 }
 
 /* Returns true if a team name exists */

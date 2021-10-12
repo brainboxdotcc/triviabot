@@ -210,59 +210,67 @@ void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 				}
 			}
 
-			std::vector<std::string> sl = fetch_shuffle_list(cmd.guild_id, category);
-			if (sl.size() == 1) {
-				if (sl[0] == "*** No such category ***") {
-					creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":warning:", _("START_BAD_CATEGORY", settings), cmd.channel_id);
-				} else if (sl[0] == "*** Category too small ***") {
-					creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":warning:", _((settings.premium ? "START_TOO_SMALL_PREM" : "START_TOO_SMALL"), settings), cmd.channel_id);
+			fetch_shuffle_list(cmd.guild_id, category, [this, cmd, settings, ques, quickfire, hintless, category, c, username](std::vector<std::string> sl) {
+				if (sl.size() == 1) {
+					if (sl[0] == "*** No such category ***") {
+						creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":warning:", _("START_BAD_CATEGORY", settings), cmd.channel_id);
+					} else if (sl[0] == "*** Category too small ***") {
+						creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":warning:", _((settings.premium ? "START_TOO_SMALL_PREM" : "START_TOO_SMALL"), settings), cmd.channel_id);
+					}
+					return;
 				}
-				return;
-			}
-			if (sl.size() < 50) {
-				creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":warning:", fmt::format(_("SPOOPY2", settings), username), cmd.channel_id, _("BROKED", settings));
-				return;
-			} else  {
+				if (sl.size() < 50) {
+					creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":warning:", fmt::format(_("SPOOPY2", settings), username), cmd.channel_id, _("BROKED", settings));
+					return;
+				} else  {
 
-				std::function<void()> do_start = [this, cmd, settings, ques, quickfire, hintless, sl, category, c, username](){
-					CheckCreateWebhook(settings, creator, cmd.channel_id);
+					std::function<void()> do_start = [this, cmd, settings, ques, quickfire, hintless, sl, category, c, username](){
+						CheckCreateWebhook(settings, creator, cmd.channel_id);
 
-					uint32_t currstreak = 1;
-					uint64_t lastanswered = 0;
+						uint32_t currstreak = 1;
+						uint64_t lastanswered = 0;
 
-					{
-						std::lock_guard<std::mutex> locker(creator->cs_mutex);
-						auto i = creator->last_channel_streaks.find(cmd.channel_id);
-						if (i != creator->last_channel_streaks.end()) {
-							if (time(NULL) < i->second.time + 600) {
-								lastanswered = i->second.lastanswered;
-								currstreak = i->second.streak;
-								creator->GetBot()->core->log(dpp::ll_debug, fmt::format("Carrying over streak from previous game on channel id {}, last to answer: {}, streak: {}", cmd.channel_id, lastanswered, currstreak));
-							} else {
-								creator->last_channel_streaks.erase(i);
-								creator->GetBot()->core->log(dpp::ll_debug, fmt::format("Streak for channel id {} not carried over, as it is over 10 minutes old", cmd.channel_id));
+						{
+							std::lock_guard<std::mutex> locker(creator->cs_mutex);
+							auto i = creator->last_channel_streaks.find(cmd.channel_id);
+							if (i != creator->last_channel_streaks.end()) {
+								if (time(NULL) < i->second.time + 600) {
+									lastanswered = i->second.lastanswered;
+									currstreak = i->second.streak;
+									creator->GetBot()->core->log(dpp::ll_debug, fmt::format("Carrying over streak from previous game on channel id {}, last to answer: {}, streak: {}", cmd.channel_id, lastanswered, currstreak));
+								} else {
+									creator->last_channel_streaks.erase(i);
+									creator->GetBot()->core->log(dpp::ll_debug, fmt::format("Streak for channel id {} not carried over, as it is over 10 minutes old", cmd.channel_id));
+								}
 							}
 						}
-					}
-					
-					{
-						std::lock_guard<std::mutex> states_lock(creator->states_mutex);
+						
+						{
+							std::lock_guard<std::mutex> states_lock(creator->states_mutex);
 
-						creator->states[cmd.channel_id] = state_t(
-							creator,
-							ques + 1,
-							currstreak,
-							lastanswered,
-							1,
-							(quickfire ? (TRIV_INTERVAL / 4) : TRIV_INTERVAL),
-							cmd.channel_id,
-							hintless,
-							sl,
-							TRIV_ASK_QUESTION,
-							cmd.guild_id
-						);
+							creator->states[cmd.channel_id] = state_t(
+								creator,
+								ques + 1,
+								currstreak,
+								lastanswered,
+								1,
+								(quickfire ? (TRIV_INTERVAL / 4) : TRIV_INTERVAL),
+								cmd.channel_id,
+								hintless,
+								sl,
+								TRIV_ASK_QUESTION,
+								cmd.guild_id
+							);
 
-						creator->GetBot()->core->log(dpp::ll_info, fmt::format("Started game on guild {}, channel {}, {} questions [{}] [category: {}]", cmd.guild_id, cmd.channel_id, ques, quickfire ? "quickfire" : "normal", (category.empty() ? "<ALL>" : category)));
+							creator->GetBot()->core->log(dpp::ll_info, fmt::format("Started game on guild {}, channel {}, {} questions [{}] [category: {}]", cmd.guild_id, cmd.channel_id, ques, quickfire ? "quickfire" : "normal", (category.empty() ? "<ALL>" : category)));
+
+							std::vector<field_t> fields = {{_("QUESTION", settings), fmt::format("{}", ques), false}};
+							if (!category.empty()) {
+								fields.push_back({_("CATEGORY", settings), category, false});
+							}
+							fields.push_back({_("GETREADY", settings), _("FIRSTCOMING", settings), false});
+							fields.push_back({_("HOWPLAY", settings), _("INSTRUCTIONS", settings), false});
+						}
 
 						std::vector<field_t> fields = {{_("QUESTION", settings), fmt::format("{}", ques), false}};
 						if (!category.empty()) {
@@ -270,43 +278,37 @@ void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 						}
 						fields.push_back({_("GETREADY", settings), _("FIRSTCOMING", settings), false});
 						fields.push_back({_("HOWPLAY", settings), _("INSTRUCTIONS", settings), false});
-					}
+						creator->EmbedWithFields(cmd.interaction_token, cmd.command_id, settings, fmt::format(_((hintless ? "NEWROUND_NH" : "NEWROUND"), settings), (hintless ? "**HARDCORE** " : (quickfire ? "**QUICKFIRE** " : "")),  _("STARTED", settings), username), fields, cmd.channel_id);
 
-					std::vector<field_t> fields = {{_("QUESTION", settings), fmt::format("{}", ques), false}};
-					if (!category.empty()) {
-						fields.push_back({_("CATEGORY", settings), category, false});
-					}
-					fields.push_back({_("GETREADY", settings), _("FIRSTCOMING", settings), false});
-					fields.push_back({_("HOWPLAY", settings), _("INSTRUCTIONS", settings), false});
-					creator->EmbedWithFields(cmd.interaction_token, cmd.command_id, settings, fmt::format(_((hintless ? "NEWROUND_NH" : "NEWROUND"), settings), (hintless ? "**HARDCORE** " : (quickfire ? "**QUICKFIRE** " : "")),  _("STARTED", settings), username), fields, cmd.channel_id);
+						creator->CacheUser(cmd.author_id, cmd.user, cmd.member, cmd.channel_id);
+						log_game_start(cmd.guild_id, cmd.channel_id, ques, quickfire, c->name, cmd.author_id, sl, hintless);
+						creator->GetBot()->core->log(dpp::ll_debug, fmt::format("returning from start game"));
+						return;
+					};
 
-					creator->CacheUser(cmd.author_id, cmd.user, cmd.member, cmd.channel_id);
-					log_game_start(cmd.guild_id, cmd.channel_id, ques, quickfire, c->name, cmd.author_id, sl, hintless);
-					creator->GetBot()->core->log(dpp::ll_debug, fmt::format("returning from start game"));
-					return;
-				};
-
-				if (quickfire && !settings.premium) {
-					db::query("SELECT * FROM insane_cooldown WHERE guild_id = ?", {cmd.guild_id}, [this, cmd, settings, do_start](db::resultset lastinsane, std::string error) {
-						if (lastinsane.size()) {
-							time_t last_insane_time = from_string<time_t>(lastinsane[0]["last_started"], std::dec);
-							if (time(NULL) - last_insane_time < 900) {
-								int64_t seconds = 900 - (time(NULL) - last_insane_time);
-								int64_t minutes = floor((float)seconds / 60.0f);
-								seconds = seconds % 60;
-								creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":warning:", fmt::format(_("INSANE_COOLDOWN", settings), minutes, seconds), cmd.channel_id);
-								return;
+					if (quickfire && !settings.premium) {
+						db::query("SELECT * FROM insane_cooldown WHERE guild_id = ?", {cmd.guild_id}, [this, cmd, settings, do_start](db::resultset lastinsane, std::string error) {
+							if (lastinsane.size()) {
+								time_t last_insane_time = from_string<time_t>(lastinsane[0]["last_started"], std::dec);
+								if (time(NULL) - last_insane_time < 900) {
+									int64_t seconds = 900 - (time(NULL) - last_insane_time);
+									int64_t minutes = floor((float)seconds / 60.0f);
+									seconds = seconds % 60;
+									creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":warning:", fmt::format(_("INSANE_COOLDOWN", settings), minutes, seconds), cmd.channel_id);
+									return;
+								}
 							}
-						}
-						db::query("INSERT INTO insane_cooldown (guild_id, last_started) VALUES(?, UNIX_TIMESTAMP()) ON DUPLICATE KEY UPDATE last_started = UNIX_TIMESTAMP()", {cmd.guild_id});
+							db::query("INSERT INTO insane_cooldown (guild_id, last_started) VALUES(?, UNIX_TIMESTAMP()) ON DUPLICATE KEY UPDATE last_started = UNIX_TIMESTAMP()", {cmd.guild_id});
+							do_start();
+						});
+					}
+					else {
 						do_start();
-					});
-				}
-				else {
-					do_start();
-				}
+					}
 
-			}
+				}				
+			});
+
 		} else {
 			creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":warning:", fmt::format(_("ALREADYRUN", settings), username), cmd.channel_id);
 			return;
