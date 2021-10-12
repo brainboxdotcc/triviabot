@@ -227,7 +227,7 @@ void TriviaModule::SetupCommands()
 
 		/* Add options to the language command parameter from the database */
 		command_t* lang_command = commands["language"];
-		db::query("SELECT * FROM languages WHERE live = 1 ORDER BY id", {}, [this, lang_command](db::resultset langs) {
+		db::query("SELECT * FROM languages WHERE live = 1 ORDER BY id", {}, [this, lang_command](db::resultset langs, std::string error) {
 			lang_command->opts[0].choices.clear();
 			for (auto & row : langs) {
 				lang_command->opts[0].add_choice(dpp::command_option_choice(row["name"], row["isocode"]));
@@ -235,7 +235,7 @@ void TriviaModule::SetupCommands()
 
 			/* Add options to the categories command parameter from the database */
 			command_t* cats_command = commands["categories"];
-			db::query("SELECT id FROM categories WHERE disabled != 1", {}, [this, cats_command](db::resultset q) {
+			db::query("SELECT id FROM categories WHERE disabled != 1", {}, [this, cats_command](db::resultset q, std::string error) {
 				size_t rows = q.size();
 				uint32_t length = 25;
 				uint32_t pages = ceil((float)rows / (float)length);

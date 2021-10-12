@@ -46,7 +46,7 @@ void command_votehint_t::call(const in_cmd &cmd, std::stringstream &tokens, guil
 
 	if (state) {
 		if ((state->gamestate == TRIV_FIRST_HINT || state->gamestate == TRIV_SECOND_HINT || state->gamestate == TRIV_TIME_UP) && (!state->is_insane_round(settings)) != 0 && state->question.answer != "") {
-			db::query("SELECT *,(unix_timestamp(vote_time) + 43200 - unix_timestamp()) as remaining FROM infobot_votes WHERE snowflake_id = ? AND now() < vote_time + interval 12 hour", {cmd.author_id}, [this, cmd, settings, username](db::resultset rs) {
+			db::query("SELECT *,(unix_timestamp(vote_time) + 43200 - unix_timestamp()) as remaining FROM infobot_votes WHERE snowflake_id = ? AND now() < vote_time + interval 12 hour", {cmd.author_id}, [this, cmd, settings, username](db::resultset rs, std::string error) {
 				state_t* state = creator->GetState(cmd.channel_id);
 				if (!state) {
 					return;

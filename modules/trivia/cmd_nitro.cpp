@@ -39,7 +39,7 @@ command_nitro_t::command_nitro_t(class TriviaModule* _creator, const std::string
 
 void command_nitro_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_settings_t &settings, const std::string &username, bool is_moderator, dpp::channel* c, dpp::user* user)
 {
-	db::query("SELECT vw_monthly_totals.*, trivia_user_cache.*, emojis FROM vw_monthly_totals INNER JOIN trivia_user_cache ON snowflake_id = name LEFT JOIN trivia_access ON name = trivia_access.user_id LEFT JOIN vw_emojis ON vw_emojis.user_id = snowflake_id WHERE (trivia_access.id is null OR trivia_access.enabled = 0) AND (SELECT COUNT(*) FROM bans WHERE nitro_ban = 1 AND bans.snowflake_id = trivia_user_cache.snowflake_id) = 0 ORDER BY score DESC, trivia_user_cache.snowflake_id LIMIT 10 ", {}, [cmd, this, settings](db::resultset q) {
+	db::query("SELECT vw_monthly_totals.*, trivia_user_cache.*, emojis FROM vw_monthly_totals INNER JOIN trivia_user_cache ON snowflake_id = name LEFT JOIN trivia_access ON name = trivia_access.user_id LEFT JOIN vw_emojis ON vw_emojis.user_id = snowflake_id WHERE (trivia_access.id is null OR trivia_access.enabled = 0) AND (SELECT COUNT(*) FROM bans WHERE nitro_ban = 1 AND bans.snowflake_id = trivia_user_cache.snowflake_id) = 0 ORDER BY score DESC, trivia_user_cache.snowflake_id LIMIT 10 ", {}, [cmd, this, settings](db::resultset q, std::string error) {
 		std::string desc;
 		uint8_t rank = 1;
 		for (auto & user : q) {

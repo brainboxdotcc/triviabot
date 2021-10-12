@@ -189,10 +189,14 @@ public:
 						std::string sql;
 						std::getline(tokens, sql);
 						sql = trim(sql);
-						db::query(sql, {}, [this, msg, sql](db::resultset rs) {
+						db::query(sql, {}, [this, msg, sql](db::resultset rs, std::string error) {
 							std::stringstream w;
 							if (rs.size() == 0) {
-								EmbedSimple("Successfully executed, no rows returned.", msg.channel_id);
+								if (error.empty()) {
+									EmbedSimple("Successfully executed, no rows returned.", msg.channel_id);
+								} else {
+									EmbedSimple("Error in SQL query: " + error, msg.channel_id);
+								}
 							} else {
 								w << "- " << sql << std::endl;
 								auto check = rs[0].begin();

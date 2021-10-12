@@ -360,7 +360,7 @@ void TriviaModule::GetGuildSettings(dpp::snowflake guild_id, get_settings_callba
 		}
 	}
 	
-	db::query("SELECT * FROM bot_guild_settings WHERE snowflake_id = ?", {guild_id}, [guild_id, callback, this](db::resultset r) {
+	db::query("SELECT * FROM bot_guild_settings WHERE snowflake_id = ?", {guild_id}, [guild_id, callback, this](db::resultset r, std::string error) {
 		if (!r.empty()) {
 			std::stringstream s(r[0]["moderator_roles"]);
 			uint64_t role_id;
@@ -405,7 +405,7 @@ void TriviaModule::UpdatePresenceLine()
 {
 	while (!terminating) {
 		/* Counts across all clusters */
-		db::query("SELECT (SELECT count(id) as total FROM questions) AS question_count, SUM(games) AS games, SUM(server_count) AS server_count, SUM(user_count) AS user_count, SUM(channel_count) AS channel_count FROM infobot_discord_counts WHERE dev = ?", {bot->IsDevMode() ? 1 : 0}, [this](db::resultset rs) {
+		db::query("SELECT (SELECT count(id) as total FROM questions) AS question_count, SUM(games) AS games, SUM(server_count) AS server_count, SUM(user_count) AS user_count, SUM(channel_count) AS channel_count FROM infobot_discord_counts WHERE dev = ?", {bot->IsDevMode() ? 1 : 0}, [this](db::resultset rs, std::string error) {
 			if (rs.size()) {
 				counters.channels = from_string<uint64_t>(rs[0]["channel_count"], std::dec);
 				counters.guilds = from_string<uint64_t>(rs[0]["server_count"], std::dec);
@@ -453,7 +453,7 @@ std::string TriviaModule::vowelcount(const std::string &text, const guild_settin
 
 void TriviaModule::show_stats(const std::string& interaction_token, dpp::snowflake command_id, dpp::snowflake guild_id, dpp::snowflake channel_id)
 {
-	db::query("SELECT dayscore, name, emojis, trivia_user_cache.* FROM scores LEFT JOIN trivia_user_cache ON snowflake_id = name LEFT JOIN vw_emojis ON name = user_id WHERE guild_id = ? and dayscore > 0 ORDER BY dayscore DESC limit 10", {guild_id}, [interaction_token, command_id, guild_id, channel_id, this](db::resultset topten) {
+	db::query("SELECT dayscore, name, emojis, trivia_user_cache.* FROM scores LEFT JOIN trivia_user_cache ON snowflake_id = name LEFT JOIN vw_emojis ON name = user_id WHERE guild_id = ? and dayscore > 0 ORDER BY dayscore DESC limit 10", {guild_id}, [interaction_token, command_id, guild_id, channel_id, this](db::resultset topten, std::string error) {
 		size_t count = 1;
 		std::string msg;
 		for(auto& r : topten) {
@@ -525,7 +525,7 @@ dpp::user dummyuser;
 
 void TriviaModule::CheckForQueuedStarts()
 {
-	db::query("SELECT * FROM start_queue ORDER BY queuetime", {}, [this](db::resultset rs) {
+	db::query("SELECT * FROM start_queue ORDER BY queuetime", {}, [this](db::resultset rs, std::string error) {
 		for (auto r = rs.begin(); r != rs.end(); ++r) {
 			uint64_t guild_id = from_string<uint64_t>((*r)["guild_id"], std::dec);
 			/* Check that this guild is on this cluster, if so we can start this game */

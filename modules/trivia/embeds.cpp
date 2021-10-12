@@ -125,7 +125,7 @@ void TriviaModule::ProcessEmbed(const std::string& interaction_token, dpp::snowf
 			}
 		}
 		if (webhook_id.empty()) {
-			db::query("SELECT * FROM channel_webhooks WHERE channel_id = ?", {channelID}, [this, channelID](db::resultset rs) {
+			db::query("SELECT * FROM channel_webhooks WHERE channel_id = ?", {channelID}, [this, channelID](db::resultset rs, std::string error) {
 				if (rs.size()) {
 					std::lock_guard<std::mutex> lock(this->wh_mutex);
 					std::string webhook_id = rs[0]["webhook"];

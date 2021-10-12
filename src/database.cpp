@@ -56,14 +56,12 @@ namespace db {
 		for (uint16_t cid = 0; cid < INITIAL_THREADPOOL_SIZE; ++cid) {
 			sqlconn* c = new sqlconn();
 			std::lock_guard<std::mutex> db_lock(c->mutex);
-			c->error.clear();
 			if (mysql_init(&(c->connection)) != nullptr) {
 				mysql_options(&(c->connection), MYSQL_SET_CHARSET_NAME, "utf8mb4");
 				mysql_options(&(c->connection), MYSQL_INIT_COMMAND, CONNECT_STRING);
 				char reconnect = 1;
 				if (mysql_options(&(c->connection), MYSQL_OPT_RECONNECT, &reconnect) == 0) {
 					if (!mysql_real_connect(&(c->connection), host.c_str(), user.c_str(), pass.c_str(), db.c_str(), port, NULL, CLIENT_MULTI_RESULTS | CLIENT_MULTI_STATEMENTS)) {
-						c->error = "db::connect() failed";
 						all_connected = false;
 					} else {
 						std::lock_guard<std::mutex> queue_lock(queue_mutex);
@@ -87,6 +85,7 @@ namespace db {
 			std::unique_lock<std::mutex> lock{ mtx };			
 			new_query_ready.wait(lock);
 
+			std::string error;
 			sqlquery qry;
 			{
 				std::lock_guard<std::mutex> db_lock(mutex);
@@ -140,7 +139,7 @@ namespace db {
 			}
 
 			if (qry._callback) {
-				qry._callback(rv);
+				qry._callback(rv, error);
 			}
 		}
 	}
@@ -199,7 +198,7 @@ namespace db {
 
 		if (!c) {
 			/* There are no free threads available. Do something! */
-			std::cout << "ERR: No free threads are available!\n";
+			cb(db::resultset(), "No threads were available for the query");
 			return;
 		}
 
@@ -225,7 +224,7 @@ namespace db {
 		}
 
 		if (parameters.size() != escaped_parameters.size()) {
-			c->error = "Parameter wasn't escaped; error: " + std::string(mysql_error(&(c->connection)));
+			cb(db::resultset(), "Parameter wasn't escaped; error: " + std::string(mysql_error(&(c->connection))));
 			return;
 		}
 

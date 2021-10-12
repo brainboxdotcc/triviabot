@@ -44,7 +44,7 @@ void command_ping_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_se
 	dpp::cluster* cluster = this->creator->GetBot()->core;
 	double discord_api_ping = cluster->rest_ping * 1000;
 	double db_start = dpp::utility::time_f();
-	db::query("SHOW TABLES", {}, [this, cmd, settings, cluster, discord_api_ping, db_start](db::resultset q) {
+	db::query("SHOW TABLES", {}, [this, cmd, settings, cluster, discord_api_ping, db_start](db::resultset q, std::string error) {
 		double db_ping = (dpp::utility::time_f() - db_start) * 1000;
 		double rq_start = dpp::utility::time_f();
 
@@ -52,7 +52,7 @@ void command_ping_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_se
 		cluster->request(std::string(creator->GetBot()->IsDevMode() ? BACKEND_HOST_DEV : BACKEND_HOST_LIVE) + "/api/", dpp::m_get, [cluster, discord_api_ping, db_ping, rq_start, this, cmd, settings](auto callback) {
 			double tb_api_ping = (dpp::utility::time_f() - rq_start) * 1000;
 			/* Get shards from database, as we can't directly see shards on other clusters */
-			db::query("SELECT * FROM infobot_shard_status ORDER BY cluster_id, id", {}, [this, cmd, settings, cluster, tb_api_ping, db_ping, discord_api_ping](db::resultset shardq) {
+			db::query("SELECT * FROM infobot_shard_status ORDER BY cluster_id, id", {}, [this, cmd, settings, cluster, tb_api_ping, db_ping, discord_api_ping](db::resultset shardq, std::string error) {
 				bool shardstatus = true;
 				long lastcluster = -1;
 				std::vector<field_t> fields = {

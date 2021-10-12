@@ -96,7 +96,7 @@ void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 		}
 	}
 
-	GetChannelWhitelist(cmd.guild_id, [this, cmd, settings, questions, quickfire, hintless, category, c, username](db::resultset rs) {
+	GetChannelWhitelist(cmd.guild_id, [this, cmd, settings, questions, quickfire, hintless, category, c, username](db::resultset rs, std::string error) {
 		std::vector<dpp::snowflake> whitelist;
 		for (auto row : rs) {
 			whitelist.push_back(from_string<dpp::snowflake>(row["channel_id"], std::dec));
@@ -287,7 +287,7 @@ void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 				};
 
 				if (quickfire && !settings.premium) {
-					db::query("SELECT * FROM insane_cooldown WHERE guild_id = ?", {cmd.guild_id}, [this, cmd, settings, do_start](db::resultset lastinsane) {
+					db::query("SELECT * FROM insane_cooldown WHERE guild_id = ?", {cmd.guild_id}, [this, cmd, settings, do_start](db::resultset lastinsane, std::string error) {
 						if (lastinsane.size()) {
 							time_t last_insane_time = from_string<time_t>(lastinsane[0]["last_started"], std::dec);
 							if (time(NULL) - last_insane_time < 900) {

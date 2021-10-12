@@ -38,7 +38,7 @@ command_topteams_t::command_topteams_t(class TriviaModule* _creator, const std::
 
 void command_topteams_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_settings_t &settings, const std::string &username, bool is_moderator, dpp::channel* c, dpp::user* user)
 {
-	db::query("SELECT * FROM teams ORDER BY score DESC LIMIT 10", {}, [this, cmd, settings](db::resultset q) {
+	db::query("SELECT * FROM teams ORDER BY score DESC LIMIT 10", {}, [this, cmd, settings](db::resultset q, std::string error) {
 		std::string desc;
 		uint8_t rank = 1;
 		for (auto & team : q) {

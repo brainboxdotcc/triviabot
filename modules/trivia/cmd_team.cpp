@@ -45,9 +45,9 @@ void command_team_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_se
 	std::getline(tokens, name);
 	name = trim(name);
 
-	db::query("SELECT *, date_format(create_date, '%d-%b-%Y') as fmt_create_date, (SELECT COUNT(*) FROM team_membership WHERE team_membership.team = teams.name) AS mc FROM teams LEFT JOIN trivia_user_cache ON snowflake_id = owner_id WHERE teams.name = '?'", {name}, [this, cmd, settings, name](db::resultset team) {
+	db::query("SELECT *, date_format(create_date, '%d-%b-%Y') as fmt_create_date, (SELECT COUNT(*) FROM team_membership WHERE team_membership.team = teams.name) AS mc FROM teams LEFT JOIN trivia_user_cache ON snowflake_id = owner_id WHERE teams.name = '?'", {name}, [this, cmd, settings, name](db::resultset team, std::string error) {
 		if (team.size()) {
-			db::query("SELECT active FROM premium_credits WHERE user_id = '?' AND cancel_date IS NULL AND active = 1", {team[0]["owner_id"]}, [this, cmd, settings, name, team](db::resultset p) {
+			db::query("SELECT active FROM premium_credits WHERE user_id = '?' AND cancel_date IS NULL AND active = 1", {team[0]["owner_id"]}, [this, cmd, settings, name, team](db::resultset p, std::string error) {
 				bool premium = false;
 				std::string url_key;
 				db::row t = team[0];
@@ -62,7 +62,7 @@ void command_team_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_se
 					return;
 				}
 
-				db::query("SELECT name FROM teams WHERE score >= ? ORDER BY score DESC", {t["score"]}, [this, cmd, settings, name, url_key, premium, team](db::resultset q) {
+				db::query("SELECT name FROM teams WHERE score >= ? ORDER BY score DESC", {t["score"]}, [this, cmd, settings, name, url_key, premium, team](db::resultset q, std::string error) {
 					std::string desc;
 					uint32_t rank = q.size();
 					db::row t = team[0];

@@ -49,19 +49,19 @@ void command_profile_t::call(const in_cmd &cmd, std::stringstream &tokens, guild
 		user_id = cmd.author_id;
 	}
 
-	db::query("SELECT *, get_all_emojis(snowflake_id) as emojis FROM trivia_user_cache WHERE snowflake_id = '?'", {user_id}, [this, cmd, settings, user_id](db::resultset _user) {
+	db::query("SELECT *, get_all_emojis(snowflake_id) as emojis FROM trivia_user_cache WHERE snowflake_id = '?'", {user_id}, [this, cmd, settings, user_id](db::resultset _user, std::string error) {
 		if (_user.size()) {
-			db::query("SELECT *, date_format(unlocked, '%d-%b-%Y') AS unlocked_friendly FROM achievements WHERE user_id = ?", {user_id}, [this, cmd, settings, user_id, _user](db::resultset inf) {
+			db::query("SELECT *, date_format(unlocked, '%d-%b-%Y') AS unlocked_friendly FROM achievements WHERE user_id = ?", {user_id}, [this, cmd, settings, user_id, _user](db::resultset inf, std::string error) {
 				std::string oa;
-				for (auto & ac : inf) {
-					for (auto& ach : *(creator->achievements)) {
-						if (ach["id"].get<std::string>() == ac["achievement_id"]) {
+				for (auto ac : inf) {
+					for (auto ach : *(creator->achievements)) {
+						if (std::to_string(ach["id"].get<uint32_t>()) == ac["achievement_id"]) {
 							oa += "<:" + ach["image"].get<std::string>() + ":" + ach["emoji_unlocked"].get<std::string>() + ">";
 						}
 					}
 				}
 
-				db::query("SELECT SUM(score) AS score, SUM(weekscore) AS weekscore, SUM(dayscore) AS dayscore, SUM(monthscore) AS score FROM scores WHERE name = '?'", {user_id}, [this, cmd, settings, user_id, _user, oa](db::resultset sc) {
+				db::query("SELECT SUM(score) AS score, SUM(weekscore) AS weekscore, SUM(dayscore) AS dayscore, SUM(monthscore) AS score FROM scores WHERE name = '?'", {user_id}, [this, cmd, settings, user_id, _user, oa](db::resultset sc, std::string error) {
 
 					std::string a = oa;
 					db::row _this_user = _user[0];

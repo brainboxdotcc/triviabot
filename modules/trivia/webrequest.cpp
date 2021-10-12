@@ -442,6 +442,7 @@ std::vector<std::string> to_list(const std::string &str)
 void cache_user(const dpp::user *_user, const dpp::guild *_guild, const dpp::guild_member* gi)
 {
 	// Replaced with direct db query for perforamance increase - 27Dec20
+	// Replaced with asyncronous request and callback - 12Oct21
 
 	uint64_t user_id = _user->id;
 	uint64_t guild_id = _guild->id;
@@ -449,8 +450,8 @@ void cache_user(const dpp::user *_user, const dpp::guild *_guild, const dpp::gui
 	dpp::guild guild = *_guild;
 	dpp::guild_member member = *gi;
 
-	db::query("INSERT INTO trivia_user_cache (snowflake_id, username, discriminator, icon) VALUES('?', '?', '?', '?') ON DUPLICATE KEY UPDATE username = '?', discriminator = '?', icon = '?'", {user_id, user.username, user.discriminator, user.avatar.to_string(), user.username, user.discriminator, user.avatar.to_string()}, [user_id, guild_id, user, guild, member](db::resultset rs) {
-		db::query("INSERT INTO trivia_guild_cache (snowflake_id, name, icon, owner_id) VALUES('?', '?', '?', '?') ON DUPLICATE KEY UPDATE name = '?', icon = '?', owner_id = '?', kicked = 0", {guild_id, guild.name, guild.icon.to_string(),  guild.owner_id, guild.name, guild.icon.to_string(),  guild.owner_id}, [user_id, guild_id, user, guild, member](db::resultset rs) {
+	db::query("INSERT INTO trivia_user_cache (snowflake_id, username, discriminator, icon) VALUES('?', '?', '?', '?') ON DUPLICATE KEY UPDATE username = '?', discriminator = '?', icon = '?'", {user_id, user.username, user.discriminator, user.avatar.to_string(), user.username, user.discriminator, user.avatar.to_string()}, [user_id, guild_id, user, guild, member](db::resultset rs, std::string error) {
+		db::query("INSERT INTO trivia_guild_cache (snowflake_id, name, icon, owner_id) VALUES('?', '?', '?', '?') ON DUPLICATE KEY UPDATE name = '?', icon = '?', owner_id = '?', kicked = 0", {guild_id, guild.name, guild.icon.to_string(),  guild.owner_id, guild.name, guild.icon.to_string(),  guild.owner_id}, [user_id, guild_id, user, guild, member](db::resultset rs, std::string error) {
 			std::string member_roles;
 			std::string comma_roles;
 			for (auto r = member.roles.begin(); r != member.roles.end(); ++r) {
@@ -480,8 +481,10 @@ void cache_user(const dpp::user *_user, const dpp::guild *_guild, const dpp::gui
 /* Fetch a question by ID from the database */
 void question_t::fetch(uint64_t id, uint64_t guild_id, const guild_settings_t &settings, question_fetch_t callback)
 {
-	std::function<void(db::resultset)> parse_question_reply = [callback, guild_id](db::resultset question) {
-		if (question.size() > 0) {
+	// Replaced with asyncronous request and callback - 12Oct21
+
+	std::function<void(db::resultset, std::string)> parse_question_reply = [callback, guild_id](db::resultset question, std::string error) {
+		if (error.empty() && question.size() > 0) {
 			callback(question_t(
 				from_string<uint64_t>(question[0]["id"], std::dec),
 				homoglyph(question[0]["question"]),
@@ -506,12 +509,12 @@ void question_t::fetch(uint64_t id, uint64_t guild_id, const guild_settings_t &s
 	};
 
 	if (settings.language == "en") {
-		db::query("select questions.*, ans1.*, hin1.*, sta1.*, cat1.name as catname from questions left join hints as hin1 on questions.id=hin1.id left join answers as ans1 on questions.id=ans1.id left join stats as sta1 on questions.id=sta1.id left join categories as cat1 on questions.category=cat1.id where questions.id = ?", {id}, [parse_question_reply](db::resultset question) {
-			parse_question_reply(question);
+		db::query("select questions.*, ans1.*, hin1.*, sta1.*, cat1.name as catname from questions left join hints as hin1 on questions.id=hin1.id left join answers as ans1 on questions.id=ans1.id left join stats as sta1 on questions.id=sta1.id left join categories as cat1 on questions.category=cat1.id where questions.id = ?", {id}, [parse_question_reply](db::resultset question, std::string error) {
+			parse_question_reply(question, error);
 		});
 	} else {
-		db::query("select questions.trans_" + settings.language + " as question, ans1.trans_" + settings.language + " as answer, hin1.trans1_" + settings.language + " as hint1, hin1.trans2_" + settings.language + " as hint2, question_img_url, answer_img_url, sta1.*, cat1.trans_" + settings.language + " as catname from questions left join hints as hin1 on questions.id=hin1.id left join answers as ans1 on questions.id=ans1.id left join stats as sta1 on questions.id=sta1.id left join categories as cat1 on questions.category=cat1.id where questions.id = ?", {id}, [parse_question_reply](db::resultset question) {
-			parse_question_reply(question);
+		db::query("select questions.trans_" + settings.language + " as question, ans1.trans_" + settings.language + " as answer, hin1.trans1_" + settings.language + " as hint1, hin1.trans2_" + settings.language + " as hint2, question_img_url, answer_img_url, sta1.*, cat1.trans_" + settings.language + " as catname from questions left join hints as hin1 on questions.id=hin1.id left join answers as ans1 on questions.id=ans1.id left join stats as sta1 on questions.id=sta1.id left join categories as cat1 on questions.category=cat1.id where questions.id = ?", {id}, [parse_question_reply](db::resultset question, std::string error) {
+			parse_question_reply(question, error);
 		});
 	}
 }
@@ -572,14 +575,14 @@ void fetch_insane_round(uint64_t guild_id, const guild_settings_t &settings, ins
 	};
 	
 	if (settings.language == "en") {
-		db::query("select id,question from insane where deleted is null order by rand() limit 0,1", {}, [process, callback](db::resultset question) {
-			db::query("select id,answer from insane_answers where question_id = ?", {question[0]["id"]}, [process, question, callback](db::resultset answers) {
+		db::query("select id,question from insane where deleted is null order by rand() limit 0,1", {}, [process, callback](db::resultset question, std::string error) {
+			db::query("select id,answer from insane_answers where question_id = ?", {question[0]["id"]}, [process, question, callback](db::resultset answers, std::string error) {
 				process(question, answers, callback);
 			});
 		});
 	} else {
-		db::query("select id,trans_" + settings.language + " AS question from insane where deleted is null order by rand() limit 0,1", {}, [process, callback, settings](db::resultset question) {
-			db::query("select id, trans_" + settings.language + " answer from insane_answers where question_id = ?", {question[0]["id"]}, [process, question, callback](db::resultset answers) {
+		db::query("select id,trans_" + settings.language + " AS question from insane where deleted is null order by rand() limit 0,1", {}, [process, callback, settings](db::resultset question, std::string error) {
+			db::query("select id, trans_" + settings.language + " answer from insane_answers where question_id = ?", {question[0]["id"]}, [process, question, callback](db::resultset answers, std::string error) {
 				process(question, answers, callback);
 			});
 		});
@@ -594,6 +597,7 @@ void send_hint(uint64_t snowflake_id, const std::string &hint, uint32_t remainin
 
 void runcli(guild_settings_t settings, const std::string &command, uint64_t guild_id, uint64_t user_id, uint64_t channel_id, const std::string &parameters, const std::string& interaction_token, dpp::snowflake command_id)
 {
+	// Replaced with asyncronous request and callback - 12Oct21
 	std::string home(getenv("HOME"));
 
 	/* IMPORTANT: dpp::utility::exec makes parameters safe */
@@ -652,17 +656,18 @@ void log_game_start(uint64_t guild_id, uint64_t channel_id, uint64_t number_ques
 /* Log the end of a game, used for resuming games on crash or restart, plus the dashboard active games list */
 void log_game_end(uint64_t guild_id, uint64_t channel_id)
 {
+	// Replaced with asyncronous request and callback - 12Oct21
 	char hostname[1024];
 	hostname[1023] = '\0';
 	gethostname(hostname, 1023);
 	std::string str_hostname = hostname;
 	
 	/* Obtain and delete the active game entry */
-	db::query("SELECT * FROM active_games WHERE guild_id = '?' AND channel_id = '?' AND hostname = '?'", {guild_id, channel_id, str_hostname}, [guild_id, channel_id, str_hostname](db::resultset gameinfo) {
+	db::query("SELECT * FROM active_games WHERE guild_id = '?' AND channel_id = '?' AND hostname = '?'", {guild_id, channel_id, str_hostname}, [guild_id, channel_id, str_hostname](db::resultset gameinfo, std::string error) {
 		db::query("DELETE FROM active_games WHERE guild_id = '?' AND channel_id = '?' AND hostname = '?'", {guild_id, channel_id, str_hostname});
 
 		/* Collate the last game's scores into JSON for storage in the database for the stats pages */
-		db::query("SELECT * FROM scores_lastgame WHERE guild_id = '?'",{guild_id}, [guild_id, str_hostname, gameinfo, channel_id](db::resultset lastgame) {
+		db::query("SELECT * FROM scores_lastgame WHERE guild_id = '?'",{guild_id}, [guild_id, str_hostname, gameinfo, channel_id](db::resultset lastgame, std::string error) {
 			std::string scores = "[";
 			db::row gi = gameinfo[0];
 			for (auto r = lastgame.begin(); r != lastgame.end(); ++r) {
@@ -683,6 +688,7 @@ void log_game_end(uint64_t guild_id, uint64_t channel_id)
 /* Update current question of a game, used for resuming games on crash or restart, plus the dashboard active games list */
 void log_question_index(guild_settings_t settings, uint64_t guild_id, uint64_t channel_id, uint32_t index, uint32_t streak, uint64_t lastanswered, uint32_t state, uint32_t qid)
 {
+	// Replaced with asyncronous request and callback - 12Oct21
 	char hostname[1024];
 	hostname[1023] = '\0';
 	gethostname(hostname, 1023);
@@ -703,7 +709,7 @@ void log_question_index(guild_settings_t settings, uint64_t guild_id, uint64_t c
 			{cluster_id, index, streak, lastanswered, state, guild_id, channel_id, std::string(hostname)});
 
 	/* Check if the dashboard has stopped this game */
-	db::query("SELECT stop FROM active_games WHERE guild_id = '?' AND channel_id = '?' AND hostname = '?' AND stop = 1", {guild_id, channel_id, std::string(hostname)}, [qid, settings, state, channel_id](db::resultset st) {
+	db::query("SELECT stop FROM active_games WHERE guild_id = '?' AND channel_id = '?' AND hostname = '?' AND stop = 1", {guild_id, channel_id, std::string(hostname)}, [qid, settings, state, channel_id](db::resultset st, std::string error) {
 		bool should_stop = (st.size() > 0);
 
 		if (state == TRIV_ASK_QUESTION) {
@@ -741,11 +747,12 @@ json get_active(const std::string &hostname, uint64_t cluster_id)
 	return json::parse(active);
 }
 
-/* Return the current team name for a player, or an empty string */
+/* Return the current team name and team score for a player, or an empty string and zero */
 void get_current_team(uint64_t snowflake_id, get_curr_team_callback_t callback)
 {
 	// Replaced with direct db query for perforamance increase - 27Dec20
-	db::query("SELECT team FROM team_membership WHERE nick = '?'", {snowflake_id}, [callback](db::resultset r) {
+	// Replaced with asyncronous request and callback - 12Oct21
+	db::query("SELECT team, score FROM team_membership INNER JOIN teams ON teams.name = team_membership.team WHERE nick = '?'", {snowflake_id}, [callback](db::resultset r, std::string error) {
 		if (r.size()) {
 			callback(from_string<uint32_t>(r[0]["score"], std::dec), r[0]["team"]);
 		} else {
@@ -786,8 +793,8 @@ void change_streak(uint64_t snowflake_id, uint64_t guild_id, int score)
 void get_streak(uint64_t snowflake_id, uint64_t guild_id, streak_callback callback)
 {
 	// Replaced with direct db query for perforamance increase - 27Dec20
-	db::query("SELECT nick, streak FROM streaks WHERE guild_id = '?' ORDER BY streak DESC LIMIT 1", {guild_id}, [snowflake_id, guild_id, callback](db::resultset streak) {
-		db::query("SELECT streak FROM streaks WHERE nick='?' AND guild_id = '?'", {snowflake_id, guild_id}, [streak, callback](db::resultset ss2) {
+	db::query("SELECT nick, streak FROM streaks WHERE guild_id = '?' ORDER BY streak DESC LIMIT 1", {guild_id}, [snowflake_id, guild_id, callback](db::resultset streak, std::string error) {
+		db::query("SELECT streak FROM streaks WHERE nick='?' AND guild_id = '?'", {snowflake_id, guild_id}, [streak, callback](db::resultset ss2, std::string error) {
 			streak_t s;
 			s.personalbest = 0;
 			s.topstreaker = 0;
@@ -815,7 +822,7 @@ std::string create_new_team(const std::string &teamname)
 void check_team_exists(const std::string &team, bool_callback callback)
 {
 	// Replaced with direct db query for perforamance increase - 27Dec20
-	 db::query("SELECT name FROM teams WHERE name = '?'", {team}, [callback](db::resultset r) {
+	 db::query("SELECT name FROM teams WHERE name = '?'", {team}, [callback](db::resultset r, std::string error) {
 		 callback(!r.empty());
 	 });
 }
@@ -858,7 +865,7 @@ void CheckCreateWebhook(const guild_settings_t & s, TriviaModule* t, uint64_t ch
 		});
 	};
 
-	db::query("SELECT * FROM channel_webhooks WHERE channel_id = '?'", {channel_id}, [channel_id, create_wh, c](db::resultset existing_hook) {
+	db::query("SELECT * FROM channel_webhooks WHERE channel_id = '?'", {channel_id}, [channel_id, create_wh, c](db::resultset existing_hook, std::string error) {
 		if (existing_hook.size()) {
 			c->log(dpp::ll_debug, fmt::format("Existing webhook found for channel {}", channel_id));
 			/* Check if existing webhook is still valid */

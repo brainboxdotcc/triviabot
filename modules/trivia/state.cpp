@@ -75,7 +75,7 @@ state_t::state_t(TriviaModule* _creator, uint32_t questions, uint32_t currstreak
 {
 	creator->GetBot()->core->log(dpp::ll_debug, fmt::format("state_t::state_t()"));
 	dpp::cluster* cl = creator->GetBot()->core;
-	db::query("SELECT name, dayscore FROM scores WHERE guild_id = ? AND dayscore > 0", {guild_id}, [this, cl](db::resultset rs) {
+	db::query("SELECT name, dayscore FROM scores WHERE guild_id = ? AND dayscore > 0", {guild_id}, [this, cl](db::resultset rs, std::string error) {
 		std::lock_guard<std::mutex> s(sm);
 		scores = {};
 		for (auto s = rs.begin(); s != rs.end(); ++s) {
@@ -83,7 +83,7 @@ state_t::state_t(TriviaModule* _creator, uint32_t questions, uint32_t currstreak
 		}
 		cl->log(dpp::ll_debug, fmt::format("Cached {} guild scores for game on channel {}", rs.size(), channel_id));
 	});
-	db::query("SELECT * FROM bans WHERE play_ban = 1", {}, [this](db::resultset rs2) {
+	db::query("SELECT * FROM bans WHERE play_ban = 1", {}, [this](db::resultset rs2, std::string error) {
 		std::lock_guard<std::mutex> bl(blmutex);
 		banlist = {};
 		for (auto s = rs2.begin(); s != rs2.end(); ++s) {
@@ -635,7 +635,7 @@ void state_t::do_insane_board(guild_settings_t settings) {
 	TriviaModule* _creator = this->creator;
 	dpp::snowflake _guild_id = guild_id;
 
-	db::query("SELECT username, discriminator, get_emojis(trivia_user_cache.snowflake_id) as emojis FROM trivia_user_cache WHERE snowflake_id IN (" + ib_in + ")", {}, [this, _channel_id, _creator, _guild_id, settings](db::resultset info) {
+	db::query("SELECT username, discriminator, get_emojis(trivia_user_cache.snowflake_id) as emojis FROM trivia_user_cache WHERE snowflake_id IN (" + ib_in + ")", {}, [this, _channel_id, _creator, _guild_id, settings](db::resultset info, std::string error) {
 		std::string desc;
 		uint32_t i = 1;
 		if (info.size()) {

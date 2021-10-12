@@ -45,7 +45,7 @@ void command_forceleave_t::call(const in_cmd &cmd, std::stringstream &tokens, gu
 	dpp::snowflake guild_id;
 	tokens >> guild_id;
 
-	db::query("SELECT * FROM trivia_access WHERE user_id = '?' AND enabled = 1", {cmd.author_id}, [cmd, this, guild_id, settings](db::resultset access) {
+	db::query("SELECT * FROM trivia_access WHERE user_id = '?' AND enabled = 1", {cmd.author_id}, [cmd, this, guild_id, settings](db::resultset access, std::string error) {
 		if (access.size() && guild_id) {
 			this->creator->GetBot()->core->guild_delete(guild_id, [this, guild_id, cmd, settings](const dpp::confirmation_callback_t &callback) {
 				if (callback.is_error()) {

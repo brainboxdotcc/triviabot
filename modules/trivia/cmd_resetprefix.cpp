@@ -45,7 +45,7 @@ void command_resetprefix_t::call(const in_cmd &cmd, std::stringstream &tokens, g
 	dpp::snowflake guild_id;
 	tokens >> guild_id;
 
-	db::query("SELECT * FROM trivia_access WHERE user_id = '?' AND enabled = 1", {cmd.author_id}, [this, cmd, settings, guild_id](db::resultset access) {
+	db::query("SELECT * FROM trivia_access WHERE user_id = '?' AND enabled = 1", {cmd.author_id}, [this, cmd, settings, guild_id](db::resultset access, std::string error) {
 		if (access.size() && guild_id) {
 			db::query("UPDATE bot_guild_settings SET prefix = '!' WHERE snowflake_id = '?'", {guild_id});
 			creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":white_check_mark:", fmt::format("Prefix on guild `{}` has been reset to `!`", guild_id), cmd.channel_id);

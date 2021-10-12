@@ -34,7 +34,7 @@
 
 /* Check for shards we have been asked to reconnect */
 void TriviaModule::CheckReconnects() {
-	db::query("SELECT * FROM infobot_shard_status WHERE forcereconnect = 1 AND cluster_id = ?", {bot->GetClusterID()}, [this](db::resultset rs) {
+	db::query("SELECT * FROM infobot_shard_status WHERE forcereconnect = 1 AND cluster_id = ?", {bot->GetClusterID()}, [this](db::resultset rs, std::string error) {
 		if (!rs.empty()) {
 			for (auto r = rs.begin(); r != rs.end(); ++r) {
 				try {

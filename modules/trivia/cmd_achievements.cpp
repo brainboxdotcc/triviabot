@@ -53,22 +53,22 @@ void command_achievements_t::call(const in_cmd &cmd, std::stringstream &tokens, 
 	/* SQL: This is safe as all values are numeric from the database */
 	std::string in_q;
 	for (auto& showoff : *(creator->achievements)) {
-		in_q += showoff["id"].get<std::string>() + ",";
+		in_q += std::to_string(showoff["id"].get<uint32_t>()) + ",";
 	}
 	if (in_q.length() > 0) {
 		in_q = in_q.substr(0, in_q.length() - 1);
 	}
 
-	db::query("SELECT *, date_format(unlocked, '%d-%b-%Y') AS unlocked_friendly FROM achievements WHERE user_id = ? AND achievement_id IN (" + in_q + ")", {user_id}, [cmd, this, settings](db::resultset r) {
+	db::query("SELECT *, date_format(unlocked, '%d-%b-%Y') AS unlocked_friendly FROM achievements WHERE user_id = ? AND achievement_id IN (" + in_q + ")", {user_id}, [cmd, this, settings](db::resultset r, std::string error) {
 		
 		uint32_t unlock_count = r.size();
 		std::string trophies = fmt::format(_("ACHCOUNT", settings), unlock_count, creator->achievements->size() - unlock_count) + "\n";
 		std::vector<field_t> fields;
 
 		for (auto& inf : r) {
-			auto & showoff = *(creator->achievements);
-			for (auto& s : *(creator->achievements)) {
-				if (s["id"].get<std::string>() == inf["achievement_id"]) {
+			auto showoff = *(creator->achievements);
+			for (auto s : *(creator->achievements)) {
+				if (std::to_string(s["id"].get<uint32_t>()) == inf["achievement_id"]) {
 					showoff = s;
 					break;
 				}

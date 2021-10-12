@@ -52,7 +52,7 @@ void command_give_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_se
 		user_id = cmd.author_id;
 	}
 
-	db::query("SELECT * FROM coins WHERE user_id = '?'", {user_id}, [cmd, this, howmuch, user_id, settings](db::resultset coins) {
+	db::query("SELECT * FROM coins WHERE user_id = '?'", {user_id}, [cmd, this, howmuch, user_id, settings](db::resultset coins, std::string error) {
 
 		std::string message;
 		uint64_t balance = 0;

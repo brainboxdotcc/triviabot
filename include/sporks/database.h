@@ -44,22 +44,35 @@ namespace db {
 
 	/* Definition of a row in a result set*/
 	typedef std::map<std::string, std::string> row;
+
 	/* Definition of a result set, a vector of maps */
 	typedef std::vector<row> resultset;
 
+	/* Represents a list of parameters to escape for an SQL query */
 	typedef std::vector<std::variant<float, std::string, uint64_t, int64_t, bool, int32_t, uint32_t, double>> paramlist;
 
-	typedef std::function<void(resultset)> callback;
+	/* An asyncronous callback to an SQL query, containing the query results */
+	typedef std::function<void(resultset, std::string error)> callback;
 
+	/* Represents a parsed SQL query and callback, ready to go */
 	struct sqlquery {
 		std::string query = "";
 		callback _callback = {};
 	};
 
+	/* Represents a MySQL connection. Each connection has a queue of queries waiting
+	 * to be executed. These are stored in three lists, the 'all' queue, the 'busy'
+	 * queue and the 'ready' queue.
+	 * All connections always exist in the 'all' queue, and move between the 'busy'
+	 * and 'ready' queue while they are executing a query regardless of queue length
+	 * on that connection.
+	 * When a new query is added to the queue for the connection, the condition_variable
+	 * is signalled from the calling thread to tell it to check for new queries at the
+	 * head of the queue.
+	 */
 	struct sqlconn {
 		MYSQL connection;
 		std::mutex mutex;
-		std::string error;
 		std::thread* thread = nullptr;
 		std::condition_variable new_query_ready;
 		std::deque<sqlquery> queries;
@@ -67,8 +80,9 @@ namespace db {
 		~sqlconn();
 	};
 
-	/* Connect to database */
+	/* Connect all connections to the database */
 	bool connect(const std::string &host, const std::string &user, const std::string &pass, const std::string &db, int port);
-	/* Issue a database query and return results */
+
+	/* Issue a database query and return results later to the lambda callback */
 	void query(const std::string &format, const paramlist &parameters, callback cb = {});
 };
