@@ -60,7 +60,7 @@ void command_categories_t::call(const in_cmd &cmd, std::stringstream &tokens, gu
 			}
 
 			for (auto & cat : q) {
-				desc += fmt::format("{} {:9s}  {}\n", cat["local_disabled"] == "1" ? "🟢    " : "🔴    ", cat["total"], cat[namefield]);
+				desc += fmt::format("{} {:9s}  {}\n", cat["local_disabled"] == "1" ? "🔴    " : "🟢    ", cat["total"], cat[namefield]);
 			}
 
 			desc += "\n" + fmt::format(_("PAGES", settings), page, pages) + "\n";

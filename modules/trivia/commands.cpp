@@ -336,6 +336,8 @@ void TriviaModule::HandleInteraction(const dpp::interaction_create_t& event) {
 			message << " " << std::get<dpp::snowflake>(p.value);
 		} else if (std::holds_alternative<std::string>(p.value)) {
 			message << " " << std::get<std::string>(p.value);
+		} else if (std::holds_alternative<bool>(p.value)) {
+			message << " " << std::get<bool>(p.value);
 		}
 	}
 

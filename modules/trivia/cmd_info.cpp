@@ -63,12 +63,12 @@ void command_info_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_se
 		statusfield(_("UPTIME", settings), ut.to_string()),
 		statusfield(_("CLUSTER", settings), Comma(creator->GetBot()->GetClusterID()) + "/" + Comma(creator->GetBot()->GetMaxClusters())),
 		statusfield(_("SHARDS", settings), Comma(shard) + "/" + Bot::GetConfig("shardcount")),
+		statusfield(_("MYPREFIX", settings), "`" + creator->escape_json(settings.prefix) + "`"),
+		statusfield(_("BOTVER", settings), std::string(creator->GetVersion())),
 		statusfield(_("MEMBERINTENT", settings), _((creator->GetBot()->HasMemberIntents() ? "TICKYES" : "CROSSNO"), settings)),
 		statusfield(_("TESTMODE", settings), _((creator->GetBot()->IsTestMode() ? "TICKYES" : "CROSSNO"), settings)),
 		statusfield(_("DEVMODE", settings), _((creator->GetBot()->IsDevMode() ? "TICKYES" : "CROSSNO"), settings)),
-		statusfield(_("MYPREFIX", settings), "`" + creator->escape_json(settings.prefix) + "`"),
-		statusfield(_("BOTVER", settings), std::string(creator->GetVersion())),
-		statusfield(_("LIBVER", settings), "[<:DPP1:847152435399360583><:DPP2:847152435343523881> " + std::string(DPP_VERSION_TEXT) + "](https://dpp.dev/)"),
+		statusfield(_("LIBVER", settings), "<:DPP1:847152435399360583><:DPP2:847152435343523881> [" + std::string(DPP_VERSION_TEXT) + "](https://dpp.dev/)"),
 		statusfield("", "")
 	};
 
