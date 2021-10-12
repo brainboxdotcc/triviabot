@@ -347,6 +347,8 @@ uint64_t TriviaModule::GetChannelTotal()
 
 void TriviaModule::GetGuildSettings(dpp::snowflake guild_id, get_settings_callback callback)
 {
+	guild_settings_t found(time(NULL), guild_id, "!", {}, 3238819, false, false, false, false, 0, "", "en", 20, 200, 15, 200, false);
+	bool cache_found = false;
 	{
 		std::lock_guard<std::mutex> locker(settingcache_mutex);
 		auto i = settings_cache.find(guild_id);
@@ -354,10 +356,14 @@ void TriviaModule::GetGuildSettings(dpp::snowflake guild_id, get_settings_callba
 			if (time(NULL) > i->second.time + 60) {
 				settings_cache.erase(i);
 			} else {
-				callback(i->second);
-				return;
+				found = i->second;
+				cache_found = true;
 			}
 		}
+	}
+	if (cache_found) {
+		callback(found);
+		return;
 	}
 	
 	db::query("SELECT * FROM bot_guild_settings WHERE snowflake_id = ?", {guild_id}, [guild_id, callback, this](db::resultset r, std::string error) {
