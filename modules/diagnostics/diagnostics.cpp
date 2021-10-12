@@ -189,64 +189,61 @@ public:
 						std::string sql;
 						std::getline(tokens, sql);
 						sql = trim(sql);
-						db::resultset rs = db::query(sql, {});
-						std::stringstream w;
-						if (rs.size() == 0) {
-							if (db::error() != "") {
-								EmbedSimple("SQL Error: " + db::error(), msg.channel_id);
-							} else {
+						db::query(sql, {}, [this, msg, sql](db::resultset rs) {
+							std::stringstream w;
+							if (rs.size() == 0) {
 								EmbedSimple("Successfully executed, no rows returned.", msg.channel_id);
-							}
-						} else {
-							w << "- " << sql << std::endl;
-							auto check = rs[0].begin();
-							w << "+ Rows Returned: " << rs.size() << std::endl;
-							for (auto name = rs[0].begin(); name != rs[0].end(); ++name) {
-								if (name == rs[0].begin()) {
-									w << "  ╭";
-								}
-								w << "────────────────────";
-								check = name;
-								w << (++check != rs[0].end() ? "┬" : "╮\n");
-							}
-							w << "  ";
-							for (auto name = rs[0].begin(); name != rs[0].end(); ++name) {
-								w << fmt::format("│{:20}", name->first.substr(0, 20));
-							}
-							w << "│" << std::endl;
-							for (auto name = rs[0].begin(); name != rs[0].end(); ++name) {
-								if (name == rs[0].begin()) {
-									w << "  ├";
-								}
-								w << "────────────────────";
-								check = name;
-								w << (++check != rs[0].end() ? "┼" : "┤\n");
-							}
-							for (auto row : rs) {
-								if (w.str().length() < 1900) {
-									w << "  ";
-									for (auto field : row) {
-										w << fmt::format("│{:20}", field.second.substr(0, 20));
+							} else {
+								w << "- " << sql << std::endl;
+								auto check = rs[0].begin();
+								w << "+ Rows Returned: " << rs.size() << std::endl;
+								for (auto name = rs[0].begin(); name != rs[0].end(); ++name) {
+									if (name == rs[0].begin()) {
+										w << "  ╭";
 									}
-									w << "│" << std::endl;
+									w << "────────────────────";
+									check = name;
+									w << (++check != rs[0].end() ? "┬" : "╮\n");
+								}
+								w << "  ";
+								for (auto name = rs[0].begin(); name != rs[0].end(); ++name) {
+									w << fmt::format("│{:20}", name->first.substr(0, 20));
+								}
+								w << "│" << std::endl;
+								for (auto name = rs[0].begin(); name != rs[0].end(); ++name) {
+									if (name == rs[0].begin()) {
+										w << "  ├";
+									}
+									w << "────────────────────";
+									check = name;
+									w << (++check != rs[0].end() ? "┼" : "┤\n");
+								}
+								for (auto row : rs) {
+									if (w.str().length() < 1900) {
+										w << "  ";
+										for (auto field : row) {
+											w << fmt::format("│{:20}", field.second.substr(0, 20));
+										}
+										w << "│" << std::endl;
+									}
+								}
+								for (auto name = rs[0].begin(); name != rs[0].end(); ++name) {
+									if (name == rs[0].begin()) {
+										w << "  ╰";
+									}
+									w << "────────────────────";
+									check = name;
+									w << (++check != rs[0].end() ? "┴" : "╯\n");
+								}
+								dpp::channel* c = dpp::find_channel(msg.channel_id);
+								if (c) {
+									if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == c->guild_id) {
+										bot->core->message_create(dpp::message(msg.channel_id, "```diff\n" + w.str() + "```"));
+										bot->sent_messages++;
+									}
 								}
 							}
-							for (auto name = rs[0].begin(); name != rs[0].end(); ++name) {
-								if (name == rs[0].begin()) {
-									w << "  ╰";
-								}
-								w << "────────────────────";
-								check = name;
-								w << (++check != rs[0].end() ? "┴" : "╯\n");
-							}
-							dpp::channel* c = dpp::find_channel(msg.channel_id);
-							if (c) {
-								if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == c->guild_id) {
-									bot->core->message_create(dpp::message(msg.channel_id, "```diff\n" + w.str() + "```"));
-									bot->sent_messages++;
-								}
-							}
-						}
+						});
 					} else if (lowercase(subcommand) == "restart") {
 						EmbedSimple("Restarting...", msg.channel_id);
 						::sleep(5);

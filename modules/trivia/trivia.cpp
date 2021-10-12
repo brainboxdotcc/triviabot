@@ -91,6 +91,9 @@ TriviaModule::TriviaModule(Bot* instigator, ModuleLoader* ml) : Module(instigato
 
 	/* Setup built in commands */
 	SetupCommands();
+
+	/* Load numeric hint strings */
+	ReloadNumStrs();
 }
 
 void TriviaModule::queue_command(const std::string &message, dpp::snowflake author, dpp::snowflake channel, dpp::snowflake guild, bool mention, const std::string &username, bool from_dashboard, dpp::user u, dpp::guild_member gm)
@@ -157,7 +160,7 @@ bool TriviaModule::OnPresenceUpdate()
 	for (auto i = shards.begin(); i != shards.end(); ++i) {
 		dpp::discord_client* shard = i->second;
 		uint64_t uptime = shard->get_uptime().secs + (shard->get_uptime().mins * 60) + (shard->get_uptime().hours * 60 * 60) + (shard->get_uptime().days * 60 * 60 * 24);
-		db::backgroundquery("INSERT INTO infobot_shard_status (id, cluster_id, connected, online, uptime, transfer, transfer_compressed) VALUES('?','?','?','?','?','?','?') ON DUPLICATE KEY UPDATE cluster_id = '?', connected = '?', online = '?', uptime = '?', transfer = '?', transfer_compressed = '?'",
+		db::query("INSERT INTO infobot_shard_status (id, cluster_id, connected, online, uptime, transfer, transfer_compressed) VALUES('?','?','?','?','?','?','?') ON DUPLICATE KEY UPDATE cluster_id = '?', connected = '?', online = '?', uptime = '?', transfer = '?', transfer_compressed = '?'",
 			{
 				shard->shard_id,
 				bot->GetClusterID(),
@@ -254,28 +257,31 @@ bool TriviaModule::OnAllShardsReady()
 				}
 				int32_t round = from_string<uint32_t>((*game)["question_index"].get<std::string>(), std::dec);
 
-				states[channel_id] = state_t(
-					this,
-					from_string<uint32_t>((*game)["questions"].get<std::string>(), std::dec) + 1,
-					from_string<uint32_t>((*game)["streak"].get<std::string>(), std::dec),
-					from_string<uint64_t>((*game)["lastanswered"].get<std::string>(), std::dec),
-					round,
-					(quickfire ? (TRIV_INTERVAL / 4) : TRIV_INTERVAL),
-					channel_id,
-					((*game)["hintless"].get<std::string>()) == "1",
-					shuffle_list,
-					(trivia_state_t)from_string<uint32_t>((*game)["state"].get<std::string>(), std::dec),
-					guild_id
-				);
+				json g = (*game);
+				GetGuildSettings(guild_id, [this, g, channel_id, round, quickfire, shuffle_list, guild_id](const guild_settings_t settings) {
+					states[channel_id] = state_t(
+						this,
+						from_string<uint32_t>(g["questions"].get<std::string>(), std::dec) + 1,
+						from_string<uint32_t>(g["streak"].get<std::string>(), std::dec),
+						from_string<uint64_t>(g["lastanswered"].get<std::string>(), std::dec),
+						round,
+						(quickfire ? (TRIV_INTERVAL / 4) : TRIV_INTERVAL),
+						channel_id,
+						(g["hintless"].get<std::string>()) == "1",
+						shuffle_list,
+						(trivia_state_t)from_string<uint32_t>(g["state"].get<std::string>(), std::dec),
+						guild_id
+					);
 
-				/* Force fetching of question */
-				if (states[channel_id].is_insane_round()) {
-					states[channel_id].do_insane_round(true);
-				} else {
-					states[channel_id].do_normal_round(true);
-				}
+					/* Force fetching of question */
+					if (states[channel_id].is_insane_round(settings)) {
+						states[channel_id].do_insane_round(true, settings);
+					} else {
+						states[channel_id].do_normal_round(true, settings);
+					}
 
-				bot->core->log(dpp::ll_info, fmt::format("Resumed game on guild {}, channel {}, {} questions [{}]", guild_id, channel_id, states[channel_id].numquestions, quickfire ? "quickfire" : "normal"));
+					bot->core->log(dpp::ll_info, fmt::format("Resumed game on guild {}, channel {}, {} questions [{}]", guild_id, channel_id, states[channel_id].numquestions, quickfire ? "quickfire" : "normal"));
+				});
 			}
 		}
 	}
@@ -298,7 +304,7 @@ bool TriviaModule::OnGuildDelete(const dpp::guild_delete_t &gd)
 			std::lock_guard<std::mutex> locker(settingcache_mutex);
 			settings_cache.erase(gd.deleted->id);
 		}
-		db::backgroundquery("UPDATE trivia_guild_cache SET kicked = 1 WHERE snowflake_id = ?", {gd.deleted->id});
+		db::query("UPDATE trivia_guild_cache SET kicked = 1 WHERE snowflake_id = ?", {gd.deleted->id});
 		bot->core->log(dpp::ll_info, fmt::format("Kicked from guild id {}", gd.deleted->id));
 	} else {
 		bot->core->log(dpp::ll_info, fmt::format("Outage on guild id {}", gd.deleted->id));
@@ -321,49 +327,25 @@ uint64_t TriviaModule::GetActiveLocalGames()
 
 uint64_t TriviaModule::GetActiveGames()
 {
-	/* Counts all games across all clusters */
-	auto rs = db::query("SELECT SUM(games) AS games FROM infobot_discord_counts WHERE dev = ?", {bot->IsDevMode() ? 1 : 0});
-	if (rs.size()) {
-		return from_string<uint64_t>(rs[0]["games"], std::dec);
-	} else {
-		return 0;
-	}
+	return counters.games;
 }
 
 uint64_t TriviaModule::GetGuildTotal()
 {
-	/* Counts all games across all clusters */
-	auto rs = db::query("SELECT SUM(server_count) AS server_count FROM infobot_discord_counts WHERE dev = ?", {bot->IsDevMode() ? 1 : 0});
-	if (rs.size()) {
-		return from_string<uint64_t>(rs[0]["server_count"], std::dec);
-	} else {
-		return 0;
-	}
+	return counters.guilds;
 }
 
 uint64_t TriviaModule::GetMemberTotal()
 {
-	/* Counts all games across all clusters */
-	auto rs = db::query("SELECT SUM(user_count) AS user_count FROM infobot_discord_counts WHERE dev = ?", {bot->IsDevMode() ? 1 : 0});
-	if (rs.size()) {
-		return from_string<uint64_t>(rs[0]["user_count"], std::dec);
-	} else {
-		return 0;
-	}
+	return counters.members;
 }
 
 uint64_t TriviaModule::GetChannelTotal()
 {
-	/* Counts all games across all clusters */
-	auto rs = db::query("SELECT SUM(channel_count) AS channel_count FROM infobot_discord_counts WHERE dev = ?", {bot->IsDevMode() ? 1 : 0});
-	if (rs.size()) {
-		return from_string<uint64_t>(rs[0]["channel_count"], std::dec);
-	} else {
-		return 0;
-	}
+	return counters.channels;
 }
 
-const guild_settings_t TriviaModule::GetGuildSettings(dpp::snowflake guild_id)
+void TriviaModule::GetGuildSettings(dpp::snowflake guild_id, get_settings_callback callback)
 {
 	{
 		std::lock_guard<std::mutex> locker(settingcache_mutex);
@@ -372,35 +354,39 @@ const guild_settings_t TriviaModule::GetGuildSettings(dpp::snowflake guild_id)
 			if (time(NULL) > i->second.time + 60) {
 				settings_cache.erase(i);
 			} else {
-				return i->second;
+				callback(i->second);
+				return;
 			}
 		}
 	}
 	
-	db::resultset r = db::query("SELECT * FROM bot_guild_settings WHERE snowflake_id = ?", {guild_id});
-	if (!r.empty()) {
-		std::stringstream s(r[0]["moderator_roles"]);
-		uint64_t role_id;
-		std::vector<uint64_t> role_list;
-		while ((s >> role_id)) {
-			role_list.push_back(role_id);
+	db::query("SELECT * FROM bot_guild_settings WHERE snowflake_id = ?", {guild_id}, [guild_id, callback, this](db::resultset r) {
+		if (!r.empty()) {
+			std::stringstream s(r[0]["moderator_roles"]);
+			uint64_t role_id;
+			std::vector<uint64_t> role_list;
+			while ((s >> role_id)) {
+				role_list.push_back(role_id);
+			}
+			std::string max_n = r[0]["max_normal_round"], max_q = r[0]["max_quickfire_round"], max_h = r[0]["max_hardcore_round"];
+			guild_settings_t gs(time(NULL), from_string<uint64_t>(r[0]["snowflake_id"], std::dec), r[0]["prefix"], role_list, from_string<uint32_t>(r[0]["embedcolour"], std::dec), (r[0]["premium"] == "1"), (r[0]["only_mods_stop"] == "1"), (r[0]["only_mods_start"] == "1"), (r[0]["role_reward_enabled"] == "1"), from_string<uint64_t>(r[0]["role_reward_id"], std::dec), r[0]["custom_url"], r[0]["language"], from_string<uint32_t>(r[0]["question_interval"], std::dec), max_n.empty() ? 200 : from_string<uint32_t>(max_n, std::dec), max_q.empty() ? (r[0]["premium"] == "1" ? 200 : 15) : from_string<uint32_t>(max_q, std::dec), max_h.empty() ? 200 : from_string<uint32_t>(max_h, std::dec), r[0]["disable_insane_rounds"] == "1");
+			{
+				std::lock_guard<std::mutex> locker(settingcache_mutex);
+				settings_cache.insert(std::make_pair(guild_id, gs));
+			}
+			callback(gs);
+			return;
+		} else {
+			db::query("INSERT INTO bot_guild_settings (snowflake_id) VALUES('?')", {guild_id});
+			guild_settings_t gs(time(NULL), guild_id, "!", {}, 3238819, false, false, false, false, 0, "", "en", 20, 200, 15, 200, false);
+			{
+				std::lock_guard<std::mutex> locker(settingcache_mutex);
+				settings_cache.insert(std::make_pair(guild_id, gs));
+			}
+			callback(gs);
+			return;
 		}
-		std::string max_n = r[0]["max_normal_round"], max_q = r[0]["max_quickfire_round"], max_h = r[0]["max_hardcore_round"];
-		guild_settings_t gs(time(NULL), from_string<uint64_t>(r[0]["snowflake_id"], std::dec), r[0]["prefix"], role_list, from_string<uint32_t>(r[0]["embedcolour"], std::dec), (r[0]["premium"] == "1"), (r[0]["only_mods_stop"] == "1"), (r[0]["only_mods_start"] == "1"), (r[0]["role_reward_enabled"] == "1"), from_string<uint64_t>(r[0]["role_reward_id"], std::dec), r[0]["custom_url"], r[0]["language"], from_string<uint32_t>(r[0]["question_interval"], std::dec), max_n.empty() ? 200 : from_string<uint32_t>(max_n, std::dec), max_q.empty() ? (r[0]["premium"] == "1" ? 200 : 15) : from_string<uint32_t>(max_q, std::dec), max_h.empty() ? 200 : from_string<uint32_t>(max_h, std::dec), r[0]["disable_insane_rounds"] == "1");
-		{
-			std::lock_guard<std::mutex> locker(settingcache_mutex);
-			settings_cache.insert(std::make_pair(guild_id, gs));
-		}
-		return gs;
-	} else {
-		db::backgroundquery("INSERT INTO bot_guild_settings (snowflake_id) VALUES('?')", {guild_id});
-		guild_settings_t gs(time(NULL), guild_id, "!", {}, 3238819, false, false, false, false, 0, "", "en", 20, 200, 15, 200, false);
-		{
-			std::lock_guard<std::mutex> locker(settingcache_mutex);
-			settings_cache.insert(std::make_pair(guild_id, gs));
-		}
-		return gs;
-	}
+	});
 }
 
 std::string TriviaModule::GetVersion()
@@ -417,18 +403,20 @@ std::string TriviaModule::GetDescription()
 
 void TriviaModule::UpdatePresenceLine()
 {
-	uint32_t ticks = 0;
-	int32_t questions = get_total_questions();
 	while (!terminating) {
-		sleep(20);
-		try {
-			ticks++;
-			if (ticks > 100) {
-				questions = get_total_questions();
-				ticks = 0;
+		/* Counts across all clusters */
+		db::query("SELECT (SELECT count(id) as total FROM questions) AS question_count, SUM(games) AS games, SUM(server_count) AS server_count, SUM(user_count) AS user_count, SUM(channel_count) AS channel_count FROM infobot_discord_counts WHERE dev = ?", {bot->IsDevMode() ? 1 : 0}, [this](db::resultset rs) {
+			if (rs.size()) {
+				counters.channels = from_string<uint64_t>(rs[0]["channel_count"], std::dec);
+				counters.guilds = from_string<uint64_t>(rs[0]["server_count"], std::dec);
+				counters.members = from_string<uint64_t>(rs[0]["user_count"], std::dec);
+				counters.games = from_string<uint64_t>(rs[0]["games"], std::dec);
+				counters.questions = from_string<uint64_t>(rs[0]["question_count"], std::dec);
 			}
+		});
+		try {
 			bot->counters["activegames"] = GetActiveLocalGames();
-			std::string presence = fmt::format("Trivia! {} questions, {} active games on {} servers through {} shards, cluster {}", Comma(questions), Comma(GetActiveGames()), Comma(this->GetGuildTotal()), Comma(bot->core->numshards), bot->GetClusterID());
+			std::string presence = fmt::format("Trivia! {} questions, {} active games on {} servers through {} shards, cluster {}", Comma(counters.questions), Comma(GetActiveGames()), Comma(this->GetGuildTotal()), Comma(bot->core->numshards), bot->GetClusterID());
 			bot->core->log(dpp::ll_debug, fmt::format("PRESENCE: {}", presence));
 			/* Can't translate this, it's per-shard! */
 			bot->core->set_presence(dpp::presence(dpp::ps_online, dpp::at_game, presence));
@@ -442,6 +430,7 @@ void TriviaModule::UpdatePresenceLine()
 		catch (std::exception &e) {
 			bot->core->log(dpp::ll_error, fmt::format("Exception in UpdatePresenceLine: {}", e.what()));
 		}
+		sleep(120);
 	}
 	bot->core->log(dpp::ll_debug, fmt::format("Presence thread exited."));
 }
@@ -464,25 +453,27 @@ std::string TriviaModule::vowelcount(const std::string &text, const guild_settin
 
 void TriviaModule::show_stats(const std::string& interaction_token, dpp::snowflake command_id, dpp::snowflake guild_id, dpp::snowflake channel_id)
 {
-	db::resultset topten = db::query("SELECT dayscore, name, emojis, trivia_user_cache.* FROM scores LEFT JOIN trivia_user_cache ON snowflake_id = name LEFT JOIN vw_emojis ON name = user_id WHERE guild_id = ? and dayscore > 0 ORDER BY dayscore DESC limit 10", {guild_id});
-	size_t count = 1;
-	std::string msg;
-	for(auto& r : topten) {
-		if (!r["username"].empty()) {
-			msg.append(fmt::format("{0}. `{1}#{2:04d}` ({3}) {4}\n", count++, r["username"], from_string<uint32_t>(r["discriminator"], std::dec), r["dayscore"], r["emojis"]));
-		} else {
-			msg.append(fmt::format("{}. <@{}> ({})\n", count++, r["snowflake_id"], r["dayscore"]));
+	db::query("SELECT dayscore, name, emojis, trivia_user_cache.* FROM scores LEFT JOIN trivia_user_cache ON snowflake_id = name LEFT JOIN vw_emojis ON name = user_id WHERE guild_id = ? and dayscore > 0 ORDER BY dayscore DESC limit 10", {guild_id}, [interaction_token, command_id, guild_id, channel_id, this](db::resultset topten) {
+		size_t count = 1;
+		std::string msg;
+		for(auto& r : topten) {
+			if (!r["username"].empty()) {
+				msg.append(fmt::format("{0}. `{1}#{2:04d}` ({3}) {4}\n", count++, r["username"], from_string<uint32_t>(r["discriminator"], std::dec), r["dayscore"], r["emojis"]));
+			} else {
+				msg.append(fmt::format("{}. <@{}> ({})\n", count++, r["snowflake_id"], r["dayscore"]));
+			}
 		}
-	}
-	if (msg.empty()) {
-		msg = "Nobody has played here today! :cry:";
-	}
-	guild_settings_t settings = GetGuildSettings(guild_id);
-	if (settings.premium && !settings.custom_url.empty()) {
-		EmbedWithFields(interaction_token, command_id, settings, _("LEADERBOARD", settings), {{_("TOP_TEN", settings), msg, false}, {_("MORE_INFO", settings), fmt::format(_("LEADER_LINK", settings), settings.custom_url), false}}, channel_id);
-	} else {
-		EmbedWithFields(interaction_token, command_id, settings, _("LEADERBOARD", settings), {{_("TOP_TEN", settings), msg, false}, {_("MORE_INFO", settings), fmt::format(_("LEADER_LINK", settings), guild_id), false}}, channel_id);
-	}
+		if (msg.empty()) {
+			msg = "Nobody has played here today! :cry:";
+		}
+		GetGuildSettings(guild_id, [this, guild_id, interaction_token, command_id, channel_id, msg](const guild_settings_t settings) {
+			if (settings.premium && !settings.custom_url.empty()) {
+				EmbedWithFields(interaction_token, command_id, settings, _("LEADERBOARD", settings), {{_("TOP_TEN", settings), msg, false}, {_("MORE_INFO", settings), fmt::format(_("LEADER_LINK", settings), settings.custom_url), false}}, channel_id);
+			} else {
+				EmbedWithFields(interaction_token, command_id, settings, _("LEADERBOARD", settings), {{_("TOP_TEN", settings), msg, false}, {_("MORE_INFO", settings), fmt::format(_("LEADER_LINK", settings), guild_id), false}}, channel_id);
+			}
+		});
+	});
 }
 
 void TriviaModule::Tick()
@@ -534,28 +525,29 @@ dpp::user dummyuser;
 
 void TriviaModule::CheckForQueuedStarts()
 {
-	db::resultset rs = db::query("SELECT * FROM start_queue ORDER BY queuetime", {});
-	for (auto r = rs.begin(); r != rs.end(); ++r) {
-		uint64_t guild_id = from_string<uint64_t>((*r)["guild_id"], std::dec);
-		/* Check that this guild is on this cluster, if so we can start this game */
-		dpp::guild* g = dpp::find_guild(guild_id);
-		if (g) {
+	db::query("SELECT * FROM start_queue ORDER BY queuetime", {}, [this](db::resultset rs) {
+		for (auto r = rs.begin(); r != rs.end(); ++r) {
+			uint64_t guild_id = from_string<uint64_t>((*r)["guild_id"], std::dec);
+			/* Check that this guild is on this cluster, if so we can start this game */
+			dpp::guild* g = dpp::find_guild(guild_id);
+			if (g) {
 
-			uint64_t channel_id = from_string<uint64_t>((*r)["channel_id"], std::dec);
-			uint64_t user_id = from_string<uint64_t>((*r)["user_id"], std::dec);
-			uint32_t questions = from_string<uint32_t>((*r)["questions"], std::dec);
-			uint32_t quickfire = from_string<uint32_t>((*r)["quickfire"], std::dec);
-			uint32_t hintless = from_string<uint32_t>((*r)["hintless"], std::dec);
-			std::string category = (*r)["category"];
+				uint64_t channel_id = from_string<uint64_t>((*r)["channel_id"], std::dec);
+				uint64_t user_id = from_string<uint64_t>((*r)["user_id"], std::dec);
+				uint32_t questions = from_string<uint32_t>((*r)["questions"], std::dec);
+				uint32_t quickfire = from_string<uint32_t>((*r)["quickfire"], std::dec);
+				uint32_t hintless = from_string<uint32_t>((*r)["hintless"], std::dec);
+				std::string category = (*r)["category"];
 
-			bot->core->log(dpp::ll_info, fmt::format("Remote start, guild_id={} channel_id={} user_id={} questions={} type={} category='{}'", guild_id, channel_id, user_id, questions, hintless ? "hardcore" : (quickfire ? "quickfire" : "normal"), category));
+				bot->core->log(dpp::ll_info, fmt::format("Remote start, guild_id={} channel_id={} user_id={} questions={} type={} category='{}'", guild_id, channel_id, user_id, questions, hintless ? "hardcore" : (quickfire ? "quickfire" : "normal"), category));
 
-			queue_command(fmt::format("{} {}{}", (hintless ? "hardcore" : (quickfire ? "quickfire" : "start")), questions, (category.empty() ? "" : (std::string(" ") + category))), user_id, channel_id, guild_id, false, "Dashboard", true, dpp::user(), dpp::guild_member());
+				queue_command(fmt::format("{} {}{}", (hintless ? "hardcore" : (quickfire ? "quickfire" : "start")), questions, (category.empty() ? "" : (std::string(" ") + category))), user_id, channel_id, guild_id, false, "Dashboard", true, dpp::user(), dpp::guild_member());
 
-			/* Delete just this entry as we've processed it */
-			db::query("DELETE FROM start_queue WHERE channel_id = ?", {channel_id});
+				/* Delete just this entry as we've processed it */
+				db::query("DELETE FROM start_queue WHERE channel_id = ?", {channel_id});
+			}
 		}
-	}
+	});
 }
 
 void TriviaModule::CacheUser(dpp::snowflake user, dpp::user _user, dpp::guild_member gm, dpp::snowflake channel_id)
@@ -607,34 +599,34 @@ bool TriviaModule::RealOnMessage(const dpp::message_create_t &message, const std
 	} else {
 
 		if (mentioned && prefix_match->Match(clean_message)) {
-			guild_settings_t settings = GetGuildSettings(guild_id);
-			bot->core->message_create(dpp::message(channel_id, fmt::format(_("PREFIX", settings), settings.prefix, settings.prefix)));
-			bot->core->log(dpp::ll_debug, fmt::format("Respond to prefix request on channel C:{} A:{}", channel_id, author_id));
+			GetGuildSettings(guild_id, [this, guild_id, channel_id, author_id](const guild_settings_t settings) {
+				bot->core->message_create(dpp::message(channel_id, fmt::format(_("PREFIX", settings), settings.prefix, settings.prefix)));
+				bot->core->log(dpp::ll_debug, fmt::format("Respond to prefix request on channel C:{} A:{}", channel_id, author_id));
+			});
 		} else {
-
-			guild_settings_t settings = GetGuildSettings(guild_id);
-
-			// Commands
-			if (lowercase(clean_message.substr(0, settings.prefix.length())) == lowercase(settings.prefix)) {
-				std::string command = clean_message.substr(settings.prefix.length(), clean_message.length() - settings.prefix.length());
-				if (user != nullptr) {
-					queue_command(command, author_id, channel_id, guild_id, mentioned, username, is_from_dashboard, *user, gm);
-					bot->core->log(dpp::ll_info, fmt::format("CMD (USER={}, GUILD={}): <{}> {}", author_id, guild_id, username, clean_message));
-				} else {
-					bot->core->log(dpp::ll_debug, fmt::format("User is null when handling command. C:{} A:{}", channel_id, author_id));
+			GetGuildSettings(guild_id, [this, mentioned, guild_id, clean_message, channel_id, author_id, username, is_from_dashboard, user, gm](const guild_settings_t settings) {
+				// Commands
+				if (lowercase(clean_message.substr(0, settings.prefix.length())) == lowercase(settings.prefix)) {
+					std::string command = clean_message.substr(settings.prefix.length(), clean_message.length() - settings.prefix.length());
+					if (user != nullptr) {
+						queue_command(command, author_id, channel_id, guild_id, mentioned, username, is_from_dashboard, *user, gm);
+						bot->core->log(dpp::ll_info, fmt::format("CMD (USER={}, GUILD={}): <{}> {}", author_id, guild_id, username, clean_message));
+					} else {
+						bot->core->log(dpp::ll_debug, fmt::format("User is null when handling command. C:{} A:{}", channel_id, author_id));
+					}
 				}
-			}
-		
-			// Answers for active games
-			{
-				std::lock_guard<std::mutex> states_lock(states_mutex);
-				state_t* state = GetState(channel_id);
-				if (state) {
-					/* The state_t class handles potential answers, but only when a game is running on this guild */
-					state->queue_message(clean_message, author_id, username, mentioned, *user, gm);
-					bot->core->log(dpp::ll_debug, fmt::format("Processed potential answer message from A:{} on C:{}", author_id, channel_id));
+			
+				// Answers for active games
+				{
+					std::lock_guard<std::mutex> states_lock(states_mutex);
+					state_t* state = GetState(channel_id);
+					if (state) {
+						/* The state_t class handles potential answers, but only when a game is running on this guild */
+						state->queue_message(clean_message, author_id, username, mentioned, *user, gm, settings);
+						bot->core->log(dpp::ll_debug, fmt::format("Processed potential answer message from A:{} on C:{}", author_id, channel_id));
+					}
 				}
-			}
+			});
 		}
 	}
 

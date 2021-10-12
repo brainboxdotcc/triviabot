@@ -45,19 +45,20 @@ void command_forceleave_t::call(const in_cmd &cmd, std::stringstream &tokens, gu
 	dpp::snowflake guild_id;
 	tokens >> guild_id;
 
-	db::resultset access = db::query("SELECT * FROM trivia_access WHERE user_id = '?' AND enabled = 1", {cmd.author_id});
+	db::query("SELECT * FROM trivia_access WHERE user_id = '?' AND enabled = 1", {cmd.author_id}, [cmd, this, guild_id, settings](db::resultset access) {
+		if (access.size() && guild_id) {
+			this->creator->GetBot()->core->guild_delete(guild_id, [this, guild_id, cmd, settings](const dpp::confirmation_callback_t &callback) {
+				if (callback.is_error()) {
+					this->creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":warning:", fmt::format("Could not leave guild: {} - {}", guild_id, callback.http_info.body), cmd.channel_id);
+				} else {
+					this->creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":white_check_mark:", fmt::format("Left guild: {}", guild_id), cmd.channel_id);
+				}
 
-	if (access.size() && guild_id) {
-		this->creator->GetBot()->core->guild_delete(guild_id, [this, guild_id, cmd, settings](const dpp::confirmation_callback_t &callback) {
-			if (callback.is_error()) {
-				this->creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":warning:", fmt::format("Could not leave guild: {} - {}", guild_id, callback.http_info.body), cmd.channel_id);
-			} else {
-				this->creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":white_check_mark:", fmt::format("Left guild: {}", guild_id), cmd.channel_id);
-			}
+			});
+		} else {
+			creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":warning:", "This command is for the TriviaBot team only", cmd.channel_id);
+		}
+	});
 
-		});
-	} else {
-		creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":warning:", "This command is for the TriviaBot team only", cmd.channel_id);
-	}
 	creator->CacheUser(cmd.author_id, cmd.user, cmd.member, cmd.channel_id);
 }

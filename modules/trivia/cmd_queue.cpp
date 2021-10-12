@@ -42,19 +42,18 @@ command_queue_t::command_queue_t(class TriviaModule* _creator, const std::string
 
 void command_queue_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_settings_t &settings, const std::string &username, bool is_moderator, dpp::channel* c, dpp::user* user)
 {
-	db::resultset access = db::query("SELECT * FROM trivia_access WHERE user_id = '?' AND enabled = 1", {cmd.author_id});
-
-	if (access.size()) {
-		db::resultset feedback = db::query("SELECT COUNT(*) AS total FROM feedback WHERE closed_by IS NULL", {});
-		db::resultset questions = db::query("SELECT COUNT(*) AS total FROM question_queue", {});
-
-		std::vector<field_t> fields = {
-			{ "Total Questions", questions[0]["total"], false },
-			{ "Total Open Feedback", feedback[0]["total"], false }
-		};
-		creator->EmbedWithFields(cmd.interaction_token, cmd.command_id, settings, "", fields, cmd.channel_id, "", "", "https://triviabot.co.uk/images/mortar.png", "Queue information\n[Bot moderation dashboard](https://triviabot.co.uk/admin/)");
-	} else {
-		creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":warning:", "This command is for the TriviaBot team only", cmd.channel_id);
-	}
+	db::query("SELECT *, (SELECT COUNT(*) FROM feedback WHERE closed_by IS NULL) as feedback, (SELECT COUNT(*) FROM question_queue) as questions FROM trivia_access WHERE user_id = '?' AND enabled = 1", {cmd.author_id}, [this, cmd, settings](db::resultset access) {
+		if (access.size()) {
+			std::string feedback = access[0]["feedback"];
+			std::string questions = access[0]["questions"];
+			std::vector<field_t> fields = {
+				{ "Total Questions", questions, false },
+				{ "Total Open Feedback", feedback, false }
+			};
+			creator->EmbedWithFields(cmd.interaction_token, cmd.command_id, settings, "", fields, cmd.channel_id, "", "", "https://triviabot.co.uk/images/mortar.png", "Queue information\n[Bot moderation dashboard](https://triviabot.co.uk/admin/)");
+		} else {
+			creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":warning:", "This command is for the TriviaBot team only", cmd.channel_id);
+		}
+	});
 	creator->CacheUser(cmd.author_id, cmd.user, cmd.member, cmd.channel_id);
 }

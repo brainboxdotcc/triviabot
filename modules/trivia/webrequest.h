@@ -43,24 +43,28 @@ struct streak_t
 	uint32_t bigstreak;
 };
 
+typedef std::function<void(uint64_t, std::vector<std::string>)> insane_cb;
+typedef std::function<void(uint32_t, std::string)> get_curr_team_callback_t;
+typedef std::function<void(uint32_t)> int_callback;
+typedef std::function<void(bool)> bool_callback;
+typedef std::function<void(streak_t)> streak_callback;
+
 void set_io_context(const std::string &apikey, class Bot* _bot, class TriviaModule* _module);
 
 // Fetch a shuffled list of question IDs via the REST API
 std::vector<std::string> fetch_shuffle_list(uint64_t guild_id, const std::string &category = "");
 
 // These functions used to query the REST API but are more efficient doing direct database queries.
-std::vector<std::string> fetch_insane_round(uint64_t &question_id, uint64_t guild_id, const class guild_settings_t &settings);
+void fetch_insane_round(uint64_t guild_id, const class guild_settings_t &settings, insane_cb callback);
 void update_score_only(uint64_t snowflake_id, uint64_t guild_id, int score, uint64_t channel_id);
 uint32_t update_score(uint64_t snowflake_id, uint64_t guild_id, double recordtime, uint64_t id, int score);
-uint32_t get_total_questions();
-std::string get_current_team(uint64_t snowflake_id);
+void get_current_team(uint64_t snowflake_id, get_curr_team_callback_t callback);
 void leave_team(uint64_t snowflake_id);
-streak_t get_streak(uint64_t snowflake_id, uint64_t guild_id);
-bool check_team_exists(const std::string &team);
+void get_streak(uint64_t snowflake_id, uint64_t guild_id, streak_callback callback);
+void check_team_exists(const std::string &team, bool_callback callback);
 void add_team_points(const std::string &team, int points, uint64_t snowflake_id);
-uint32_t get_team_points(const std::string &team);
 void cache_user(const class dpp::user *_user, const class dpp::guild *_guild, const class dpp::guild_member* gi);
-bool log_question_index(uint64_t guild_id, uint64_t channel_id, uint32_t index, uint32_t streak, uint64_t lastanswered, uint32_t state, uint32_t qid);
+void log_question_index(guild_settings_t settings, uint64_t guild_id, uint64_t channel_id, uint32_t index, uint32_t streak, uint64_t lastanswered, uint32_t state, uint32_t qid);
 void log_game_start(uint64_t guild_id, uint64_t channel_id, uint64_t number_questions, bool quickfire, const std::string &channel_name, uint64_t user_id, const std::vector<std::string> &questions, bool hintless);
 void log_game_end(uint64_t guild_id, uint64_t channel_id);
 void change_streak(uint64_t snowflake_id, uint64_t guild_id, int score);
@@ -72,7 +76,7 @@ void custom_command(const std::string& interaction_token, dpp::snowflake command
 // These functions query the REST API and are not as performant as the functions above. Some of these cannot
 // currently be rewritten as direct queries, as they use external apis like neutrino, or are hooked into the
 // achievement system, or are REST by design such as those that use graphics APIs.
-bool join_team(uint64_t snowflake_id, const std::string &team, uint64_t channel_id);
+void join_team(uint64_t snowflake_id, const std::string &team, uint64_t channel_id, bool_callback callback);
 std::string create_new_team(const std::string &teamname);
 void send_hint(uint64_t snowflake_id, const std::string &hint, uint32_t remaining);
 json get_active(const std::string &hostname, uint64_t cluster_id);

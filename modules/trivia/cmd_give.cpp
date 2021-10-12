@@ -42,8 +42,6 @@ void command_give_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_se
 {
 	dpp::snowflake user_id = 0;
 	int64_t howmuch = 0;
-	uint64_t balance = 0;
-	std::string message;
 
 	tokens >> user_id >> howmuch;
 
@@ -54,26 +52,24 @@ void command_give_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_se
 		user_id = cmd.author_id;
 	}
 
-	db::query("START TRANSACTION", {});
+	db::query("SELECT * FROM coins WHERE user_id = '?'", {user_id}, [cmd, this, howmuch, user_id, settings](db::resultset coins) {
 
-	db::resultset coins = db::query("SELECT * FROM coins WHERE user_id = '?'", {user_id});
-	if (coins.size()) {
-        	balance = from_string<uint64_t>(coins[0]["balance"], std::dec);
-	}
+		std::string message;
+		uint64_t balance = 0;
 
-	if (howmuch > balance) {
-		message = _("NOTENOUGH", settings);
-	} else {
-		message = fmt::format(_("GAVECOINS", settings), howmuch, user_id);
-		db::query("SET @COIN_LOG_DISABLED = 1", {});
-		db::query("UPDATE coins SET balance = balance - ? WHERE user_id = ?", {howmuch, cmd.author_id});
-		db::query("INSERT INTO coins (user_id, balance) VALUES('?', '?') ON DUPLICATE KEY UPDATE balance = balance + ?", {user_id, howmuch, howmuch});
-		db::query("SET @COIN_LOG_DISABLED = 0", {});
-	}
+		if (coins.size()) {
+			balance = from_string<uint64_t>(coins[0]["balance"], std::dec);
+		}
 
-	db::query("COMMIT", {});
+		if (howmuch > balance) {
+			message = _("NOTENOUGH", settings);
+		} else {
+			message = fmt::format(_("GAVECOINS", settings), howmuch, user_id);
+			db::query("CALL give_coins(?, ?, ?)", {howmuch, cmd.author_id, user_id});
+		}
 
-	creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, "", message + "\n\n[" + _("SHOPURLTEXT", settings) + "](https://triviabot.co.uk/coinshop/)",
-	cmd.channel_id, "", "", "https://triviabot.co.uk/images/coin.gif");
+		creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, "", message + "\n\n[" + _("SHOPURLTEXT", settings) + "](https://triviabot.co.uk/coinshop/)",
+		cmd.channel_id, "", "", "https://triviabot.co.uk/images/coin.gif");
+	});
 	creator->CacheUser(cmd.author_id, cmd.user, cmd.member, cmd.channel_id);
 }

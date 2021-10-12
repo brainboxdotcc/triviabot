@@ -25,6 +25,12 @@
 #include <map>
 #include <string>
 #include <variant>
+#include <deque>
+#include <thread>
+#include <functional>
+#include <condition_variable>
+#include <queue>
+#include <mysql/mysql.h>
 
 /*
  * db::resultset r = db::query("SELECT * FROM infobot WHERE setby = '?'", {"SKIPDX00"});
@@ -43,13 +49,26 @@ namespace db {
 
 	typedef std::vector<std::variant<float, std::string, uint64_t, int64_t, bool, int32_t, uint32_t, double>> paramlist;
 
+	typedef std::function<void(resultset)> callback;
+
+	struct sqlquery {
+		std::string query = "";
+		callback _callback = {};
+	};
+
+	struct sqlconn {
+		MYSQL connection;
+		std::mutex mutex;
+		std::string error;
+		std::thread* thread = nullptr;
+		std::condition_variable new_query_ready;
+		std::deque<sqlquery> queries;
+		void handle();
+		~sqlconn();
+	};
+
 	/* Connect to database */
 	bool connect(const std::string &host, const std::string &user, const std::string &pass, const std::string &db, int port);
-	/* Disconnect from database */
-	bool close();
 	/* Issue a database query and return results */
-	resultset query(const std::string &format, const paramlist &parameters);
-	void backgroundquery(const std::string &format, const paramlist &parameters);
-	/* Returns the last error string */
-	const std::string& error();
+	void query(const std::string &format, const paramlist &parameters, callback cb = {});
 };

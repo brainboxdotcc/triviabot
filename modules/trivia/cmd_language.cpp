@@ -51,17 +51,17 @@ void command_language_t::call(const in_cmd &cmd, std::stringstream &tokens, guil
 	creator->CacheUser(cmd.author_id, cmd.user, cmd.member, cmd.channel_id);
 
 	if (lang_name.empty()) {
-		db::resultset langs = db::query("SELECT * FROM languages WHERE live = 1 ORDER BY id", {});
-		std::vector<field_t> fields;
-		for (auto & row : langs) {
-			field_t field;
-			field.name = row["isocode"] + " " + row["emoji"];
-			field.value = row["name"];
-			field._inline = true;
-			fields.push_back(field);
-		}
-		creator->EmbedWithFields(cmd.interaction_token, cmd.command_id, settings, _("SUPPORTEDLANGS", settings), fields, cmd.channel_id, "https://triviabot.co.uk", "", "", _("HOWTOCHANGE", settings));
-
+		db::query("SELECT * FROM languages WHERE live = 1 ORDER BY id", {}, [cmd, this, settings](db::resultset langs) {
+			std::vector<field_t> fields;
+			for (auto & row : langs) {
+				field_t field;
+				field.name = row["isocode"] + " " + row["emoji"];
+				field.value = row["name"];
+				field._inline = true;
+				fields.push_back(field);
+			}
+			creator->EmbedWithFields(cmd.interaction_token, cmd.command_id, settings, _("SUPPORTEDLANGS", settings), fields, cmd.channel_id, "https://triviabot.co.uk", "", "", _("HOWTOCHANGE", settings));
+		});
 		return;
 	}
 
@@ -70,13 +70,16 @@ void command_language_t::call(const in_cmd &cmd, std::stringstream &tokens, guil
 		return;
 	}
 
-	db::resultset r = db::query("SELECT * FROM languages WHERE live = 1 AND isocode = '?' ORDER BY id", {lang_name});
-	if (r.size() == 0) {
-		creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":warning:", _("BADLANG", settings), cmd.channel_id);
-	}
+	db::query("SELECT * FROM languages WHERE live = 1 AND isocode = '?' ORDER BY id", {lang_name}, [cmd, this, lang_name, settings](db::resultset r) {
+		if (r.empty()) {
+			creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":warning:", _("BADLANG", settings), cmd.channel_id);
+		}
+		guild_settings_t s = settings;
+		s.language = lang_name;
+		db::query("UPDATE bot_guild_settings SET language = '?' WHERE snowflake_id = '?'", {lang_name, cmd.guild_id}, [cmd, this, s](db::resultset r) {
+			creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, s, ":white_check_mark:", _("LANGCHANGE", s), cmd.channel_id, _("CATDONE", s));
+		});
+	});
 
-	settings.language = lang_name;
-	db::query("UPDATE bot_guild_settings SET language = '?' WHERE snowflake_id = '?'", {lang_name, cmd.guild_id});
-	creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":white_check_mark:", _("LANGCHANGE", settings), cmd.channel_id, _("CATDONE", settings));
 
 }

@@ -38,19 +38,19 @@ command_topteams_t::command_topteams_t(class TriviaModule* _creator, const std::
 
 void command_topteams_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_settings_t &settings, const std::string &username, bool is_moderator, dpp::channel* c, dpp::user* user)
 {
-	std::string desc;
-	uint8_t rank = 1;
-
-	db::resultset q = db::query("SELECT * FROM teams ORDER BY score DESC LIMIT 10", {});
-	for (auto & team : q) {
-		desc += "**#" + std::to_string(rank) + "** `" + team["name"] + "` (*" + team["score"] + "*)";
-		if (rank++ == 1) {
-			desc += " <:crown:722808671888736306>";
+	db::query("SELECT * FROM teams ORDER BY score DESC LIMIT 10", {}, [this, cmd, settings](db::resultset q) {
+		std::string desc;
+		uint8_t rank = 1;
+		for (auto & team : q) {
+			desc += "**#" + std::to_string(rank) + "** `" + team["name"] + "` (*" + team["score"] + "*)";
+			if (rank++ == 1) {
+				desc += " <:crown:722808671888736306>";
+			}
+			desc += "\n";
 		}
-		desc += "\n";
-	}
 
-	creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, "", desc, cmd.channel_id, _("TOP10TEAMS", settings));
+		creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, "", desc, cmd.channel_id, _("TOP10TEAMS", settings));
+	});
 	creator->CacheUser(cmd.author_id, cmd.user, cmd.member, cmd.channel_id);
 }
 

@@ -45,35 +45,36 @@ void command_disable_t::call(const in_cmd &cmd, std::stringstream &tokens, guild
 	std::string category_name;
 	const int MAX_PERCENT_DISABLE = 75;
 	const int MIN_QUESTIONS = 1000;
-	std::string namefield = "name";
-
 	creator->CacheUser(cmd.author_id, cmd.user, cmd.member, cmd.channel_id);
 
 	std::getline(tokens, category_name);
 	category_name = trim(category_name);
-	if (settings.language != "en") {
-		namefield = "trans_" + settings.language;
-	}
 	if (!is_moderator)  {
 		creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":warning:", _("MODONLY", settings), cmd.channel_id);
 		return;
 	}
-	db::resultset cat = db::query("SELECT * FROM categories WHERE " + namefield + " = '?'", {category_name});
-	if (!cat.size()) {
-		creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":warning:", fmt::format(_("NOSUCHCAT", settings), category_name), cmd.channel_id, _("CATERROR", settings));
-		return;
-	}
 
-	db::query("START TRANSACTION", {});
-	db::query("INSERT INTO disabled_categories (guild_id, category_id) VALUES('?', '?')", {cmd.guild_id, cat[0]["id"]});
-	db::resultset pd = db::query("SELECT count_remaining('?') AS remaining", {cmd.guild_id});
-	int remaining = from_string<int>(pd[0]["remaining"], std::dec);
-	if (remaining < MIN_QUESTIONS) {
-		db::query("ROLLBACK", {});
-		creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":warning:", fmt::format(_("TOOFEWCATS", settings), 100 - MAX_PERCENT_DISABLE), cmd.channel_id, _("CATERROR", settings));
-		return;
+	std::string namefield = "name";
+	if (settings.language != "en") {
+		namefield = "trans_" + settings.language;
 	}
-	db::query("COMMIT", {});
+	db::query("SELECT * FROM categories WHERE " + namefield + " = '?'", {category_name}, [cmd, this, settings, category_name, namefield](db::resultset cat) {
 
-	creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":white_check_mark:", fmt::format(_("CATDISABLED", settings), cat[0][namefield]), cmd.channel_id, _("CATDONE", settings));
+		if (cat.empty()) {
+			creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":warning:", fmt::format(_("NOSUCHCAT", settings), category_name), cmd.channel_id, _("CATERROR", settings));
+			return;
+		}
+		std::string cat_id = cat[0]["id"];
+		db::query("INSERT INTO disabled_categories (guild_id, category_id) VALUES('?', '?')", {cmd.guild_id, cat_id}, [cmd, this, settings, category_name, cat, cat_id, namefield](db::resultset) {
+			db::query("SELECT count_remaining('?') AS remaining", {cmd.guild_id}, [cmd, this, settings, category_name, cat, cat_id, namefield](db::resultset pd) {
+				int remaining = from_string<int>(pd[0]["remaining"], std::dec);
+				if (remaining < MIN_QUESTIONS) {
+					db::query("DELETE FROM disabled_categories WHERE guild_id = '?' AND category_id = '?'", {cmd.guild_id, cat_id});
+					creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":warning:", fmt::format(_("TOOFEWCATS", settings), 100 - MAX_PERCENT_DISABLE), cmd.channel_id, _("CATERROR", settings));
+					return;
+				}
+				creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":white_check_mark:", fmt::format(_("CATDISABLED", settings), category_name), cmd.channel_id, _("CATDONE", settings));
+			});
+		});
+	});
 }

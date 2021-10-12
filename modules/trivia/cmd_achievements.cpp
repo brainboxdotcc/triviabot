@@ -49,29 +49,42 @@ void command_achievements_t::call(const in_cmd &cmd, std::stringstream &tokens, 
 		user_id = cmd.author_id;
 	}
 
-	uint32_t unlock_count = from_string<uint32_t>(db::query("SELECT COUNT(*) AS unlocked FROM achievements WHERE user_id = ?", {user_id})[0]["unlocked"], std::dec);
-	std::string trophies = fmt::format(_("ACHCOUNT", settings), unlock_count, creator->achievements->size() - unlock_count) + "\n";
 
-	std::vector<field_t> fields;
-
+	/* SQL: This is safe as all values are numeric from the database */
+	std::string in_q;
 	for (auto& showoff : *(creator->achievements)) {
-		db::resultset inf = db::query("SELECT *, date_format(unlocked, '%d-%b-%Y') AS unlocked_friendly FROM achievements WHERE user_id = ? AND achievement_id = ?", {user_id, showoff["id"].get<uint32_t>()});
-		if (inf.size()) {
+		in_q += showoff["id"].get<std::string>() + ",";
+	}
+	if (in_q.length() > 0) {
+		in_q = in_q.substr(0, in_q.length() - 1);
+	}
+
+	db::query("SELECT *, date_format(unlocked, '%d-%b-%Y') AS unlocked_friendly FROM achievements WHERE user_id = ? AND achievement_id IN (" + in_q + ")", {user_id}, [cmd, this, settings](db::resultset r) {
+		
+		uint32_t unlock_count = r.size();
+		std::string trophies = fmt::format(_("ACHCOUNT", settings), unlock_count, creator->achievements->size() - unlock_count) + "\n";
+		std::vector<field_t> fields;
+
+		for (auto& inf : r) {
+			auto & showoff = *(creator->achievements);
+			for (auto& s : *(creator->achievements)) {
+				if (s["id"].get<std::string>() == inf["achievement_id"]) {
+					showoff = s;
+					break;
+				}
+			}
 			fields.push_back({
 				"<:" + showoff["image"].get<std::string>() + ":" + showoff["emoji_unlocked"].get<std::string>() + "> - " + _(showoff["name"].get<std::string>(), settings),
-				_(showoff["desc"].get<std::string>(), settings) + " (*" + inf[0]["unlocked_friendly"] + "*)\n<:blank:667278047006949386>",
+				_(showoff["desc"].get<std::string>(), settings) + " (*" + inf["unlocked_friendly"] + "*)\n<:blank:667278047006949386>",
 				false
 			});
 		}
-	}
-
-	creator->EmbedWithFields(
-		cmd.interaction_token, cmd.command_id, settings,
-		_("TROPHYCABINET", settings), fields, cmd.channel_id,
-		"https://triviabot.co.uk/", "", "",
-		"<:blank:667278047006949386>\n" + trophies + "<:blank:667278047006949386>"
-	);
-
-
+		creator->EmbedWithFields(
+			cmd.interaction_token, cmd.command_id, settings,
+			_("TROPHYCABINET", settings), fields, cmd.channel_id,
+			"https://triviabot.co.uk/", "", "",
+			"<:blank:667278047006949386>\n" + trophies + "<:blank:667278047006949386>"
+		);
+	});
 	creator->CacheUser(cmd.author_id, cmd.user, cmd.member, cmd.channel_id);
 }

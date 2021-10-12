@@ -41,48 +41,52 @@ command_team_t::command_team_t(class TriviaModule* _creator, const std::string &
 void command_team_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_settings_t &settings, const std::string &username, bool is_moderator, dpp::channel* c, dpp::user* user)
 {
 	std::string name;
-	std::string desc;
-	std::string url_key;
-	uint32_t rank = 1;
-	bool premium = false;
 
 	std::getline(tokens, name);
 	name = trim(name);
 
-	db::resultset team = db::query("SELECT *, date_format(create_date, '%d-%b-%Y') as fmt_create_date, (SELECT COUNT(*) FROM team_membership WHERE team_membership.team = teams.name) AS mc FROM teams LEFT JOIN trivia_user_cache ON snowflake_id = owner_id WHERE teams.name = '?'", {name});
+	db::query("SELECT *, date_format(create_date, '%d-%b-%Y') as fmt_create_date, (SELECT COUNT(*) FROM team_membership WHERE team_membership.team = teams.name) AS mc FROM teams LEFT JOIN trivia_user_cache ON snowflake_id = owner_id WHERE teams.name = '?'", {name}, [this, cmd, settings, name](db::resultset team) {
+		if (team.size()) {
+			db::query("SELECT active FROM premium_credits WHERE user_id = '?' AND cancel_date IS NULL AND active = 1", {team[0]["owner_id"]}, [this, cmd, settings, name, team](db::resultset p) {
+				bool premium = false;
+				std::string url_key;
+				db::row t = team[0];
 
-	if (team.size()) {
-		db::resultset p = db::query("SELECT active FROM premium_credits WHERE user_id = '?' AND cancel_date IS NULL AND active = 1", {team[0]["owner_id"]});
-		premium = (p.size() > 0);
-		url_key = team[0]["url_key"];
-		if (premium && !team[0]["team_url"].empty()) {
-			url_key = team[0]["team_url"];
+				premium = (p.size() > 0);
+				url_key = t["url_key"];
+				if (premium && !t["team_url"].empty()) {
+					url_key = t["team_url"];
+				}
+				if (team.size() == 0 || url_key.empty()) {
+					creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, "", fmt::format(_("NOSUCHTEAM", settings), name), cmd.channel_id, _("NOTQUITERIGHT", settings));
+					return;
+				}
+
+				db::query("SELECT name FROM teams WHERE score >= ? ORDER BY score DESC", {t["score"]}, [this, cmd, settings, name, url_key, premium, team](db::resultset q) {
+					std::string desc;
+					uint32_t rank = q.size();
+					db::row t = team[0];
+
+					if (!t["description"].empty()) {
+						desc = dpp::utility::utf8substr(t["description"], 0, 932) + "\n<:blank:667278047006949386>\n";
+					}
+
+					desc += fmt::format(_("TEAMHUB", settings), url_key) +  "\n<:blank:667278047006949386>";
+
+					std::vector<field_t> fields = {
+						{ _("NAME", settings), t["name"], true},
+						{ _("FOUNDER", settings), t["username"], true},
+						{ _("MEMBERCOUNT", settings), t["mc"], true},
+						{ _("POINTSTOTAL", settings), t["score"], true},
+						{ _("GLOBALRANK", settings), std::to_string(rank), true},
+						{ _("DATEFOUNDED", settings), t["fmt_create_date"], true}
+					};
+					creator->EmbedWithFields(cmd.interaction_token, cmd.command_id, settings, _("TINFO", settings), fields, cmd.channel_id, "https://triviabot.co.uk/team/" + url_key, t["image_url"], "", dpp::utility::utf8substr(desc, 0, 2048));
+				});
+
+			});
 		}
-	}
-
-	if (team.size() == 0 || url_key.empty()) {
-		creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, "", fmt::format(_("NOSUCHTEAM", settings), name), cmd.channel_id, _("NOTQUITERIGHT", settings));
-		return;
-	}
-
-	db::resultset q = db::query("SELECT name FROM teams WHERE score >= ? ORDER BY score DESC", {team[0]["score"]});
-	rank = q.size();
-
-	if (!team[0]["description"].empty()) {
-		desc = dpp::utility::utf8substr(team[0]["description"], 0, 932) + "\n<:blank:667278047006949386>\n";
-	}
-
-	desc += fmt::format(_("TEAMHUB", settings), url_key) +  "\n<:blank:667278047006949386>";
-
-	std::vector<field_t> fields = {
-		{ _("NAME", settings), team[0]["name"], true},
-		{ _("FOUNDER", settings), team[0]["username"], true},
-		{ _("MEMBERCOUNT", settings), team[0]["mc"], true},
-		{ _("POINTSTOTAL", settings), team[0]["score"], true},
-		{ _("GLOBALRANK", settings), std::to_string(rank), true},
-		{ _("DATEFOUNDED", settings), team[0]["fmt_create_date"], true}
-	};
-	creator->EmbedWithFields(cmd.interaction_token, cmd.command_id, settings, _("TINFO", settings), fields, cmd.channel_id, "https://triviabot.co.uk/team/" + url_key, team[0]["image_url"], "", dpp::utility::utf8substr(desc, 0, 2048));
+	});
 	creator->CacheUser(cmd.author_id, cmd.user, cmd.member, cmd.channel_id);
 }
 

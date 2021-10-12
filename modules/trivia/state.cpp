@@ -38,7 +38,9 @@
 #include "piglatin.h"
 #include "time.h"
 
+std::mutex blmutex;
 std::unordered_map<uint64_t, bool> banlist;
+std::mutex sm;
 
 in_msg::in_msg(const std::string &m, uint64_t author, bool mention, const std::string &_username, dpp::user u, dpp::guild_member gm) : msg(m), author_id(author), mentions_bot(mention), username(_username), user(u), member(gm)
 {
@@ -72,25 +74,27 @@ state_t::state_t(TriviaModule* _creator, uint32_t questions, uint32_t currstreak
 	last_to_answer(lastanswered)
 {
 	creator->GetBot()->core->log(dpp::ll_debug, fmt::format("state_t::state_t()"));
-	insane.clear();
-	db::resultset rs = db::query("SELECT name, dayscore FROM scores WHERE guild_id = ? AND dayscore > 0", {guild_id});
-	if (rs.size()) {
+	dpp::cluster* cl = creator->GetBot()->core;
+	db::query("SELECT name, dayscore FROM scores WHERE guild_id = ? AND dayscore > 0", {guild_id}, [this, cl](db::resultset rs) {
+		std::lock_guard<std::mutex> s(sm);
+		scores = {};
 		for (auto s = rs.begin(); s != rs.end(); ++s) {
-			scores[from_string<uint64_t>((*s)["name"], std::dec)] = from_string<uint64_t>((*s)["dayscore"], std::dec);
+			this->scores[from_string<uint64_t>((*s)["name"], std::dec)] = from_string<uint64_t>((*s)["dayscore"], std::dec);
 		}
-		creator->GetBot()->core->log(dpp::ll_debug, fmt::format("Cached {} guild scores for game on channel {}", rs.size(), channel_id));
-	}
-	db::resultset rs2 = db::query("SELECT * FROM bans WHERE play_ban = 1", {});
-	if (rs2.size()) {
-		banlist.clear();
+		cl->log(dpp::ll_debug, fmt::format("Cached {} guild scores for game on channel {}", rs.size(), channel_id));
+	});
+	db::query("SELECT * FROM bans WHERE play_ban = 1", {}, [this](db::resultset rs2) {
+		std::lock_guard<std::mutex> bl(blmutex);
+		banlist = {};
 		for (auto s = rs2.begin(); s != rs2.end(); ++s) {
 			banlist[from_string<uint64_t>((*s)["snowflake_id"], std::dec)] = true;
 		}
-	}
+	});
 }
 
 uint64_t state_t::get_score(dpp::snowflake uid)
 {
+	std::lock_guard<std::mutex> s(sm);
 	auto i = scores.find(uid);
 	if (i != scores.end()) {
 		return i->second;
@@ -101,6 +105,7 @@ uint64_t state_t::get_score(dpp::snowflake uid)
 
 void state_t::set_score(dpp::snowflake uid, uint64_t score)
 {
+	std::lock_guard<std::mutex> s(sm);
 	scores[uid] = score;
 }
 
@@ -131,11 +136,11 @@ std::string state_t::_(const std::string &k, const guild_settings_t& settings)
 	return creator->_(k, settings);
 }
 
-void state_t::queue_message(const std::string &message, uint64_t author_id, const std::string &username, bool mentions_bot, dpp::user u, dpp::guild_member gm)
+void state_t::queue_message(const std::string &message, uint64_t author_id, const std::string &username, bool mentions_bot, dpp::user u, dpp::guild_member gm, guild_settings_t settings)
 {
 	// FIX: Check termination atomic flag to avoid race where object is deleted but its handle_message gets called
 	if (!terminating) {
-		handle_message(in_msg(message, author_id, mentions_bot, username, u, gm));
+		handle_message(in_msg(message, author_id, mentions_bot, username, u, gm), settings);
 	}
 }
 
@@ -194,11 +199,12 @@ void state_t::record_activity(uint64_t user_id)
 
 bool state_t::user_banned(uint64_t user_id)
 {
+	std::lock_guard<std::mutex> bl(blmutex);
 	return (banlist.find(user_id) != banlist.end());
 }
 
 /* Handle inbound message */
-void state_t::handle_message(const in_msg& m)
+void state_t::handle_message(const in_msg m, guild_settings_t settings)
 {
 	if (this->terminating || !creator)
 		return;
@@ -208,12 +214,11 @@ void state_t::handle_message(const in_msg& m)
 	}
 
 	if (gamestate == TRIV_ASK_QUESTION || gamestate == TRIV_FIRST_HINT || gamestate == TRIV_SECOND_HINT || gamestate == TRIV_TIME_UP) {
-		guild_settings_t settings = creator->GetGuildSettings(guild_id);
 
 		/* Flag activity of user */
 		record_activity(m.author_id);
 
-		if (is_insane_round()) {
+		if (is_insane_round(settings)) {
 
 			/* Insane round */
 			std::string answered = utf8lower(removepunct(m.msg), settings.language == "es");
@@ -241,13 +246,10 @@ void state_t::handle_message(const in_msg& m)
 				add_insane_stats(m.author_id);
 
 				if (done) {
-					do_insane_board();
+					do_insane_board(settings);
 					clear_insane_stats();
 					/* Only save state if all answers have been found */
-					if (log_question_index(guild_id, channel_id, round, streak, last_to_answer, gamestate, 0)) {
-						StopGame(settings);
-						return;
-					}
+					log_question_index(settings, guild_id, channel_id, round, streak, last_to_answer, gamestate, 0);
 				}
 			}
 		} else {
@@ -265,14 +267,14 @@ void state_t::handle_message(const in_msg& m)
 			/* Answer on channel is an exact match for the current answer and/or it is numeric, OR, it's non-numeric and has a levenstein distance near enough to the current answer (account for misspellings) */
 			if (!answer.empty() && 
 					(
-					 /* Answer is a direct match */
-					 (trivia_message.length() >= answer.length() && utf8lower(answer, needs_spanish_hack) == utf8lower(trivia_message, needs_spanish_hack))
-					 ||
-					 
-					 (!PCRE("^\\$(\\d+)$").Match(answer) && !PCRE("^(\\d+)$").Match(answer) && (answer.length() > 5 &&
+					/* Answer is a direct match */
+					(trivia_message.length() >= answer.length() && utf8lower(answer, needs_spanish_hack) == utf8lower(trivia_message, needs_spanish_hack))
+					||
+					
+					(!PCRE("^\\$(\\d+)$").Match(answer) && !PCRE("^(\\d+)$").Match(answer) && (answer.length() > 5 &&
 					(utf8lower(answer, needs_spanish_hack) == utf8lower(trivia_message, needs_spanish_hack) ||
 					(trivia_message.length() >= answer.length() && creator->levenstein(trivia_message, answer) < 2))))
-					 )) {
+					)) {
 
 				question.answer = "";
 
@@ -284,7 +286,7 @@ void state_t::handle_message(const in_msg& m)
 				double submit_time = question.recordtime;
 				uint32_t score = this->score;
 
-				std::string ans_message;
+				ans_message.clear();
 
 				ans_message.append(fmt::format(_("NORM_CORRECT", settings), homoglyph(this->original_answer), score, pts, time_to_answer));
 				if (time_to_answer < question.recordtime) {
@@ -296,65 +298,62 @@ void state_t::handle_message(const in_msg& m)
 				uint64_t newscore = get_score(m.author_id);
 				ans_message.append(fmt::format(_("SCORE_UPDATE", settings), m.username, newscore ? newscore : score));
 
-				std::string teamname = get_current_team(m.author_id);
-				if (!empty(teamname)) {
-					add_team_points(teamname, score, m.author_id);
-					uint32_t newteamscore = get_team_points(teamname);
-					ans_message.append(fmt::format(_("TEAM_SCORE", settings), teamname, score, pts, newteamscore));
-				}
+				get_current_team(m.author_id, [this, pts, m, score, settings](uint32_t old_score, std::string teamname) {
+					if (!empty(teamname)) {
+						add_team_points(teamname, score, m.author_id);
+						ans_message.append(fmt::format(_("TEAM_SCORE", settings), teamname, score, pts, old_score + score));
+					}
 
-				if (last_to_answer == m.author_id) {
-					/* Amend current streak */
-					streak++;
-					ans_message.append(fmt::format(_("ON_A_STREAK", settings), m.username, streak));
-					streak_t s = get_streak(m.author_id, guild_id);
-					if (streak > s.personalbest) {
-						ans_message.append(_("BEATEN_BEST", settings));
-						change_streak(m.author_id, guild_id, streak);
+					std::function<void()> finish_message = [this, settings, m]() {
+						bool coin = should_drop_coin();
+						std::string thumbnail = "";
+						if (coin) {
+							/* Player got a coin drop! */
+							thumbnail = "https://triviabot.co.uk/images/coin.gif";
+							/* Award 100 + rand coins */
+							uint32_t coins = 100 + creator->random(0, 50);
+							db::query("INSERT INTO coins (user_id, balance) VALUES(?, ?) ON DUPLICATE KEY UPDATE balance = balance + ?", {m.author_id, coins});
+							ans_message.append("\n\n**").append(fmt::format(_(std::string("COIN_DROP_") + std::to_string(creator->random(1, 4)), settings), m.username, coins, coins)).append("**");
+						}
+
+						/* Update last person to answer */
+						last_to_answer = m.author_id;
+
+						if (round + 1 <= numquestions - 2) {
+							ans_message += "\n\n" + fmt::format(_("COMING_UP", settings), interval);
+						}	
+
+						creator->SimpleEmbed(settings, ":thumbsup:", ans_message, channel_id, fmt::format(_("CORRECT", settings), m.username), question.answer_image, thumbnail);
+						log_question_index(settings, guild_id, channel_id, round, streak, last_to_answer, gamestate, question.id);
+					};
+
+					if (last_to_answer == m.author_id) {
+						/* Amend current streak */
+						streak++;
+						ans_message.append(fmt::format(_("ON_A_STREAK", settings), m.username, streak));
+						get_streak(m.author_id, guild_id, [this, m, settings, finish_message](streak_t s) {
+							if (streak > s.personalbest) {
+								ans_message.append(_("BEATEN_BEST", settings));
+								change_streak(m.author_id, guild_id, streak);
+							} else {
+								ans_message.append(fmt::format(_("NOT_THERE_YET", settings), s.personalbest));
+							}
+							if (streak > s.bigstreak && s.topstreaker != m.author_id) {
+								ans_message.append(fmt::format(_("STREAK_BEATDOWN", settings), m.username, s.topstreaker, streak));
+							}
+							finish_message();
+						});
+						return;
+					} else if (streak > 1 && last_to_answer && last_to_answer != m.author_id) {
+						/* Player beat someone elses streak */
+						ans_message.append(fmt::format(_("STREAK_ENDER", settings), m.username, last_to_answer, streak));
+						streak = 1;
 					} else {
-						ans_message.append(fmt::format(_("NOT_THERE_YET", settings), s.personalbest));
+						streak = 1;
 					}
-					if (streak > s.bigstreak && s.topstreaker != m.author_id) {
-						ans_message.append(fmt::format(_("STREAK_BEATDOWN", settings), m.username, s.topstreaker, streak));
-					}
-				} else if (streak > 1 && last_to_answer && last_to_answer != m.author_id) {
-					/* Player beat someone elses streak */
-					ans_message.append(fmt::format(_("STREAK_ENDER", settings), m.username, last_to_answer, streak));
-					streak = 1;
-				} else {
-					streak = 1;
-				}
 
-				bool coin = should_drop_coin();
-				std::string thumbnail = "";
-				if (coin) {
-					/* Player got a coin drop! */
-					thumbnail = "https://triviabot.co.uk/images/coin.gif";
-					/* TODO: Award 100 + rand coins */
-					uint32_t coins = 100 + creator->random(0, 50);
-					db::resultset rs = db::query("SELECT * FROM coins WHERE user_id = ?", {m.author_id});
-					db::backgroundquery("INSERT INTO coins (user_id, balance) VALUES(?, ?) ON DUPLICATE KEY UPDATE balance = balance + ?", {m.author_id, coins});
-					uint64_t current = 0;
-					if (rs.size()) {
-						current = from_string<uint64_t>(rs[0]["balance"], std::dec);
-					}
-					ans_message.append("\n\n**").append(fmt::format(_(std::string("COIN_DROP_") + std::to_string(creator->random(1, 4)), settings), m.username, coins, current + coins)).append("**");
-
-				}
-
-				/* Update last person to answer */
-				last_to_answer = m.author_id;
-
-                		if (round + 1 <= numquestions - 2) {
-		                        ans_message += "\n\n" + fmt::format(_("COMING_UP", settings), interval);
-		                }	
-
-				creator->SimpleEmbed(settings, ":thumbsup:", ans_message, channel_id, fmt::format(_("CORRECT", settings), m.username), question.answer_image, thumbnail);
-
-				if (log_question_index(guild_id, channel_id, round, streak, last_to_answer, gamestate, question.id)) {
-					StopGame(settings);
-					return;
-				}
+					finish_message();
+				});
 			}
 		}
 	}
@@ -366,76 +365,77 @@ void state_t::handle_message(const in_msg& m)
  */
 void state_t::tick()
 {
-	guild_settings_t settings = creator->GetGuildSettings(guild_id);
-	if (!is_valid()) {
-		log_game_end(guild_id, channel_id);
-		terminating = true;
-		gamestate = TRIV_END;
-		return;
-	}
-	try {
-		switch (gamestate) {
-			case TRIV_ASK_QUESTION:
-				if (!terminating) {
-					if (is_insane_round()) {
-						do_insane_round(false);
-					} else {
-						do_normal_round(false);
-					}
-				}
-			break;
-			case TRIV_FIRST_HINT:
-				if (!terminating) {
-					do_first_hint();
-				}
-			break;
-			case TRIV_SECOND_HINT:
-				if (!terminating) {
-					do_second_hint();
-				}
-			break;
-			case TRIV_TIME_UP:
-				if (!terminating) {
-					do_time_up();
-				}
-			break;
-			case TRIV_ANSWER_CORRECT:
-				if (!terminating) {
-					do_answer_correct();
-				}
-			break;
-			case TRIV_END:
-				do_end_game();
-			break;
-			default:
-				creator->GetBot()->core->log(dpp::ll_warning, fmt::format("Invalid state '{}', ending round.", gamestate));
-				gamestate = TRIV_END;
-				terminating = true;
-			break;
+	creator->GetGuildSettings(guild_id, [this](const guild_settings_t settings) {
+		if (!is_valid()) {
+			log_game_end(guild_id, channel_id);
+			terminating = true;
+			gamestate = TRIV_END;
+			return;
 		}
+		try {
+			switch (gamestate) {
+				case TRIV_ASK_QUESTION:
+					if (!terminating) {
+						if (is_insane_round(settings)) {
+							do_insane_round(false, settings);
+						} else {
+							do_normal_round(false, settings);
+						}
+					}
+				break;
+				case TRIV_FIRST_HINT:
+					if (!terminating) {
+						do_first_hint(settings);
+					}
+				break;
+				case TRIV_SECOND_HINT:
+					if (!terminating) {
+						do_second_hint(settings);
+					}
+				break;
+				case TRIV_TIME_UP:
+					if (!terminating) {
+						do_time_up(settings);
+					}
+				break;
+				case TRIV_ANSWER_CORRECT:
+					if (!terminating) {
+						do_answer_correct(settings);
+					}
+				break;
+				case TRIV_END:
+					do_end_game(settings);
+				break;
+				default:
+					creator->GetBot()->core->log(dpp::ll_warning, fmt::format("Invalid state '{}', ending round.", gamestate));
+					gamestate = TRIV_END;
+					terminating = true;
+				break;
+			}
 
-		if (gamestate == TRIV_ANSWER_CORRECT) {
-			/* Correct answer shortcuts the timer */
-			next_tick = time(NULL);
-		} else {
-			/* Set time for next tick */
-			if (gamestate == TRIV_ASK_QUESTION && interval == TRIV_INTERVAL) {
-				next_tick = time(NULL) + settings.question_interval;
+			if (gamestate == TRIV_ANSWER_CORRECT) {
+				/* Correct answer shortcuts the timer */
+				next_tick = time(NULL);
 			} else {
-				next_tick = time(NULL) + interval;
+				/* Set time for next tick */
+				if (gamestate == TRIV_ASK_QUESTION && interval == TRIV_INTERVAL) {
+					next_tick = time(NULL) + settings.question_interval;
+				} else {
+					next_tick = time(NULL) + interval;
+				}
 			}
 		}
-	}
-	catch (std::exception &e) {
-		creator->GetBot()->core->log(dpp::ll_debug, fmt::format("state_t exception! - {}", e.what()));
-	}
-	catch (...) {
-		creator->GetBot()->core->log(dpp::ll_debug, fmt::format("state_t exception! - non-object"));
-	}
+		catch (std::exception &e) {
+			creator->GetBot()->core->log(dpp::ll_debug, fmt::format("state_t exception! - {}", e.what()));
+		}
+		catch (...) {
+			creator->GetBot()->core->log(dpp::ll_debug, fmt::format("state_t exception! - non-object"));
+		}
+	});
 }
 
 /* State machine event for insane round question */
-void state_t::do_insane_round(bool silent)
+void state_t::do_insane_round(bool silent, guild_settings_t settings)
 {
 	creator->GetBot()->core->log(dpp::ll_debug, fmt::format("do_insane_round: G:{} C:{}", guild_id, channel_id));
 
@@ -445,50 +445,30 @@ void state_t::do_insane_round(bool silent)
 		return;
 	}
 
-	guild_settings_t settings = creator->GetGuildSettings(guild_id);
-
-	// Attempt up to 5 times to fetch an insane round, with 3 second delay between tries
-	std::vector<std::string> answers;
-	uint32_t tries = 0;
-	do {
-		answers = fetch_insane_round(question.id, guild_id, settings);
-		if (answers.size() >= 2) {
-			// Got a valid answer list, bail out
-			tries = 0;
-			break;
-		} else {
-			// Request error, try again
-			tries++;
-			sleep(3);
-		}
-	} while (tries < 5);
-	// 5 or more tries stops the game
-	if (log_question_index(guild_id, channel_id, round, streak, last_to_answer, gamestate, question.id) || tries >= 5) {
-		StopGame(settings);
-		return;
-	}
-
-	insane = {};
-	for (auto n = answers.begin(); n != answers.end(); ++n) {
-		if (n == answers.begin()) {
-			question.question = trim(*n);
-		} else {
-			if (*n != "***END***") {
-				std::string a = utf8lower(removepunct(*n), settings.language == "es");
-				insane[a] = true;
+	fetch_insane_round(guild_id, settings, [this, silent, settings](uint64_t question_id, std::vector<std::string> answers) {
+		insane = {};
+		question.id = question_id;
+		for (auto n = answers.begin(); n != answers.end(); ++n) {
+			if (n == answers.begin()) {
+				question.question = trim(*n);
+			} else {
+				if (*n != "***END***") {
+					std::string a = utf8lower(removepunct(*n), settings.language == "es");
+					insane[a] = true;
+				}
 			}
 		}
-	}
-	insane_left = insane.size();
-	insane_num = insane.size();
-	gamestate = TRIV_FIRST_HINT;
-
-
-	creator->EmbedWithFields(settings, fmt::format(_("QUESTION_COUNTER", settings), round, numquestions - 1), {{_("INSANE_ROUND", settings), fmt::format(_("INSANE_ANS_COUNT", settings), insane_num), false}, {_("QUESTION", settings), question.question, false}}, channel_id, fmt::format("https://triviabot.co.uk/report/?c={}&g={}&insane={}", channel_id, guild_id, question.id + channel_id));
+		insane_left = insane.size();
+		insane_num = insane.size();
+		gamestate = TRIV_FIRST_HINT;
+		if (!silent) {
+			creator->EmbedWithFields(settings, fmt::format(_("QUESTION_COUNTER", settings), round, numquestions - 1), {{_("INSANE_ROUND", settings), fmt::format(_("INSANE_ANS_COUNT", settings), insane_num), false}, {_("QUESTION", settings), question.question, false}}, channel_id, fmt::format("https://triviabot.co.uk/report/?c={}&g={}&insane={}", channel_id, guild_id, question.id + channel_id));
+		}
+	});
 }
 
 /* State machine event for normal round question */
-void state_t::do_normal_round(bool silent)
+void state_t::do_normal_round(bool silent, guild_settings_t settings)
 {
 	creator->GetBot()->core->log(dpp::ll_debug, fmt::format("do_normal_round: G:{} C:{}", guild_id, channel_id));
 
@@ -498,129 +478,125 @@ void state_t::do_normal_round(bool silent)
 		return;
 	}
 
-	guild_settings_t settings = creator->GetGuildSettings(guild_id);
-
 	creator->GetBot()->core->log(dpp::ll_debug, fmt::format("do_normal_round: fetch_question: '{}'", shuffle_list[round - 1]));
-	question = question_t::fetch(from_string<uint64_t>(shuffle_list[round - 1], std::dec), guild_id, settings);
-
-	if (question.id == 0) {
-		gamestate = TRIV_END;
-		score = 0;
-		question.answer = "";
-		creator->GetBot()->core->log(dpp::ll_warning, fmt::format("do_normal_round(): Attempted to retrieve question id {} but got a malformed response. Round was aborted.", shuffle_list[round - 1]));
-		if (!silent) {
-			creator->EmbedWithFields(settings, fmt::format(_("Q_FETCH_ERROR", settings)), {{_("Q_SPOOPY", settings), _("Q_CONTACT_DEVS", settings), false}, {_("ROUND_STOPPING", settings), _("ERROR_BROKE_IT", settings), false}}, channel_id);
+	question_t::fetch(from_string<uint64_t>(shuffle_list[round - 1], std::dec), guild_id, settings, [this, silent, settings](const question_t& q) {
+		this->question = q;
+		if (question.id == 0) {
+			gamestate = TRIV_END;
+			score = 0;
+			question.answer = "";
+			creator->GetBot()->core->log(dpp::ll_warning, fmt::format("do_normal_round(): Attempted to retrieve question id {} but got a malformed response. Round was aborted.", shuffle_list[round - 1]));
+			if (!silent) {
+				creator->EmbedWithFields(settings, fmt::format(_("Q_FETCH_ERROR", settings)), {{_("Q_SPOOPY", settings), _("Q_CONTACT_DEVS", settings), false}, {_("ROUND_STOPPING", settings), _("ERROR_BROKE_IT", settings), false}}, channel_id);
+			}
+			return;
 		}
-		return;
-	}
 
-	if (question.question != "") {
-		asktime = time_f();
-		question.answer = trim(question.answer);
-		original_answer = question.answer;
-		std::string t = creator->conv_num(question.answer, settings);
-		if (creator->is_number(t) && t != "0") {
-			question.answer = t;
-		}
-		question.answer = creator->tidy_num(question.answer);
-		/* Handle hints */
-		if (question.customhint1.empty()) {
-			/* No custom first hint, build one */
-			question.customhint1 = "";
-			if (creator->is_number(question.answer)) {
-				question.customhint1 = creator->MakeFirstHint(question.answer, settings);
-			} else {
-				uint32_t r = creator->random(1, 12);
-				if (settings.language == "bg") {
-					question.customhint1 = fmt::format(_("SCRAMBLED_ANSWER", settings), question.shuffle1);
+		if (question.question != "") {
+			asktime = dpp::utility::time_f();
+			question.answer = trim(question.answer);
+			original_answer = question.answer;
+			std::string t = creator->conv_num(question.answer, settings);
+			if (creator->is_number(t) && t != "0") {
+				question.answer = t;
+			}
+			question.answer = creator->tidy_num(question.answer);
+			/* Handle hints */
+			if (question.customhint1.empty()) {
+				/* No custom first hint, build one */
+				question.customhint1 = "";
+				if (creator->is_number(question.answer)) {
+					question.customhint1 = creator->MakeFirstHint(question.answer, settings);
 				} else {
-					if (r <= 4) {
-						/* Leave only capital letters */
-						question.customhint1 = question.answer;
-						for (int x = 0; x < question.customhint1.length(); ++x) {
-							if ((question.customhint1[x] >= 'a' && question.customhint1[x] <= 'z') || question.customhint1[x] == '1' || question.customhint1[x] == '3' || question.customhint1[x] == '5' || question.customhint1[x]  == '7' || question.customhint1[x] == '9') {
-									question.customhint1[x] = '#';
+					uint32_t r = creator->random(1, 12);
+					if (settings.language == "bg") {
+						question.customhint1 = fmt::format(_("SCRAMBLED_ANSWER", settings), question.shuffle1);
+					} else {
+						if (r <= 4) {
+							/* Leave only capital letters */
+							question.customhint1 = question.answer;
+							for (int x = 0; x < question.customhint1.length(); ++x) {
+								if ((question.customhint1[x] >= 'a' && question.customhint1[x] <= 'z') || question.customhint1[x] == '1' || question.customhint1[x] == '3' || question.customhint1[x] == '5' || question.customhint1[x]  == '7' || question.customhint1[x] == '9') {
+										question.customhint1[x] = '#';
+								}
+							}
+						} else if (r <= 8) {
+							question.customhint1 = creator->letterlong(question.answer, settings);
+						} else {
+							question.customhint1 = fmt::format(_("SCRAMBLED_ANSWER", settings), question.shuffle1);
+						}
+					}
+				}
+			}
+			if (question.customhint2.empty()) {
+				/* No custom second hint, build one */
+				question.customhint2 = "";
+				if (creator->is_number(question.answer) || PCRE("^\\$(\\d+)$").Match(question.answer)) {
+					std::string currency;
+					std::vector<std::string> matches;
+					question.customhint2 = question.answer;
+					if (PCRE("^\\$(\\d+)$").Match(question.customhint2, matches)) {
+						question.customhint2 = matches[1];
+						currency = "$";
+					}
+					question.customhint2 = currency + question.customhint2;
+					uint32_t r = creator->random(1, 13);
+					if ((r < 3 && from_string<uint32_t>(question.customhint2, std::dec) <= 10000)) {
+						question.customhint2 = creator->dec_to_roman(from_string<unsigned int>(question.customhint2, std::dec), settings);
+					} else if ((r >= 3 && r < 6) || from_string<uint32_t>(question.customhint2, std::dec) > 10000) {
+						question.customhint2 = fmt::format(_("HEX", settings), from_string<uint32_t>(question.customhint2, std::dec));
+					} else if (r >= 6 && r <= 10) {
+						question.customhint2 = fmt::format(_("OCT", settings), from_string<uint32_t>(question.customhint2, std::dec));
+					} else {
+						question.customhint2 = fmt::format(_("BIN", settings), from_string<uint32_t>(question.customhint2, std::dec));
+					}
+				} else {
+					uint32_t r = creator->random(1, 12);
+					if (r <= 4 && settings.language != "bg") {
+						/* Transpose only the vowels */
+						question.customhint2 = question.answer;
+						for (int x = 0; x < question.customhint2.length(); ++x) {
+							if (toupper(question.customhint2[x]) == 'A' || toupper(question.customhint2[x]) == 'E' || toupper(question.customhint2[x]) == 'I' || toupper(question.customhint2[x]) == 'O' || toupper(question.customhint2[x]) == 'U' || toupper(question.customhint2[x]) == '2' || toupper(question.customhint2[x]) == '4' || toupper(question.customhint2[x]) == '6' || toupper(question.customhint2[x]) == '8' || toupper(question.customhint2[x]) == '0') {
+								question.customhint2[x] = '#';
 							}
 						}
-					} else if (r <= 8) {
-						question.customhint1 = creator->letterlong(question.answer, settings);
+					} else if ((r >= 5 && r <= 6) || settings.language != "en") {
+						question.customhint2 = creator->vowelcount(question.answer, settings);
 					} else {
-						question.customhint1 = fmt::format(_("SCRAMBLED_ANSWER", settings), question.shuffle1);
+						/* settings.language check for en above, because piglatin only makes sense in english */
+						question.customhint2 = piglatin(question.answer);
 					}
+
 				}
 			}
-		}
-		if (question.customhint2.empty()) {
-			/* No custom second hint, build one */
-			question.customhint2 = "";
-			if (creator->is_number(question.answer) || PCRE("^\\$(\\d+)$").Match(question.answer)) {
-				std::string currency;
-				std::vector<std::string> matches;
-				question.customhint2 = question.answer;
-				if (PCRE("^\\$(\\d+)$").Match(question.customhint2, matches)) {
-					question.customhint2 = matches[1];
-					currency = "$";
-				}
-				question.customhint2 = currency + question.customhint2;
-				uint32_t r = creator->random(1, 13);
-				if ((r < 3 && from_string<uint32_t>(question.customhint2, std::dec) <= 10000)) {
-					question.customhint2 = creator->dec_to_roman(from_string<unsigned int>(question.customhint2, std::dec), settings);
-				} else if ((r >= 3 && r < 6) || from_string<uint32_t>(question.customhint2, std::dec) > 10000) {
-					question.customhint2 = fmt::format(_("HEX", settings), from_string<uint32_t>(question.customhint2, std::dec));
-				} else if (r >= 6 && r <= 10) {
-					question.customhint2 = fmt::format(_("OCT", settings), from_string<uint32_t>(question.customhint2, std::dec));
-				} else {
-					question.customhint2 = fmt::format(_("BIN", settings), from_string<uint32_t>(question.customhint2, std::dec));
-				}
-			} else {
-				uint32_t r = creator->random(1, 12);
-				if (r <= 4 && settings.language != "bg") {
-					/* Transpose only the vowels */
-					question.customhint2 = question.answer;
-					for (int x = 0; x < question.customhint2.length(); ++x) {
-						if (toupper(question.customhint2[x]) == 'A' || toupper(question.customhint2[x]) == 'E' || toupper(question.customhint2[x]) == 'I' || toupper(question.customhint2[x]) == 'O' || toupper(question.customhint2[x]) == 'U' || toupper(question.customhint2[x]) == '2' || toupper(question.customhint2[x]) == '4' || toupper(question.customhint2[x]) == '6' || toupper(question.customhint2[x]) == '8' || toupper(question.customhint2[x]) == '0') {
-							question.customhint2[x] = '#';
-						}
-					}
-				} else if ((r >= 5 && r <= 6) || settings.language != "en") {
-					question.customhint2 = creator->vowelcount(question.answer, settings);
-				} else {
-					/* settings.language check for en above, because piglatin only makes sense in english */
-					question.customhint2 = piglatin(question.answer);
-				}
 
+			if (!silent) {
+				creator->EmbedWithFields(settings, fmt::format(_("QUESTION_COUNTER", settings), round, numquestions - 1), {{_("CATEGORY", settings), question.catname, false}, {_("QUESTION", settings), question.question, false}}, channel_id, fmt::format("https://triviabot.co.uk/report/?c={}&g={}&normal={}", channel_id, guild_id, question.id + channel_id), question.question_image);
+			}
+
+		} else {
+			if (!silent) {
+				creator->SimpleEmbed(settings, ":ghost:", _("BRAIN_BROKE_IT", settings), channel_id, _("FETCH_Q", settings));
 			}
 		}
 
-		if (!silent) {
-			creator->EmbedWithFields(settings, fmt::format(_("QUESTION_COUNTER", settings), round, numquestions - 1), {{_("CATEGORY", settings), question.catname, false}, {_("QUESTION", settings), question.question, false}}, channel_id, fmt::format("https://triviabot.co.uk/report/?c={}&g={}&normal={}", channel_id, guild_id, question.id + channel_id), question.question_image);
+		score = (hintless ? 6 : (interval == TRIV_INTERVAL ? 4 : 8));
+		/* Advance state to first hint, if hints are enabled, otherwise go straight to time up */
+		if (hintless) {
+			gamestate = TRIV_TIME_UP;
+		} else {
+			gamestate = TRIV_FIRST_HINT;
 		}
-
-	} else {
-		if (!silent) {
-			creator->SimpleEmbed(settings, ":ghost:", _("BRAIN_BROKE_IT", settings), channel_id, _("FETCH_Q", settings));
-		}
-	}
-
-	score = (hintless ? 6 : (interval == TRIV_INTERVAL ? 4 : 8));
-	/* Advance state to first hint, if hints are enabled, otherwise go straight to time up */
-	if (hintless) {
-		gamestate = TRIV_TIME_UP;
-	} else {
-		gamestate = TRIV_FIRST_HINT;
-	}
-	if (log_question_index(guild_id, channel_id, round, streak, last_to_answer, gamestate, question.id)) {
-		StopGame(settings);
-	}
+		log_question_index(settings, guild_id, channel_id, round, streak, last_to_answer, gamestate, question.id);
+	});
 
 }
 
 /* State machine event for first hint */
-void state_t::do_first_hint()
+void state_t::do_first_hint(guild_settings_t settings)
 {
 	creator->GetBot()->core->log(dpp::ll_debug, fmt::format("do_first_hint: G:{} C:{}", guild_id, channel_id));
-	guild_settings_t settings = creator->GetGuildSettings(guild_id);
-	if (is_insane_round()) {
+	if (is_insane_round(settings)) {
 		/* Insane round countdown */
 		creator->SimpleEmbed(settings, ":clock10:", fmt::format(_("SECS_LEFT", settings), interval * 2), channel_id);
 	} else {
@@ -629,40 +605,62 @@ void state_t::do_first_hint()
 	}
 	gamestate = TRIV_SECOND_HINT;
 	score = (interval == TRIV_INTERVAL ? 2 : 4);
-	if (log_question_index(guild_id, channel_id, round, streak, last_to_answer, gamestate, question.id)) {
-		StopGame(settings);
-	}
+	log_question_index(settings, guild_id, channel_id, round, streak, last_to_answer, gamestate, question.id);
 }
 
-void state_t::do_insane_board() {
+void state_t::do_insane_board(guild_settings_t settings) {
+
+	/* No stats if no players */
+	if (insane_round_stats.empty()) {
+		return;
+	}
+
 	/* Last round was an insane round, display insane round score table embed if there were any participants */
-	std::string desc;
-	uint32_t i = 1;
-	std::multimap<uint64_t, dpp::snowflake> ordered;
+	ordered.clear();
+
 	/* Sort by largest first */
 	for (auto s = insane_round_stats.begin(); s != insane_round_stats.end(); ++s) {
 		ordered.insert(std::make_pair(s->second, s->first));
 	}
+	std::string ib_in;
 	for (std::multimap<uint64_t, dpp::snowflake>::reverse_iterator sc = ordered.rbegin(); sc != ordered.rend(); ++sc) {
-		db::resultset info = db::query("SELECT username, discriminator, get_emojis(trivia_user_cache.snowflake_id) as emojis FROM trivia_user_cache WHERE snowflake_id = ?", {sc->second});
+		ib_in += std::to_string(sc->second) + ",";
+	}
+	if (ib_in.length() > 0) {
+		ib_in = ib_in.substr(0, ib_in.length() - 1);
+	}
+
+	/* Capture a copy, as the state can dissapear from under the lambda */
+	dpp::snowflake _channel_id = this->channel_id;
+	TriviaModule* _creator = this->creator;
+	dpp::snowflake _guild_id = guild_id;
+
+	db::query("SELECT username, discriminator, get_emojis(trivia_user_cache.snowflake_id) as emojis FROM trivia_user_cache WHERE snowflake_id IN (" + ib_in + ")", {}, [this, _channel_id, _creator, _guild_id, settings](db::resultset info) {
+		std::string desc;
+		uint32_t i = 1;
 		if (info.size()) {
-			desc += fmt::format("**#{0}** `{1}#{2:04d}` (*{3}*) {4}\n", i, info[0]["username"], from_string<uint32_t>(info[0]["discriminator"], std::dec), Comma(sc->first), info[0]["emojis"]);
+			for (std::multimap<uint64_t, dpp::snowflake>::reverse_iterator sc = ordered.rbegin(); sc != ordered.rend(); ++sc) {
+				for (auto& inf : info) {
+					if (inf["id"] == std::to_string(sc->second)) {
+						desc += fmt::format("**#{0}** `{1}#{2:04d}` (*{3}*) {4}\n", i, inf["username"], from_string<uint32_t>(inf["discriminator"], std::dec), Comma(sc->first), inf["emojis"]);
+						break;
+					}
+				}
+				i++;
+			}
 		}
-		i++;
-	}
-	if (!desc.empty()) {
-		guild_settings_t settings = creator->GetGuildSettings(guild_id);
-		creator->SimpleEmbed(settings, "", desc, channel_id, _("INSANESTATS", settings));
-	}
-	db::backgroundquery("DELETE FROM insane_round_statistics WHERE channel_id = '?'", {channel_id});
+		if (!desc.empty()) {
+			_creator->SimpleEmbed(settings, "", desc, _channel_id, _creator->_("INSANESTATS", settings));
+		}
+		db::query("DELETE FROM insane_round_statistics WHERE channel_id = '?'", {_channel_id});
+	});
 }
 
 /* State machine event for second hint */
-void state_t::do_second_hint()
+void state_t::do_second_hint(guild_settings_t settings)
 {
 	creator->GetBot()->core->log(dpp::ll_debug, fmt::format("do_second_hint: G:{} C:{}", guild_id, channel_id));
-	guild_settings_t settings = creator->GetGuildSettings(guild_id);
-	if (is_insane_round()) {
+	if (is_insane_round(settings)) {
 		/* Insane round countdown */
 		creator->SimpleEmbed(settings, ":clock1030:", fmt::format(_("SECS_LEFT", settings), interval), channel_id);
 	} else {
@@ -671,28 +669,25 @@ void state_t::do_second_hint()
 	}
 	gamestate = TRIV_TIME_UP;
 	score = (interval == TRIV_INTERVAL ? 1 : 2);
-	if (log_question_index(guild_id, channel_id, round, streak, last_to_answer, gamestate, question.id)) {
-		StopGame(settings);
-	}
+	log_question_index(settings, guild_id, channel_id, round, streak, last_to_answer, gamestate, question.id);
 }
 
 /* State machine event for question time up */
-void state_t::do_time_up()
+void state_t::do_time_up(guild_settings_t settings)
 {
 	creator->GetBot()->core->log(dpp::ll_debug, fmt::format("do_time_up: G:{} C:{}", guild_id, channel_id));
-	guild_settings_t settings = creator->GetGuildSettings(guild_id);
 
 	std::string content;
 	std::string title;
 	std::string image;
 
 	{
-		if (is_insane_round()) {
+		if (is_insane_round(settings)) {
 			/* Insane round */
 			uint32_t found = insane_num - insane_left;
 			content += fmt::format(_("INSANE_FOUND", settings), found);
 			title = _("TIME_UP", settings);
-			do_insane_board();
+			do_insane_board(settings);
 			clear_insane_stats();
 
 		} else if (question.answer != "") {
@@ -704,7 +699,7 @@ void state_t::do_time_up()
 
 		}
 		/* FIX: You can only lose your streak on a non-insane round */
-		if (question.answer != "" && !is_insane_round() && streak > 1 && last_to_answer) {
+		if (question.answer != "" && !is_insane_round(settings) && streak > 1 && last_to_answer) {
 			content += "\n\n" + fmt::format(_("STREAK_SMASHED", settings), fmt::format("<@{}>", last_to_answer), streak);
 		}
 
@@ -712,7 +707,7 @@ void state_t::do_time_up()
 		if (question.answer != "") {
 			question.answer = "";
 			/* For non-insane rounds reset the streak back to 1 */
-			if (!is_insane_round()) {
+			if (!is_insane_round(settings)) {
 				last_to_answer = 0;
 				streak = 1;
 			}
@@ -727,35 +722,28 @@ void state_t::do_time_up()
 
 	gamestate = (round > numquestions ? TRIV_END : TRIV_ASK_QUESTION);
 	round++;
-	if (log_question_index(guild_id, channel_id, round, streak, last_to_answer, gamestate, question.id)) {
-		StopGame(settings);
-	}
+	log_question_index(settings, guild_id, channel_id, round, streak, last_to_answer, gamestate, question.id);
 }
 
 /* State machine event for answer correct */
-void state_t::do_answer_correct()
+void state_t::do_answer_correct(guild_settings_t settings)
 {
 	creator->GetBot()->core->log(dpp::ll_debug, fmt::format("do_answer_correct: G:{} C:{}", guild_id, channel_id));
-
-	guild_settings_t settings = creator->GetGuildSettings(guild_id);
 
 	round++;
 	question.answer = "";
 	gamestate = TRIV_ASK_QUESTION;
 
-	if (log_question_index(guild_id, channel_id, round, streak, last_to_answer, gamestate, question.id)) {
-		StopGame(settings);
-	}
+	log_question_index(settings, guild_id, channel_id, round, streak, last_to_answer, gamestate, question.id);
 }
 
 /* State machine event for end of game */
-void state_t::do_end_game()
+void state_t::do_end_game(guild_settings_t settings)
 {
 	creator->GetBot()->core->log(dpp::ll_debug, fmt::format("do_end_game: G:{} C:{}", guild_id, channel_id));
 
 	log_game_end(guild_id, channel_id);
 
-	guild_settings_t settings = creator->GetGuildSettings(guild_id);
 	creator->GetBot()->core->log(dpp::ll_info, fmt::format("End of game on guild {}, channel {} after {} seconds", guild_id, channel_id, time(NULL) - start_time));
 	creator->SimpleEmbed(settings, ":stop_button:", fmt::format(_("END1", settings), numquestions - 1), channel_id, _("END_TITLE", settings));
 	creator->show_stats("", 0, guild_id, channel_id);
@@ -764,9 +752,8 @@ void state_t::do_end_game()
 }
 
 /* Returns true if the current round is an insane round */
-bool state_t::is_insane_round()
+bool state_t::is_insane_round(guild_settings_t s)
 {
 	/* Insane rounds are every tenth question */
-	guild_settings_t s = creator->GetGuildSettings(guild_id);
 	return (s.disable_insane_rounds == false && (round % 10 == 0));
 }

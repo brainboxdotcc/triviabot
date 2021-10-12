@@ -4,6 +4,7 @@
 #include <map>
 #include <thread>
 #include <deque>
+#include <mutex>
 
 enum trivia_state_t
 {
@@ -27,6 +28,8 @@ class in_msg
 	in_msg(const std::string &m, uint64_t author, bool mention, const std::string &username, dpp::user u, dpp::guild_member gm);
 };
 
+typedef std::function<void(const struct question_t&)> question_fetch_t;
+
 struct question_t
 {
 	uint64_t id;
@@ -48,7 +51,7 @@ struct question_t
 	question_t(uint64_t _id, const std::string &_question, const std::string &_answer, const std::string &_hint1, const std::string &_hint2, const std::string &_catname, time_t _lastasked, uint32_t _timesasked,
 		const std::string &_lastcorrect, double _record_time, const std::string &_shuffle1, const std::string &_shuffle2, const std::string &_question_image, const std::string &_answer_image);
 
-	static question_t fetch(uint64_t id, uint64_t guild_id, const class guild_settings_t &settings);
+	static void fetch(uint64_t id, uint64_t guild_id, const class guild_settings_t &settings, question_fetch_t callback);
 };
 
 class state_t
@@ -58,7 +61,7 @@ class state_t
 	uint32_t get_activity();
 	void record_activity(uint64_t user_id);
 	bool should_drop_coin();
-	void do_insane_board();
+	void do_insane_board(guild_settings_t settings);
 
  public:
 	time_t next_tick;
@@ -86,24 +89,26 @@ class state_t
 	std::map<uint64_t, time_t> activity;
 	std::unordered_map<dpp::snowflake, uint64_t> scores;
 	std::unordered_map<dpp::snowflake, uint32_t> insane_round_stats;
+	std::string ans_message;
+	std::multimap<uint64_t, dpp::snowflake> ordered;
 
 	state_t(const state_t &) = default;
 	state_t();
 	state_t(class TriviaModule* _creator, uint32_t questions, uint32_t currstreak, uint64_t lastanswered, uint32_t question_index, uint32_t _interval, uint64_t channel_id, bool hintless, const std::vector<std::string> &shuffle_list, trivia_state_t startstate,  uint64_t guild_id);
 	~state_t();
 	void tick();
-	void queue_message(const std::string &message, uint64_t author_id, const std::string &username, bool mentions_bot, dpp::user u, dpp::guild_member gm);
-	void handle_message(const in_msg& m);
+	void queue_message(const std::string &message, uint64_t author_id, const std::string &username, bool mentions_bot, dpp::user u, dpp::guild_member gm, guild_settings_t settings);
+	void handle_message(const in_msg m, guild_settings_t c_settings);
 	bool is_valid();
-	void do_insane_round(bool silent);
-	void do_normal_round(bool silent);
-	void do_first_hint();
-	void do_second_hint();
-	void do_time_up();
-	void do_answer_correct();
-	void do_end_game();
+	void do_insane_round(bool silent, guild_settings_t settings);
+	void do_normal_round(bool silent, guild_settings_t settings);
+	void do_first_hint(guild_settings_t settings);
+	void do_second_hint(guild_settings_t settings);
+	void do_time_up(guild_settings_t settings);
+	void do_answer_correct(guild_settings_t settings);
+	void do_end_game(guild_settings_t settings);
 	void StopGame(const guild_settings_t &settings);
-	bool is_insane_round();
+	bool is_insane_round(guild_settings_t settings);
 	uint64_t get_score(dpp::snowflake uid);
 	void set_score(dpp::snowflake uid, uint64_t score);
 	void add_score(dpp::snowflake uid, uint64_t addition);

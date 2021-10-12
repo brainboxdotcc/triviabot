@@ -42,17 +42,17 @@ void command_coins_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 {
 	dpp::snowflake user_id = 0;
 	tokens >> user_id;
-	uint64_t balance = 0;
 	if (!user_id) {
 		user_id = cmd.author_id;
 	}
 
-	db::resultset coins = db::query("SELECT * FROM coins WHERE user_id = '?'", {user_id});
-	if (coins.size()) {
-        	balance = from_string<uint64_t>(coins[0]["balance"], std::dec);
-	}
-
-	std::string body = fmt::format(_("COINTOTAL", settings), balance) + "\n\n[" + _("SHOPURLTEXT", settings) + "](https://triviabot.co.uk/coinshop/)";
-	creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, "", body, cmd.channel_id, _("YOURWALLET", settings), "", "https://triviabot.co.uk/images/coin.gif");
+	db::query("SELECT * FROM coins WHERE user_id = '?'", {user_id}, [cmd, this, settings, user_id](db::resultset coins) {
+		uint64_t balance = 0;
+		if (coins.size()) {
+			balance = from_string<uint64_t>(coins[0]["balance"], std::dec);
+		}
+		std::string body = fmt::format(_("COINTOTAL", settings), balance) + "\n\n[" + _("SHOPURLTEXT", settings) + "](https://triviabot.co.uk/coinshop/)";
+		creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, "", body, cmd.channel_id, _("YOURWALLET", settings), "", "https://triviabot.co.uk/images/coin.gif");
+	});
 	creator->CacheUser(cmd.author_id, cmd.user, cmd.member, cmd.channel_id);
 }

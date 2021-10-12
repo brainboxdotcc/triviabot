@@ -227,87 +227,89 @@ void TriviaModule::SetupCommands()
 
 		/* Add options to the language command parameter from the database */
 		command_t* lang_command = commands["language"];
-		db::resultset langs = db::query("SELECT * FROM languages WHERE live = 1 ORDER BY id", {});
-		lang_command->opts[0].choices.clear();
-		for (auto & row : langs) {
-			lang_command->opts[0].add_choice(dpp::command_option_choice(row["name"], row["isocode"]));
-		}
-
-		/* Add options to the categories command parameter from the database */
-		command_t* cats_command = commands["categories"];
-		db::resultset q = db::query("SELECT id FROM categories WHERE disabled != 1", {});
-		size_t rows = q.size();
-		uint32_t length = 25;
-		uint32_t pages = ceil((float)rows / (float)length);
-		cats_command->opts[0].choices.clear();
-		for (uint32_t r = 1; r <= pages; ++r) {
-			cats_command->opts[0].add_choice(dpp::command_option_choice(fmt::format("Page {}", r), std::to_string(r)));
-		}
-
-
-		/* Two lists, one for the main set of global commands, and one for admin commands */
-		std::vector<dpp::slashcommand> slashcommands;
-		std::vector<dpp::slashcommand> adminslash;
-
-		/* Iterate the list and build dpp::slashcommand object vector */
-		for (auto & c : commands) {
-			if (!c.second->description.empty()) {
-				dpp::slashcommand sc;
-				sc.set_name(c.first).set_description(c.second->description).set_application_id(from_string<uint64_t>(bot->GetConfig("application_id"), std::dec));
-				for (auto & o : c.second->opts) {
-					sc.add_option(o);
-				}
-				if (c.second->admin) {
-					adminslash.push_back(sc);
-				} else {
-					slashcommands.push_back(sc);
-				}
+		db::query("SELECT * FROM languages WHERE live = 1 ORDER BY id", {}, [this, lang_command](db::resultset langs) {
+			lang_command->opts[0].choices.clear();
+			for (auto & row : langs) {
+				lang_command->opts[0].add_choice(dpp::command_option_choice(row["name"], row["isocode"]));
 			}
-		}
 
-		/* Add externals */
-		DoExternalCommands(slashcommands, adminslash);
+			/* Add options to the categories command parameter from the database */
+			command_t* cats_command = commands["categories"];
+			db::query("SELECT id FROM categories WHERE disabled != 1", {}, [this, cats_command](db::resultset q) {
+				size_t rows = q.size();
+				uint32_t length = 25;
+				uint32_t pages = ceil((float)rows / (float)length);
+				cats_command->opts[0].choices.clear();
+				for (uint32_t r = 1; r <= pages; ++r) {
+					cats_command->opts[0].add_choice(dpp::command_option_choice(fmt::format("Page {}", r), std::to_string(r)));
+				}
 
-		bot->core->log(dpp::ll_info, fmt::format("Registering {} global and {} local slash commands", slashcommands.size(), adminslash.size()));
 
-		/* Now register all the commands */
-		if (bot->IsDevMode()) {
-			/*
-			 * Development mode - all commands are guild commands, and all are attached to the test server.
-			 */
-			std::copy(std::begin(adminslash), std::end(adminslash), std::back_inserter(slashcommands));
-			bot->core->guild_bulk_command_create(slashcommands, from_string<uint64_t>(bot->GetConfig("test_server"), std::dec), [this](const dpp::confirmation_callback_t &callback) {
-				if (callback.is_error()) {
-					this->bot->core->log(dpp::ll_error, fmt::format("Failed to register guild slash commands (dev mode, main set): {}", callback.http_info.body));
+				/* Two lists, one for the main set of global commands, and one for admin commands */
+				std::vector<dpp::slashcommand> slashcommands;
+				std::vector<dpp::slashcommand> adminslash;
+
+				/* Iterate the list and build dpp::slashcommand object vector */
+				for (auto & c : commands) {
+					if (!c.second->description.empty()) {
+						dpp::slashcommand sc;
+						sc.set_name(c.first).set_description(c.second->description).set_application_id(from_string<uint64_t>(bot->GetConfig("application_id"), std::dec));
+						for (auto & o : c.second->opts) {
+							sc.add_option(o);
+						}
+						if (c.second->admin) {
+							adminslash.push_back(sc);
+						} else {
+							slashcommands.push_back(sc);
+						}
+					}
+				}
+
+				/* Add externals */
+				DoExternalCommands(slashcommands, adminslash);
+
+				bot->core->log(dpp::ll_info, fmt::format("Registering {} global and {} local slash commands", slashcommands.size(), adminslash.size()));
+
+				/* Now register all the commands */
+				if (bot->IsDevMode()) {
+					/*
+					* Development mode - all commands are guild commands, and all are attached to the test server.
+					*/
+					std::copy(std::begin(adminslash), std::end(adminslash), std::back_inserter(slashcommands));
+					bot->core->guild_bulk_command_create(slashcommands, from_string<uint64_t>(bot->GetConfig("test_server"), std::dec), [this](const dpp::confirmation_callback_t &callback) {
+						if (callback.is_error()) {
+							this->bot->core->log(dpp::ll_error, fmt::format("Failed to register guild slash commands (dev mode, main set): {}", callback.http_info.body));
+						} else {
+							dpp::slashcommand_map sm = std::get<dpp::slashcommand_map>(callback.value);
+							this->bot->core->log(dpp::ll_info, fmt::format("Registered {} guild commands to test server", sm.size()));
+						}
+
+					});
 				} else {
-					dpp::slashcommand_map sm = std::get<dpp::slashcommand_map>(callback.value);
-					this->bot->core->log(dpp::ll_info, fmt::format("Registered {} guild commands to test server", sm.size()));
+					/*
+					* Live mode/test mode - main set are global slash commands (with their related cache delay, ew)
+					* Admin set are guild commands attached to the support server.
+					*/
+					bot->core->global_bulk_command_create(slashcommands, [this](const dpp::confirmation_callback_t &callback) {
+						if (callback.is_error()) {
+							this->bot->core->log(dpp::ll_error, fmt::format("Failed to register global slash commands (live mode, main set): {}", callback.http_info.body));
+						} else {
+							dpp::slashcommand_map sm = std::get<dpp::slashcommand_map>(callback.value);
+							this->bot->core->log(dpp::ll_info, fmt::format("Registered {} global commands", sm.size()));
+						}
+					});
+					bot->core->guild_bulk_command_create(adminslash, from_string<uint64_t>(bot->GetConfig("home"), std::dec), [this](const dpp::confirmation_callback_t &callback) {
+						if (callback.is_error()) {
+							this->bot->core->log(dpp::ll_error, fmt::format("Failed to register guild slash commands (live mode, admin set): {}", callback.http_info.body));
+						} else {
+							dpp::slashcommand_map sm = std::get<dpp::slashcommand_map>(callback.value);
+							this->bot->core->log(dpp::ll_info, fmt::format("Registered {} guild commands to support server", sm.size()));
+						}
+					});
 				}
 
 			});
-		} else {
-			/*
-			 * Live mode/test mode - main set are global slash commands (with their related cache delay, ew)
-			 * Admin set are guild commands attached to the support server.
-			 */
-			bot->core->global_bulk_command_create(slashcommands, [this](const dpp::confirmation_callback_t &callback) {
-				if (callback.is_error()) {
-					this->bot->core->log(dpp::ll_error, fmt::format("Failed to register global slash commands (live mode, main set): {}", callback.http_info.body));
-				} else {
-					dpp::slashcommand_map sm = std::get<dpp::slashcommand_map>(callback.value);
-					this->bot->core->log(dpp::ll_info, fmt::format("Registered {} global commands", sm.size()));
-				}
-			});
-			bot->core->guild_bulk_command_create(adminslash, from_string<uint64_t>(bot->GetConfig("home"), std::dec), [this](const dpp::confirmation_callback_t &callback) {
-				if (callback.is_error()) {
-					this->bot->core->log(dpp::ll_error, fmt::format("Failed to register guild slash commands (live mode, admin set): {}", callback.http_info.body));
-				} else {
-					dpp::slashcommand_map sm = std::get<dpp::slashcommand_map>(callback.value);
-					this->bot->core->log(dpp::ll_info, fmt::format("Registered {} guild commands to support server", sm.size()));
-				}
-			});
-		}
-
+		});
 	}
 
 	/* Hook interaction event */
@@ -379,107 +381,66 @@ void TriviaModule::DoExternalCommands(std::vector<dpp::slashcommand>& normal, st
 
 dpp::user dashboard_dummy;
 
-void TriviaModule::handle_command(const in_cmd &cmd) {
+void TriviaModule::handle_command(const in_cmd cmd) {
 
 	try {
 		if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == cmd.guild_id) {
 	
-			std::stringstream tokens(cmd.msg);
-			std::string base_command;
-			tokens >> base_command;
-	
-			dpp::channel* c = dpp::find_channel(cmd.channel_id);
-			dpp::user* user = (dpp::user*)&cmd.user;
-			if (cmd.from_dashboard) {
-				dashboard_dummy.username = "Dashboard";
-				dashboard_dummy.flags = 0;
-				user = &dashboard_dummy;
-			}
-			if (!c) {
-				return;
-			}
-	
-			guild_settings_t settings = GetGuildSettings(cmd.guild_id);
-	
-			/* Check for moderator status - first check if owner */
-			dpp::guild* g = dpp::find_guild(cmd.guild_id);
-			bool moderator = (g && (cmd.from_dashboard || g->owner_id == cmd.author_id));
-			/* Now iterate the list of moderator roles from settings */
-			if (!moderator) {
-				if (g) {
-					for (auto modrole = settings.moderator_roles.begin(); modrole != settings.moderator_roles.end(); ++modrole) {
-						/* Check for when user cache is off, and guild member passed in via the message */
-						for (auto role = cmd.member.roles.begin(); role != cmd.member.roles.end(); ++role) {
-							if (*role == *modrole) {
-								moderator = true;
+			GetGuildSettings(cmd.guild_id, [this, cmd](const guild_settings_t c_settings) {
+				guild_settings_t settings = c_settings;
+
+				std::stringstream tokens(cmd.msg);
+				std::string base_command;
+				tokens >> base_command;
+
+				dpp::channel* c = dpp::find_channel(cmd.channel_id);
+				dpp::user* user = (dpp::user*)&cmd.user;
+				if (cmd.from_dashboard) {
+					dashboard_dummy.username = "Dashboard";
+					dashboard_dummy.flags = 0;
+					user = &dashboard_dummy;
+				}
+				if (!c) {
+					return;
+				}
+
+				/* Check for moderator status - first check if owner */
+				dpp::guild* g = dpp::find_guild(cmd.guild_id);
+				bool moderator = (g && (cmd.from_dashboard || g->owner_id == cmd.author_id));
+				/* Now iterate the list of moderator roles from settings */
+				if (!moderator) {
+					if (g) {
+						for (auto modrole = settings.moderator_roles.begin(); modrole != settings.moderator_roles.end(); ++modrole) {
+							/* Check for when user cache is off, and guild member passed in via the message */
+							for (auto role = cmd.member.roles.begin(); role != cmd.member.roles.end(); ++role) {
+								if (*role == *modrole) {
+									moderator = true;
+									break;
+								}
+							}
+
+							if (moderator) {
+								/* Short-circuit out of outer loop */
 								break;
 							}
 						}
-
-						if (moderator) {
-							/* Short-circuit out of outer loop */
-							break;
-						}
 					}
 				}
-			}
-	
-			base_command = lowercase(base_command);
-	
-			/* Support for old-style commands e.g. !trivia start instead of !start */
-			if (base_command == "trivia") {
-				tokens >> base_command;
+		
 				base_command = lowercase(base_command);
-			}
-	
-			auto command = commands.find(base_command);
-			if (command != commands.end()) {
-
-				bool can_execute = false;
+		
+				/* Support for old-style commands e.g. !trivia start instead of !start */
+				if (base_command == "trivia") {
+					tokens >> base_command;
+					base_command = lowercase(base_command);
+				}
+		
 				auto command = commands.find(base_command);
 				if (command != commands.end()) {
-					std::lock_guard<std::mutex> cmd_lock(cmdmutex);
-					auto check = limits.find(cmd.channel_id);
-					if (check == limits.end()) {
-						can_execute = true;
-						limits[cmd.channel_id] = time(NULL) + PER_CHANNEL_RATE_LIMIT;
-					} else if (time(NULL) > check->second) {
-						can_execute = true;
-						limits[cmd.channel_id] = time(NULL) + PER_CHANNEL_RATE_LIMIT;
-					}
-				}
 
-				if (can_execute || cmd.from_dashboard) {
-					bot->core->log(dpp::ll_debug, fmt::format("command_t '{}' routed to handler", base_command));
-					command->second->call(cmd, tokens, settings, cmd.username, moderator, c, user);
-				} else {
-					/* Display rate limit message, but only one per rate limit period */
-					bool emit_rl_warning = false;
-					std::lock_guard<std::mutex> cmd_lock(cmdmutex);
-
-					auto check = last_rl_warning.find(cmd.channel_id);
-					if (check == last_rl_warning.end()) {
-						emit_rl_warning = true;
-						last_rl_warning[cmd.channel_id] = time(NULL) + PER_CHANNEL_RATE_LIMIT;
-					} else if (time(NULL) > check->second) {
-						emit_rl_warning = true;
-						last_rl_warning[cmd.channel_id] = time(NULL) + PER_CHANNEL_RATE_LIMIT;
-					}
-					if (emit_rl_warning) {
-						SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":snail:", fmt::format(_("RATELIMITED", settings), PER_CHANNEL_RATE_LIMIT, base_command), cmd.channel_id, _("WOAHTHERE", settings));
-					}
-					bot->core->log(dpp::ll_debug, fmt::format("command_t '{}' NOT routed to handler on channel {}, limiting", base_command, cmd.channel_id));
-				}
-			} else {
-				/* Custom commands handled completely by the API as a REST call */
-				bool command_exists = false;
-				{
-					std::lock_guard<std::mutex> cmd_list_lock(cmds_mutex);
-					command_exists = (std::find(api_commands.begin(), api_commands.end(), trim(lowercase(base_command))) != api_commands.end());
-				}
-				if (command_exists) {
 					bool can_execute = false;
-					{
+					auto command = commands.find(base_command);
+					if (command != commands.end()) {
 						std::lock_guard<std::mutex> cmd_lock(cmdmutex);
 						auto check = limits.find(cmd.channel_id);
 						if (check == limits.end()) {
@@ -491,12 +452,9 @@ void TriviaModule::handle_command(const in_cmd &cmd) {
 						}
 					}
 
-					if (can_execute) {
-						std::string rest;
-						std::getline(tokens, rest);
-						rest = trim(rest);
-						CacheUser(cmd.author_id, cmd.user, cmd.member, cmd.channel_id);
-						custom_command(cmd.interaction_token, cmd.command_id, settings, this, base_command, trim(rest), cmd.author_id, cmd.channel_id, cmd.guild_id);
+					if (can_execute || cmd.from_dashboard) {
+						bot->core->log(dpp::ll_debug, fmt::format("command_t '{}' routed to handler", base_command));
+						command->second->call(cmd, tokens, settings, cmd.username, moderator, c, user);
 					} else {
 						/* Display rate limit message, but only one per rate limit period */
 						bool emit_rl_warning = false;
@@ -513,13 +471,60 @@ void TriviaModule::handle_command(const in_cmd &cmd) {
 						if (emit_rl_warning) {
 							SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":snail:", fmt::format(_("RATELIMITED", settings), PER_CHANNEL_RATE_LIMIT, base_command), cmd.channel_id, _("WOAHTHERE", settings));
 						}
-
-						bot->core->log(dpp::ll_debug, fmt::format("Command '{}' not sent to API, rate limited", trim(lowercase(base_command))));
+						bot->core->log(dpp::ll_debug, fmt::format("command_t '{}' NOT routed to handler on channel {}, limiting", base_command, cmd.channel_id));
 					}
 				} else {
-					bot->core->log(dpp::ll_debug, fmt::format("Command '{}' not known to API", trim(lowercase(base_command))));
+					/* Custom commands handled completely by the API as a REST call */
+					bool command_exists = false;
+					{
+						std::lock_guard<std::mutex> cmd_list_lock(cmds_mutex);
+						command_exists = (std::find(api_commands.begin(), api_commands.end(), trim(lowercase(base_command))) != api_commands.end());
+					}
+					if (command_exists) {
+						bool can_execute = false;
+						{
+							std::lock_guard<std::mutex> cmd_lock(cmdmutex);
+							auto check = limits.find(cmd.channel_id);
+							if (check == limits.end()) {
+								can_execute = true;
+								limits[cmd.channel_id] = time(NULL) + PER_CHANNEL_RATE_LIMIT;
+							} else if (time(NULL) > check->second) {
+								can_execute = true;
+								limits[cmd.channel_id] = time(NULL) + PER_CHANNEL_RATE_LIMIT;
+							}
+						}
+
+						if (can_execute) {
+							std::string rest;
+							std::getline(tokens, rest);
+							rest = trim(rest);
+							CacheUser(cmd.author_id, cmd.user, cmd.member, cmd.channel_id);
+							custom_command(cmd.interaction_token, cmd.command_id, settings, this, base_command, trim(rest), cmd.author_id, cmd.channel_id, cmd.guild_id);
+						} else {
+							/* Display rate limit message, but only one per rate limit period */
+							bool emit_rl_warning = false;
+							std::lock_guard<std::mutex> cmd_lock(cmdmutex);
+
+							auto check = last_rl_warning.find(cmd.channel_id);
+							if (check == last_rl_warning.end()) {
+								emit_rl_warning = true;
+								last_rl_warning[cmd.channel_id] = time(NULL) + PER_CHANNEL_RATE_LIMIT;
+							} else if (time(NULL) > check->second) {
+								emit_rl_warning = true;
+								last_rl_warning[cmd.channel_id] = time(NULL) + PER_CHANNEL_RATE_LIMIT;
+							}
+							if (emit_rl_warning) {
+								SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":snail:", fmt::format(_("RATELIMITED", settings), PER_CHANNEL_RATE_LIMIT, base_command), cmd.channel_id, _("WOAHTHERE", settings));
+							}
+
+							bot->core->log(dpp::ll_debug, fmt::format("Command '{}' not sent to API, rate limited", trim(lowercase(base_command))));
+						}
+					} else {
+						bot->core->log(dpp::ll_debug, fmt::format("Command '{}' not known to API", trim(lowercase(base_command))));
+					}
 				}
-			}
+			});
+	
 		} else {
 			bot->core->log(dpp::ll_debug, fmt::format("Dropped command {} due to test mode", cmd.msg));
 		}

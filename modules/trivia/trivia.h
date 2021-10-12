@@ -24,6 +24,7 @@
 
 #include <dpp/dpp.h>
 #include <sporks/modules.h>
+#include <sporks/database.h>
 #include <sporks/regex.h>
 #include <string>
 #include <map>
@@ -67,10 +68,19 @@ struct last_streak_t {
 	dpp::snowflake lastanswered;
 };
 
+struct global_counters_t {
+	uint64_t games = 0;
+	uint64_t guilds = 0;
+	uint64_t members = 0;
+	uint64_t channels = 0;
+	uint64_t questions = 0;
+};
+
+typedef std::function<void(const guild_settings_t)> get_settings_callback;
+
 /**
  * Module class for trivia system
  */
-
 class TriviaModule : public Module
 {
 	PCRE* number_tidy_dollars;
@@ -102,12 +112,16 @@ public:
 	json* lang;
 	json* achievements;
 	std::mutex states_mutex;
+	std::mutex numstrlock;
 	std::map<dpp::snowflake, state_t> states;
+	std::multimap<uint64_t, db::row> numstrs;
 
 	std::mutex cs_mutex;
 	std::mutex wh_mutex;
 	std::unordered_map<dpp::snowflake, last_streak_t> last_channel_streaks;
 	std::unordered_map<dpp::snowflake, std::string> webhooks;
+
+	global_counters_t counters;
 
 	TriviaModule(Bot* instigator, ModuleLoader* ml);
 	Bot* GetBot();
@@ -116,7 +130,7 @@ public:
 	void DoExternalCommands(std::vector<dpp::slashcommand>& normal, std::vector<dpp::slashcommand>& admin);
 	void HandleInteraction(const dpp::interaction_create_t& event);
 	void queue_command(const std::string &message, dpp::snowflake author, dpp::snowflake channel, dpp::snowflake guild, bool mention, const std::string &username, bool from_dashboard, dpp::user u, dpp::guild_member gm);
-	void handle_command(const in_cmd &cmd);
+	void handle_command(const in_cmd cmd);
 	void ProcessCommands();
 	void ProcessGuildQueue();
 	virtual bool OnPresenceUpdate();
@@ -134,7 +148,9 @@ public:
 	uint64_t GetMemberTotal();
 	uint64_t GetChannelTotal();
 
-	const guild_settings_t GetGuildSettings(dpp::snowflake guild_id);
+	void ReloadNumStrs();
+
+	void GetGuildSettings(dpp::snowflake guild_id, get_settings_callback callback);
 	std::string escape_json(const std::string &s);
 
 	void ProcessEmbed(const class guild_settings_t& settings, const std::string &embed_json, dpp::snowflake channelID);
