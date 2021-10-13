@@ -574,33 +574,39 @@ void fetch_shuffle_list(uint64_t guild_id, const std::string &category, vector_c
 	}, "", "text/plain", { {"X-API-Auth", apikey } });
 }
 
-/* Fetch a random insane round from the database, setting the question_id parameter and returning the question and all answers in a vector */
-void fetch_insane_round(uint64_t guild_id, const guild_settings_t &settings, insane_cb callback)
-{
-	std::function<void(db::resultset, db::resultset, insane_cb)> process = [](db::resultset questions, db::resultset answers, insane_cb callback) {
-		std::vector<std::string> list;
-		uint64_t question_id = from_string<uint64_t>(questions[0]["id"], std::dec);
-		list.push_back(homoglyph(questions[0]["question"]));
+std::function<void(db::resultset, db::resultset, insane_cb)> process = [](db::resultset questions, db::resultset answers, insane_cb callback) {
+	std::vector<std::string> list;
+	uint64_t question_id = from_string<uint64_t>(questions[0]["id"], std::dec);
+	list.push_back(homoglyph(questions[0]["question"]));
 
+	if (!answers.empty()) {
 		for (auto a = answers.begin(); a != answers.end(); ++a) {
 			list.push_back((*a)["answer"]);
 		}
-		list.push_back("***END***");
+	}
+	list.push_back("***END***");
 
-		callback(question_id, list);
-	};
-	
+	callback(question_id, list);
+};
+
+/* Fetch a random insane round from the database, setting the question_id parameter and returning the question and all answers in a vector */
+void fetch_insane_round(uint64_t guild_id, const guild_settings_t &settings, insane_cb callback)
+{
 	if (settings.language == "en") {
-		db::query("select id,question from insane where deleted is null order by rand() limit 0,1", {}, [process, callback](db::resultset question, std::string error) {
-			db::query("select id,answer from insane_answers where question_id = ?", {question[0]["id"]}, [process, question, callback](db::resultset answers, std::string error) {
-				process(question, answers, callback);
-			});
+		db::query("select id,question from insane where deleted is null order by rand() limit 0,1", {}, [callback](db::resultset question, std::string error) {
+			if (!question.empty()) {
+				db::query("select id,answer from insane_answers where question_id = ?", {question[0]["id"]}, [question, callback](db::resultset answers, std::string error) {
+					process(question, answers, callback);
+				});
+			}
 		});
 	} else {
-		db::query("select id,trans_" + settings.language + " AS question from insane where deleted is null order by rand() limit 0,1", {}, [process, callback, settings](db::resultset question, std::string error) {
-			db::query("select id, trans_" + settings.language + " answer from insane_answers where question_id = ?", {question[0]["id"]}, [process, question, callback](db::resultset answers, std::string error) {
-				process(question, answers, callback);
-			});
+		db::query("select id,trans_" + settings.language + " AS question from insane where deleted is null order by rand() limit 0,1", {}, [callback, settings](db::resultset question, std::string error) {
+			if (!question.empty()) {
+				db::query("select id, trans_" + settings.language + " answer from insane_answers where question_id = ?", {question[0]["id"]}, [question, callback](db::resultset answers, std::string error) {
+					process(question, answers, callback);
+				});
+			}
 		});
 	}
 }
