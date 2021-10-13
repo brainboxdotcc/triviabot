@@ -62,7 +62,7 @@ void command_enable_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_
 		return;
 	}
 
-	db::query("DELETE FROM disabled_categories WHERE guild_id = '?' AND category_id = '?'", {cmd.guild_id, cat[0]["id"]});
+	db::backgroundquery("DELETE FROM disabled_categories WHERE guild_id = '?' AND category_id = '?'", {cmd.guild_id, cat[0]["id"]});
 
 	creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":white_check_mark:", fmt::format(_("CATENABLED", settings), cat[0][namefield]), cmd.channel_id, _("CATDONE", settings));
 }

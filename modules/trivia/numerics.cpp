@@ -158,32 +158,48 @@ std::string TriviaModule::conv_num(std::string datain, const guild_settings_t &s
 std::string TriviaModule::numbertoname(uint64_t number, const guild_settings_t& settings)
 {
 	/* If there are multiple names for this number, this will randomly pick one */
-	db::resultset rs = db::query("SELECT * FROM numstrs WHERE value = ? ORDER BY rand() LIMIT 1", {number});
-	if (rs.size()) {
-		if (settings.language == "en")
-			return rs[0]["description"];
-		else
-			return rs[0][fmt::format("trans_{}", settings.language)];
+	auto i = numstrs.find(number);
+	if (i != numstrs.end()) {
+		if (settings.language == "en") {
+			return i->second["description"];
+		} else {
+			return i->second[fmt::format("trans_{}", settings.language)];
+		}
+	} else {
+		return std::to_string(number);
 	}
-	return std::to_string(number);
 }
 
 std::string TriviaModule::GetNearestNumber(uint64_t number, const guild_settings_t& settings)
 {
-	db::resultset rs = db::query("SELECT * FROM numstrs WHERE value <= ? ORDER BY value DESC LIMIT 1", {number});
-	if (rs.size()) {
-		return numbertoname(from_string<uint64_t>(rs[0]["value"], std::dec), settings);
+	std::lock_guard<std::mutex> lg(this->numstrlock);
+	auto i = std::find_if(numstrs.rbegin(), numstrs.rend(), [number](std::pair<uint64_t, const db::row> r){ return r.first <= number; });
+	if (i != numstrs.rend()) {
+		return numbertoname(i->first, settings);
+	} else {
+		return "0";
 	}
-	return "0";
 }
 
 uint64_t TriviaModule::GetNearestNumberVal(uint64_t number, const guild_settings_t& settings)
 {
-	db::resultset rs = db::query("SELECT value FROM numstrs WHERE value <= ? ORDER BY value DESC LIMIT 1", {number});
-	if (rs.size()) {
-		return from_string<uint64_t>(rs[0]["value"], std::dec);
+	std::lock_guard<std::mutex> lg(this->numstrlock);
+	auto i = std::find_if(numstrs.rbegin(), numstrs.rend(), [number](std::pair<uint64_t, const db::row> r){ return r.first <= number; });
+	if (i != numstrs.rend()) {
+		return i->first;
+	} else {
+		return 0;
 	}
-	return 0;
+}
+
+void TriviaModule::ReloadNumStrs()
+{
+	db::resultset rs = db::query("SELECT * FROM numstrs", {});
+	std::lock_guard<std::mutex> lg(this->numstrlock);
+	this->numstrs.clear();
+	for (auto& n : rs) {
+		this->numstrs.emplace(from_string<uint64_t>(n["value"], std::dec), n);
+	}
 }
 
 bool TriviaModule::is_number(const std::string &s)
@@ -202,7 +218,10 @@ std::string TriviaModule::MakeFirstHint(const std::string &s, const guild_settin
 			n -= GetNearestNumberVal(n, settings);
 		}
 		if (n > 0) {
-			Q.append(numbertoname(n, settings));
+			{
+				std::lock_guard<std::mutex> lg(this->numstrlock);
+				Q.append(numbertoname(n, settings));
+			}
 		}
 		Q = Q.substr(0, Q.length() - plus.length());
 	}
@@ -215,4 +234,3 @@ std::string TriviaModule::MakeFirstHint(const std::string &s, const guild_settin
 		return Q;
 	}
 }
-

@@ -51,11 +51,16 @@ namespace db {
 		paramlist parameters;
 	};
 
-	MYSQL connection;
+	const size_t POOL_SIZE = 10;
+	size_t curr_index = 0;
+
+	MYSQL connection[POOL_SIZE];
+	std::mutex db_mutex[POOL_SIZE];
+
 	MYSQL background_connection;
-	std::mutex db_mutex;
 	std::mutex b_db_mutex;
 	std::mutex b_db_query_mutex;
+
 	std::string _error;
 	std::queue<background_query> background_queries;
 	std::thread* background_thread;
@@ -88,29 +93,34 @@ namespace db {
 	 * Connect to mysql database, returns false if there was an error.
 	 */
 	bool connect(const std::string &host, const std::string &user, const std::string &pass, const std::string &db, int port) {
-		std::lock_guard<std::mutex> db_lock(db_mutex);
 		std::lock_guard<std::mutex> db_lock2(b_db_mutex);
-		if (mysql_init(&connection) != nullptr) {
-			mysql_options(&connection, MYSQL_SET_CHARSET_NAME, "utf8mb4");
-			mysql_options(&connection, MYSQL_INIT_COMMAND, CONNECT_STRING);
-			char reconnect = 1;
-			if (mysql_options(&connection, MYSQL_OPT_RECONNECT, &reconnect) == 0) {
-				if (mysql_real_connect(&connection, host.c_str(), user.c_str(), pass.c_str(), db.c_str(), port, NULL, CLIENT_MULTI_RESULTS | CLIENT_MULTI_STATEMENTS)) {
-					if (mysql_init(&background_connection) != nullptr) {
-						mysql_options(&background_connection, MYSQL_SET_CHARSET_NAME, "utf8mb4");
-						mysql_options(&background_connection, MYSQL_INIT_COMMAND, CONNECT_STRING);
-						char reconnect = 1;
-						if (mysql_options(&background_connection, MYSQL_OPT_RECONNECT, &reconnect) == 0) {
-							background_thread = new std::thread(bgthread);
-
-							return mysql_real_connect(&background_connection, host.c_str(), user.c_str(), pass.c_str(), db.c_str(), port, NULL, CLIENT_MULTI_RESULTS | CLIENT_MULTI_STATEMENTS);
-						}
+		bool failed = false;
+		for (size_t i = 0; i < POOL_SIZE; ++i) {
+			if (mysql_init(&connection[i]) != nullptr) {
+				mysql_options(&connection[i], MYSQL_SET_CHARSET_NAME, "utf8mb4");
+				mysql_options(&connection[i], MYSQL_INIT_COMMAND, CONNECT_STRING);
+				char reconnect = 1;
+				if (mysql_options(&connection[i], MYSQL_OPT_RECONNECT, &reconnect) == 0) {
+					if (!mysql_real_connect(&connection[i], host.c_str(), user.c_str(), pass.c_str(), db.c_str(), port, NULL, CLIENT_MULTI_RESULTS | CLIENT_MULTI_STATEMENTS)) {
+						failed = true;
+						break;
 					}
 				}
 			}
 		}
+
+		if (mysql_init(&background_connection) != nullptr) {
+			mysql_options(&background_connection, MYSQL_SET_CHARSET_NAME, "utf8mb4");
+			mysql_options(&background_connection, MYSQL_INIT_COMMAND, CONNECT_STRING);
+			char reconnect = 1;
+			if (mysql_options(&background_connection, MYSQL_OPT_RECONNECT, &reconnect) == 0) {
+				background_thread = new std::thread(bgthread);
+				return !failed && mysql_real_connect(&background_connection, host.c_str(), user.c_str(), pass.c_str(), db.c_str(), port, NULL, CLIENT_MULTI_RESULTS | CLIENT_MULTI_STATEMENTS);
+			}
+		}
+
 		_error = "db::connect() failed";
-		return false;
+		return !failed;
 	}
 
 	/**
@@ -118,8 +128,10 @@ namespace db {
 	 * If there's an error, there isn't much we can do about it anyway.
 	 */
 	bool close() {
-		std::lock_guard<std::mutex> db_lock(db_mutex);
-		mysql_close(&connection);
+		for (size_t i = 0; i < POOL_SIZE; ++i) {
+			std::lock_guard<std::mutex> db_lock(db_mutex[i]);
+			mysql_close(&connection[i]);
+		}
 		mysql_close(&background_connection);
 		return true;
 	}
@@ -143,17 +155,17 @@ namespace db {
 	 * Returns a resultset of the results as rows. Avoid returning massive resultsets if you can.
 	 */
 	resultset query(const std::string &format, const paramlist &parameters) {
-
-		return real_query(b_db_mutex, connection, format, parameters);
+		size_t c = 0;
+		if (curr_index >= POOL_SIZE) {
+			curr_index = 0;
+			c = 0;
+		} else {
+			c = curr_index++;
+		}
+		return real_query(db_mutex[c], connection[c], format, parameters);
 	}
 
 	resultset real_query(std::mutex& mutex, MYSQL &conn, const std::string &format, const paramlist &parameters) {
-
-		/**
-		 * One DB handle can't query the database from multiple threads at the same time.
-		 * To prevent corruption of results, put a lock guard on queries.
-		 */
-		std::lock_guard<std::mutex> db_lock(mutex);
 
 		std::vector<std::string> escaped_parameters;
 
@@ -203,42 +215,48 @@ namespace db {
 			}
 		}
 
-		int result = mysql_query(&conn, querystring.c_str());
-
-		/**
-		 * On successful query collate results into a std::map
-		 */
-		if (result == 0) {
-			MYSQL_RES *a_res = mysql_use_result(&conn);
-			if (a_res) {
-				MYSQL_ROW a_row;
-				while ((a_row = mysql_fetch_row(a_res))) {
-					MYSQL_FIELD *fields = mysql_fetch_fields(a_res);
-					row thisrow;
-					if (mysql_num_fields(a_res) == 0) {
-						break;
-					}
-					if (fields && mysql_num_fields(a_res)) {
-						unsigned int field_count = 0;
-						while (field_count < mysql_num_fields(a_res)) {
-							std::string a = (fields[field_count].name ? fields[field_count].name : "");
-							std::string b = (a_row[field_count] ? a_row[field_count] : "");
-							thisrow[a] = b;
-							field_count++;
-						}
-						rv.push_back(thisrow);
-					}
-				}
-				mysql_free_result(a_res);
-			}
-		} else {
+		{
 			/**
-			 * In properly written code, this should never happen. Famous last words.
+			 * One DB handle can't query the database from multiple threads at the same time.
+			 * To prevent corruption of results, put a lock guard on queries.
 			 */
-			_error = mysql_error(&conn);
-			std::cout << fmt::format("SQL Error: {} on query {}", _error, querystring) << "\n";
-		}
+			std::lock_guard<std::mutex> db_lock(mutex);
+			int result = mysql_query(&conn, querystring.c_str());
 
+			/**
+			 * On successful query collate results into a std::map
+			 */
+			if (result == 0) {
+				MYSQL_RES *a_res = mysql_use_result(&conn);
+				if (a_res) {
+					MYSQL_ROW a_row;
+					while ((a_row = mysql_fetch_row(a_res))) {
+						MYSQL_FIELD *fields = mysql_fetch_fields(a_res);
+						row thisrow;
+						if (mysql_num_fields(a_res) == 0) {
+							break;
+						}
+						if (fields && mysql_num_fields(a_res)) {
+							unsigned int field_count = 0;
+							while (field_count < mysql_num_fields(a_res)) {
+								std::string a = (fields[field_count].name ? fields[field_count].name : "");
+								std::string b = (a_row[field_count] ? a_row[field_count] : "");
+								thisrow[a] = b;
+								field_count++;
+							}
+							rv.push_back(thisrow);
+						}
+					}
+					mysql_free_result(a_res);
+				}
+			} else {
+				/**
+				 * In properly written code, this should never happen. Famous last words.
+				 */
+				_error = mysql_error(&conn);
+				std::cout << fmt::format("SQL Error: {} on query {}", _error, querystring) << "\n";
+			}
+		}
 		return rv;
 	}
 };

@@ -99,3 +99,17 @@ template <typename T> T from_string(const std::string &s, std::ios_base & (*f)(s
 	return t;
 }
 
+template <uint64_t> uint64_t from_string(const std::string &s, std::ios_base & (*f)(std::ios_base&))
+{
+	return std::stoull(s, 0, 10);
+}
+
+template <uint32_t> uint32_t from_string(const std::string &s, std::ios_base & (*f)(std::ios_base&))
+{
+	return std::stoul(s, 0, 10);
+}
+
+template <int> int from_string(const std::string &s, std::ios_base & (*f)(std::ios_base&))
+{
+	return std::stoi(s, 0, 10);
+}

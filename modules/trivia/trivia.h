@@ -25,6 +25,7 @@
 #include <dpp/dpp.h>
 #include <sporks/modules.h>
 #include <sporks/regex.h>
+#include <sporks/database.h>
 #include <string>
 #include <map>
 #include <vector>
@@ -106,8 +107,12 @@ public:
 
 	std::mutex cs_mutex;
 	std::mutex wh_mutex;
+	std::mutex numstrlock;
 	std::unordered_map<dpp::snowflake, last_streak_t> last_channel_streaks;
 	std::unordered_map<dpp::snowflake, std::string> webhooks;
+	std::multimap<uint64_t, db::row> numstrs;
+	
+	void ReloadNumStrs();
 
 	TriviaModule(Bot* instigator, ModuleLoader* ml);
 	Bot* GetBot();

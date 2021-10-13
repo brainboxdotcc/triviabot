@@ -58,7 +58,7 @@ class state_t
 	uint32_t get_activity();
 	void record_activity(uint64_t user_id);
 	bool should_drop_coin();
-	void do_insane_board();
+	void do_insane_board(const guild_settings_t& settings);
 
  public:
 	time_t next_tick;
@@ -86,24 +86,26 @@ class state_t
 	std::map<uint64_t, time_t> activity;
 	std::unordered_map<dpp::snowflake, uint64_t> scores;
 	std::unordered_map<dpp::snowflake, uint32_t> insane_round_stats;
+	std::vector<question_t> question_cache;
 
 	state_t(const state_t &) = default;
 	state_t();
 	state_t(class TriviaModule* _creator, uint32_t questions, uint32_t currstreak, uint64_t lastanswered, uint32_t question_index, uint32_t _interval, uint64_t channel_id, bool hintless, const std::vector<std::string> &shuffle_list, trivia_state_t startstate,  uint64_t guild_id);
 	~state_t();
 	void tick();
-	void queue_message(const std::string &message, uint64_t author_id, const std::string &username, bool mentions_bot, dpp::user u, dpp::guild_member gm);
-	void handle_message(const in_msg& m);
+	void build_question_cache(const guild_settings_t& settings);
+	void queue_message(const guild_settings_t& settings, const std::string &message, uint64_t author_id, const std::string &username, bool mentions_bot, dpp::user u, dpp::guild_member gm);
+	void handle_message(const in_msg& m, const guild_settings_t& settings);
 	bool is_valid();
-	void do_insane_round(bool silent);
-	void do_normal_round(bool silent);
-	void do_first_hint();
-	void do_second_hint();
-	void do_time_up();
-	void do_answer_correct();
-	void do_end_game();
+	void do_insane_round(bool silent, const guild_settings_t& settings);
+	void do_normal_round(bool silent, const guild_settings_t& settings);
+	void do_first_hint(const guild_settings_t& settings);
+	void do_second_hint(const guild_settings_t& settings);
+	void do_time_up(const guild_settings_t& settings);
+	void do_answer_correct(const guild_settings_t& settings);
+	void do_end_game(const guild_settings_t& settings);
 	void StopGame(const guild_settings_t &settings);
-	bool is_insane_round();
+	bool is_insane_round(const guild_settings_t& settings);
 	uint64_t get_score(dpp::snowflake uid);
 	void set_score(dpp::snowflake uid, uint64_t score);
 	void add_score(dpp::snowflake uid, uint64_t addition);

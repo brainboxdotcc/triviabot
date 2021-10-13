@@ -152,10 +152,10 @@ void statdump()
 				}
 				requests[i] = 0;
 				errors[i] = 0;
-				db::query("INSERT INTO http_requests (interface, hard_errors, requests) VALUES('?', ?, ?) ON DUPLICATE KEY UPDATE hard_errors = hard_errors + ?, requests = requests + ?", {i, e, r, e, r});
+				db::backgroundquery("INSERT INTO http_requests (interface, hard_errors, requests) VALUES('?', ?, ?) ON DUPLICATE KEY UPDATE hard_errors = hard_errors + ?, requests = requests + ?", {i, e, r, e, r});
 				if (statuscodes.find(i) != statuscodes.end()) {
 					for (auto & codes : statuscodes[i]) {
-						db::query("INSERT INTO http_status_codes (interface, status_code, requests) VALUES('?', ?, ?) ON DUPLICATE KEY UPDATE requests = requests + ?", {i, codes.first, codes.second, codes.second});
+						db::backgroundquery("INSERT INTO http_status_codes (interface, status_code, requests) VALUES('?', ?, ?) ON DUPLICATE KEY UPDATE requests = requests + ?", {i, codes.first, codes.second, codes.second});
 						statuscodes[i][codes.first] = 0;
 					}
 				}
@@ -259,15 +259,6 @@ std::string web_request(const std::string &_host, const std::string &_path, cons
 				seconds = channellock[channel_id].first;
 				type = fmt::format("channel {}", channel_id);
 			}
-			/* Interface rate limit hit on another thread */
-			if (!when) {
-				db::resultset r = db::query("SELECT * FROM http_ratelimit WHERE interface = '?'", {iface});
-				if (r.size()) {
-					when = from_string<time_t>(r[0]["rl_when"], std::dec);
-					seconds = from_string<uint32_t>(r[0]["rl_seconds"], std::dec);
-					type = fmt::format("interface {}", iface);
-				}
-			}
 		}
 		/* If we have to wait, and the rate limit timeout has not already been reached, wait. */
 		if (seconds > 0 && when + seconds > time(NULL)) {
@@ -319,7 +310,7 @@ std::string web_request(const std::string &_host, const std::string &_path, cons
 									module->webhooks.erase(i);
 								}
 							}
-							db::query("DELETE FROM channel_webhooks WHERE channel_id = ?", {channel_id});
+							db::backgroundquery("DELETE FROM channel_webhooks WHERE channel_id = ?", {channel_id});
 						}
 					}
 				}
@@ -343,7 +334,7 @@ std::string web_request(const std::string &_host, const std::string &_path, cons
 						 * systems this holds back all requests coming from the same network interface (generally
 						 * the same IP, but may not be if production is using NIC teaming)
 						*/
-						db::query("INSERT INTO http_ratelimit (interface, rl_when, rl_seconds) VALUES('?',?,?) ON DUPLICATE KEY UPDATE rl_when = ?, rl_seconds = ?", {iface, seconds, time(NULL), time(NULL), seconds});
+						db::backgroundquery("INSERT INTO http_ratelimit (interface, rl_when, rl_seconds) VALUES('?',?,?) ON DUPLICATE KEY UPDATE rl_when = ?, rl_seconds = ?", {iface, seconds, time(NULL), time(NULL), seconds});
 						type = fmt::format("interface {}", iface);
 					} else {
 						/* Channel ratelimit hit (other webhooks are being fired by other bots/automations
@@ -455,10 +446,10 @@ void cache_user(const dpp::user *_user, const dpp::guild *_guild, const dpp::gui
 	uint64_t user_id = _user->id;
 	uint64_t guild_id = _guild->id;
 
-	db::query("INSERT INTO trivia_user_cache (snowflake_id, username, discriminator, icon) VALUES('?', '?', '?', '?') ON DUPLICATE KEY UPDATE username = '?', discriminator = '?', icon = '?'",
+	db::backgroundquery("INSERT INTO trivia_user_cache (snowflake_id, username, discriminator, icon) VALUES('?', '?', '?', '?') ON DUPLICATE KEY UPDATE username = '?', discriminator = '?', icon = '?'",
 			{user_id, _user->username, _user->discriminator, _user->avatar.to_string(), _user->username, _user->discriminator, _user->avatar.to_string()});
 
-	db::query("INSERT INTO trivia_guild_cache (snowflake_id, name, icon, owner_id) VALUES('?', '?', '?', '?') ON DUPLICATE KEY UPDATE name = '?', icon = '?', owner_id = '?', kicked = 0",
+	db::backgroundquery("INSERT INTO trivia_guild_cache (snowflake_id, name, icon, owner_id) VALUES('?', '?', '?', '?') ON DUPLICATE KEY UPDATE name = '?', icon = '?', owner_id = '?', kicked = 0",
 			{guild_id, _guild->name, _guild->icon.to_string(),  _guild->owner_id, _guild->name, _guild->icon.to_string(),  _guild->owner_id});
 
 	std::string member_roles;
@@ -467,14 +458,14 @@ void cache_user(const dpp::user *_user, const dpp::guild *_guild, const dpp::gui
 		member_roles.append(std::to_string(*r)).append(" ");
 	}
 	member_roles = trim(member_roles);
-	db::query("INSERT INTO trivia_guild_membership (guild_id, user_id, roles) VALUES('?', '?', '?') ON DUPLICATE KEY UPDATE roles = '?'",
+	db::backgroundquery("INSERT INTO trivia_guild_membership (guild_id, user_id, roles) VALUES('?', '?', '?') ON DUPLICATE KEY UPDATE roles = '?'",
 			{guild_id, user_id, member_roles, member_roles});
 
 	for (auto n = _guild->roles.begin(); n != _guild->roles.end(); ++n) {
 		dpp::role* r = dpp::find_role(*n);
 		if (r) {
 			comma_roles.append(std::to_string(r->id)).append(",");
-			db::query("INSERT INTO trivia_role_cache (id, guild_id, colour, permissions, position, hoist, managed, mentionable, name) VALUES('?', '?', '?', '?', '?', '?', '?', '?', '?') ON DUPLICATE KEY UPDATE colour = '?', permissions = '?', position = '?', hoist = '?', managed = '?', mentionable = '?', name = '?'",
+			db::backgroundquery("INSERT INTO trivia_role_cache (id, guild_id, colour, permissions, position, hoist, managed, mentionable, name) VALUES('?', '?', '?', '?', '?', '?', '?', '?', '?') ON DUPLICATE KEY UPDATE colour = '?', permissions = '?', position = '?', hoist = '?', managed = '?', mentionable = '?', name = '?'",
 			{
 				r->id, guild_id, r->colour, r->permissions, r->position, (r->is_hoisted() ? 1 : 0), (r->is_managed() ? 1 : 0), (r->is_mentionable() ? 1 : 0), r->name,
 				r->colour, r->permissions, r->position, (r->is_hoisted() ? 1 : 0), (r->is_managed() ? 1 : 0), (r->is_mentionable() ? 1 : 0), r->name
@@ -483,22 +474,20 @@ void cache_user(const dpp::user *_user, const dpp::guild *_guild, const dpp::gui
 	}
 	comma_roles = trim(comma_roles.substr(0, comma_roles.length() - 1));
 	/* Delete any that have been deleted from discord */
-	db::query("DELETE FROM trivia_role_cache WHERE guild_id = ? AND id NOT IN (" + comma_roles + ")", {guild_id});
+	db::backgroundquery("DELETE FROM trivia_role_cache WHERE guild_id = ? AND id NOT IN (" + comma_roles + ")", {guild_id});
 }
 
 /* Fetch a question by ID from the database */
 question_t question_t::fetch(uint64_t id, uint64_t guild_id, const guild_settings_t &settings)
 {
 	try {
-		db::query("INSERT INTO stats (id, lastasked, timesasked, lastcorrect, record_time) VALUES('?',UNIX_TIMESTAMP(),1,NULL,60000) ON DUPLICATE KEY UPDATE lastasked = UNIX_TIMESTAMP(), timesasked = timesasked + 1 ", {id});
 		db::resultset question;
 		if (settings.language == "en") {
 			question = db::query("select questions.*, ans1.*, hin1.*, sta1.*, cat1.name as catname from questions left join hints as hin1 on questions.id=hin1.id left join answers as ans1 on questions.id=ans1.id left join stats as sta1 on questions.id=sta1.id left join categories as cat1 on questions.category=cat1.id where questions.id = ?", {id});
 		} else {
 			question = db::query("select questions.trans_" + settings.language + " as question, ans1.trans_" + settings.language + " as answer, hin1.trans1_" + settings.language + " as hint1, hin1.trans2_" + settings.language + " as hint2, question_img_url, answer_img_url, sta1.*, cat1.trans_" + settings.language + " as catname from questions left join hints as hin1 on questions.id=hin1.id left join answers as ans1 on questions.id=ans1.id left join stats as sta1 on questions.id=sta1.id left join categories as cat1 on questions.category=cat1.id where questions.id = ?", {id});
-	}
+		}
 		if (question.size() > 0) {
-			db::query("UPDATE counters SET asked = asked + 1", {});
 				return question_t(
 			from_string<uint64_t>(question[0]["id"], std::dec),
 				homoglyph(question[0]["question"]),
@@ -627,10 +616,10 @@ void custom_command(const std::string& interaction_token, dpp::snowflake command
 void update_score_only(uint64_t snowflake_id, uint64_t guild_id, int score, uint64_t channel_id)
 {
 	// Replaced with direct db query for perforamance increase - 27Dec20
-	db::query("INSERT INTO scores (name, guild_id, score, dayscore, weekscore, monthscore) VALUES('?', '?', '?', '?', '?', '?') ON DUPLICATE KEY UPDATE score = score + ?, weekscore = weekscore + ?, monthscore = monthscore + ?, dayscore = dayscore + ?",
+	db::backgroundquery("INSERT INTO scores (name, guild_id, score, dayscore, weekscore, monthscore) VALUES('?', '?', '?', '?', '?', '?') ON DUPLICATE KEY UPDATE score = score + ?, weekscore = weekscore + ?, monthscore = monthscore + ?, dayscore = dayscore + ?",
 			{snowflake_id, guild_id, score, score, score, score, score, score, score, score});
-	db::query("INSERT INTO scores_lastgame (guild_id, user_id, score) VALUES('?', '?', '?') ON DUPLICATE KEY UPDATE score = score + ?", {guild_id, snowflake_id, score, score});
-	db::query("INSERT INTO insane_round_statistics (guild_id, channel_id, user_id, score) VALUES('?', '?', '?', '?') ON DUPLICATE KEY UPDATE score = score + ?", {guild_id, channel_id, snowflake_id, score, score});
+	db::backgroundquery("INSERT INTO scores_lastgame (guild_id, user_id, score) VALUES('?', '?', '?') ON DUPLICATE KEY UPDATE score = score + ?", {guild_id, snowflake_id, score, score});
+	db::backgroundquery("INSERT INTO insane_round_statistics (guild_id, channel_id, user_id, score) VALUES('?', '?', '?', '?') ON DUPLICATE KEY UPDATE score = score + ?", {guild_id, channel_id, snowflake_id, score, score});
 }
 
 void check_achievement(const std::string &when, uint64_t user_id, uint64_t guild_id)
@@ -648,9 +637,9 @@ void log_game_start(uint64_t guild_id, uint64_t channel_id, uint64_t number_ques
 	check_achievement("start", user_id, guild_id);
 	uint32_t cluster_id = bot->GetClusterID();
 
-	db::query("INSERT INTO active_games (cluster_id, guild_id, channel_id, hostname, quickfire, questions, channel_name, user_id, qlist, hintless) VALUES('?', '?', '?', '?', '?', '?', '?', '?', '?', '?')",
+	db::backgroundquery("INSERT INTO active_games (cluster_id, guild_id, channel_id, hostname, quickfire, questions, channel_name, user_id, qlist, hintless) VALUES('?', '?', '?', '?', '?', '?', '?', '?', '?', '?')",
 			{cluster_id, guild_id, channel_id, std::string(hostname), quickfire ? 1 : 0, number_questions, channel_name, user_id, json(questions).dump(), hintless ? 1 : 0});
-	db::query("DELETE FROM scores_lastgame WHERE guild_id = ?", {guild_id});
+	db::backgroundquery("DELETE FROM scores_lastgame WHERE guild_id = ?", {guild_id});
 }
 
 /* Log the end of a game, used for resuming games on crash or restart, plus the dashboard active games list */
@@ -662,7 +651,7 @@ void log_game_end(uint64_t guild_id, uint64_t channel_id)
 	
 	/* Obtain and delete the active game entry */
 	db::resultset gameinfo = db::query("SELECT * FROM active_games WHERE guild_id = '?' AND channel_id = '?' AND hostname = '?'", {guild_id, channel_id, std::string(hostname)});
-	db::query("DELETE FROM active_games WHERE guild_id = '?' AND channel_id = '?' AND hostname = '?'", {guild_id, channel_id, std::string(hostname)});
+	db::backgroundquery("DELETE FROM active_games WHERE guild_id = '?' AND channel_id = '?' AND hostname = '?'", {guild_id, channel_id, std::string(hostname)});
 
 	/* Collate the last game's scores into JSON for storage in the database for the stats pages */
 	db::resultset lastgame = db::query("SELECT * FROM scores_lastgame WHERE guild_id = '?'",{guild_id});
@@ -672,11 +661,11 @@ void log_game_end(uint64_t guild_id, uint64_t channel_id)
 	}
 	scores = scores.substr(0, scores.length() - 1) + "]";
 	if (gameinfo.size() > 0 && scores != "]") {
-		db::query("INSERT INTO game_score_history (guild_id, timestarted, timefinished, scores) VALUES('?', '?', now(), '?')", {guild_id, gameinfo[0]["started"], scores});
+		db::backgroundquery("INSERT INTO game_score_history (guild_id, timestarted, timefinished, scores) VALUES('?', '?', now(), '?')", {guild_id, gameinfo[0]["started"], scores});
 	}
 
 	/* Safeguard */
-	db::query("DELETE FROM insane_round_statistics WHERE channel_id = '?'", {channel_id});
+	db::backgroundquery("DELETE FROM insane_round_statistics WHERE channel_id = '?'", {channel_id});
 }
 
 /* Update current question of a game, used for resuming games on crash or restart, plus the dashboard active games list */
@@ -700,7 +689,7 @@ bool log_question_index(uint64_t guild_id, uint64_t channel_id, uint32_t index, 
 	}
 
 	/* Update game details */
-	db::query("UPDATE active_games SET cluster_id = '?', question_index = '?', streak = '?', lastanswered = '?', state = '?' WHERE guild_id = '?' AND channel_id = '?' AND hostname = '?'",
+	db::backgroundquery("UPDATE active_games SET cluster_id = '?', question_index = '?', streak = '?', lastanswered = '?', state = '?' WHERE guild_id = '?' AND channel_id = '?' AND hostname = '?'",
 			{cluster_id, index, streak, lastanswered, state, guild_id, channel_id, std::string(hostname)});
 
 	/* Check if the dashboard has stopped this game */
@@ -708,8 +697,8 @@ bool log_question_index(uint64_t guild_id, uint64_t channel_id, uint32_t index, 
 	should_stop = (st.size() > 0);
 
 	if (state == TRIV_ASK_QUESTION) {
-		db::query("UPDATE counters SET asked_15_min = asked_15_min + 1", {});
-		db::query("UPDATE categories SET questions_asked = questions_asked + 1 WHERE id = (SELECT category FROM questions WHERE id = '?' LIMIT 1)", {qid});
+		db::backgroundquery("UPDATE counters SET asked_15_min = asked_15_min + 1", {});
+		db::backgroundquery("UPDATE categories SET questions_asked = questions_asked + 1 WHERE id = (SELECT category FROM questions WHERE id = '?' LIMIT 1)", {qid});
 	}
 
 	return should_stop;
@@ -719,10 +708,10 @@ bool log_question_index(uint64_t guild_id, uint64_t channel_id, uint32_t index, 
 uint32_t update_score(uint64_t snowflake_id, uint64_t guild_id, double recordtime, uint64_t id, int score)
 {
 	// Replaced with direct db query for perforamance increase - 27Dec20
-	db::query("UPDATE stats SET lastcorrect='?', record_time='?' WHERE id = ?", {snowflake_id, recordtime, id});
-	db::query("INSERT INTO scores (name, guild_id, score, dayscore, weekscore, monthscore) VALUES('?', '?', '?', '?', '?', '?') ON DUPLICATE KEY UPDATE score = score + ?, weekscore = weekscore + ?, monthscore = monthscore + ?, dayscore = dayscore + ?",
+	db::backgroundquery("UPDATE stats SET lastcorrect='?', record_time='?' WHERE id = ?", {snowflake_id, recordtime, id});
+	db::backgroundquery("INSERT INTO scores (name, guild_id, score, dayscore, weekscore, monthscore) VALUES('?', '?', '?', '?', '?', '?') ON DUPLICATE KEY UPDATE score = score + ?, weekscore = weekscore + ?, monthscore = monthscore + ?, dayscore = dayscore + ?",
 			{snowflake_id, guild_id, score, score, score, score, score, score, score, score});
-	db::query("INSERT INTO scores_lastgame (guild_id, user_id, score) VALUES('?', '?', '?') ON DUPLICATE KEY UPDATE score = score + ?", {guild_id, snowflake_id, score, score});
+	db::backgroundquery("INSERT INTO scores_lastgame (guild_id, user_id, score) VALUES('?', '?', '?') ON DUPLICATE KEY UPDATE score = score + ?", {guild_id, snowflake_id, score, score});
 
 	return 0;
 }
@@ -779,7 +768,7 @@ bool join_team(uint64_t snowflake_id, const std::string &team, uint64_t channel_
 /* Update the streak for a player on a guild */
 void change_streak(uint64_t snowflake_id, uint64_t guild_id, int score)
 {
-	db::query("INSERT INTO streaks (nick, guild_id, streak) VALUES('?','?','?') ON DUPLICATE KEY UPDATE streak='?'", {snowflake_id, guild_id, score, score});
+	db::backgroundquery("INSERT INTO streaks (nick, guild_id, streak) VALUES('?','?','?') ON DUPLICATE KEY UPDATE streak='?'", {snowflake_id, guild_id, score, score});
 	check_achievement("streak", snowflake_id, guild_id);
 }
 
@@ -821,9 +810,9 @@ bool check_team_exists(const std::string &team)
 void add_team_points(const std::string &team, int points, uint64_t snowflake_id)
 {
 	// Replaced with direct db query for perforamance increase - 27Dec20
-	db::query("UPDATE teams SET score = score + ? WHERE name = '?'", {points, team});
+	db::backgroundquery("UPDATE teams SET score = score + ? WHERE name = '?'", {points, team});
 	if (snowflake_id) {
-		db::query("UPDATE team_membership SET points_contributed = points_contributed + ? WHERE nick = '?'", {points, snowflake_id});
+		db::backgroundquery("UPDATE team_membership SET points_contributed = points_contributed + ? WHERE nick = '?'", {points, snowflake_id});
 	}
 
 }
@@ -874,7 +863,7 @@ void CheckCreateWebhook(const guild_settings_t & s, TriviaModule* t, uint64_t ch
 		c->get_webhook(std::stoull(existing_hook[0]["webhook_id"]), [create_wh, channel_id, c](const dpp::confirmation_callback_t& data) {
 			if (!data.is_error()) {
 				dpp::webhook existing_wh = std::get<dpp::webhook>(data.value);
-				db::query("UPDATE channel_webhooks SET webhook = '?' WHERE webhook_id = '?' AND channel_id = '?'", {"https://discord.com/api/webhooks/" + std::to_string(existing_wh.id) + "/" + dpp::url_encode(existing_wh.token), existing_wh.id, existing_wh.channel_id});
+				db::backgroundquery("UPDATE channel_webhooks SET webhook = '?' WHERE webhook_id = '?' AND channel_id = '?'", {"https://discord.com/api/webhooks/" + std::to_string(existing_wh.id) + "/" + dpp::url_encode(existing_wh.token), existing_wh.id, existing_wh.channel_id});
 				c->log(dpp::ll_debug, fmt::format("Existing webhook still valid for channel {}", channel_id));
 				return;
 			} else {

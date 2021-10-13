@@ -341,6 +341,7 @@ void TriviaModule::HandleInteraction(const dpp::interaction_create_t& event) {
 	cmd.command_id = event.command.id;
 	cmd.interaction_token = event.command.token;
 	this->handle_command(cmd);
+	bot->core->log(dpp::ll_info, fmt::format("SCMD (USER={}, GUILD={}): <{}> {}", cmd.author_id, cmd.guild_id, cmd.username, cmd.msg));
 }
 
 void TriviaModule::DoExternalCommands(std::vector<dpp::slashcommand>& normal, std::vector<dpp::slashcommand>& admin) {

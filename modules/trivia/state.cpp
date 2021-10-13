@@ -80,6 +80,7 @@ state_t::state_t(TriviaModule* _creator, uint32_t questions, uint32_t currstreak
 		}
 		creator->GetBot()->core->log(dpp::ll_debug, fmt::format("Cached {} guild scores for game on channel {}", rs.size(), channel_id));
 	}
+	/* This doesnt need to be done every time */
 	db::resultset rs2 = db::query("SELECT * FROM bans WHERE play_ban = 1", {});
 	if (rs2.size()) {
 		banlist.clear();
@@ -131,11 +132,11 @@ std::string state_t::_(const std::string &k, const guild_settings_t& settings)
 	return creator->_(k, settings);
 }
 
-void state_t::queue_message(const std::string &message, uint64_t author_id, const std::string &username, bool mentions_bot, dpp::user u, dpp::guild_member gm)
+void state_t::queue_message(const guild_settings_t& settings, const std::string &message, uint64_t author_id, const std::string &username, bool mentions_bot, dpp::user u, dpp::guild_member gm)
 {
 	// FIX: Check termination atomic flag to avoid race where object is deleted but its handle_message gets called
 	if (!terminating) {
-		handle_message(in_msg(message, author_id, mentions_bot, username, u, gm));
+		handle_message(in_msg(message, author_id, mentions_bot, username, u, gm), settings);
 	}
 }
 
@@ -198,7 +199,7 @@ bool state_t::user_banned(uint64_t user_id)
 }
 
 /* Handle inbound message */
-void state_t::handle_message(const in_msg& m)
+void state_t::handle_message(const in_msg& m, const guild_settings_t& settings)
 {
 	if (this->terminating || !creator)
 		return;
@@ -208,12 +209,11 @@ void state_t::handle_message(const in_msg& m)
 	}
 
 	if (gamestate == TRIV_ASK_QUESTION || gamestate == TRIV_FIRST_HINT || gamestate == TRIV_SECOND_HINT || gamestate == TRIV_TIME_UP) {
-		guild_settings_t settings = creator->GetGuildSettings(guild_id);
 
 		/* Flag activity of user */
 		record_activity(m.author_id);
 
-		if (is_insane_round()) {
+		if (is_insane_round(settings)) {
 
 			/* Insane round */
 			std::string answered = utf8lower(removepunct(m.msg), settings.language == "es");
@@ -241,7 +241,7 @@ void state_t::handle_message(const in_msg& m)
 				add_insane_stats(m.author_id);
 
 				if (done) {
-					do_insane_board();
+					do_insane_board(settings);
 					clear_insane_stats();
 					/* Only save state if all answers have been found */
 					if (log_question_index(guild_id, channel_id, round, streak, last_to_answer, gamestate, 0)) {
@@ -374,38 +374,41 @@ void state_t::tick()
 		return;
 	}
 	try {
+		if (question_cache.empty()) {
+				build_question_cache(settings);
+		}
 		switch (gamestate) {
 			case TRIV_ASK_QUESTION:
 				if (!terminating) {
-					if (is_insane_round()) {
-						do_insane_round(false);
+					if (is_insane_round(settings)) {
+						do_insane_round(false, settings);
 					} else {
-						do_normal_round(false);
+						do_normal_round(false, settings);
 					}
 				}
 			break;
 			case TRIV_FIRST_HINT:
 				if (!terminating) {
-					do_first_hint();
+					do_first_hint(settings);
 				}
 			break;
 			case TRIV_SECOND_HINT:
 				if (!terminating) {
-					do_second_hint();
+					do_second_hint(settings);
 				}
 			break;
 			case TRIV_TIME_UP:
 				if (!terminating) {
-					do_time_up();
+					do_time_up(settings);
 				}
 			break;
 			case TRIV_ANSWER_CORRECT:
 				if (!terminating) {
-					do_answer_correct();
+					do_answer_correct(settings);
 				}
 			break;
 			case TRIV_END:
-				do_end_game();
+				do_end_game(settings);
 			break;
 			default:
 				creator->GetBot()->core->log(dpp::ll_warning, fmt::format("Invalid state '{}', ending round.", gamestate));
@@ -435,7 +438,7 @@ void state_t::tick()
 }
 
 /* State machine event for insane round question */
-void state_t::do_insane_round(bool silent)
+void state_t::do_insane_round(bool silent, const guild_settings_t& settings)
 {
 	creator->GetBot()->core->log(dpp::ll_debug, fmt::format("do_insane_round: G:{} C:{}", guild_id, channel_id));
 
@@ -444,8 +447,6 @@ void state_t::do_insane_round(bool silent)
 		score = 0;
 		return;
 	}
-
-	guild_settings_t settings = creator->GetGuildSettings(guild_id);
 
 	// Attempt up to 5 times to fetch an insane round, with 3 second delay between tries
 	std::vector<std::string> answers;
@@ -488,7 +489,7 @@ void state_t::do_insane_round(bool silent)
 }
 
 /* State machine event for normal round question */
-void state_t::do_normal_round(bool silent)
+void state_t::do_normal_round(bool silent, const guild_settings_t& settings)
 {
 	creator->GetBot()->core->log(dpp::ll_debug, fmt::format("do_normal_round: G:{} C:{}", guild_id, channel_id));
 
@@ -498,10 +499,10 @@ void state_t::do_normal_round(bool silent)
 		return;
 	}
 
-	guild_settings_t settings = creator->GetGuildSettings(guild_id);
-
 	creator->GetBot()->core->log(dpp::ll_debug, fmt::format("do_normal_round: fetch_question: '{}'", shuffle_list[round - 1]));
-	question = question_t::fetch(from_string<uint64_t>(shuffle_list[round - 1], std::dec), guild_id, settings);
+	question = question_cache[round - 1];
+	db::backgroundquery("INSERT INTO stats (id, lastasked, timesasked, lastcorrect, record_time) VALUES('?',UNIX_TIMESTAMP(),1,NULL,60000) ON DUPLICATE KEY UPDATE lastasked = UNIX_TIMESTAMP(), timesasked = timesasked + 1 ", {question.id});
+	db::backgroundquery("UPDATE counters SET asked = asked + 1", {});
 
 	if (question.id == 0) {
 		gamestate = TRIV_END;
@@ -616,11 +617,10 @@ void state_t::do_normal_round(bool silent)
 }
 
 /* State machine event for first hint */
-void state_t::do_first_hint()
+void state_t::do_first_hint(const guild_settings_t& settings)
 {
 	creator->GetBot()->core->log(dpp::ll_debug, fmt::format("do_first_hint: G:{} C:{}", guild_id, channel_id));
-	guild_settings_t settings = creator->GetGuildSettings(guild_id);
-	if (is_insane_round()) {
+	if (is_insane_round(settings)) {
 		/* Insane round countdown */
 		creator->SimpleEmbed(settings, ":clock10:", fmt::format(_("SECS_LEFT", settings), interval * 2), channel_id);
 	} else {
@@ -634,7 +634,7 @@ void state_t::do_first_hint()
 	}
 }
 
-void state_t::do_insane_board() {
+void state_t::do_insane_board(const guild_settings_t& settings) {
 	/* Last round was an insane round, display insane round score table embed if there were any participants */
 	std::string desc;
 	uint32_t i = 1;
@@ -651,18 +651,16 @@ void state_t::do_insane_board() {
 		i++;
 	}
 	if (!desc.empty()) {
-		guild_settings_t settings = creator->GetGuildSettings(guild_id);
 		creator->SimpleEmbed(settings, "", desc, channel_id, _("INSANESTATS", settings));
 	}
 	db::backgroundquery("DELETE FROM insane_round_statistics WHERE channel_id = '?'", {channel_id});
 }
 
 /* State machine event for second hint */
-void state_t::do_second_hint()
+void state_t::do_second_hint(const guild_settings_t& settings)
 {
 	creator->GetBot()->core->log(dpp::ll_debug, fmt::format("do_second_hint: G:{} C:{}", guild_id, channel_id));
-	guild_settings_t settings = creator->GetGuildSettings(guild_id);
-	if (is_insane_round()) {
+	if (is_insane_round(settings)) {
 		/* Insane round countdown */
 		creator->SimpleEmbed(settings, ":clock1030:", fmt::format(_("SECS_LEFT", settings), interval), channel_id);
 	} else {
@@ -676,23 +674,32 @@ void state_t::do_second_hint()
 	}
 }
 
+void state_t::build_question_cache(const guild_settings_t& settings)
+{
+	double start = dpp::utility::time_f();
+	creator->GetBot()->core->log(dpp::ll_debug, fmt::format("Build question cache start: G:{} C:{}", guild_id, channel_id));
+	for (size_t i = 0; i < shuffle_list.size(); ++i) {
+		question_cache.emplace_back(question_t::fetch(from_string<uint64_t>(shuffle_list[i], std::dec), guild_id, settings));
+	}
+	creator->GetBot()->core->log(dpp::ll_debug, fmt::format("Build question cache end in {:.04f} secs: G:{} C:{}", dpp::utility::time_f() - start, guild_id, channel_id));
+}
+
 /* State machine event for question time up */
-void state_t::do_time_up()
+void state_t::do_time_up(const guild_settings_t& settings)
 {
 	creator->GetBot()->core->log(dpp::ll_debug, fmt::format("do_time_up: G:{} C:{}", guild_id, channel_id));
-	guild_settings_t settings = creator->GetGuildSettings(guild_id);
 
 	std::string content;
 	std::string title;
 	std::string image;
 
 	{
-		if (is_insane_round()) {
+		if (is_insane_round(settings)) {
 			/* Insane round */
 			uint32_t found = insane_num - insane_left;
 			content += fmt::format(_("INSANE_FOUND", settings), found);
 			title = _("TIME_UP", settings);
-			do_insane_board();
+			do_insane_board(settings);
 			clear_insane_stats();
 
 		} else if (question.answer != "") {
@@ -704,7 +711,7 @@ void state_t::do_time_up()
 
 		}
 		/* FIX: You can only lose your streak on a non-insane round */
-		if (question.answer != "" && !is_insane_round() && streak > 1 && last_to_answer) {
+		if (question.answer != "" && !is_insane_round(settings) && streak > 1 && last_to_answer) {
 			content += "\n\n" + fmt::format(_("STREAK_SMASHED", settings), fmt::format("<@{}>", last_to_answer), streak);
 		}
 
@@ -712,7 +719,7 @@ void state_t::do_time_up()
 		if (question.answer != "") {
 			question.answer = "";
 			/* For non-insane rounds reset the streak back to 1 */
-			if (!is_insane_round()) {
+			if (!is_insane_round(settings)) {
 				last_to_answer = 0;
 				streak = 1;
 			}
@@ -733,11 +740,9 @@ void state_t::do_time_up()
 }
 
 /* State machine event for answer correct */
-void state_t::do_answer_correct()
+void state_t::do_answer_correct(const guild_settings_t& settings)
 {
 	creator->GetBot()->core->log(dpp::ll_debug, fmt::format("do_answer_correct: G:{} C:{}", guild_id, channel_id));
-
-	guild_settings_t settings = creator->GetGuildSettings(guild_id);
 
 	round++;
 	question.answer = "";
@@ -749,13 +754,12 @@ void state_t::do_answer_correct()
 }
 
 /* State machine event for end of game */
-void state_t::do_end_game()
+void state_t::do_end_game(const guild_settings_t& settings)
 {
 	creator->GetBot()->core->log(dpp::ll_debug, fmt::format("do_end_game: G:{} C:{}", guild_id, channel_id));
 
 	log_game_end(guild_id, channel_id);
 
-	guild_settings_t settings = creator->GetGuildSettings(guild_id);
 	creator->GetBot()->core->log(dpp::ll_info, fmt::format("End of game on guild {}, channel {} after {} seconds", guild_id, channel_id, time(NULL) - start_time));
 	creator->SimpleEmbed(settings, ":stop_button:", fmt::format(_("END1", settings), numquestions - 1), channel_id, _("END_TITLE", settings));
 	creator->show_stats("", 0, guild_id, channel_id);
@@ -764,9 +768,8 @@ void state_t::do_end_game()
 }
 
 /* Returns true if the current round is an insane round */
-bool state_t::is_insane_round()
+bool state_t::is_insane_round(const guild_settings_t& s)
 {
 	/* Insane rounds are every tenth question */
-	guild_settings_t s = creator->GetGuildSettings(guild_id);
 	return (s.disable_insane_rounds == false && (round % 10 == 0));
 }

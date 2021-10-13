@@ -26,14 +26,6 @@
 #include <string>
 #include <variant>
 
-/*
- * db::resultset r = db::query("SELECT * FROM infobot WHERE setby = '?'", {"SKIPDX00"});
- * int t = 0;
- * for (auto q = r.begin(); q != r.end(); ++q) {
- *	 std::cout << (t++) << ": " << (*q)["key_word"] << std::endl;
- * }
- */
-
 namespace db {
 
 	/* Definition of a row in a result set*/

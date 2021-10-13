@@ -91,6 +91,9 @@ TriviaModule::TriviaModule(Bot* instigator, ModuleLoader* ml) : Module(instigato
 
 	/* Setup built in commands */
 	SetupCommands();
+
+	/* Load numeric hints */
+	ReloadNumStrs();
 }
 
 void TriviaModule::queue_command(const std::string &message, dpp::snowflake author, dpp::snowflake channel, dpp::snowflake guild, bool mention, const std::string &username, bool from_dashboard, dpp::user u, dpp::guild_member gm)
@@ -267,12 +270,13 @@ bool TriviaModule::OnAllShardsReady()
 					(trivia_state_t)from_string<uint32_t>((*game)["state"].get<std::string>(), std::dec),
 					guild_id
 				);
-
 				/* Force fetching of question */
-				if (states[channel_id].is_insane_round()) {
-					states[channel_id].do_insane_round(true);
+				guild_settings_t s = GetGuildSettings(guild_id);
+				states[channel_id].build_question_cache(s);
+				if (states[channel_id].is_insane_round(s)) {
+					states[channel_id].do_insane_round(true, s);
 				} else {
-					states[channel_id].do_normal_round(true);
+					states[channel_id].do_normal_round(true, s);
 				}
 
 				bot->core->log(dpp::ll_info, fmt::format("Resumed game on guild {}, channel {}, {} questions [{}]", guild_id, channel_id, states[channel_id].numquestions, quickfire ? "quickfire" : "normal"));
@@ -389,7 +393,7 @@ const guild_settings_t TriviaModule::GetGuildSettings(dpp::snowflake guild_id)
 		guild_settings_t gs(time(NULL), from_string<uint64_t>(r[0]["snowflake_id"], std::dec), r[0]["prefix"], role_list, from_string<uint32_t>(r[0]["embedcolour"], std::dec), (r[0]["premium"] == "1"), (r[0]["only_mods_stop"] == "1"), (r[0]["only_mods_start"] == "1"), (r[0]["role_reward_enabled"] == "1"), from_string<uint64_t>(r[0]["role_reward_id"], std::dec), r[0]["custom_url"], r[0]["language"], from_string<uint32_t>(r[0]["question_interval"], std::dec), max_n.empty() ? 200 : from_string<uint32_t>(max_n, std::dec), max_q.empty() ? (r[0]["premium"] == "1" ? 200 : 15) : from_string<uint32_t>(max_q, std::dec), max_h.empty() ? 200 : from_string<uint32_t>(max_h, std::dec), r[0]["disable_insane_rounds"] == "1");
 		{
 			std::lock_guard<std::mutex> locker(settingcache_mutex);
-			settings_cache.insert(std::make_pair(guild_id, gs));
+			settings_cache.emplace(guild_id, gs);
 		}
 		return gs;
 	} else {
@@ -397,7 +401,7 @@ const guild_settings_t TriviaModule::GetGuildSettings(dpp::snowflake guild_id)
 		guild_settings_t gs(time(NULL), guild_id, "!", {}, 3238819, false, false, false, false, 0, "", "en", 20, 200, 15, 200, false);
 		{
 			std::lock_guard<std::mutex> locker(settingcache_mutex);
-			settings_cache.insert(std::make_pair(guild_id, gs));
+			settings_cache.emplace(guild_id, gs);
 		}
 		return gs;
 	}
@@ -420,7 +424,6 @@ void TriviaModule::UpdatePresenceLine()
 	uint32_t ticks = 0;
 	int32_t questions = get_total_questions();
 	while (!terminating) {
-		sleep(20);
 		try {
 			ticks++;
 			if (ticks > 100) {
@@ -442,6 +445,7 @@ void TriviaModule::UpdatePresenceLine()
 		catch (std::exception &e) {
 			bot->core->log(dpp::ll_error, fmt::format("Exception in UpdatePresenceLine: {}", e.what()));
 		}
+		sleep(120);
 	}
 	bot->core->log(dpp::ll_debug, fmt::format("Presence thread exited."));
 }
@@ -631,7 +635,7 @@ bool TriviaModule::RealOnMessage(const dpp::message_create_t &message, const std
 				state_t* state = GetState(channel_id);
 				if (state) {
 					/* The state_t class handles potential answers, but only when a game is running on this guild */
-					state->queue_message(clean_message, author_id, username, mentioned, *user, gm);
+					state->queue_message(settings, clean_message, author_id, username, mentioned, *user, gm);
 					bot->core->log(dpp::ll_debug, fmt::format("Processed potential answer message from A:{} on C:{}", author_id, channel_id));
 				}
 			}
@@ -642,10 +646,10 @@ bool TriviaModule::RealOnMessage(const dpp::message_create_t &message, const std
 	double time_taken = end - start;
 
 	if (bot->IsDevMode()) {
-		bot->core->log(dpp::ll_debug, fmt::format("Message processing took {:.4f} seconds, channel: {}", time_taken, msg.channel_id));
+		bot->core->log(dpp::ll_debug, fmt::format("Message processing took {:.7f} seconds, channel: {}", time_taken, msg.channel_id));
 	} else {
 		if (time_taken > 0.1) {
-			 bot->core->log(dpp::ll_warning, fmt::format("Message processing took {:.4f} seconds!!! Channel: {}", time_taken, msg.channel_id));
+			 bot->core->log(dpp::ll_warning, fmt::format("Message processing took {:.7f} seconds!!! Channel: {}", time_taken, msg.channel_id));
 		}
 	}
 
