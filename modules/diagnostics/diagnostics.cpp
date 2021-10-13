@@ -196,7 +196,7 @@ public:
 						statstr << fmt::format("{0:7s} {1:7s}{2:9s}  {3:6s}       {4:s} {5:s}     ", "Conn#", "F/B", "Proc/Err", "Ready", "Avg Query Len", "Total Time") << "\n";
 						statstr << fmt::format("----------------------------------------------------------------\n") << "\n";
 						for (db::connection_info ci : stats.connections) {
-							statstr << fmt::format("{0:02d} {1:7s} {2:8d}/{3:04d}  {4:6s} {5:12.06f} {6:12.03f}",
+							statstr << fmt::format("{0:02d} {1:7s} {2:8d}/{3:04d}  {4:6s} {5:12.06f} {6:16.03f}",
 							n++,
 							ci.background ? "     B " : "     F ",
 							ci.queries_processed,
