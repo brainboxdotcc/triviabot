@@ -182,9 +182,31 @@ public:
 							if (bot->Loader->Reload(modfile)) {
 								EmbedSimple("Reloaded module: " + modfile, msg.channel_id);
 							} else {
-								EmbedSimple(std::string("Can't do that: ``") + bot->Loader->GetLastError() + "``", msg.channel_id);
+								EmbedSimple(std::string("Can't do that: `") + bot->Loader->GetLastError() + "`", msg.channel_id);
 							}
 						}
+					} else if (lowercase(subcommand) == "sqlstats") {
+						db::statistics stats = db::get_stats();
+						std::ostringstream statstr;
+						statstr << fmt::format("SQL Statistics\n---------------\n") << "\n";
+						statstr << fmt::format("Total queries executed: {:10d}", stats.queries_processed) << "\n";
+						statstr << fmt::format("Total queries errored:  {:10d}", stats.queries_errored) << "\n\n";
+						size_t n = 0;
+						statstr << fmt::format("{0:7s} {1:7s}{2:9s}  {3:6s}       {4:s} {5:s}     ", "Conn#", "F/B", "Proc/Err", "Ready", "Avg Query Len", "Total Time") << "\n";
+						statstr << fmt::format("----------------------------------------------------------------\n") << "\n";
+						for (db::connection_info ci : stats.connections) {
+							statstr << fmt::format("{0:02d} {1:7s} {2:8d}/{3:04d}  {4:6s} {5:12.06f} {6:12.03f}",
+							n++,
+							ci.background ? "     B " : "     F ",
+							ci.queries_processed,
+							ci.queries_errored,
+							ci.ready ? "🟢" : "🔴",
+							ci.avg_query_length,
+							ci.busy_time
+							) << "\n";
+						}
+						bot->core->message_create(dpp::message(msg.channel_id, "```\n" + statstr.str() + "\n```"));
+						bot->sent_messages++;
 					} else if (lowercase(subcommand) == "sql") {
 						std::string sql;
 						std::getline(tokens, sql);

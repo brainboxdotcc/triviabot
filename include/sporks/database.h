@@ -25,6 +25,8 @@
 #include <map>
 #include <string>
 #include <variant>
+#include <spdlog/fwd.h>
+#include <mysql/mysql.h>
 
 namespace db {
 
@@ -35,8 +37,49 @@ namespace db {
 
 	typedef std::vector<std::variant<float, std::string, uint64_t, int64_t, bool, int32_t, uint32_t, double>> paramlist;
 
+
+	/* Represents a MySQL connection. Each connection has a queue of queries waiting
+	 * to be executed. These are stored in three lists, the 'all' queue, the 'busy'
+	 * queue and the 'ready' queue.
+	 * All connections always exist in the 'all' queue, and move between the 'busy'
+	 * and 'ready' queue while they are executing a query regardless of queue length
+	 * on that connection.
+	 * When a new query is added to the queue for the connection, the condition_variable
+	 * is signalled from the calling thread to tell it to check for new queries at the
+	 * head of the queue.
+	 */
+	struct sqlconn {
+		MYSQL connection;
+		std::mutex mutex;
+		uint64_t queries_processed = 0;
+		uint64_t queries_errored = 0;
+		double avg_query_length = 0.0;
+		double busy_time = 0.0;
+		bool busy = false;
+	};
+
+	/* Information on a connection for struct statistics */
+	struct connection_info {
+		uint64_t queries_processed = 0;
+		uint64_t queries_errored = 0;
+		double busy_time = 0.0;
+		double avg_query_length = 0.0;
+		bool ready = true;
+		bool background = false;
+	};
+
+	/* Connection information */
+	struct statistics {
+		std::vector<connection_info> connections;
+		uint64_t queries_processed = 0;
+		uint64_t queries_errored = 0;
+	};
+
+	/* Get statistics */
+	statistics get_stats();
+
 	/* Connect to database */
-	bool connect(const std::string &host, const std::string &user, const std::string &pass, const std::string &db, int port);
+	bool connect(std::shared_ptr<spdlog::logger> logger, const std::string &host, const std::string &user, const std::string &pass, const std::string &db, int port);
 	/* Disconnect from database */
 	bool close();
 	/* Issue a database query and return results */
