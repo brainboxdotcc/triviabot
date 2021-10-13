@@ -189,8 +189,9 @@ public:
 						db::statistics stats = db::get_stats();
 						std::ostringstream statstr;
 						statstr << fmt::format("SQL Statistics\n---------------\n") << "\n";
-						statstr << fmt::format("Total queries executed: {:10d}", stats.queries_processed) << "\n";
-						statstr << fmt::format("Total queries errored:  {:10d}", stats.queries_errored) << "\n\n";
+						statstr << fmt::format("Total queries executed:  {:10d}", stats.queries_processed) << "\n";
+						statstr << fmt::format("Total queries errored:   {:10d}", stats.queries_errored) << "\n";
+						statstr << fmt::format("Background queue length: {:10d}", stats.bg_queue_length) << "\n\n";
 						size_t n = 0;
 						statstr << fmt::format("{0:7s} {1:7s}{2:9s}  {3:6s}       {4:s} {5:s}     ", "Conn#", "F/B", "Proc/Err", "Ready", "Avg Query Len", "Total Time") << "\n";
 						statstr << fmt::format("----------------------------------------------------------------\n") << "\n";

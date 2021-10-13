@@ -32,6 +32,11 @@
 #include <queue>
 #include <dpp/dpp.h>
 
+/* Initial connection string for the database.
+ * Note that mariadb and mysql have differnet syntax (this is one of the few sitations where they differ).
+ * Both set the maximum query time to 3 seconds, which is far more than needed but acts as a safety net
+ * against any bad programming or runaway queries.
+ */
 #ifdef MARIADB_VERSION_ID
 	#define CONNECT_STRING "SET NAMES utf8mb4, @@SESSION.max_statement_time=3000"
 #else
@@ -42,32 +47,50 @@ using namespace std::literals;
 
 namespace db {
 
-	double time_f() {
-		using namespace std::chrono;
-		auto tp = system_clock::now() + 0ns;
-		return tp.time_since_epoch().count() / 1000000000.0;
-	}
-
+	/* Represents a stored background query for the queue */
 	struct background_query {
+		/* Format string */
 		std::string format;
+		/* Unescaped parameters */
 		paramlist parameters;
 	};
 
+	/* Number of connections in the foreground thread pool.
+	 * REMEMBER NOT TO GET TOO GREEDY!
+	 * This will be multiplied up by how many clusters are running!
+	 */
 	const size_t POOL_SIZE = 10;
+
+	/* Current connection index for the foreground pool,
+	 * used for round-robin of the queries across connections.
+	 */
 	size_t curr_index = 0;
 
+	/* Foreground connection pool */
 	sqlconn connections[POOL_SIZE];
+
+	/* Background connection */
 	sqlconn bg_connection;
 
+	/* Total processed query counter */
 	uint64_t processed = 0;
+	
+	/* Total errored queries counter */
 	uint64_t errored = 0;
 
+	/* Protects the background_queries queue from concurrent access */
 	std::mutex b_db_mutex;
 
+	/* The last error to occur */
 	std::string _error;
-	std::queue<background_query> background_queries;
-	std::thread* background_thread;
 
+	/* Queue of background queries to be executed */
+	std::queue<background_query> background_queries;
+
+	/* Thread upon which background queries will execute */
+	std::thread* background_thread = nullptr;
+
+	/* spdlog logger */
 	std::shared_ptr<spdlog::logger> log;
 
 	resultset real_query(sqlconn &conn, const std::string &format, const paramlist &parameters);
@@ -87,6 +110,10 @@ namespace db {
 		}
 		stats.queries_processed = processed;
 		stats.queries_errored = errored;
+		{
+			std::lock_guard<std::mutex> db_lock(b_db_mutex);
+			stats.bg_queue_length = background_queries.size();
+		}
 
 		connection_info ci;
 		ci.ready = !bg_connection.busy;
@@ -106,7 +133,7 @@ namespace db {
 			{
 				std::lock_guard<std::mutex> db_lock(b_db_mutex);
 				while (background_queries.size()) {
-					bg_copy.push(background_queries.front());
+					bg_copy.emplace(background_queries.front());
 					background_queries.pop();
 				}
 			}
@@ -179,10 +206,7 @@ namespace db {
 
 	void backgroundquery(const std::string &format, const paramlist &parameters) {
 		std::lock_guard<std::mutex> db_lock(b_db_mutex);
-		background_query bq;
-		bq.format = format;
-		bq.parameters = parameters;
-		background_queries.push(bq);
+		background_queries.emplace(background_query{ format, parameters });
 	}
 
 	/**
