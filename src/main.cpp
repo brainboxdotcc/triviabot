@@ -398,6 +398,8 @@ int main(int argc, char** argv) {
 		bot.on_voice_state_update(std::bind(&Bot::onVoiceStateUpdate, &client, std::placeholders::_1));
 		bot.on_voice_server_update(std::bind(&Bot::onVoiceServerUpdate, &client, std::placeholders::_1));
 		bot.on_webhooks_update(std::bind(&Bot::onWebhooksUpdate, &client, std::placeholders::_1));
+
+		bot.set_websocket_protocol(dpp::ws_etf);
 	
 		try {
 			/* Actually connect and start the event loop */
