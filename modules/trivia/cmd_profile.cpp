@@ -66,7 +66,7 @@ void command_profile_t::call(const in_cmd &cmd, std::stringstream &tokens, guild
 		std::string dl = fmt::format("{:32s}{:8d}", _("DAILY", settings), daily);
 		std::string wl = fmt::format("{:32s}{:8d}", _("WEEKLY", settings), weekly);
 		std::string ml = fmt::format("{:32s}{:8d}", _("MONTHLY", settings), monthly);
-		std::string ll = fmt::format("{:32s}{:8d}", _("MONTHLY", settings), lifetime);
+		std::string ll = fmt::format("{:32s}{:8d}", _("LIFETIME", settings), lifetime);
 
 		std::string scores = "```" + dl + "\n" + wl + "\n" + ml + "\n" + ll + "```";
 
