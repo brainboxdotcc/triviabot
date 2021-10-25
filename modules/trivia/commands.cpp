@@ -298,7 +298,8 @@ void TriviaModule::SetupCommands()
 					this->bot->core->log(dpp::ll_info, fmt::format("Registered {} global commands", sm.size()));
 				}
 			});
-			bot->core->guild_bulk_command_create(adminslash, from_string<uint64_t>(bot->GetConfig("home"), std::dec), [this](const dpp::confirmation_callback_t &callback) {
+			std::copy(std::begin(adminslash), std::end(adminslash), std::back_inserter(slashcommands));
+			bot->core->guild_bulk_command_create(slashcommands, from_string<uint64_t>(bot->GetConfig("home"), std::dec), [this](const dpp::confirmation_callback_t &callback) {
 				if (callback.is_error()) {
 					this->bot->core->log(dpp::ll_error, fmt::format("Failed to register guild slash commands (live mode, admin set): {}", callback.http_info.body));
 				} else {
