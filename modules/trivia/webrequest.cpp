@@ -698,7 +698,7 @@ bool log_question_index(uint64_t guild_id, uint64_t channel_id, uint32_t index, 
 
 	if (state == TRIV_ASK_QUESTION) {
 		db::backgroundquery("UPDATE counters SET asked_15_min = asked_15_min + 1", {});
-		db::backgroundquery("UPDATE categories SET questions_asked = questions_asked + 1 WHERE id = (SELECT category FROM questions WHERE id = '?' LIMIT 1)", {qid});
+		db::backgroundquery("UPDATE categories inner join questions on questions.category = categories.id SET questions_asked = questions_asked + 1 WHERE questions.id = ?", {qid});
 	}
 
 	return should_stop;
