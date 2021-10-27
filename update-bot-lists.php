@@ -77,7 +77,7 @@ while ($site = mysqli_fetch_object($q)) {
 		'http' => [
 				'method' => 'POST',
 				'ignore_errors' => true,
-				'header'  => "Content-Type: $ct\r\nUser-Agent: Artificially-Intelligent-Potato (Compatible/1.0; Baked; Two-Electrodes)\r\nAuthorization: " . $site->authorization.  "\r\nX-TOKEN-DBLFR: " . $site->authorization,
+				'header'  => "Content-Type: $ct\r\nUser-Agent: Artificially-Intelligent-Potato (Compatible/1.0; Baked; Two-Electrodes)\r\nAuthorization: " . $site->authorization.  "\r\nX-TOKEN-DBLFR: " . $site->authorization . "\r\nserverCount: " . ($totals->servers + 0),
 				'content' => ($site->post_type == 'json' ? $json_payload : http_build_query($payload)), 
 			]
 		];
