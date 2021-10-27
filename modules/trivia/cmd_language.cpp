@@ -76,7 +76,7 @@ void command_language_t::call(const in_cmd &cmd, std::stringstream &tokens, guil
 	}
 
 	settings.language = lang_name;
-	db::query("UPDATE bot_guild_settings SET language = '?' WHERE snowflake_id = '?'", {lang_name, cmd.guild_id});
+	db::backgroundquery("UPDATE bot_guild_settings SET language = '?' WHERE snowflake_id = '?'", {lang_name, cmd.guild_id});
 	creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":white_check_mark:", _("LANGCHANGE", settings), cmd.channel_id, _("CATDONE", settings));
 
 }

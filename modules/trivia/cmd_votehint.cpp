@@ -74,7 +74,7 @@ void command_votehint_t::call(const in_cmd &cmd, std::stringstream &tokens, guil
 					personal_hint = ReplaceString(personal_hint, " ", "#");
 					// Get the API to do this -- note: DPP can do this safely now
 					send_hint(cmd.author_id, personal_hint, remaining_hints);
-					db::query("UPDATE infobot_votes SET dm_hints = ? WHERE snowflake_id = ?", {remaining_hints, cmd.author_id});
+					db::backgroundquery("UPDATE infobot_votes SET dm_hints = ? WHERE snowflake_id = ?", {remaining_hints, cmd.author_id});
 					creator->CacheUser(cmd.author_id, cmd.user, cmd.member, cmd.channel_id);
 					return;
 				}

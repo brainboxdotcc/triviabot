@@ -44,7 +44,7 @@ void command_privacy_t::call(const in_cmd &cmd, std::stringstream &tokens, guild
 	tokens >> str_p;
 	str_p = lowercase(trim(str_p));
 	bool onoff = ((str_p == "on" || str_p == "1" || str_p == "true") ? 1 : 0);
-	db::query("UPDATE team_membership SET privacy_mode = '?' WHERE nick = '?'", {onoff, cmd.author_id});
+	db::backgroundquery("UPDATE team_membership SET privacy_mode = '?' WHERE nick = '?'", {onoff, cmd.author_id});
 	creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, "🕵️", _((onoff ? "PRV_ON" : "PRV_OFF"), settings), cmd.channel_id, _("PRIVACY", settings));
 	creator->CacheUser(cmd.author_id, cmd.user, cmd.member, cmd.channel_id);
 }

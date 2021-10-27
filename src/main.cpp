@@ -51,7 +51,7 @@ json configdocument;
 /**
  * Constructor (creates threads, loads all modules)
  */
-Bot::Bot(bool development, bool testing, bool intents, dpp::cluster* dppcluster) : dev(development), test(testing), memberintents(intents), thr_presence(nullptr), terminate(false), shard_init_count(0), core(dppcluster), sent_messages(0), received_messages(0), my_cluster_id(0) {
+Bot::Bot(bool development, bool testing, bool intents, dpp::cluster* dppcluster, uint32_t cluster_id) : dev(development), test(testing), memberintents(intents), thr_presence(nullptr), terminate(false), shard_init_count(0), core(dppcluster), sent_messages(0), received_messages(0), my_cluster_id(cluster_id) {
 	Loader = new ModuleLoader(this);
 	Loader->LoadAll();
 
@@ -361,8 +361,7 @@ int main(int argc, char** argv) {
 			}
 		});
 
-		Bot client(dev, test, members, &bot);
-		client.SetClusterID(clusterid);
+		Bot client(dev, test, members, &bot, clusterid);
 
 		/* Attach events to the Bot class methods */
 		bot.on_message_create(std::bind(&Bot::onMessage, &client, std::placeholders::_1));

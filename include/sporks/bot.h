@@ -84,7 +84,7 @@ public:
 	uint64_t sent_messages;
 	uint64_t received_messages;
 
-	Bot(bool development, bool testing, bool intents, dpp::cluster* dppcluster);
+	Bot(bool development, bool testing, bool intents, dpp::cluster* dppcluster, uint32_t cluster_id);
 	virtual ~Bot();
 
 	bool IsDevMode();
