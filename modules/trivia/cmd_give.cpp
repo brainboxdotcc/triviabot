@@ -54,8 +54,6 @@ void command_give_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_se
 		user_id = cmd.author_id;
 	}
 
-	db::query("START TRANSACTION", {});
-
 	db::resultset coins = db::query("SELECT * FROM coins WHERE user_id = '?'", {user_id});
 	if (coins.size()) {
         	balance = from_string<uint64_t>(coins[0]["balance"], std::dec);
@@ -65,13 +63,8 @@ void command_give_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_se
 		message = _("NOTENOUGH", settings);
 	} else {
 		message = fmt::format(_("GAVECOINS", settings), howmuch, user_id);
-		db::backgroundquery("SET @COIN_LOG_DISABLED = 1", {});
-		db::backgroundquery("UPDATE coins SET balance = balance - ? WHERE user_id = ?", {howmuch, cmd.author_id});
-		db::backgroundquery("INSERT INTO coins (user_id, balance) VALUES('?', '?') ON DUPLICATE KEY UPDATE balance = balance + ?", {user_id, howmuch, howmuch});
-		db::backgroundquery("SET @COIN_LOG_DISABLED = 0", {});
+		db::backgroundquery("CALL give_coins(?, ?, ?)", {howmuch, cmd.author_id, user_id});
 	}
-
-	db::query("COMMIT", {});
 
 	creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, "", message + "\n\n[" + _("SHOPURLTEXT", settings) + "](https://triviabot.co.uk/coinshop/)",
 	cmd.channel_id, "", "", "https://triviabot.co.uk/images/coin.gif");

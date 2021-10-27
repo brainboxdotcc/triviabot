@@ -64,16 +64,14 @@ void command_disable_t::call(const in_cmd &cmd, std::stringstream &tokens, guild
 		return;
 	}
 
-	db::query("START TRANSACTION", {});
 	db::query("INSERT INTO disabled_categories (guild_id, category_id) VALUES('?', '?')", {cmd.guild_id, cat[0]["id"]});
 	db::resultset pd = db::query("SELECT count_remaining('?') AS remaining", {cmd.guild_id});
 	int remaining = from_string<int>(pd[0]["remaining"], std::dec);
 	if (remaining < MIN_QUESTIONS) {
-		db::query("ROLLBACK", {});
+		db::backgroundquery("DELETE FROM disabled_categories WHERE guild_id = ? AND category_id = ?", {cmd.guild_id, cat[0]["id"]});
 		creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":warning:", fmt::format(_("TOOFEWCATS", settings), 100 - MAX_PERCENT_DISABLE), cmd.channel_id, _("CATERROR", settings));
 		return;
 	}
-	db::query("COMMIT", {});
 
 	creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":white_check_mark:", fmt::format(_("CATDISABLED", settings), cat[0][namefield]), cmd.channel_id, _("CATDONE", settings));
 }
