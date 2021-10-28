@@ -61,7 +61,6 @@ void command_language_t::call(const in_cmd &cmd, std::stringstream &tokens, guil
 			fields.push_back(field);
 		}
 		creator->EmbedWithFields(cmd.interaction_token, cmd.command_id, settings, _("SUPPORTEDLANGS", settings), fields, cmd.channel_id, "https://triviabot.co.uk", "", "", _("HOWTOCHANGE", settings));
-
 		return;
 	}
 
@@ -73,10 +72,10 @@ void command_language_t::call(const in_cmd &cmd, std::stringstream &tokens, guil
 	db::resultset r = db::query("SELECT * FROM languages WHERE live = 1 AND isocode = '?' ORDER BY id", {lang_name});
 	if (r.size() == 0) {
 		creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":warning:", _("BADLANG", settings), cmd.channel_id);
+	} else {
+		settings.language = lang_name;
+		db::backgroundquery("UPDATE bot_guild_settings SET language = '?' WHERE snowflake_id = '?'", {lang_name, cmd.guild_id});
+		creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":white_check_mark:", _("LANGCHANGE", settings), cmd.channel_id, _("CATDONE", settings));
 	}
-
-	settings.language = lang_name;
-	db::backgroundquery("UPDATE bot_guild_settings SET language = '?' WHERE snowflake_id = '?'", {lang_name, cmd.guild_id});
-	creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":white_check_mark:", _("LANGCHANGE", settings), cmd.channel_id, _("CATDONE", settings));
 
 }
