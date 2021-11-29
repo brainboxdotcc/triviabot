@@ -70,14 +70,20 @@ void command_ping_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_se
 				}
 				f = { _("CLUSTER", settings) + " " + shard["cluster_id"], "", true };
 			}
-			lastcluster = std::stol(shard["cluster_id"]);
 			/* Green circle: Shard UP
 			 * Wrench emoji: Shard down for less than 15 mins; Under maintainence
 			 * Red circle: Shard down over 15 mins; DOWN
 			 */
-			f.value += "`" + fmt::format("{:02d}", std::stoul(shard["id"])) + "`: " + (shard["connected"] == "1" && shard["online"] == "1" ? ":green_circle: ": (shard["down_since"].empty() && time(nullptr) - stoull(shard["down_since"]) > 60 * 15 ? ":red_circle: " : "<:wrench:546395191892901909> ")) + "\n";
-			if (shard["connected"] == "0" || shard["online"] == "0") {
-				shardstatus = false;
+			try {
+				lastcluster = std::stol(shard["cluster_id"]);
+				uint64_t ds = stoull(shard["down_since"]);
+				uint32_t sid = std::stoul(shard["id"]);
+				f.value += "`" + fmt::format("{:02d}", sid) + "`: " + (shard["connected"] == "1" && shard["online"] == "1" ? ":green_circle: ": (shard["down_since"].empty() && time(nullptr) - ds > 60 * 15 ? ":red_circle: " : "<:wrench:546395191892901909> ")) + "\n";
+				if (shard["connected"] == "0" || shard["online"] == "0") {
+					shardstatus = false;
+				}
+			}
+			catch (const std::exception &) {
 			}
 		}
 		fields.push_back(f);

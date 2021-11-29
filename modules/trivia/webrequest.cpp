@@ -860,7 +860,14 @@ void CheckCreateWebhook(const guild_settings_t & s, TriviaModule* t, uint64_t ch
 	if (existing_hook.size()) {
 		c->log(dpp::ll_debug, fmt::format("Existing webhook found for channel {}", channel_id));
 		/* Check if existing webhook is still valid */
-		c->get_webhook(std::stoull(existing_hook[0]["webhook_id"]), [create_wh, channel_id, c](const dpp::confirmation_callback_t& data) {
+		uint64_t wid = 0;
+		try {
+			wid = std::stoull(existing_hook[0]["webhook_id"]);
+		}
+		catch (const std::exception&) {
+			wid = 0;
+		}
+		c->get_webhook(wid, [create_wh, channel_id, c](const dpp::confirmation_callback_t& data) {
 			if (!data.is_error()) {
 				dpp::webhook existing_wh = std::get<dpp::webhook>(data.value);
 				db::backgroundquery("UPDATE channel_webhooks SET webhook = '?' WHERE webhook_id = '?' AND channel_id = '?'", {"https://discord.com/api/webhooks/" + std::to_string(existing_wh.id) + "/" + dpp::url_encode(existing_wh.token), existing_wh.id, existing_wh.channel_id});
