@@ -66,6 +66,9 @@ void command_ping_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_se
 			/* Arrange shards by cluster, each cluster in an embed field */
 			if (lastcluster != std::stol(shard["cluster_id"])) {
 				if (lastcluster != -1) {
+					if (f.value.empty()) {
+						f.value = "(error)";
+					}
 					fields.push_back(f);
 				}
 				f = { _("CLUSTER", settings) + " " + shard["cluster_id"], "", true };
@@ -85,6 +88,9 @@ void command_ping_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_se
 			}
 			catch (const std::exception &) {
 			}
+		}
+		if (f.value.empty()) {
+			f.value = "(error)";
 		}
 		fields.push_back(f);
 		creator->EmbedWithFields(
