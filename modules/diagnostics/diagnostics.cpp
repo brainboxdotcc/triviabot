@@ -107,18 +107,18 @@ public:
 
 		if (mentioned && diagnosticmessage->Match(clean_message, param) && param.size() >= 3) {
 
-			dpp::message msg = *(message.msg);
+			dpp::message msg = message.msg;
 			std::stringstream tokens(trim(param[2]));
 			std::string subcommand;
 			tokens >> subcommand;
 
-			bot->core->log(dpp::ll_info, fmt::format("SUDO: <{}> {}", msg.author ? msg.author->username : "", clean_message));
+			bot->core->log(dpp::ll_info, fmt::format("SUDO: <{}> {}", msg.author.id ? msg.author.username : "", clean_message));
 
 			/* Get owner snowflake id from config file */
 			dpp::snowflake owner_id = from_string<int64_t>(Bot::GetConfig("owner"), std::dec);
 
 			/* Only allow these commands to the bot owner */
-			if (msg.author && msg.author->id == owner_id) {
+			if (msg.author.id == owner_id) {
 
 				if (param.size() < 3) {
 					/* Invalid number of parameters */

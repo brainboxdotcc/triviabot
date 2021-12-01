@@ -583,27 +583,23 @@ bool TriviaModule::OnMessage(const dpp::message_create_t &message, const std::st
 bool TriviaModule::RealOnMessage(const dpp::message_create_t &message, const std::string& clean_message, bool mentioned, const std::vector<std::string> &stringmentions, dpp::snowflake _author_id)
 {
 	std::string username;
-	dpp::message msg = *(message.msg);
+	dpp::message msg = message.msg;
 	bool is_from_dashboard = (_author_id != 0);
 	double start = time_f();
 
 	// Allow overriding of author id from remote start code
-	uint64_t author_id = _author_id ? _author_id : msg.author->id;
+	uint64_t author_id = _author_id ? _author_id : msg.author.id;
 
-	bool isbot = msg.author->is_bot();
-
-	dpp::user* user = message.msg->author;
-	if (user) {
-		username = user->username;
-		if (isbot) {
-			/* Drop bots here */
-			return true;
-		}
+	bool isbot = msg.author.is_bot();
+	username = message.msg.author.username;
+	if (isbot) {
+		/* Drop bots here */
+		return true;
 	}
 	
-	dpp::snowflake guild_id = message.msg->guild_id;
-	dpp::snowflake channel_id = message.msg->channel_id;
-	dpp::guild_member gm = message.msg->member;
+	dpp::snowflake guild_id = message.msg.guild_id;
+	dpp::snowflake channel_id = message.msg.channel_id;
+	dpp::guild_member gm = message.msg.member;
 
 	if (msg.channel_id == 0) {
 		/* No channel! */
@@ -621,12 +617,8 @@ bool TriviaModule::RealOnMessage(const dpp::message_create_t &message, const std
 			// Commands
 			if (lowercase(clean_message.substr(0, settings.prefix.length())) == lowercase(settings.prefix)) {
 				std::string command = clean_message.substr(settings.prefix.length(), clean_message.length() - settings.prefix.length());
-				if (user != nullptr) {
-					queue_command(command, author_id, channel_id, guild_id, mentioned, username, is_from_dashboard, *user, gm);
-					bot->core->log(dpp::ll_info, fmt::format("CMD (USER={}, GUILD={}): <{}> {}", author_id, guild_id, username, clean_message));
-				} else {
-					bot->core->log(dpp::ll_debug, fmt::format("User is null when handling command. C:{} A:{}", channel_id, author_id));
-				}
+				queue_command(command, author_id, channel_id, guild_id, mentioned, username, is_from_dashboard, message.msg.author, gm);
+				bot->core->log(dpp::ll_info, fmt::format("CMD (USER={}, GUILD={}): <{}> {}", author_id, guild_id, username, clean_message));
 			}
 		
 			// Answers for active games
@@ -635,7 +627,7 @@ bool TriviaModule::RealOnMessage(const dpp::message_create_t &message, const std
 				state_t* state = GetState(channel_id);
 				if (state) {
 					/* The state_t class handles potential answers, but only when a game is running on this guild */
-					state->queue_message(settings, clean_message, author_id, username, mentioned, *user, gm);
+					state->queue_message(settings, clean_message, author_id, username, mentioned, message.msg.author, gm);
 					bot->core->log(dpp::ll_debug, fmt::format("Processed potential answer message from A:{} on C:{}", author_id, channel_id));
 				}
 			}
