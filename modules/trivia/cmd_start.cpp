@@ -59,6 +59,12 @@ void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 
 	tokens >> str_q;
 
+	/* Don't allow banned users to start games at all */
+	db::resultset rs2 = db::query("SELECT snowflake_id FROM bans WHERE play_ban = 1 AND snowflake_id = ?", {cmd.author_id});
+	if (rs2.size()) {
+		return;
+	}
+
 	if (str_q.empty()) {
 		questions = 10;
 	} else {
@@ -84,8 +90,8 @@ void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 
 	json document;
 	std::ifstream configfile("../config.json");
-	configfile >> document;
 	json shitlist = document["shitlist"];
+	configfile >> document;
 	for (auto entry = shitlist.begin(); entry != shitlist.end(); ++entry) {
 		int64_t sl_guild_id = from_string<int64_t>(entry->get<std::string>(), std::dec);
 		if (cmd.channel_id == sl_guild_id) {
