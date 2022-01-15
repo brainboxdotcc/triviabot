@@ -618,6 +618,8 @@ void update_score_only(uint64_t snowflake_id, uint64_t guild_id, int score, uint
 	// Replaced with direct db query for perforamance increase - 27Dec20
 	db::backgroundquery("INSERT INTO scores (name, guild_id, score, dayscore, weekscore, monthscore) VALUES('?', '?', '?', '?', '?', '?') ON DUPLICATE KEY UPDATE score = score + ?, weekscore = weekscore + ?, monthscore = monthscore + ?, dayscore = dayscore + ?",
 			{snowflake_id, guild_id, score, score, score, score, score, score, score, score});
+	db::backgroundquery("INSERT INTO global_scores (name, score, dayscore, weekscore, monthscore) VALUES('?', '?', '?', '?', '?') ON DUPLICATE KEY UPDATE score = score + ?, weekscore = weekscore + ?, monthscore = monthscore + ?, dayscore = dayscore + ?",
+			{snowflake_id, score, score, score, score, score, score, score, score});
 	db::backgroundquery("INSERT INTO scores_lastgame (guild_id, user_id, score) VALUES('?', '?', '?') ON DUPLICATE KEY UPDATE score = score + ?", {guild_id, snowflake_id, score, score});
 	db::backgroundquery("INSERT INTO insane_round_statistics (guild_id, channel_id, user_id, score) VALUES('?', '?', '?', '?') ON DUPLICATE KEY UPDATE score = score + ?", {guild_id, channel_id, snowflake_id, score, score});
 }
@@ -711,6 +713,8 @@ uint32_t update_score(uint64_t snowflake_id, uint64_t guild_id, double recordtim
 	db::backgroundquery("UPDATE stats SET lastcorrect='?', record_time='?' WHERE id = ?", {snowflake_id, recordtime, id});
 	db::backgroundquery("INSERT INTO scores (name, guild_id, score, dayscore, weekscore, monthscore) VALUES('?', '?', '?', '?', '?', '?') ON DUPLICATE KEY UPDATE score = score + ?, weekscore = weekscore + ?, monthscore = monthscore + ?, dayscore = dayscore + ?",
 			{snowflake_id, guild_id, score, score, score, score, score, score, score, score});
+	db::backgroundquery("INSERT INTO global_scores (name, score, dayscore, weekscore, monthscore) VALUES('?', '?', '?', '?', '?') ON DUPLICATE KEY UPDATE score = score + ?, weekscore = weekscore + ?, monthscore = monthscore + ?, dayscore = dayscore + ?",
+			{snowflake_id, score, score, score, score, score, score, score, score});
 	db::backgroundquery("INSERT INTO scores_lastgame (guild_id, user_id, score) VALUES('?', '?', '?') ON DUPLICATE KEY UPDATE score = score + ?", {guild_id, snowflake_id, score, score});
 
 	return 0;

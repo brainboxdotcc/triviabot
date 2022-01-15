@@ -59,10 +59,17 @@ void command_profile_t::call(const in_cmd &cmd, std::stringstream &tokens, guild
 			}
 		}
 
-		uint64_t lifetime = from_string<uint64_t>(db::query("SELECT SUM(score) AS score FROM scores WHERE name = '?'", {user_id})[0]["score"], std::dec);
-		uint64_t weekly = from_string<uint64_t>(db::query("SELECT SUM(weekscore) AS score FROM scores WHERE name = '?'", {user_id})[0]["score"], std::dec);
-		uint64_t daily = from_string<uint64_t>(db::query("SELECT SUM(dayscore) AS score FROM scores WHERE name = '?'", {user_id})[0]["score"], std::dec);
-		uint64_t monthly = from_string<uint64_t>(db::query("SELECT SUM(monthscore) AS score FROM scores WHERE name = '?'", {user_id})[0]["score"], std::dec);
+		db::resultset srs = db::query("SELECT * FROM global_scores WHERE name = '?'", {user_id});
+		uint64_t lifetime = 0;
+		uint64_t weekly = 0;
+		uint64_t daily = 0;
+		uint64_t monthly = 0;
+		if (srs.size()) {
+			lifetime = from_string<uint64_t>(srs[0]["score"], std::dec);
+			weekly = from_string<uint64_t>(srs[0]["weekscore"], std::dec);
+			daily = from_string<uint64_t>(srs[0]["dayscore"], std::dec);
+			monthly = from_string<uint64_t>(srs[0]["monthscore"], std::dec);
+		}
 		std::string dl = fmt::format("{:32s}{:8d}", _("DAILY", settings), daily);
 		std::string wl = fmt::format("{:32s}{:8d}", _("WEEKLY", settings), weekly);
 		std::string ml = fmt::format("{:32s}{:8d}", _("MONTHLY", settings), monthly);
