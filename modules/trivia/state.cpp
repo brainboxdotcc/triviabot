@@ -291,13 +291,13 @@ void state_t::handle_message(const in_msg& m, const guild_settings_t& settings)
 					ans_message.append(fmt::format(_("RECORD_TIME", settings), m.username));
 					submit_time = time_to_answer;
 				}
-				update_score(m.author_id, guild_id, submit_time, question.id, score);
+				update_score(m.author_id, guild_id, submit_time, question.id, score, question.guild_id != 0);
 				add_score(m.author_id, score);
 				uint64_t newscore = get_score(m.author_id);
 				ans_message.append(fmt::format(_("SCORE_UPDATE", settings), m.username, newscore ? newscore : score));
 
 				std::string teamname = get_current_team(m.author_id);
-				if (!empty(teamname)) {
+				if (!empty(teamname) && question.guild_id == 0) {
 					add_team_points(teamname, score, m.author_id);
 					uint32_t newteamscore = get_team_points(teamname);
 					ans_message.append(fmt::format(_("TEAM_SCORE", settings), teamname, score, pts, newteamscore));
@@ -325,7 +325,7 @@ void state_t::handle_message(const in_msg& m, const guild_settings_t& settings)
 					streak = 1;
 				}
 
-				bool coin = should_drop_coin();
+				bool coin = question.guild_id == 0 && should_drop_coin();
 				std::string thumbnail = "";
 				if (coin) {
 					/* Player got a coin drop! */

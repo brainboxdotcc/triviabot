@@ -30,6 +30,7 @@ class in_msg
 struct question_t
 {
 	uint64_t id;
+	dpp::snowflake guild_id;
 	std::string question;
 	std::string answer;
 	std::string customhint1;
@@ -45,7 +46,7 @@ struct question_t
 	std::string answer_image;
 
 	question_t();
-	question_t(uint64_t _id, const std::string &_question, const std::string &_answer, const std::string &_hint1, const std::string &_hint2, const std::string &_catname, time_t _lastasked, uint32_t _timesasked,
+	question_t(uint64_t _id, dpp::snowflake _guild_id, const std::string &_question, const std::string &_answer, const std::string &_hint1, const std::string &_hint2, const std::string &_catname, time_t _lastasked, uint32_t _timesasked,
 		const std::string &_lastcorrect, double _record_time, const std::string &_shuffle1, const std::string &_shuffle2, const std::string &_question_image, const std::string &_answer_image);
 
 	static question_t fetch(uint64_t id, uint64_t guild_id, const class guild_settings_t &settings);

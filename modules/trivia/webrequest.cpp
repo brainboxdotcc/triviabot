@@ -87,14 +87,14 @@ std::string web_request(const std::string &_host, const std::string &_path, cons
 std::string fetch_page(const std::string &_endpoint, const std::string &body = "");
 std::vector<std::string> getinterfaces();
 
-question_t::question_t(uint64_t _id, const std::string &_question, const std::string &_answer, const std::string &_hint1, const std::string &_hint2, const std::string &_catname, time_t _lastasked, uint32_t _timesasked,
+question_t::question_t(uint64_t _id, dpp::snowflake _guild_id, const std::string &_question, const std::string &_answer, const std::string &_hint1, const std::string &_hint2, const std::string &_catname, time_t _lastasked, uint32_t _timesasked,
 	const std::string &_lastcorrect, double _record_time, const std::string &_shuffle1, const std::string &_shuffle2, const std::string &_question_image, const std::string &_answer_image) :
-	id(_id), question(_question), answer(_answer), customhint1(_hint1), customhint2(_hint2), catname(_catname), lastasked(_lastasked), timesasked(_timesasked), lastcorrect(_lastcorrect), recordtime(_record_time),
+	id(_id), guild_id(_guild_id), question(_question), answer(_answer), customhint1(_hint1), customhint2(_hint2), catname(_catname), lastasked(_lastasked), timesasked(_timesasked), lastcorrect(_lastcorrect), recordtime(_record_time),
 	shuffle1(_shuffle1), shuffle2(_shuffle2), question_image(_question_image), answer_image(_answer_image)
 {
 }
 
-question_t::question_t() : id(0), lastasked(0), timesasked(0), recordtime(0)
+question_t::question_t() : id(0), guild_id(0), lastasked(0), timesasked(0), recordtime(0)
 {
 }
 
@@ -485,11 +485,12 @@ question_t question_t::fetch(uint64_t id, uint64_t guild_id, const guild_setting
 		if (settings.language == "en") {
 			question = db::query("select questions.*, ans1.*, hin1.*, sta1.*, cat1.name as catname from questions left join hints as hin1 on questions.id=hin1.id left join answers as ans1 on questions.id=ans1.id left join stats as sta1 on questions.id=sta1.id left join categories as cat1 on questions.category=cat1.id where questions.id = ?", {id});
 		} else {
-			question = db::query("select questions.trans_" + settings.language + " as question, ans1.trans_" + settings.language + " as answer, hin1.trans1_" + settings.language + " as hint1, hin1.trans2_" + settings.language + " as hint2, question_img_url, answer_img_url, sta1.*, cat1.trans_" + settings.language + " as catname from questions left join hints as hin1 on questions.id=hin1.id left join answers as ans1 on questions.id=ans1.id left join stats as sta1 on questions.id=sta1.id left join categories as cat1 on questions.category=cat1.id where questions.id = ?", {id});
+			question = db::query("select questions.trans_" + settings.language + " as question, ans1.trans_" + settings.language + " as answer, hin1.trans1_" + settings.language + " as hint1, hin1.trans2_" + settings.language + " as hint2, question_img_url, question.guild_id, answer_img_url, sta1.*, cat1.trans_" + settings.language + " as catname from questions left join hints as hin1 on questions.id=hin1.id left join answers as ans1 on questions.id=ans1.id left join stats as sta1 on questions.id=sta1.id left join categories as cat1 on questions.category=cat1.id where questions.id = ?", {id});
 		}
 		if (question.size() > 0) {
 				return question_t(
-			from_string<uint64_t>(question[0]["id"], std::dec),
+				from_string<uint64_t>(question[0]["id"], std::dec),
+				from_string<uint64_t>(question[0]["guild_id"], std::dec),
 				homoglyph(question[0]["question"]),
 				question[0]["answer"],
 				question[0]["hint1"],
@@ -707,14 +708,16 @@ bool log_question_index(uint64_t guild_id, uint64_t channel_id, uint32_t index, 
 }
 
 /* Update the score for a user and their team, during non-insane round */
-uint32_t update_score(uint64_t snowflake_id, uint64_t guild_id, double recordtime, uint64_t id, int score)
+uint32_t update_score(uint64_t snowflake_id, uint64_t guild_id, double recordtime, uint64_t id, int score, bool local_only)
 {
 	// Replaced with direct db query for perforamance increase - 27Dec20
 	db::backgroundquery("UPDATE stats SET lastcorrect='?', record_time='?' WHERE id = ?", {snowflake_id, recordtime, id});
 	db::backgroundquery("INSERT INTO scores (name, guild_id, score, dayscore, weekscore, monthscore) VALUES('?', '?', '?', '?', '?', '?') ON DUPLICATE KEY UPDATE score = score + ?, weekscore = weekscore + ?, monthscore = monthscore + ?, dayscore = dayscore + ?",
 			{snowflake_id, guild_id, score, score, score, score, score, score, score, score});
-	db::backgroundquery("INSERT INTO global_scores (name, score, dayscore, weekscore, monthscore) VALUES('?', '?', '?', '?', '?') ON DUPLICATE KEY UPDATE score = score + ?, weekscore = weekscore + ?, monthscore = monthscore + ?, dayscore = dayscore + ?",
+	if (!local_only) {
+		db::backgroundquery("INSERT INTO global_scores (name, score, dayscore, weekscore, monthscore) VALUES('?', '?', '?', '?', '?') ON DUPLICATE KEY UPDATE score = score + ?, weekscore = weekscore + ?, monthscore = monthscore + ?, dayscore = dayscore + ?",
 			{snowflake_id, score, score, score, score, score, score, score, score});
+	}
 	db::backgroundquery("INSERT INTO scores_lastgame (guild_id, user_id, score) VALUES('?', '?', '?') ON DUPLICATE KEY UPDATE score = score + ?", {guild_id, snowflake_id, score, score});
 
 	return 0;
