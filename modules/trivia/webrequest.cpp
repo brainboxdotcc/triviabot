@@ -490,7 +490,7 @@ question_t question_t::fetch(uint64_t id, uint64_t guild_id, const guild_setting
 		if (question.size() > 0) {
 				return question_t(
 				from_string<uint64_t>(question[0]["id"], std::dec),
-				from_string<uint64_t>(question[0]["guild_id"], std::dec),
+				question[0]["guild_id"].empty() ? 0 : from_string<uint64_t>(question[0]["guild_id"], std::dec),
 				homoglyph(question[0]["question"]),
 				question[0]["answer"],
 				question[0]["hint1"],
