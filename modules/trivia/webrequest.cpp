@@ -485,7 +485,7 @@ question_t question_t::fetch(uint64_t id, uint64_t guild_id, const guild_setting
 		if (settings.language == "en") {
 			question = db::query("select questions.*, ans1.*, hin1.*, sta1.*, cat1.name as catname from questions left join hints as hin1 on questions.id=hin1.id left join answers as ans1 on questions.id=ans1.id left join stats as sta1 on questions.id=sta1.id left join categories as cat1 on questions.category=cat1.id where questions.id = ?", {id});
 		} else {
-			question = db::query("select questions.trans_" + settings.language + " as question, ans1.trans_" + settings.language + " as answer, hin1.trans1_" + settings.language + " as hint1, hin1.trans2_" + settings.language + " as hint2, question_img_url, question.guild_id, answer_img_url, sta1.*, cat1.trans_" + settings.language + " as catname from questions left join hints as hin1 on questions.id=hin1.id left join answers as ans1 on questions.id=ans1.id left join stats as sta1 on questions.id=sta1.id left join categories as cat1 on questions.category=cat1.id where questions.id = ?", {id});
+			question = db::query("select questions.trans_" + settings.language + " as question, ans1.trans_" + settings.language + " as answer, hin1.trans1_" + settings.language + " as hint1, hin1.trans2_" + settings.language + " as hint2, question_img_url, questions.guild_id, answer_img_url, sta1.*, cat1.trans_" + settings.language + " as catname from questions left join hints as hin1 on questions.id=hin1.id left join answers as ans1 on questions.id=ans1.id left join stats as sta1 on questions.id=sta1.id left join categories as cat1 on questions.category=cat1.id where questions.id = ?", {id});
 		}
 		if (question.size() > 0) {
 				return question_t(
@@ -786,6 +786,32 @@ streak_t get_streak(uint64_t snowflake_id, uint64_t guild_id)
 	streak_t s;
 	db::resultset streak = db::query("SELECT nick, streak FROM streaks WHERE guild_id = '?' ORDER BY streak DESC LIMIT 1", {guild_id});
 	db::resultset ss2 = db::query("SELECT streak FROM streaks WHERE nick='?' AND guild_id = '?'", {snowflake_id, guild_id});
+	s.personalbest = 0;
+	s.topstreaker = 0;
+	s.bigstreak = 9999999;
+	if (ss2.size() > 0) {
+		s.personalbest = from_string<uint32_t>(ss2[0]["streak"], std::dec);
+	}
+	if (streak.size() > 0) {
+		s.topstreaker = from_string<uint64_t>(streak[0]["nick"], std::dec);
+		s.bigstreak = from_string<uint32_t>(streak[0]["streak"], std::dec);
+	}
+	return s;
+}
+
+/* Update the streak for a player on a guild */
+void change_streak(uint64_t snowflake_id, int score)
+{
+	db::backgroundquery("INSERT INTO global_streaks (nick, streak) VALUES('?','?') ON DUPLICATE KEY UPDATE streak='?'", {snowflake_id, score, score});
+}
+
+/* Get the current streak details for a player on a guild, and the best streak for the guild at present */
+streak_t get_streak(uint64_t snowflake_id)
+{
+	// Replaced with direct db query for perforamance increase - 27Dec20
+	streak_t s;
+	db::resultset streak = db::query("SELECT nick, streak FROM global_streaks ORDER BY streak DESC LIMIT 1", {});
+	db::resultset ss2 = db::query("SELECT streak FROM global_streaks WHERE nick='?'", {snowflake_id});
 	s.personalbest = 0;
 	s.topstreaker = 0;
 	s.bigstreak = 9999999;

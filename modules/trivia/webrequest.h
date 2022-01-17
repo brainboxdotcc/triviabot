@@ -56,6 +56,7 @@ uint32_t get_total_questions();
 std::string get_current_team(uint64_t snowflake_id);
 void leave_team(uint64_t snowflake_id);
 streak_t get_streak(uint64_t snowflake_id, uint64_t guild_id);
+streak_t get_streak(uint64_t snowflake_id);
 bool check_team_exists(const std::string &team);
 void add_team_points(const std::string &team, int points, uint64_t snowflake_id);
 uint32_t get_team_points(const std::string &team);
@@ -64,6 +65,7 @@ bool log_question_index(uint64_t guild_id, uint64_t channel_id, uint32_t index, 
 void log_game_start(uint64_t guild_id, uint64_t channel_id, uint64_t number_questions, bool quickfire, const std::string &channel_name, uint64_t user_id, const std::vector<std::string> &questions, bool hintless);
 void log_game_end(uint64_t guild_id, uint64_t channel_id);
 void change_streak(uint64_t snowflake_id, uint64_t guild_id, int score);
+void change_streak(uint64_t snowflake_id, int score);
 std::vector<std::string> get_api_command_names();
 
 // These execute external PHP scripts, through a special handler. They bypass REST.
