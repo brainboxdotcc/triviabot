@@ -308,7 +308,6 @@ void state_t::handle_message(const in_msg& m, const guild_settings_t& settings)
 					streak++;
 					ans_message.append(fmt::format(_("ON_A_STREAK", settings), m.username, streak));
 					streak_t s = get_streak(m.author_id, guild_id);	// Guild streak
-					streak_t s2 = get_streak(m.author_id);		// Global streak
 					if (streak > s.personalbest) {
 						// Guild streak
 						ans_message.append(_("BEATEN_BEST", settings));
@@ -316,9 +315,12 @@ void state_t::handle_message(const in_msg& m, const guild_settings_t& settings)
 					} else {
 						ans_message.append(fmt::format(_("NOT_THERE_YET", settings), s.personalbest));
 					}
-					if (streak > s2.personalbest) {
-						// Global streak
-						change_streak(m.author_id, streak);
+					if (question.guild_id == 0) {
+						streak_t s2 = get_streak(m.author_id);		// Global streak
+						if (streak > s2.personalbest) {
+							// Global streak
+							change_streak(m.author_id, streak);
+						}
 					}
 					if (streak > s.bigstreak && s.topstreaker != m.author_id) {
 						ans_message.append(fmt::format(_("STREAK_BEATDOWN", settings), m.username, s.topstreaker, streak));
