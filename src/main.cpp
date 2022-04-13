@@ -248,7 +248,7 @@ int main(int argc, char** argv) {
 	};
 
 	/* These are our default intents for the bot, basically just receive messages, see reactions to the messages and see who's in our guilds */
-	uint32_t intents = dpp::i_default_intents;
+	uint32_t intents = dpp::i_default_intents | dpp::i_message_content;
 
 	/* Yes, getopt is ugly, but what you gonna do... */
 	int index;
