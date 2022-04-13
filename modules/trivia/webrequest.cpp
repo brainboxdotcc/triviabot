@@ -178,30 +178,6 @@ void set_io_context(const std::string &_apikey, Bot* _bot, TriviaModule* _module
 	statdumper = new std::thread(&statdump);
 }
 
-/* Encodes a url parameter similar to php urlencode() */
-std::string url_encode(const std::string &value) {
-	std::ostringstream escaped;
-	escaped.fill('0');
-	escaped << std::hex;
-
-	for (std::string::const_iterator i = value.begin(), n = value.end(); i != n; ++i) {
-		std::string::value_type c = (*i);
-
-		// Keep alphanumeric and other accepted characters intact
-		if (isalnum(c) || c == '-' || c == '_' || c == '.' || c == '~') {
-			escaped << c;
-			continue;
-		}
-
-		// Any other characters are percent-encoded
-		escaped << std::uppercase;
-		escaped << '%' << std::setw(2) << int((unsigned char) c);
-		escaped << std::nouppercase;
-	}
-
-	return escaped.str();
-}
-
 std::vector<std::string> getinterfaces()
 {
 	struct ifaddrs *ifaddr = NULL;
@@ -552,7 +528,7 @@ std::vector<std::string> fetch_shuffle_list(uint64_t guild_id, const std::string
 	if (category.empty()) {
 		return to_list(fetch_page(fmt::format("?opt=shuffle&guild_id={}",guild_id)));
 	} else {
-		return to_list(fetch_page(fmt::format("?opt=shuffle&guild_id={}&category={}",guild_id, url_encode(category))));
+		return to_list(fetch_page(fmt::format("?opt=shuffle&guild_id={}&category={}",guild_id, dpp::utility::url_encode(category))));
 	}
 }
 
@@ -584,7 +560,7 @@ std::vector<std::string> fetch_insane_round(uint64_t &question_id, uint64_t guil
 /* Send a DM hint to a user. TODO: Make D++ do this directly now its stable there */
 void send_hint(uint64_t snowflake_id, const std::string &hint, uint32_t remaining)
 {
-	later(fmt::format("?opt=customhint&user_id={}&hint={}&remaining={}", snowflake_id, url_encode(hint), remaining), "");
+	later(fmt::format("?opt=customhint&user_id={}&hint={}&remaining={}", snowflake_id, dpp::utility::url_encode(hint), remaining), "");
 }
 
 void runcli(guild_settings_t settings, const std::string &command, uint64_t guild_id, uint64_t user_id, uint64_t channel_id, const std::string &parameters, const std::string& interaction_token, dpp::snowflake command_id)
@@ -600,7 +576,7 @@ void runcli(guild_settings_t settings, const std::string &command, uint64_t guil
 			module->ProcessEmbed(interaction_token, command_id, s, reply, channel_id);
 		} else if (!interaction_token.empty()) {
 			/* Empty reply but handled. delete "thinking" notification */
-			bot->core->post_rest(API_PATH "/webhooks", std::to_string(bot->core->me.id), dpp::url_encode(interaction_token) + "/messages/@original", dpp::m_delete, "", [&](auto& json, auto& request) {}, "", "");
+			bot->core->post_rest(API_PATH "/webhooks", std::to_string(bot->core->me.id), dpp::utility::url_encode(interaction_token) + "/messages/@original", dpp::m_delete, "", [&](auto& json, auto& request) {}, "", "");
 		}
 	});
 }
@@ -627,7 +603,7 @@ void update_score_only(uint64_t snowflake_id, uint64_t guild_id, int score, uint
 
 void check_achievement(const std::string &when, uint64_t user_id, uint64_t guild_id)
 {
-	later(fmt::format("?opt=ach&user_id={}&guild_id={}&when={}", user_id, guild_id, url_encode(when)), "");
+	later(fmt::format("?opt=ach&user_id={}&guild_id={}&when={}", user_id, guild_id, dpp::utility::url_encode(when)), "");
 }
 
 /* Log the start of a game to the database via the API, used for resuming of games on crash or restart, plus the dashboard active games list */
@@ -761,7 +737,7 @@ void leave_team(uint64_t snowflake_id)
 bool join_team(uint64_t snowflake_id, const std::string &team, uint64_t channel_id)
 {
 	if (check_team_exists(team)) {
-		std::string r = trim(fetch_page(fmt::format("?opt=setteam&nick={}&team={}&channel_id={}", snowflake_id, url_encode(team), channel_id)));
+		std::string r = trim(fetch_page(fmt::format("?opt=setteam&nick={}&team={}&channel_id={}", snowflake_id, dpp::utility::url_encode(team), channel_id)));
 		if (r == "__OK__") {
 			return true;
 		} else {
@@ -828,7 +804,7 @@ streak_t get_streak(uint64_t snowflake_id)
 /* Create a new team, censors the team name using neutrino API */
 std::string create_new_team(const std::string &teamname)
 {
-	return trim(fetch_page(fmt::format("?opt=createteam&name={}", url_encode(teamname))));
+	return trim(fetch_page(fmt::format("?opt=createteam&name={}", dpp::utility::url_encode(teamname))));
 }
 
 /* Returns true if a team name exists */
@@ -880,7 +856,7 @@ void CheckCreateWebhook(const guild_settings_t & s, TriviaModule* t, uint64_t ch
 		c->create_webhook(wh, [channel_id, c](const dpp::confirmation_callback_t& data) {
 			if (!data.is_error()) {
 				dpp::webhook new_wh = std::get<dpp::webhook>(data.value);
-				std::string url = "https://discord.com/api/webhooks/" + std::to_string(new_wh.id) + "/" + dpp::url_encode(new_wh.token);
+				std::string url = "https://discord.com/api/webhooks/" + std::to_string(new_wh.id) + "/" + dpp::utility::url_encode(new_wh.token);
 				db::query("INSERT INTO channel_webhooks (channel_id, webhook_id, webhook) VALUES('?','?','?') ON DUPLICATE KEY UPDATE webhook_id = '?', webhook = '?'", {new_wh.channel_id, new_wh.id, url, new_wh.id, url});
 				c->log(dpp::ll_debug, fmt::format("New webhook created for channel {}: {}", channel_id, new_wh.id));
 			} else {
@@ -903,7 +879,7 @@ void CheckCreateWebhook(const guild_settings_t & s, TriviaModule* t, uint64_t ch
 		c->get_webhook(wid, [create_wh, channel_id, c](const dpp::confirmation_callback_t& data) {
 			if (!data.is_error()) {
 				dpp::webhook existing_wh = std::get<dpp::webhook>(data.value);
-				db::backgroundquery("UPDATE channel_webhooks SET webhook = '?' WHERE webhook_id = '?' AND channel_id = '?'", {"https://discord.com/api/webhooks/" + std::to_string(existing_wh.id) + "/" + dpp::url_encode(existing_wh.token), existing_wh.id, existing_wh.channel_id});
+				db::backgroundquery("UPDATE channel_webhooks SET webhook = '?' WHERE webhook_id = '?' AND channel_id = '?'", {"https://discord.com/api/webhooks/" + std::to_string(existing_wh.id) + "/" + dpp::utility::url_encode(existing_wh.token), existing_wh.id, existing_wh.channel_id});
 				c->log(dpp::ll_debug, fmt::format("Existing webhook still valid for channel {}", channel_id));
 				return;
 			} else {
