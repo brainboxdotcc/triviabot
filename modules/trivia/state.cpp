@@ -28,6 +28,7 @@
 #include <cstdint>
 #include <fstream>
 #include <streambuf>
+#include <unistd.h>
 #include <sporks/stringops.h>
 #include <sporks/statusfield.h>
 #include <sporks/database.h>

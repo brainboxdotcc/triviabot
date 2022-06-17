@@ -25,6 +25,8 @@
 #ifndef _GNU_SOURCE
 	#define _GNU_SOURCE
 #endif
+#include <unistd.h>
+#include <limits.h>
 #include <link.h>
 #include <dlfcn.h>
 #include <sstream>

@@ -29,6 +29,7 @@
 #include <cstdint>
 #include <fstream>
 #include <streambuf>
+#include <unistd.h>
 #include <sporks/stringops.h>
 #include <sporks/statusfield.h>
 #include <sporks/database.h>
@@ -410,7 +411,7 @@ const guild_settings_t TriviaModule::GetGuildSettings(dpp::snowflake guild_id)
 std::string TriviaModule::GetVersion()
 {
 	/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-	std::string version = "$ModVer 101$";
+	std::string version = "$ModVer 102$";
 	return "3.0." + version.substr(8,version.length() - 9);
 }
 
