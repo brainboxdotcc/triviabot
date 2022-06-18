@@ -33,6 +33,7 @@
 #include <stdexcept>
 #include <string>
 #include <array>
+#include <unistd.h>
 
 int64_t GetRSS() {
 	int64_t ram = 0;
@@ -86,7 +87,7 @@ public:
 	virtual std::string GetVersion()
 	{
 		/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-		std::string version = "$ModVer 33$";
+		std::string version = "$ModVer 34$";
 		return "1.0." + version.substr(8,version.length() - 9);
 	}
 
