@@ -98,6 +98,7 @@ class TriviaModule : public Module
 	command_list_t commands;
 	void CheckLangReload();
 	bool booted;
+	void thinking(bool ephemeral, const dpp::interaction_create_t& event);
 public:
 	time_t startup;
 	json* lang;
@@ -121,7 +122,7 @@ public:
 	void DoExternalCommands(std::vector<dpp::slashcommand>& normal, std::vector<dpp::slashcommand>& admin);
 	void HandleInteraction(const dpp::interaction_create_t& event);
 	void queue_command(const std::string &message, dpp::snowflake author, dpp::snowflake channel, dpp::snowflake guild, bool mention, const std::string &username, bool from_dashboard, dpp::user u, dpp::guild_member gm);
-	void handle_command(const in_cmd &cmd);
+	void handle_command(const in_cmd &cmd, const dpp::interaction_create_t& event);
 	void ProcessCommands();
 	void ProcessGuildQueue();
 	virtual bool OnPresenceUpdate();

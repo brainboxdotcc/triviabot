@@ -522,13 +522,177 @@ std::vector<std::string> get_api_command_names()
 	return EnumCommandsDir();
 }
 
+// Twister random generator
+std::random_device dev;
+std::mt19937_64 rng(dev());
+
 /* Fetch a shuffled list of question IDs from the API, which is dependant upon some statistics for the guild and the category selected. */
-std::vector<std::string> fetch_shuffle_list(uint64_t guild_id, const std::string &category)
+std::vector<std::string> fetch_shuffle_list(uint64_t guild_id, const std::string &category, const guild_settings_t &settings)
 {
-	if (category.empty()) {
-		return to_list(fetch_page(fmt::format("?opt=shuffle&guild_id={}",guild_id)));
+	if (guild_id == 0) {
+		throw NoSuchCategoryException();
+	}
+
+	std::vector<std::string> return_value;
+	uint32_t weekscore = 0;
+	db::resultset r = db::query("SELECT guild_id, SUM(weekscore) AS weekscore FROM scores WHERE guild_id = '?' GROUP BY guild_id", {guild_id});
+	if (r.size()) {
+		weekscore = from_string<uint32_t>(r[0]["weekscore"], std::dec);
+	}
+
+	bool premium = settings.premium;
+	uint32_t min_questions = premium ? MIN_QUESTIONS_PREMIUM : MIN_QUESTIONS;
+
+	if (!category.empty()) {
+		// Play specific category by name
+		std::string column(settings.language == "en" ? "name" : "trans_" + settings.language);
+		if (category.find(";") != std::string::npos) {
+			// multiple category names
+			std::vector<std::string> cats = dpp::utility::tokenize(category, ";");
+			std::string query("(");
+			db::paramlist parameters;
+			std::string sv;
+			// Check for non-premium trying to use server category
+			for (auto& cm : cats) {
+				if (lowercase(trim(cm)) == "server" && !premium) {
+					throw NoSuchCategoryException();
+				}
+			}
+			for (auto& cm : cats) {
+				if (lowercase(trim(cm)) == "server" && premium) {
+					// Guild specific premium question list
+					db::resultset result = db::query("SELECT questions.id FROM questions WHERE guild_id = ? ORDER BY RAND() LIMIT 500", {guild_id});
+					for (auto& ans : result) {
+						return_value.emplace_back(ans["id"]);
+					}
+				} else {
+					query.append("(? LIKE '?%') OR ");
+					parameters.emplace_back(column);
+					parameters.emplace_back(trim(ReplaceString(cm, "%", "_")));
+				}
+			}
+			if (query.substr(query.length() - 4, 4) == " OR ") {
+				query = query.substr(0, query.length() - 4);
+			}
+			query.append(")");
+			db::resultset cr = db::query("SELECT * FROM categories WHERE " + query + " AND disabled = 0", parameters);
+			uint32_t count = 0;
+			db::paramlist cl;
+			query.clear();
+			for (auto& cat : cr) {
+				auto r = db::query("SELECT COUNT(id) AS c FROM questions WHERE category = ?", {cat["id"]});
+				if (r.size()) {
+					count += from_string<uint32_t>(r[0]["c"], std::dec);
+					cl.emplace_back(cat["id"]);
+					query.append("?,");
+				}
+			}
+			if (query.length()) {
+				query = query.substr(0, query.length() - 1);
+			}
+			if (count >= min_questions) {
+				auto result = db::query("SELECT questions.id, questions.category FROM questions INNER JOIN categories ON questions.category = categories.id WHERE questions.guild_id IS NULL AND categories.disabled != 1 AND category IN (" + query + ") ORDER BY RAND() LIMIT 500", cl);
+				for (auto & ans : result) {
+					return_value.emplace_back(ans["id"]);
+				}
+			} else {
+				throw CategoryTooSmallException();
+			}
+			return return_value;
+		} else {
+			// single category name
+			if (lowercase(trim(category)) == "server" && !premium) {
+				throw NoSuchCategoryException();
+			} else if (lowercase(trim(category)) == "server" && premium) {
+				// guild specific premium category list
+				uint32_t qc = 0, iterations = 0;
+				while (qc < 200 && iterations < 200) {
+					auto result = db::query("SELECT questions.id FROM questions WHERE guild_id = ? ORDER BY RAND() LIMIT 500", {settings.guild_id});
+					for (auto & ans : result) {
+						return_value.emplace_back(ans["id"]);
+						qc++;
+					}
+				}
+				if (qc < 200) {
+					throw CategoryTooSmallException();
+				}
+				return return_value;
+			} else {
+				db::resultset cat = db::query("SELECT * FROM categories WHERE (? LIKE '?%') AND disabled = 0", {column, trim(ReplaceString(category, "%", "_"))});
+				if (cat.size()) {
+					auto r = db::query("SELECT COUNT(id) AS c FROM questions WHERE category = '?'", {cat[0]["id"]});
+					if (r.size()) {
+						if (from_string<uint32_t>(r[0]["c"], std::dec) >= min_questions) {
+							auto result = db::query("SELECT questions.id, questions.category FROM questions INNER JOIN categories ON questions.category = categories.id WHERE questions.guild_id IS NULL AND categories.disabled != 1 AND category = '?' ORDER BY RAND() LIMIT 500", {cat[0]["id"]});
+							for (auto & ans : result) {
+								return_value.emplace_back(ans["id"]);
+							}
+							return return_value;
+						}
+					}
+					throw CategoryTooSmallException();
+				} else {
+					throw NoSuchCategoryException();
+				}
+
+			}
+		}
 	} else {
-		return to_list(fetch_page(fmt::format("?opt=shuffle&guild_id={}&category={}",guild_id, dpp::utility::url_encode(category))));
+		// Play all enabled categories
+		uint32_t lastcat = -1;
+		uint32_t questions = 0;
+		std::map<uint64_t, uint64_t> list;
+		std::map<std::string, bool> variation_list;
+		size_t variation = 0;
+		db::resultset result;
+		if (premium) {
+			result = db::query("SELECT questions.id, questions.category FROM questions \
+				INNER JOIN categories ON questions.category = categories.id AND categories.disabled != 1 \
+				LEFT JOIN disabled_categories ON questions.category = disabled_categories.category_id and disabled_categories.guild_id = ? \
+				WHERE (questions.guild_id IS NULL OR questions.guild_id = ?) AND disabled_categories.category_id is null ORDER BY RAND() LIMIT 500", {guild_id, guild_id});
+		} else {
+			result = db::query("SELECT questions.id, questions.category FROM questions \
+				INNER JOIN categories ON questions.category = categories.id AND categories.disabled != 1 \
+				LEFT JOIN disabled_categories ON questions.category = disabled_categories.category_id and disabled_categories.guild_id = ? \
+				WHERE (questions.guild_id IS NULL) AND disabled_categories.category_id is null ORDER BY RAND() LIMIT 500;", {guild_id});
+		}
+		for (auto & ans : result) {
+			list[from_string<uint64_t>(ans["id"], std::dec)] = from_string<uint64_t>(ans["category"], std::dec);
+			variation_list[ans["category"]] = true;
+		}
+		variation = variation_list.size();
+		if (variation < 10) {
+			// Very few categories enabled, can't ensure category doesnt duplicate between questions!	
+			size_t q_max = 0;
+			for (auto & ans : list) {
+				return_value.emplace_back(std::to_string(ans.first));
+				if (++q_max > 201) {
+					break;
+				}
+			}
+		} else {
+			// Ensure best we can that we don't  get two identical categories in a row
+			for (size_t n = 0; n < 201;) {
+				std::uniform_int_distribution<size_t> idDist(0, list.size() - 1);
+				auto selected = list.begin();
+				std::advance(selected, idDist(rng));
+				if (lastcat != selected->second) {
+					lastcat = selected->second;
+					return_value.emplace_back(std::to_string(selected->first));
+					n++;
+					list.erase(selected);
+				} else if (list.size() < 2) {
+					return_value.emplace_back(std::to_string(selected->first));
+					n++;
+					lastcat = -1;
+				}
+				if (list.empty()) {
+					break;
+				}
+			}
+		}
+
+		return return_value;
 	}
 }
 
@@ -552,15 +716,8 @@ std::vector<std::string> fetch_insane_round(uint64_t &question_id, uint64_t guil
 	for (auto a = answers.begin(); a != answers.end(); ++a) {
 		list.push_back((*a)["answer"]);
 	}
-	list.push_back("***END***");
 
 	return list;
-}
-
-/* Send a DM hint to a user. TODO: Make D++ do this directly now its stable there */
-void send_hint(uint64_t snowflake_id, const std::string &hint, uint32_t remaining)
-{
-	later(fmt::format("?opt=customhint&user_id={}&hint={}&remaining={}", snowflake_id, dpp::utility::url_encode(hint), remaining), "");
 }
 
 void runcli(guild_settings_t settings, const std::string &command, uint64_t guild_id, uint64_t user_id, uint64_t channel_id, const std::string &parameters, const std::string& interaction_token, dpp::snowflake command_id)

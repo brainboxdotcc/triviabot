@@ -59,7 +59,7 @@ void command_achievements_t::call(const in_cmd &cmd, std::stringstream &tokens, 
 		if (inf.size()) {
 			fields.push_back({
 				"<:" + showoff["image"].get<std::string>() + ":" + showoff["emoji_unlocked"].get<std::string>() + "> - " + _(showoff["name"].get<std::string>(), settings),
-				_(showoff["desc"].get<std::string>(), settings) + " (*" + inf[0]["unlocked_friendly"] + "*)\n<:blank:667278047006949386>",
+				_(showoff["desc"].get<std::string>(), settings) + " (*" + inf[0]["unlocked_friendly"] + "*)\n" + BLANK_EMOJI,
 				false
 			});
 		}
@@ -69,7 +69,7 @@ void command_achievements_t::call(const in_cmd &cmd, std::stringstream &tokens, 
 		cmd.interaction_token, cmd.command_id, settings,
 		_("TROPHYCABINET", settings), fields, cmd.channel_id,
 		"https://triviabot.co.uk/", "", "",
-		"<:blank:667278047006949386>\n" + trophies + "<:blank:667278047006949386>"
+		BLANK_EMOJI + std::string("\n") + trophies + BLANK_EMOJI
 	);
 
 

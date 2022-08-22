@@ -43,7 +43,7 @@ in_cmd::in_cmd(const std::string &m, uint64_t author, uint64_t channel, uint64_t
 {
 }
 
-command_t::command_t(class TriviaModule* _creator, const std::string &_base_command, bool adm, const std::string& descr, std::vector<dpp::command_option> options) : creator(_creator), base_command(_base_command), description(descr), opts(options), admin(adm)
+command_t::command_t(class TriviaModule* _creator, const std::string &_base_command, bool adm, const std::string& descr, std::vector<dpp::command_option> options, bool is_ephemeral) : creator(_creator), base_command(_base_command), description(descr), opts(options), admin(adm), ephemeral(is_ephemeral)
 {
 }
 
@@ -319,19 +319,12 @@ void TriviaModule::HandleInteraction(const dpp::interaction_create_t& event) {
 
 	std::stringstream message;
 
-	/* Set 'thinking' state */
-	dpp::message msg;
-	msg.content = "*";
-	msg.guild_id = event.command.guild_id;
-	msg.channel_id = event.command.channel_id;
-	bot->core->interaction_response_create(event.command.id, event.command.token, dpp::interaction_response(dpp::ir_deferred_channel_message_with_source, msg));
-
 	message << cmd_interaction.name;
 	for (auto & p : cmd_interaction.options) {
 		if (std::holds_alternative<int64_t>(p.value)) {
 			message << " " << std::get<int64_t>(p.value);
-		} else if (std::holds_alternative<dpp::snowflake>(p.value)) {
-			message << " " << std::get<dpp::snowflake>(p.value);
+		} else if (std::holds_alternative<uint64_t>(p.value)) {
+			message << " " << std::get<uint64_t>(p.value);
 		} else if (std::holds_alternative<std::string>(p.value)) {
 			message << " " << std::get<std::string>(p.value);
 		}
@@ -340,7 +333,7 @@ void TriviaModule::HandleInteraction(const dpp::interaction_create_t& event) {
 	in_cmd cmd(message.str(), event.command.usr.id, event.command.channel_id, event.command.guild_id, false, event.command.usr.username, false, event.command.usr, event.command.member);
 	cmd.command_id = event.command.id;
 	cmd.interaction_token = event.command.token;
-	this->handle_command(cmd);
+	this->handle_command(cmd, event);
 	bot->core->log(dpp::ll_info, fmt::format("SCMD (USER={}, GUILD={}): <{}> {}", cmd.author_id, cmd.guild_id, cmd.username, cmd.msg));
 }
 
@@ -380,7 +373,23 @@ void TriviaModule::DoExternalCommands(std::vector<dpp::slashcommand>& normal, st
 
 dpp::user dashboard_dummy;
 
-void TriviaModule::handle_command(const in_cmd &cmd) {
+void TriviaModule::thinking(bool ephemeral, const dpp::interaction_create_t& event) {
+	if (event.command.guild_id.empty()) {
+		return;
+	}
+	/* Set 'thinking' state */
+	dpp::message msg;
+	msg.content = "*";
+	msg.guild_id = event.command.guild_id;
+	msg.channel_id = event.command.channel_id;
+	if (ephemeral) {
+		msg.set_flags(dpp::m_ephemeral);
+	}
+	bot->core->interaction_response_create(event.command.id, event.command.token, dpp::interaction_response(dpp::ir_deferred_channel_message_with_source, msg));
+
+}
+
+void TriviaModule::handle_command(const in_cmd &cmd, const dpp::interaction_create_t& event) {
 
 	try {
 		if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == cmd.guild_id) {
@@ -436,18 +445,17 @@ void TriviaModule::handle_command(const in_cmd &cmd) {
 			auto command = commands.find(base_command);
 			if (command != commands.end()) {
 
+				this->thinking(command->second->ephemeral, event);
+
 				bool can_execute = false;
-				auto command = commands.find(base_command);
-				if (command != commands.end()) {
-					std::lock_guard<std::mutex> cmd_lock(cmdmutex);
-					auto check = limits.find(cmd.channel_id);
-					if (check == limits.end()) {
-						can_execute = true;
-						limits[cmd.channel_id] = time(NULL) + PER_CHANNEL_RATE_LIMIT;
-					} else if (time(NULL) > check->second) {
-						can_execute = true;
-						limits[cmd.channel_id] = time(NULL) + PER_CHANNEL_RATE_LIMIT;
-					}
+				std::lock_guard<std::mutex> cmd_lock(cmdmutex);
+				auto check = limits.find(cmd.channel_id);
+				if (check == limits.end()) {
+					can_execute = true;
+					limits[cmd.channel_id] = time(NULL) + PER_CHANNEL_RATE_LIMIT;
+				} else if (time(NULL) > check->second) {
+					can_execute = true;
+					limits[cmd.channel_id] = time(NULL) + PER_CHANNEL_RATE_LIMIT;
 				}
 
 				if (can_execute || cmd.from_dashboard) {
@@ -472,6 +480,8 @@ void TriviaModule::handle_command(const in_cmd &cmd) {
 					bot->core->log(dpp::ll_debug, fmt::format("command_t '{}' NOT routed to handler on channel {}, limiting", base_command, cmd.channel_id));
 				}
 			} else {
+				this->thinking(false, event);
+
 				/* Custom commands handled completely by the API as a REST call */
 				bool command_exists = false;
 				{

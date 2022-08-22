@@ -49,14 +49,14 @@ void command_ping_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_se
 	start = dpp::utility::time_f();
 
 	/* Get TriviaBot API time by timing an arbitrary request */
-	cluster->request(std::string(creator->GetBot()->IsDevMode() ? BACKEND_HOST_DEV : BACKEND_HOST_LIVE) + "/api/", dpp::m_get, [cluster, discord_api_ping, start, db_ping, this, cmd, settings](auto callback) {
+	cluster->request("http://" + std::string(creator->GetBot()->IsDevMode() ? BACKEND_HOST_DEV : BACKEND_HOST_LIVE) + "/api/", dpp::m_get, [cluster, discord_api_ping, start, db_ping, this, cmd, settings](auto callback) {
 		double tb_api_ping = (dpp::utility::time_f() - start) * 1000;
 		bool shardstatus = true;
 		long lastcluster = -1;
 		std::vector<field_t> fields = {
-                        {_("DISCPING", settings), fmt::format("{:.02f} ms\n<:blank:667278047006949386>", discord_api_ping), true },
-                        {_("APIPING", settings), fmt::format("{:.02f} ms\n<:blank:667278047006949386>", tb_api_ping), true },
-                        {_("DBPING", settings), fmt::format("{:.02f} ms\n<:blank:667278047006949386>", db_ping), true },
+                        {_("DISCPING", settings), fmt::format("{:.02f} ms\n{}", discord_api_ping, BLANK_EMOJI), true },
+                        {_("APIPING", settings), fmt::format("{:.02f} ms\n{}", tb_api_ping, BLANK_EMOJI), true },
+                        {_("DBPING", settings), fmt::format("{:.02f} ms\n{}", db_ping, BLANK_EMOJI), true },
 		};
 		field_t f;
 		std::string desc;
@@ -95,7 +95,7 @@ void command_ping_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_se
 			cmd.interaction_token, cmd.command_id, settings,
 			_("PONG", settings), fields, cmd.channel_id,
 			"https://triviabot.co.uk/", "", "",
-			":ping_pong: " + ((shardstatus == true && tb_api_ping < 200 && discord_api_ping < 800 && db_ping < 3 ? _("OKPING", settings) : _("BADPING", settings))) + "\n\n**" + _("PINGKEY", settings) + "**\n<:blank:667278047006949386>"
+			":ping_pong: " + ((shardstatus == true && tb_api_ping < 200 && discord_api_ping < 800 && db_ping < 3 ? _("OKPING", settings) : _("BADPING", settings))) + "\n\n**" + _("PINGKEY", settings) + "**\n" + BLANK_EMOJI
 		);
 		creator->CacheUser(cmd.author_id, cmd.user, cmd.member, cmd.channel_id);
 	});

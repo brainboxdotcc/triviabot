@@ -77,8 +77,8 @@ void command_profile_t::call(const in_cmd &cmd, std::stringstream &tokens, guild
 
 		std::string scores = "```" + dl + "\n" + wl + "\n" + ml + "\n" + ll + "```";
 
-		a += "<:blank:667278047006949386>";
-		std::string emojis = _user[0]["emojis"] + "<:blank:667278047006949386>";
+		a += BLANK_EMOJI;
+		std::string emojis = _user[0]["emojis"] + BLANK_EMOJI;
 
 		creator->EmbedWithFields(
 			cmd.interaction_token, cmd.command_id, settings,
@@ -86,7 +86,7 @@ void command_profile_t::call(const in_cmd &cmd, std::stringstream &tokens, guild
 			{
 				{ _("BADGES", settings), emojis, true },
 				{ _("ACHIEVEMENTS", settings), a, true },
-				{ "<:blank:667278047006949386>", scores, false }
+				{ BLANK_EMOJI, scores, false }
 			}, cmd.channel_id, "https://triviabot.co.uk/profile" + std::to_string(user_id), "",
 			"https://triviabot.co.uk/images/busts.png",
 			"[" + _("CLICKHEREPROFILE", settings) + "](https://triviabot.co.uk/profile/" + std::to_string(user_id) + ")"
@@ -98,14 +98,3 @@ void command_profile_t::call(const in_cmd &cmd, std::stringstream &tokens, guild
 	}
 
 }
-
-
-/* 
-
-echo json_encode([
-        "fields" => [
-                ["name"=>__("BADGES", $prefs), "value" => $emojis, "inline" => true],
-                ["name"=>__("ACHIEVEMENTS", $prefs), "value" => $a, "inline" => true],
-                ["name"=>"<:blank:667278047006949386>", "value" => $scores, "inline" => false],
-        ],
-*/

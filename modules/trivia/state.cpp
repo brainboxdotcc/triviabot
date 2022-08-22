@@ -298,7 +298,7 @@ void state_t::handle_message(const in_msg& m, const guild_settings_t& settings)
 				ans_message.append(fmt::format(_("SCORE_UPDATE", settings), m.username, newscore ? newscore : score));
 
 				std::string teamname = get_current_team(m.author_id);
-				if (!empty(teamname) && question.guild_id == 0) {
+				if (!empty(teamname) && question.guild_id.empty()) {
 					add_team_points(teamname, score, m.author_id);
 					uint32_t newteamscore = get_team_points(teamname);
 					ans_message.append(fmt::format(_("TEAM_SCORE", settings), teamname, score, pts, newteamscore));
@@ -316,7 +316,7 @@ void state_t::handle_message(const in_msg& m, const guild_settings_t& settings)
 					} else {
 						ans_message.append(fmt::format(_("NOT_THERE_YET", settings), s.personalbest));
 					}
-					if (question.guild_id == 0) {
+					if (question.guild_id.empty()) {
 						streak_t s2 = get_streak(m.author_id);		// Global streak
 						if (streak > s2.personalbest) {
 							// Global streak
@@ -334,7 +334,7 @@ void state_t::handle_message(const in_msg& m, const guild_settings_t& settings)
 					streak = 1;
 				}
 
-				bool coin = question.guild_id == 0 && should_drop_coin();
+				bool coin = question.guild_id.empty() && should_drop_coin();
 				std::string thumbnail = "";
 				if (coin) {
 					/* Player got a coin drop! */
@@ -483,10 +483,8 @@ void state_t::do_insane_round(bool silent, const guild_settings_t& settings)
 		if (n == answers.begin()) {
 			question.question = trim(*n);
 		} else {
-			if (*n != "***END***") {
-				std::string a = utf8lower(removepunct(*n), settings.language == "es");
-				insane[a] = true;
-			}
+			std::string a = utf8lower(removepunct(*n), settings.language == "es");
+			insane[a] = true;
 		}
 	}
 	insane_left = insane.size();

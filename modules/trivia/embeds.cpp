@@ -105,8 +105,13 @@ void TriviaModule::ProcessEmbed(const std::string& interaction_token, dpp::snowf
 			msg.content = "";
 			msg.guild_id = settings.guild_id;
 			msg.channel_id = channelID;
+			std::string real_interaction_token{interaction_token};
+			if (real_interaction_token.substr(0, 9) == "EPHEMERAL") {
+				real_interaction_token = real_interaction_token.substr(9, real_interaction_token.length() - 9);
+				msg.set_flags(dpp::m_ephemeral);
+			}
 			msg.add_embed(dpp::embed(&embed));
-			bot->core->interaction_response_edit(interaction_token, msg, [this](const dpp::confirmation_callback_t &callback) {
+			bot->core->interaction_response_edit(real_interaction_token, msg, [this](const dpp::confirmation_callback_t &callback) {
 				if (callback.is_error()) {
 					this->bot->core->log(dpp::ll_error, fmt::format("Can't edit interaction response: {}", callback.http_info.body));
 				}

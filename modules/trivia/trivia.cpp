@@ -100,7 +100,7 @@ TriviaModule::TriviaModule(Bot* instigator, ModuleLoader* ml) : Module(instigato
 void TriviaModule::queue_command(const std::string &message, dpp::snowflake author, dpp::snowflake channel, dpp::snowflake guild, bool mention, const std::string &username, bool from_dashboard, dpp::user u, dpp::guild_member gm)
 {
 	//std::lock_guard<std::mutex> cmd_lock(cmdmutex);
-	handle_command(in_cmd(message, author, channel, guild, mention, username, from_dashboard, u, gm));
+	handle_command(in_cmd(message, author, channel, guild, mention, username, from_dashboard, u, gm), dpp::interaction_create_t(nullptr, ""));
 }
 
 void TriviaModule::ProcessCommands()
@@ -118,7 +118,7 @@ void TriviaModule::ProcessCommands()
 		}
 		if (!to_process.empty()) {
 			for (auto m = to_process.begin(); m != to_process.end(); ++m) {
-				handle_command(*m);
+				handle_command(*m, dpp::interaction_create_t(nullptr, ""));
 			}
 			to_process.clear();
 		}
@@ -245,6 +245,7 @@ bool TriviaModule::OnAllShardsReady()
 			if (states.find(channel_id) == states.end()) {
 
 				std::vector<std::string> shuffle_list;
+				guild_settings_t s = GetGuildSettings(guild_id);
 
 				/* Get shuffle list from state in db */
 				if (!(*game)["qlist"].get<std::string>().empty()) {
@@ -254,7 +255,12 @@ bool TriviaModule::OnAllShardsReady()
 					}
 				} else {
 					/* No shuffle list to resume from, create a new one */
-					shuffle_list = fetch_shuffle_list(from_string<uint64_t>((*game)["guild_id"].get<std::string>(), std::dec));
+					try {
+						shuffle_list = fetch_shuffle_list(from_string<uint64_t>((*game)["guild_id"].get<std::string>(), std::dec), "", s);
+					}
+					catch (const std::exception&) {
+						shuffle_list = {};
+					}
 				}
 				int32_t round = from_string<uint32_t>((*game)["question_index"].get<std::string>(), std::dec);
 
@@ -272,7 +278,6 @@ bool TriviaModule::OnAllShardsReady()
 					guild_id
 				);
 				/* Force fetching of question */
-				guild_settings_t s = GetGuildSettings(guild_id);
 				states[channel_id].build_question_cache(s);
 				if (states[channel_id].is_insane_round(s)) {
 					states[channel_id].do_insane_round(true, s);
@@ -602,7 +607,7 @@ bool TriviaModule::RealOnMessage(const dpp::message_create_t &message, const std
 	dpp::snowflake channel_id = message.msg.channel_id;
 	dpp::guild_member gm = message.msg.member;
 
-	if (msg.channel_id == 0) {
+	if (msg.channel_id.empty()) {
 		/* No channel! */
 		bot->core->log(dpp::ll_debug, fmt::format("Message without channel, M:{} A:{}", msg.id, author_id));
 	} else {

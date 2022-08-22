@@ -71,6 +71,11 @@
 		"memory_resource": "cpp",
 		"random": "cpp",
 		"variant": "cpp",
-		"codecvt": "cpp"
+		"codecvt": "cpp",
+		"compare": "cpp",
+		"coroutine": "cpp",
+		"future": "cpp",
+		"ranges": "cpp",
+		"stop_token": "cpp"
 	}
 }

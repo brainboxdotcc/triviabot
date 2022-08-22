@@ -24,6 +24,7 @@
 #include <string>
 #include <vector>
 #include <exception>
+#include <pcre.h>
 
 /**
  * An exception thrown by a regular expression
@@ -44,7 +45,7 @@ class PCRE
 {
 	const char* pcre_error;
 	int pcre_error_ofs;
-	struct real_pcre* compiled_regex;
+	pcre* compiled_regex;
  public:
 	/* Constructor */
 	PCRE(const std::string &match, bool case_insensitive = false);

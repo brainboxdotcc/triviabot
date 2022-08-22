@@ -69,10 +69,10 @@ void command_team_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_se
 	rank = q.size();
 
 	if (!team[0]["description"].empty()) {
-		desc = dpp::utility::utf8substr(team[0]["description"], 0, 932) + "\n<:blank:667278047006949386>\n";
+		desc = dpp::utility::utf8substr(team[0]["description"], 0, 932) + "\n" + BLANK_EMOJI + std::string("\n");
 	}
 
-	desc += fmt::format(_("TEAMHUB", settings), url_key) +  "\n<:blank:667278047006949386>";
+	desc += fmt::format(_("TEAMHUB", settings), url_key) +  "\n" + BLANK_EMOJI;
 
 	std::vector<field_t> fields = {
 		{ _("NAME", settings), team[0]["name"], true},
