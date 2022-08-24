@@ -323,8 +323,8 @@ void TriviaModule::HandleInteraction(const dpp::interaction_create_t& event) {
 	for (auto & p : cmd_interaction.options) {
 		if (std::holds_alternative<int64_t>(p.value)) {
 			message << " " << std::get<int64_t>(p.value);
-		} else if (std::holds_alternative<uint64_t>(p.value)) {
-			message << " " << std::get<uint64_t>(p.value);
+		} else if (std::holds_alternative<dpp::snowflake>(p.value)) {
+			message << " " << std::get<dpp::snowflake>(p.value);
 		} else if (std::holds_alternative<std::string>(p.value)) {
 			message << " " << std::get<std::string>(p.value);
 		}
@@ -333,8 +333,8 @@ void TriviaModule::HandleInteraction(const dpp::interaction_create_t& event) {
 	in_cmd cmd(message.str(), event.command.usr.id, event.command.channel_id, event.command.guild_id, false, event.command.usr.username, false, event.command.usr, event.command.member);
 	cmd.command_id = event.command.id;
 	cmd.interaction_token = event.command.token;
-	this->handle_command(cmd, event);
 	bot->core->log(dpp::ll_info, fmt::format("SCMD (USER={}, GUILD={}): <{}> {}", cmd.author_id, cmd.guild_id, cmd.username, cmd.msg));
+	this->handle_command(cmd, event);
 }
 
 void TriviaModule::DoExternalCommands(std::vector<dpp::slashcommand>& normal, std::vector<dpp::slashcommand>& admin) {
