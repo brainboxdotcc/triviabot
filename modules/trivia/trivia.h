@@ -121,6 +121,8 @@ public:
 	void SetupCommands();
 	void DoExternalCommands(std::vector<dpp::slashcommand>& normal, std::vector<dpp::slashcommand>& admin);
 	void HandleInteraction(const dpp::interaction_create_t& event);
+	void HandleSelect(const dpp::select_click_t & event);
+	void HandleButton(const dpp::button_click_t & event);
 	void queue_command(const std::string &message, dpp::snowflake author, dpp::snowflake channel, dpp::snowflake guild, bool mention, const std::string &username, bool from_dashboard, dpp::user u, dpp::guild_member gm);
 	void handle_command(const in_cmd &cmd, const dpp::interaction_create_t& event);
 	void ProcessCommands();

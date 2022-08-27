@@ -1,10 +1,12 @@
 #pragma once
 
 #include <string>
+#include <map>
 #include "settings.h"
 #include <dpp/dpp.h>
 
-#define DECLARE_COMMAND_CLASS(__command_name__) class __command_name__ : public command_t { public: __command_name__(class TriviaModule* _creator, const std::string &_base_command, bool adm, const std::string& descr, std::vector<dpp::command_option> options); virtual void call(const in_cmd &cmd, std::stringstream &tokens, guild_settings_t &settings, const std::string &username, bool is_moderator, dpp::channel* c, dpp::user* user); };
+#define DECLARE_COMMAND_CLASS(__command_name__, __ancestor__) class __command_name__ : public __ancestor__ { public: __command_name__(class TriviaModule* _creator, const std::string &_base_command, bool adm, const std::string& descr, std::vector<dpp::command_option> options); virtual void call(const in_cmd &cmd, std::stringstream &tokens, guild_settings_t &settings, const std::string &username, bool is_moderator, dpp::channel* c, dpp::user* user); virtual ~__command_name__() = default; };
+#define DECLARE_COMMAND_CLASS_SELECT(__command_name__, __ancestor__) class __command_name__ : public __ancestor__ { public: __command_name__(class TriviaModule* _creator, const std::string &_base_command, bool adm, const std::string& descr, std::vector<dpp::command_option> options); virtual void call(const in_cmd &cmd, std::stringstream &tokens, guild_settings_t &settings, const std::string &username, bool is_moderator, dpp::channel* c, dpp::user* user); virtual ~__command_name__() = default; virtual void select_click(const dpp::select_click_t & event, const in_cmd &cmd, guild_settings_t &settings); virtual void button_click(const dpp::button_click_t & event, const in_cmd &cmd, guild_settings_t &settings);  };
 
 #define BLANK_EMOJI "<:blank:667278047006949386>"
 
@@ -34,44 +36,49 @@ class command_t
  public:
 	bool admin;
 	bool ephemeral;
+	dpp::slashcommand_contextmenu_type type;
  	std::string description;
 	std::vector<dpp::command_option> opts;
-	command_t(class TriviaModule* _creator, const std::string &_base_command, bool adm, const std::string& descr, std::vector<dpp::command_option> options, bool is_ephemeral = false);
+	command_t(class TriviaModule* _creator, const std::string &_base_command, bool adm, const std::string& descr, std::vector<dpp::command_option> options, bool is_ephemeral = false, dpp::slashcommand_contextmenu_type command_type = dpp::ctxm_chat_input);
 	virtual void call(const in_cmd &cmd, std::stringstream &tokens, guild_settings_t &settings, const std::string &username, bool is_moderator, dpp::channel* c, dpp::user* user) = 0;
+	virtual void select_click(const dpp::select_click_t & event, const in_cmd &cmd, guild_settings_t &settings);
+	virtual void button_click(const dpp::button_click_t & event, const in_cmd &cmd, guild_settings_t &settings);
 	virtual ~command_t();
 };
 
-DECLARE_COMMAND_CLASS(command_start_t);
-DECLARE_COMMAND_CLASS(command_stop_t);
-DECLARE_COMMAND_CLASS(command_vote_t);
-DECLARE_COMMAND_CLASS(command_votehint_t);
-DECLARE_COMMAND_CLASS(command_stats_t);
-DECLARE_COMMAND_CLASS(command_info_t);
-DECLARE_COMMAND_CLASS(command_join_t);
-DECLARE_COMMAND_CLASS(command_create_t);
-DECLARE_COMMAND_CLASS(command_leave_t);
-DECLARE_COMMAND_CLASS(command_help_t);
-DECLARE_COMMAND_CLASS(command_dashboard_t);
-DECLARE_COMMAND_CLASS(command_global_t);
-DECLARE_COMMAND_CLASS(command_enable_t);
-DECLARE_COMMAND_CLASS(command_disable_t);
-DECLARE_COMMAND_CLASS(command_privacy_t);
-DECLARE_COMMAND_CLASS(command_invite_t);
-DECLARE_COMMAND_CLASS(command_coins_t);
-DECLARE_COMMAND_CLASS(command_language_t);
-DECLARE_COMMAND_CLASS(command_prefix_t);
-DECLARE_COMMAND_CLASS(command_forceleave_t);
-DECLARE_COMMAND_CLASS(command_topteams_t);
-DECLARE_COMMAND_CLASS(command_nitro_t);
-DECLARE_COMMAND_CLASS(command_resetprefix_t);
-DECLARE_COMMAND_CLASS(command_shard_t);
-DECLARE_COMMAND_CLASS(command_give_t);
-DECLARE_COMMAND_CLASS(command_queue_t);
-DECLARE_COMMAND_CLASS(command_categories_t);
-DECLARE_COMMAND_CLASS(command_team_t);
-DECLARE_COMMAND_CLASS(command_ping_t);
-DECLARE_COMMAND_CLASS(command_servertime_t);
-DECLARE_COMMAND_CLASS(command_achievements_t);
-DECLARE_COMMAND_CLASS(command_profile_t);
+DECLARE_COMMAND_CLASS(command_start_t, command_t);
+DECLARE_COMMAND_CLASS(command_stop_t, command_t);
+DECLARE_COMMAND_CLASS(command_vote_t, command_t);
+DECLARE_COMMAND_CLASS(command_votehint_t, command_t);
+DECLARE_COMMAND_CLASS(command_stats_t, command_t);
+DECLARE_COMMAND_CLASS(command_info_t, command_t);
+DECLARE_COMMAND_CLASS(command_join_t, command_t);
+DECLARE_COMMAND_CLASS(command_create_t, command_t);
+DECLARE_COMMAND_CLASS(command_leave_t, command_t);
+DECLARE_COMMAND_CLASS(command_help_t, command_t);
+DECLARE_COMMAND_CLASS(command_dashboard_t, command_t);
+DECLARE_COMMAND_CLASS(command_global_t, command_t);
+DECLARE_COMMAND_CLASS(command_enable_t, command_t);
+DECLARE_COMMAND_CLASS(command_disable_t, command_t);
+DECLARE_COMMAND_CLASS(command_privacy_t, command_t);
+DECLARE_COMMAND_CLASS(command_invite_t, command_t);
+DECLARE_COMMAND_CLASS(command_coins_t, command_t);
+DECLARE_COMMAND_CLASS(command_language_t, command_t);
+DECLARE_COMMAND_CLASS(command_prefix_t, command_t);
+DECLARE_COMMAND_CLASS(command_forceleave_t, command_t);
+DECLARE_COMMAND_CLASS(command_topteams_t, command_t);
+DECLARE_COMMAND_CLASS(command_nitro_t, command_t);
+DECLARE_COMMAND_CLASS(command_resetprefix_t, command_t);
+DECLARE_COMMAND_CLASS(command_shard_t, command_t);
+DECLARE_COMMAND_CLASS(command_give_t, command_t);
+DECLARE_COMMAND_CLASS(command_queue_t, command_t);
+DECLARE_COMMAND_CLASS(command_categories_t, command_t);
+DECLARE_COMMAND_CLASS(command_team_t, command_t);
+DECLARE_COMMAND_CLASS(command_ping_t, command_t);
+DECLARE_COMMAND_CLASS(command_servertime_t, command_t);
+DECLARE_COMMAND_CLASS(command_achievements_t, command_t);
+DECLARE_COMMAND_CLASS(command_profile_t, command_t);
+DECLARE_COMMAND_CLASS_SELECT(command_context_user_t, command_t);
+DECLARE_COMMAND_CLASS(command_context_message_t, command_context_user_t);
 
-typedef std::map<std::string, command_t*> command_list_t;
+typedef std::multimap<std::string, command_t*> command_list_t;

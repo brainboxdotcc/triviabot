@@ -43,7 +43,7 @@ in_cmd::in_cmd(const std::string &m, uint64_t author, uint64_t channel, uint64_t
 {
 }
 
-command_t::command_t(class TriviaModule* _creator, const std::string &_base_command, bool adm, const std::string& descr, std::vector<dpp::command_option> options, bool is_ephemeral) : creator(_creator), base_command(_base_command), description(descr), opts(options), admin(adm), ephemeral(is_ephemeral)
+command_t::command_t(class TriviaModule* _creator, const std::string &_base_command, bool adm, const std::string& descr, std::vector<dpp::command_option> options, bool is_ephemeral, dpp::slashcommand_contextmenu_type command_type) : creator(_creator), base_command(_base_command), description(descr), opts(options), admin(adm), ephemeral(is_ephemeral), type(command_type)
 {
 }
 
@@ -54,6 +54,14 @@ command_t::~command_t()
 std::string command_t::_(const std::string &str, const guild_settings_t &settings)
 {
 	return creator->_(str, settings);
+}
+
+void command_t::select_click(const dpp::select_click_t & event, const in_cmd &cmd, guild_settings_t &settings)
+{
+}
+
+void command_t::button_click(const dpp::button_click_t & event, const in_cmd &cmd, guild_settings_t &settings)
+{
 }
 
 /* Register slash commands and build the array of standard message commands */
@@ -215,6 +223,12 @@ void TriviaModule::SetupCommands()
 			}
 		)},
 		{"leave", new command_leave_t(this, "leave", false, "Leave your current Trivia Team", { })},
+		{"Start Trivia: Normal", new command_context_user_t(this, "Start Trivia: Normal", false, "Start a round of Trivia", { })},
+		{"Start Trivia: Normal", new command_context_message_t(this, "Start Trivia: Normal", false, "Start a round of Trivia", { })},
+		{"Start Trivia: Quickfire", new command_context_user_t(this, "Start Trivia: Quickfire", false, "Start a round of Trivia", { })},
+		{"Start Trivia: Quickfire", new command_context_message_t(this, "Start Trivia: Quickfire", false, "Start a round of Trivia", { })},
+		{"Start Trivia: Hardcore", new command_context_user_t(this, "Start Trivia: Hardcore", false, "Start a round of Trivia", { })},
+		{"Start Trivia: Hardcore", new command_context_message_t(this, "Start Trivia: Hardcore", false, "Start a round of Trivia", { })},
 		{
 			"help", new command_help_t(this, "help", false, "Show help for TriviaBot",
 			{
@@ -226,7 +240,7 @@ void TriviaModule::SetupCommands()
 	if (bot->GetClusterID() == 0) {
 
 		/* Add options to the language command parameter from the database */
-		command_t* lang_command = commands["language"];
+		command_t* lang_command = commands.find("language")->second;
 		db::resultset langs = db::query("SELECT * FROM languages WHERE live = 1 ORDER BY id", {});
 		lang_command->opts[0].choices.clear();
 		for (auto & row : langs) {
@@ -234,7 +248,7 @@ void TriviaModule::SetupCommands()
 		}
 
 		/* Add options to the categories command parameter from the database */
-		command_t* cats_command = commands["categories"];
+		command_t* cats_command = commands.find("categories")->second;
 		db::resultset q = db::query("SELECT id FROM categories WHERE disabled != 1", {});
 		size_t rows = q.size();
 		uint32_t length = 25;
@@ -253,7 +267,10 @@ void TriviaModule::SetupCommands()
 		for (auto & c : commands) {
 			if (!c.second->description.empty()) {
 				dpp::slashcommand sc;
-				sc.set_name(c.first).set_description(c.second->description).set_application_id(from_string<uint64_t>(bot->GetConfig("application_id"), std::dec));
+				sc.set_type(c.second->type)	// Must set type first to prevent lowercasing of context menu items
+				  .set_name(c.first)
+				  .set_description(c.second->description)
+				  .set_application_id(from_string<uint64_t>(bot->GetConfig("application_id"), std::dec));
 				for (auto & o : c.second->opts) {
 					sc.add_option(o);
 				}
@@ -310,31 +327,63 @@ void TriviaModule::SetupCommands()
 
 	}
 
-	/* Hook interaction event */
+	/* Hook interaction events */
 	bot->core->on_interaction_create(std::bind(&TriviaModule::HandleInteraction, this, std::placeholders::_1));
+	bot->core->on_select_click(std::bind(&TriviaModule::HandleSelect, this, std::placeholders::_1));
+	bot->core->on_button_click(std::bind(&TriviaModule::HandleButton, this, std::placeholders::_1));
+}
+
+void TriviaModule::HandleSelect(const dpp::select_click_t & event) {
+	auto command = commands.find(event.custom_id);
+	if (command != commands.end()) {
+		in_cmd cmd(event.values[0], event.command.usr.id, event.command.channel_id, event.command.guild_id, false, event.command.usr.username, false, event.command.usr, event.command.member);
+		cmd.command_id = event.command.id;
+		cmd.interaction_token = event.command.token;
+		guild_settings_t settings = GetGuildSettings(cmd.guild_id);
+		command->second->select_click(event, cmd, settings);
+	}
+}
+
+void TriviaModule::HandleButton(const dpp::button_click_t & event) {
+	std::string identifier = event.custom_id.substr(0, event.custom_id.find(','));
+	std::string remainder = event.custom_id.substr(event.custom_id.find(',') + 1);
+	auto command = commands.find(identifier);
+	if (command != commands.end()) {
+		in_cmd cmd(remainder, event.command.usr.id, event.command.channel_id, event.command.guild_id, false, event.command.usr.username, false, event.command.usr, event.command.member);
+		cmd.command_id = event.command.id;
+		cmd.interaction_token = event.command.token;
+		guild_settings_t settings = GetGuildSettings(cmd.guild_id);
+		command->second->button_click(event, cmd, settings);
+	}
 }
 
 void TriviaModule::HandleInteraction(const dpp::interaction_create_t& event) {
-	dpp::command_interaction cmd_interaction = std::get<dpp::command_interaction>(event.command.data);
+	if (event.command.type == dpp::it_application_command) {
+		dpp::command_interaction cmd_interaction = std::get<dpp::command_interaction>(event.command.data);
 
-	std::stringstream message;
+		std::stringstream message;
 
-	message << cmd_interaction.name;
-	for (auto & p : cmd_interaction.options) {
-		if (std::holds_alternative<int64_t>(p.value)) {
-			message << " " << std::get<int64_t>(p.value);
-		} else if (std::holds_alternative<dpp::snowflake>(p.value)) {
-			message << " " << std::get<dpp::snowflake>(p.value);
-		} else if (std::holds_alternative<std::string>(p.value)) {
-			message << " " << std::get<std::string>(p.value);
+		message << cmd_interaction.name;
+		for (auto & p : cmd_interaction.options) {
+			if (std::holds_alternative<int64_t>(p.value)) {
+				message << " " << std::get<int64_t>(p.value);
+			} else if (std::holds_alternative<dpp::snowflake>(p.value)) {
+				message << " " << std::get<dpp::snowflake>(p.value);
+			} else if (std::holds_alternative<std::string>(p.value)) {
+				message << " " << std::get<std::string>(p.value);
+			}
 		}
-	}
 
-	in_cmd cmd(message.str(), event.command.usr.id, event.command.channel_id, event.command.guild_id, false, event.command.usr.username, false, event.command.usr, event.command.member);
-	cmd.command_id = event.command.id;
-	cmd.interaction_token = event.command.token;
-	bot->core->log(dpp::ll_info, fmt::format("SCMD (USER={}, GUILD={}): <{}> {}", cmd.author_id, cmd.guild_id, cmd.username, cmd.msg));
-	this->handle_command(cmd, event);
+		in_cmd cmd(message.str(), event.command.usr.id, event.command.channel_id, event.command.guild_id, false, event.command.usr.username, false, event.command.usr, event.command.member);
+		cmd.command_id = event.command.id;
+		cmd.interaction_token = event.command.token;
+		if (cmd_interaction.type == dpp::ctxm_chat_input) {
+			bot->core->log(dpp::ll_info, fmt::format("SCMD (USER={}, GUILD={}): <{}> /{}", cmd.author_id, cmd.guild_id, cmd.username, cmd.msg));
+		} else {
+			bot->core->log(dpp::ll_info, fmt::format("CONTEXT (USER={}, GUILD={}): {} -> '{}'", cmd.author_id, cmd.guild_id, cmd.username, cmd.msg));
+		}
+		this->handle_command(cmd, event);
+	}
 }
 
 void TriviaModule::DoExternalCommands(std::vector<dpp::slashcommand>& normal, std::vector<dpp::slashcommand>& admin) {
@@ -442,7 +491,14 @@ void TriviaModule::handle_command(const in_cmd &cmd, const dpp::interaction_crea
 				base_command = lowercase(base_command);
 			}
 	
-			auto command = commands.find(base_command);
+			auto command = commands.end();
+			if (!cmd.interaction_token.empty()) {
+				/* For interactions, if we can't find the command then it's a context menu action */
+				command = commands.find(cmd.msg);
+			}
+			if (command == commands.end()) {
+				command = commands.find(base_command);
+			}
 			if (command != commands.end()) {
 
 				this->thinking(command->second->ephemeral, event);
@@ -458,8 +514,8 @@ void TriviaModule::handle_command(const in_cmd &cmd, const dpp::interaction_crea
 					limits[cmd.channel_id] = time(NULL) + PER_CHANNEL_RATE_LIMIT;
 				}
 
-				if (can_execute || cmd.from_dashboard) {
-					bot->core->log(dpp::ll_debug, fmt::format("command_t '{}' routed to handler", base_command));
+				if (can_execute || cmd.from_dashboard || command->second->ephemeral) {
+					bot->core->log(dpp::ll_debug, fmt::format("command_t '{}' routed to handler", command->first));
 					command->second->call(cmd, tokens, settings, cmd.username, moderator, c, user);
 				} else {
 					/* Display rate limit message, but only one per rate limit period */
