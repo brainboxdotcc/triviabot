@@ -141,6 +141,7 @@ void command_context_user_t::call(const in_cmd &cmd, std::stringstream &tokens, 
 
 void RefreshMessage(in_flight &infl, guild_settings_t& settings, std::string base_command, TriviaModule* creator)
 {
+	std::string field = (settings.language == "en") ? "name" : "trans_" + settings.language;
 	dpp::message msg;
 	msg.add_embed(
 		dpp::embed()
@@ -172,7 +173,7 @@ void RefreshMessage(in_flight &infl, guild_settings_t& settings, std::string bas
 				.set_required(true)
 		)
 	);
-	db::resultset q = db::query("SELECT * FROM categories WHERE disabled != 1", {});
+	db::resultset q = db::query("SELECT id FROM categories WHERE disabled != 1", {});
 	size_t rows = q.size();
 	uint32_t length = 25;
 	uint32_t pages = ceil((float)rows / (float)length);
@@ -194,9 +195,9 @@ void RefreshMessage(in_flight &infl, guild_settings_t& settings, std::string bas
 	for (auto& nrow : q) {
 		msg.components[0].components[0].add_select_option(
 			dpp::select_option(
-				"📚 " + nrow["name"], nlohmann::json(
+				"📚 " + nrow[field], nlohmann::json(
 					{
-						{"category", nrow["name"]},
+						{"category", nrow[field]},
 						{"type", infl.type},
 						{"questions", infl.questions},
 						{"page", infl.page},
