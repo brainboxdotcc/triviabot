@@ -135,6 +135,13 @@ void command_context_user_t::call(const in_cmd &cmd, std::stringstream &tokens, 
 	in_flight infl {0, real_interaction_token, {}, 1, round_type, time(nullptr), 0};
 	{
 		std::lock_guard lock(m);
+		for(auto iter = active_menus.begin(); iter != active_menus.end(); ) {
+			if (time(nullptr) >= iter->second.creation + 300) {
+				iter = active_menus.erase(iter);
+			} else {
+				++iter;
+			}
+		}
 		active_menus[cmd.user.id] = infl;
 	}
 }
