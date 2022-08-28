@@ -37,19 +37,79 @@
 #include "commands.h"
 #include "wlower.h"
 
+/**
+ * @brief Mutex to protect active_menus
+ */
 std::mutex m;
 
+/**
+ * @brief Active menus each have a state which is stored in a map by user id.
+ * This state represents what selected category names the user has, what token
+ * is used to edit their ephemeral message, what page they're on for categories,
+ * when the state was originally created, how many questions and what state theyre in.
+ */
 struct in_flight {
 	int state = 0;
 	std::string token;
 	std::vector<std::string> categories;
-	int page;
+	int page = 1;
 	std::string type;
 	time_t creation;
 	int questions;
 };
 
+/**
+ * @brief Active menu states per user
+ */
 std::unordered_map<dpp::snowflake, in_flight> active_menus;
+
+/**
+ * @brief Find active menu state
+ * 
+ * @param s user id
+ * @return in_flight* found state or null if no state
+ */
+in_flight* find_active_menu(dpp::snowflake s) {
+	std::lock_guard lock(m);
+	auto i = active_menus.find(s);
+	if (i != active_menus.end()) {
+		return &(i->second);
+	} else {
+		return nullptr;
+	}
+}
+
+/**
+ * @brief Save active menu state and prune stale
+ * 
+ * @param s user id
+ * @param i menu state
+ */
+void save_active_menu(dpp::snowflake s, const in_flight& i) {
+	std::lock_guard lock(m);
+	/* Remove idle menus */
+	for(auto iter = active_menus.begin(); iter != active_menus.end(); ) {
+		if (time(nullptr) >= iter->second.creation + 300) {
+			iter = active_menus.erase(iter);
+		} else {
+			++iter;
+		}
+	}
+	active_menus[s] = i;
+}
+
+/**
+ * @brief Delete active menu
+ * 
+ * @param s user id
+ */
+void delete_active_menu(dpp::snowflake s) {
+	std::lock_guard lock(m);
+	auto i = active_menus.find(s);
+	if (i != active_menus.end()) {
+		active_menus.erase(i);
+	}
+}
 
 command_context_message_t::command_context_message_t(class TriviaModule* _creator, const std::string &_base_command, bool adm, const std::string& descr, std::vector<dpp::command_option> options)
 	: command_context_user_t(_creator, _base_command, adm, descr, options)
@@ -132,18 +192,7 @@ void command_context_user_t::call(const in_cmd &cmd, std::stringstream &tokens, 
 		msg
 	);
 
-	in_flight infl {0, real_interaction_token, {}, 1, round_type, time(nullptr), 0};
-	{
-		std::lock_guard lock(m);
-		for(auto iter = active_menus.begin(); iter != active_menus.end(); ) {
-			if (time(nullptr) >= iter->second.creation + 300) {
-				iter = active_menus.erase(iter);
-			} else {
-				++iter;
-			}
-		}
-		active_menus[cmd.user.id] = infl;
-	}
+	save_active_menu(cmd.user.id, {0, real_interaction_token, {}, 1, round_type, time(nullptr), 0});
 }
 
 void RefreshMessage(in_flight &infl, guild_settings_t& settings, std::string base_command, TriviaModule* creator)
@@ -222,18 +271,13 @@ void RefreshMessage(in_flight &infl, guild_settings_t& settings, std::string bas
 
 void command_context_user_t::button_click(const dpp::button_click_t & event, const in_cmd &cmd, guild_settings_t &settings)
 {
-	in_flight infl;
 	std::string message;
 	event.reply();
-	{
-		std::lock_guard lock(m);
-		auto i = active_menus.find(event.command.usr.id);
-		if (i != active_menus.end()) {
-			infl = i->second;
-		} else {
-			return;
-		}
+	auto i = find_active_menu(event.command.usr.id);
+	if (!i) {
+		return;
 	}
+	in_flight infl = *i;
 
 	if (cmd.msg == "start") {
 		/* Start game */
@@ -268,40 +312,29 @@ void command_context_user_t::button_click(const dpp::button_click_t & event, con
 			infl.token,
 			msg
 		);
-		{
-			std::lock_guard lock(m);
-			auto i = active_menus.find(cmd.user.id);
-			if (i != active_menus.end()) {
-				active_menus.erase(i);
-			}
-		}
+		delete_active_menu(cmd.user.id);
 		return;
-	}
-	if (atoi(cmd.msg.c_str()) > 0) {
-		infl.page = std::stoi(cmd.msg);
-		RefreshMessage(infl, settings, this->base_command, creator);
+	} else {
+		try {
+			infl.page = std::stoi(cmd.msg);
+			RefreshMessage(infl, settings, this->base_command, creator);
+		}
+		catch (const std::exception&) {
+		}
 	}
 
-	{
-		std::lock_guard lock(m);
-		active_menus[cmd.user.id] = infl;
-	}
+	save_active_menu(cmd.user.id, infl);
 }
 
 
 void command_context_user_t::select_click(const dpp::select_click_t & event, const in_cmd &cmd, guild_settings_t &settings)
 {
-	in_flight infl;
 	event.reply();
-	{
-		std::lock_guard lock(m);
-		auto i = active_menus.find(event.command.usr.id);
-		if (i != active_menus.end()) {
-			infl = i->second;
-		} else {
-			return;
-		}
+	auto i = find_active_menu(event.command.usr.id);
+	if (!i) {
+		return;
 	}
+	in_flight infl = *i;
 
 	nlohmann::json j = nlohmann::json::parse(cmd.msg);
 	infl.questions = j.at("questions").get<int>();
