@@ -67,7 +67,6 @@ TriviaModule::TriviaModule(Bot* instigator, ModuleLoader* ml) : Module(instigato
 
 	/* Create threads */
 	presence_update = new std::thread(&TriviaModule::UpdatePresenceLine, this);
-	command_processor = new std::thread(&TriviaModule::ProcessCommands, this);
 	game_tick_thread = new std::thread(&TriviaModule::Tick, this);
 	guild_queue_thread = new std::thread(&TriviaModule::ProcessGuildQueue, this);
 
@@ -99,31 +98,11 @@ TriviaModule::TriviaModule(Bot* instigator, ModuleLoader* ml) : Module(instigato
 
 void TriviaModule::queue_command(const std::string &message, dpp::snowflake author, dpp::snowflake channel, dpp::snowflake guild, bool mention, const std::string &username, bool from_dashboard, dpp::user u, dpp::guild_member gm)
 {
-	//std::lock_guard<std::mutex> cmd_lock(cmdmutex);
 	handle_command(in_cmd(message, author, channel, guild, mention, username, from_dashboard, u, gm), dpp::interaction_create_t(nullptr, ""));
 }
 
 void TriviaModule::ProcessCommands()
 {
-	while (!terminating) {
-		{
-			std::lock_guard<std::mutex> cmd_lock(cmdmutex);
-			if (!commandqueue.empty()) {
-				to_process.clear();
-				for (auto m = commandqueue.begin(); m != commandqueue.end(); ++m) {
-					to_process.push_back(*m);
-				}
-				commandqueue.clear();
-			}
-		}
-		if (!to_process.empty()) {
-			for (auto m = to_process.begin(); m != to_process.end(); ++m) {
-				handle_command(*m, dpp::interaction_create_t(nullptr, ""));
-			}
-			to_process.clear();
-		}
-		std::this_thread::sleep_for(std::chrono::milliseconds(100));
-	}
 }
 
 Bot* TriviaModule::GetBot()
@@ -136,7 +115,6 @@ TriviaModule::~TriviaModule()
 	/* We don't just delete threads, they must go through Bot::DisposeThread which joins them first */
 	DisposeThread(game_tick_thread);
 	DisposeThread(presence_update);
-	DisposeThread(command_processor);
 	DisposeThread(guild_queue_thread);
 
 	/* This explicitly calls the destructor on all states */

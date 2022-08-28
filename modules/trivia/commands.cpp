@@ -504,14 +504,16 @@ void TriviaModule::handle_command(const in_cmd &cmd, const dpp::interaction_crea
 				this->thinking(command->second->ephemeral, event);
 
 				bool can_execute = false;
-				std::lock_guard<std::mutex> cmd_lock(cmdmutex);
-				auto check = limits.find(cmd.channel_id);
-				if (check == limits.end()) {
-					can_execute = true;
-					limits[cmd.channel_id] = time(NULL) + PER_CHANNEL_RATE_LIMIT;
-				} else if (time(NULL) > check->second) {
-					can_execute = true;
-					limits[cmd.channel_id] = time(NULL) + PER_CHANNEL_RATE_LIMIT;
+				{
+					std::lock_guard<std::mutex> cmd_lock(cmdmutex);
+					auto check = limits.find(cmd.channel_id);
+					if (check == limits.end()) {
+						can_execute = true;
+						limits[cmd.channel_id] = time(NULL) + PER_CHANNEL_RATE_LIMIT;
+					} else if (time(NULL) > check->second) {
+						can_execute = true;
+						limits[cmd.channel_id] = time(NULL) + PER_CHANNEL_RATE_LIMIT;
+					}
 				}
 
 				if (can_execute || cmd.from_dashboard || command->second->ephemeral) {
@@ -520,15 +522,16 @@ void TriviaModule::handle_command(const in_cmd &cmd, const dpp::interaction_crea
 				} else {
 					/* Display rate limit message, but only one per rate limit period */
 					bool emit_rl_warning = false;
-					std::lock_guard<std::mutex> cmd_lock(cmdmutex);
-
-					auto check = last_rl_warning.find(cmd.channel_id);
-					if (check == last_rl_warning.end()) {
-						emit_rl_warning = true;
-						last_rl_warning[cmd.channel_id] = time(NULL) + PER_CHANNEL_RATE_LIMIT;
-					} else if (time(NULL) > check->second) {
-						emit_rl_warning = true;
-						last_rl_warning[cmd.channel_id] = time(NULL) + PER_CHANNEL_RATE_LIMIT;
+					{
+						std::lock_guard<std::mutex> cmd_lock(cmdmutex);
+						auto check = last_rl_warning.find(cmd.channel_id);
+						if (check == last_rl_warning.end()) {
+							emit_rl_warning = true;
+							last_rl_warning[cmd.channel_id] = time(NULL) + PER_CHANNEL_RATE_LIMIT;
+						} else if (time(NULL) > check->second) {
+							emit_rl_warning = true;
+							last_rl_warning[cmd.channel_id] = time(NULL) + PER_CHANNEL_RATE_LIMIT;
+						}
 					}
 					if (emit_rl_warning) {
 						SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":snail:", fmt::format(_("RATELIMITED", settings), PER_CHANNEL_RATE_LIMIT, base_command), cmd.channel_id, _("WOAHTHERE", settings));
@@ -567,15 +570,16 @@ void TriviaModule::handle_command(const in_cmd &cmd, const dpp::interaction_crea
 					} else {
 						/* Display rate limit message, but only one per rate limit period */
 						bool emit_rl_warning = false;
-						std::lock_guard<std::mutex> cmd_lock(cmdmutex);
-
-						auto check = last_rl_warning.find(cmd.channel_id);
-						if (check == last_rl_warning.end()) {
-							emit_rl_warning = true;
-							last_rl_warning[cmd.channel_id] = time(NULL) + PER_CHANNEL_RATE_LIMIT;
-						} else if (time(NULL) > check->second) {
-							emit_rl_warning = true;
-							last_rl_warning[cmd.channel_id] = time(NULL) + PER_CHANNEL_RATE_LIMIT;
+						{
+							std::lock_guard<std::mutex> cmd_lock(cmdmutex);
+							auto check = last_rl_warning.find(cmd.channel_id);
+							if (check == last_rl_warning.end()) {
+								emit_rl_warning = true;
+								last_rl_warning[cmd.channel_id] = time(NULL) + PER_CHANNEL_RATE_LIMIT;
+							} else if (time(NULL) > check->second) {
+								emit_rl_warning = true;
+								last_rl_warning[cmd.channel_id] = time(NULL) + PER_CHANNEL_RATE_LIMIT;
+							}
 						}
 						if (emit_rl_warning) {
 							SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":snail:", fmt::format(_("RATELIMITED", settings), PER_CHANNEL_RATE_LIMIT, base_command), cmd.channel_id, _("WOAHTHERE", settings));
