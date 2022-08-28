@@ -416,7 +416,7 @@ const guild_settings_t TriviaModule::GetGuildSettings(dpp::snowflake guild_id)
 std::string TriviaModule::GetVersion()
 {
 	/* NOTE: This version string below is modified by a pre-commit hook on the git repository */
-	std::string version = "$ModVer 102$";
+	std::string version = "$ModVer 103$";
 	return "3.0." + version.substr(8,version.length() - 9);
 }
 
@@ -510,7 +510,8 @@ void TriviaModule::Tick()
 					bot->core->log(dpp::ll_trace, fmt::format("Ticking state id {} (now={}, next_tick={})", s.first, now, s.second.next_tick));
 					s.second.tick();
 					if (s.second.terminating) {
-						expired.push_back(s.first);
+						uint64_t e = s.first;
+						expired.push_back(e);
 					}
 				}
 			}
