@@ -49,7 +49,7 @@ time_t get_mtime(const char *path)
 void TriviaModule::CheckLangReload()
 {
 	if (get_mtime("../lang.json") > lastlang) {
-		std::lock_guard<std::mutex> cmd_list_lock(lang_mutex);
+		std::unique_lock lang_lock(lang_mutex);
 		lastlang = get_mtime("../lang.json");
 		std::ifstream langfile("../lang.json");
 		json* newlang = new json();

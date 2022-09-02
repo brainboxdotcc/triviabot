@@ -143,6 +143,19 @@ void TriviaModule::SetupCommands()
 			}
 		)},
 		{
+			"reassignpremium", new command_reassignpremium_t(this, "reassignpremium", true, "Move premium subscription from one guild to another",
+			{
+				dpp::command_option(dpp::co_user, "user", "User with premium subscription", true),
+				dpp::command_option(dpp::co_string, "guild", "New guild ID for premium subscription", true)
+			}
+		)},
+		{
+			"subscription", new command_subscription_t(this, "subscription", true, "Show premium subscription info for a user",
+			{
+				dpp::command_option(dpp::co_user, "user", "User to show premium subscription information for", true)
+			}
+		)},
+		{
 			"shard", new command_shard_t(this, "shard", false, "Show which shard and cluster a server is on",
 			{
 				dpp::command_option(dpp::co_string, "guild", "Guild ID to show info for", false)
@@ -438,6 +451,30 @@ void TriviaModule::thinking(bool ephemeral, const dpp::interaction_create_t& eve
 
 }
 
+bool TriviaModule::has_rl_warn(dpp::snowflake channel_id) {
+	std::shared_lock cmd_lock(cmdmutex);
+	auto check = last_rl_warning.find(channel_id);
+	return check != last_rl_warning.end() && time(NULL) < check->second;
+}
+
+bool TriviaModule::has_limit(dpp::snowflake channel_id) {
+	std::shared_lock cmd_lock(cmdmutex);
+	auto check = limits.find(channel_id);
+	return check != limits.end() && time(NULL) < check->second;
+}
+
+bool TriviaModule::set_rl_warn(dpp::snowflake channel_id) {
+	std::unique_lock cmd_lock(cmdmutex);
+	last_rl_warning[channel_id] = time(NULL) + PER_CHANNEL_RATE_LIMIT;
+	return true;
+}
+
+bool TriviaModule::set_limit(dpp::snowflake channel_id) {
+	std::unique_lock cmd_lock(cmdmutex);
+	limits[channel_id] = time(NULL) + PER_CHANNEL_RATE_LIMIT;
+	return true;
+}
+
 void TriviaModule::handle_command(const in_cmd &cmd, const dpp::interaction_create_t& event) {
 
 	try {
@@ -504,16 +541,9 @@ void TriviaModule::handle_command(const in_cmd &cmd, const dpp::interaction_crea
 				this->thinking(command->second->ephemeral, event);
 
 				bool can_execute = false;
-				{
-					std::lock_guard<std::mutex> cmd_lock(cmdmutex);
-					auto check = limits.find(cmd.channel_id);
-					if (check == limits.end()) {
-						can_execute = true;
-						limits[cmd.channel_id] = time(NULL) + PER_CHANNEL_RATE_LIMIT;
-					} else if (time(NULL) > check->second) {
-						can_execute = true;
-						limits[cmd.channel_id] = time(NULL) + PER_CHANNEL_RATE_LIMIT;
-					}
+				if (!this->has_limit(cmd.channel_id)) {
+					can_execute = true;
+					this->set_limit(cmd.channel_id);
 				}
 
 				if (can_execute || cmd.from_dashboard || command->second->ephemeral) {
@@ -521,19 +551,8 @@ void TriviaModule::handle_command(const in_cmd &cmd, const dpp::interaction_crea
 					command->second->call(cmd, tokens, settings, cmd.username, moderator, c, user);
 				} else {
 					/* Display rate limit message, but only one per rate limit period */
-					bool emit_rl_warning = false;
-					{
-						std::lock_guard<std::mutex> cmd_lock(cmdmutex);
-						auto check = last_rl_warning.find(cmd.channel_id);
-						if (check == last_rl_warning.end()) {
-							emit_rl_warning = true;
-							last_rl_warning[cmd.channel_id] = time(NULL) + PER_CHANNEL_RATE_LIMIT;
-						} else if (time(NULL) > check->second) {
-							emit_rl_warning = true;
-							last_rl_warning[cmd.channel_id] = time(NULL) + PER_CHANNEL_RATE_LIMIT;
-						}
-					}
-					if (emit_rl_warning) {
+					if (!this->has_rl_warn(cmd.channel_id)) {
+						this->set_rl_warn(cmd.channel_id);
 						SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":snail:", fmt::format(_("RATELIMITED", settings), PER_CHANNEL_RATE_LIMIT, base_command), cmd.channel_id, _("WOAHTHERE", settings));
 					}
 					bot->core->log(dpp::ll_debug, fmt::format("command_t '{}' NOT routed to handler on channel {}, limiting", base_command, cmd.channel_id));
@@ -544,21 +563,14 @@ void TriviaModule::handle_command(const in_cmd &cmd, const dpp::interaction_crea
 				/* Custom commands handled completely by the API as a REST call */
 				bool command_exists = false;
 				{
-					std::lock_guard<std::mutex> cmd_list_lock(cmds_mutex);
+					std::shared_lock cmd_list_lock(cmds_mutex);
 					command_exists = (std::find(api_commands.begin(), api_commands.end(), trim(lowercase(base_command))) != api_commands.end());
 				}
 				if (command_exists) {
 					bool can_execute = false;
-					{
-						std::lock_guard<std::mutex> cmd_lock(cmdmutex);
-						auto check = limits.find(cmd.channel_id);
-						if (check == limits.end()) {
-							can_execute = true;
-							limits[cmd.channel_id] = time(NULL) + PER_CHANNEL_RATE_LIMIT;
-						} else if (time(NULL) > check->second) {
-							can_execute = true;
-							limits[cmd.channel_id] = time(NULL) + PER_CHANNEL_RATE_LIMIT;
-						}
+					if (!this->has_limit(cmd.channel_id)) {
+						can_execute = true;
+						this->set_limit(cmd.channel_id);
 					}
 
 					if (can_execute) {
@@ -569,22 +581,10 @@ void TriviaModule::handle_command(const in_cmd &cmd, const dpp::interaction_crea
 						custom_command(cmd.interaction_token, cmd.command_id, settings, this, base_command, trim(rest), cmd.author_id, cmd.channel_id, cmd.guild_id);
 					} else {
 						/* Display rate limit message, but only one per rate limit period */
-						bool emit_rl_warning = false;
-						{
-							std::lock_guard<std::mutex> cmd_lock(cmdmutex);
-							auto check = last_rl_warning.find(cmd.channel_id);
-							if (check == last_rl_warning.end()) {
-								emit_rl_warning = true;
-								last_rl_warning[cmd.channel_id] = time(NULL) + PER_CHANNEL_RATE_LIMIT;
-							} else if (time(NULL) > check->second) {
-								emit_rl_warning = true;
-								last_rl_warning[cmd.channel_id] = time(NULL) + PER_CHANNEL_RATE_LIMIT;
-							}
-						}
-						if (emit_rl_warning) {
+						if (!this->has_rl_warn(cmd.channel_id)) {
+							this->set_rl_warn(cmd.channel_id);
 							SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":snail:", fmt::format(_("RATELIMITED", settings), PER_CHANNEL_RATE_LIMIT, base_command), cmd.channel_id, _("WOAHTHERE", settings));
 						}
-
 						bot->core->log(dpp::ll_debug, fmt::format("Command '{}' not sent to API, rate limited", trim(lowercase(base_command))));
 					}
 				} else {

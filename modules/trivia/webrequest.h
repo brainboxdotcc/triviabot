@@ -51,6 +51,14 @@ class NoSuchCategoryException : public std::exception {
 class CategoryTooSmallException : public std::exception {
 };
 
+// Team has a minimum points required to join and player doesn't have enough points
+class JoinNotQualifiedException : public std::exception {
+public:
+	uint64_t score;
+	uint64_t required;
+	JoinNotQualifiedException(uint64_t player_score, uint64_t required_score) : score(player_score), required(required_score) { };
+};
+
 // Minimum number of questions for non-premium guild, per category
 const uint32_t MIN_QUESTIONS = 1000;
 
@@ -80,18 +88,15 @@ void log_game_start(uint64_t guild_id, uint64_t channel_id, uint64_t number_ques
 void log_game_end(uint64_t guild_id, uint64_t channel_id);
 void change_streak(uint64_t snowflake_id, uint64_t guild_id, int score);
 void change_streak(uint64_t snowflake_id, int score);
+bool join_team(uint64_t snowflake_id, const std::string &team, uint64_t channel_id);
+void check_create_webhook(const guild_settings_t & s, TriviaModule* t, uint64_t channel_id);
 std::vector<std::string> get_api_command_names();
 
 // These execute external PHP scripts, through a special handler. They bypass REST.
 void custom_command(const std::string& interaction_token, dpp::snowflake command_id, const guild_settings_t& settings, TriviaModule* tm, const std::string &command, const std::string &parameters, uint64_t user_id, uint64_t channel_id, uint64_t guild_id);
 
 // These functions query the REST API and are not as performant as the functions above. Some of these cannot
-// currently be rewritten as direct queries, as they use external apis like neutrino, or are hooked into the
-// achievement system, or are REST by design such as those that use graphics APIs.
-bool join_team(uint64_t snowflake_id, const std::string &team, uint64_t channel_id);
-std::string create_new_team(const std::string &teamname);
-json get_active(const std::string &hostname, uint64_t cluster_id);
+// currently be rewritten as direct queries, as they are hooked into the achievement system, or are REST by
+// design such as those that use graphics APIs.
 void check_achievement(const std::string &when, uint64_t user_id, uint64_t guild_id);
-void CheckCreateWebhook(const guild_settings_t & s, TriviaModule* t, uint64_t channel_id);
-void PostWebhook(const std::string &webhook_url, const std::string &embed, uint64_t channel_id);
-
+void post_webhook(const std::string &webhook_url, const std::string &embed, uint64_t channel_id);

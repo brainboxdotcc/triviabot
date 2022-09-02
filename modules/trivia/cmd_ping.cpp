@@ -47,56 +47,50 @@ void command_ping_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_se
 	db::resultset q = db::query("SHOW TABLES", {});
 	double db_ping = (dpp::utility::time_f() - start) * 1000;
 	start = dpp::utility::time_f();
-
-	/* Get TriviaBot API time by timing an arbitrary request */
-	cluster->request("http://" + std::string(creator->GetBot()->IsDevMode() ? BACKEND_HOST_DEV : BACKEND_HOST_LIVE) + "/api/", dpp::m_get, [cluster, discord_api_ping, start, db_ping, this, cmd, settings](auto callback) {
-		double tb_api_ping = (dpp::utility::time_f() - start) * 1000;
-		bool shardstatus = true;
-		long lastcluster = -1;
-		std::vector<field_t> fields = {
-                        {_("DISCPING", settings), fmt::format("{:.02f} ms\n{}", discord_api_ping, BLANK_EMOJI), true },
-                        {_("APIPING", settings), fmt::format("{:.02f} ms\n{}", tb_api_ping, BLANK_EMOJI), true },
-                        {_("DBPING", settings), fmt::format("{:.02f} ms\n{}", db_ping, BLANK_EMOJI), true },
-		};
-		field_t f;
-		std::string desc;
-		/* Get shards from database, as we can't directly see shards on other clusters */
-		db::resultset shardq = db::query("SELECT *, unix_timestamp(down_since) as ds FROM infobot_shard_status ORDER BY cluster_id, id", {});
-		for (auto & shard : shardq) {
-			/* Arrange shards by cluster, each cluster in an embed field */
-			if (lastcluster != std::stol(shard["cluster_id"])) {
-				if (lastcluster != -1) {
-					fields.push_back(f);
-				}
-				f = { _("CLUSTER", settings) + " " + shard["cluster_id"], "", true };
+	bool shardstatus = true;
+	long lastcluster = -1;
+	std::vector<field_t> fields = {
+		{_("DISCPING", settings), fmt::format("{:.02f} ms{}\n", discord_api_ping, discord_api_ping >= 800 ? " :warning:" : ""), false },
+		{_("DBPING", settings), fmt::format("{:.02f} ms{}\n{}", db_ping, db_ping >= 3 ? " :warning:" : "", BLANK_EMOJI), false },
+	};
+	field_t f;
+	std::string desc;
+	/* Get shards from database, as we can't directly see shards on other clusters */
+	db::resultset shardq = db::query("SELECT *, unix_timestamp(down_since) as ds FROM infobot_shard_status ORDER BY cluster_id, id", {});
+	for (auto & shard : shardq) {
+		/* Arrange shards by cluster, each cluster in an embed field */
+		if (lastcluster != std::stol(shard["cluster_id"])) {
+			if (lastcluster != -1) {
+				fields.push_back(f);
 			}
-			/* Green circle: Shard UP
-			 * Wrench emoji: Shard down for less than 15 mins; Under maintainence
-			 * Red circle: Shard down over 15 mins; DOWN
-			 */
-			try {
-				lastcluster = std::stol(shard["cluster_id"]);
-				uint64_t ds = shard["ds"].empty() ? 0 : stoull(shard["ds"]);
-				uint32_t sid = std::stoul(shard["id"]);
-				f.value += "`" + fmt::format("{:02d}", sid) + "`: " + (shard["connected"] == "1" && shard["online"] == "1" ? ":green_circle: ": (shard["down_since"].empty() && time(nullptr) - ds > 60 * 15 ? ":red_circle: " : "<:wrench:546395191892901909> ")) + "\n";
-				if (shard["connected"] == "0" || shard["online"] == "0") {
-					shardstatus = false;
-				}
-			}
-			catch (const std::exception &e) {
-				f.value += "`" + std::string(e.what()) + "` ";
+			f = { _("CLUSTER", settings) + " " + shard["cluster_id"], "", true };
+		}
+		/* Green circle: Shard UP
+			* Wrench emoji: Shard down for less than 15 mins; Under maintainence
+			* Red circle: Shard down over 15 mins; DOWN
+			*/
+		try {
+			lastcluster = std::stol(shard["cluster_id"]);
+			uint64_t ds = shard["ds"].empty() ? 0 : stoull(shard["ds"]);
+			uint32_t sid = std::stoul(shard["id"]);
+			f.value += "`" + fmt::format("{:02d}", sid) + "`: " + (shard["connected"] == "1" && shard["online"] == "1" ? ":green_circle: ": (shard["down_since"].empty() && time(nullptr) - ds > 60 * 15 ? ":red_circle: " : "<:wrench:546395191892901909> ")) + "\n";
+			if (shard["connected"] == "0" || shard["online"] == "0") {
+				shardstatus = false;
 			}
 		}
-		if (f.value.empty()) {
-			f.value = "(error)";
+		catch (const std::exception &e) {
+			f.value += "`" + std::string(e.what()) + "` ";
 		}
-		fields.push_back(f);
-		creator->EmbedWithFields(
-			cmd.interaction_token, cmd.command_id, settings,
-			_("PONG", settings), fields, cmd.channel_id,
-			"https://triviabot.co.uk/", "", "",
-			":ping_pong: " + ((shardstatus == true && tb_api_ping < 200 && discord_api_ping < 800 && db_ping < 3 ? _("OKPING", settings) : _("BADPING", settings))) + "\n\n**" + _("PINGKEY", settings) + "**\n" + BLANK_EMOJI
-		);
-		creator->CacheUser(cmd.author_id, cmd.user, cmd.member, cmd.channel_id);
-	});
+	}
+	if (f.value.empty()) {
+		f.value = "(error)";
+	}
+	fields.push_back(f);
+	creator->EmbedWithFields(
+		cmd.interaction_token, cmd.command_id, settings,
+		_("PONG", settings), fields, cmd.channel_id,
+		"https://triviabot.co.uk/", "", "",
+		":ping_pong: " + ((shardstatus == true && discord_api_ping < 800 && db_ping < 3 ? _("OKPING", settings) : _("BADPING", settings))) + "\n\n**" + _("PINGKEY", settings) + "**\n" + BLANK_EMOJI
+	);
+	creator->CacheUser(cmd.author_id, cmd.user, cmd.member, cmd.channel_id);
 }

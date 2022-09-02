@@ -123,7 +123,7 @@ void TriviaModule::ProcessEmbed(const std::string& interaction_token, dpp::snowf
 		/* Check if this channel has a webhook. If it does, use it! */
 		std::string webhook_id;
 		{
-			std::lock_guard<std::mutex> lock(this->wh_mutex);
+			std::shared_lock lock(this->wh_mutex);
 			auto i = this->webhooks.find(channelID);
 			if (i != this->webhooks.end()) {
 				webhook_id = i->second;
@@ -132,13 +132,13 @@ void TriviaModule::ProcessEmbed(const std::string& interaction_token, dpp::snowf
 		if (webhook_id.empty()) {
 			db::resultset rs = db::query("SELECT * FROM channel_webhooks WHERE channel_id = ?", {channelID});
 			if (rs.size()) {
-				std::lock_guard<std::mutex> lock(this->wh_mutex);
+				std::unique_lock lock(this->wh_mutex);
 				webhook_id = rs[0]["webhook"];
 				this->webhooks[channelID] = webhook_id;
 			}
 		}
 		if (!webhook_id.empty()) {
-			PostWebhook(webhook_id, cleaned_json, channelID);
+			post_webhook(webhook_id, cleaned_json, channelID);
 		} else {
 			bot->core->message_create(dpp::message(channelID, dpp::embed(&embed)));
 		}

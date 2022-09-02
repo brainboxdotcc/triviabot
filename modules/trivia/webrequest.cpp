@@ -280,7 +280,7 @@ std::string web_request(const std::string &_host, const std::string &_path, cons
 						bot->core->log(dpp::ll_warning, fmt::format("HTTP Error {} on POST {}/{} (channel_id={})", res->status, _host, _path, channel_id));
 						if (res->status == 404) {
 							{
-								std::lock_guard<std::mutex> lock(module->wh_mutex);
+								std::unique_lock lock(module->wh_mutex);
 								auto i = module->webhooks.find(channel_id);
 								if (i != module->webhooks.end()) {
 									module->webhooks.erase(i);
@@ -856,13 +856,6 @@ uint32_t update_score(uint64_t snowflake_id, uint64_t guild_id, double recordtim
 	return 0;
 }
 
-/* Return a list of active games from the API, used for resuming on crash or restart and by the dashboard, populated by log_game_start(), log_game_end() and log_question_index() */
-json get_active(const std::string &hostname, uint64_t cluster_id)
-{
-	std::string active = fetch_page(fmt::format("?opt=getactive&hostname={}&cluster={}", hostname, cluster_id));
-	return json::parse(active);
-}
-
 /* Return a total count of questions from the database. The query can be expensive, avoid calling too frequently */
 uint32_t get_total_questions()
 {
@@ -894,12 +887,25 @@ void leave_team(uint64_t snowflake_id)
 bool join_team(uint64_t snowflake_id, const std::string &team, uint64_t channel_id)
 {
 	if (check_team_exists(team)) {
-		std::string r = trim(fetch_page(fmt::format("?opt=setteam&nick={}&team={}&channel_id={}", snowflake_id, dpp::utility::url_encode(team), channel_id)));
-		if (r == "__OK__") {
-			return true;
-		} else {
-			return false;
+		auto teaminfo = db::query("SELECT * FROM teams WHERE name = '?'", {team});
+		if (teaminfo.size() && teaminfo[0]["qualifying_score"].length() && from_string<uint64_t>(teaminfo[0]["qualifying_score"], std::dec) > 0) {
+			auto rs_score = db::query("SELECT * FROM vw_scorechart WHERE name = '?'", {team});
+			uint64_t score = (rs_score.size() ? from_string<uint64_t>(rs_score[0]["score"], std::dec) : 0);
+			if (score < from_string<uint64_t>(teaminfo[0]["qualifying_score"], std::dec)) {
+				throw JoinNotQualifiedException(score, from_string<uint64_t>(teaminfo[0]["qualifying_score"], std::dec));
+			}
 		}
+		auto rs = db::query("SELECT team FROM team_membership WHERE nick='?'", {snowflake_id});
+		if (rs.size()) {
+			for (auto& t : rs) {
+				db::backgroundquery("UPDATE teams SET owner_id = '?' WHERE name = '?' AND owner_id IS NULL", {snowflake_id, team});
+				return true;
+			}
+		}
+		db::query("DELETE FROM team_membership WHERE nick='?'", {snowflake_id});
+		db::query("INSERT INTO team_membership (nick, team, joined, points_contributed) VALUES('?','?',now(),0)", {snowflake_id, team});
+		db::query("UPDATE teams SET owner_id = '?' WHERE name = '?' AND owner_id IS NULL", {snowflake_id, team});
+		return true;
 	} else {
 		return false;
 	}
@@ -958,12 +964,6 @@ streak_t get_streak(uint64_t snowflake_id)
 	return s;
 }
 
-/* Create a new team, censors the team name using neutrino API */
-std::string create_new_team(const std::string &teamname)
-{
-	return trim(fetch_page(fmt::format("?opt=createteam&name={}", dpp::utility::url_encode(teamname))));
-}
-
 /* Returns true if a team name exists */
 bool check_team_exists(const std::string &team)
 {
@@ -995,7 +995,7 @@ uint32_t get_team_points(const std::string &team)
 	}
 }
 
-void CheckCreateWebhook(const guild_settings_t & s, TriviaModule* t, uint64_t channel_id)
+void check_create_webhook(const guild_settings_t & s, TriviaModule* t, uint64_t channel_id)
 {
 	/* Create new webhook for a channel, or update existing webhook.
 	 * Store webhook details to database for future use.
@@ -1053,7 +1053,7 @@ void CheckCreateWebhook(const guild_settings_t & s, TriviaModule* t, uint64_t ch
 	}
 }
 
-void PostWebhook(const std::string &webhook_url, const std::string &embed, uint64_t channel_id)
+void post_webhook(const std::string &webhook_url, const std::string &embed, uint64_t channel_id)
 {
 	std::lock_guard<std::mutex> fi(fafindex);
 	std::lock_guard<std::mutex> fafguard(faflock[faf_index]);

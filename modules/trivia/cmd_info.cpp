@@ -38,6 +38,21 @@
 
 using json = nlohmann::json;
 
+int64_t GetRSS() {
+	int64_t ram = 0;
+	std::ifstream self_status("/proc/self/status");
+	while (self_status) {
+		std::string token;
+		self_status >> token;
+		if (token == "VmRSS:") {
+			self_status >> ram;
+			break;
+		}
+	}
+	self_status.close();
+	return ram * 1024;
+}
+
 command_info_t::command_info_t(class TriviaModule* _creator, const std::string &_base_command, bool adm, const std::string& descr, std::vector<dpp::command_option> options) : command_t(_creator, _base_command, adm, descr, options) { }
 
 void command_info_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_settings_t &settings, const std::string &username, bool is_moderator, dpp::channel* c, dpp::user* user)
@@ -60,10 +75,12 @@ void command_info_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_se
 		statusfield(_("TOTALSERVERS", settings), Comma(servers)),
 		statusfield(_("CONNSINCE", settings), startstr),
 		statusfield(_("ONLINEUSERS", settings), Comma(users)),
+		statusfield(_("RSS", settings), Comma(GetRSS() / 1024 / 1024) + "M"),
 		statusfield(_("UPTIME", settings), ut.to_string()),
 		statusfield(_("CLUSTER", settings), Comma(creator->GetBot()->GetClusterID()) + "/" + Comma(creator->GetBot()->GetMaxClusters())),
 		statusfield(_("SHARDS", settings), Comma(shard) + "/" + Bot::GetConfig("shardcount")),
 		statusfield(_("MEMBERINTENT", settings), _((creator->GetBot()->HasMemberIntents() ? "TICKYES" : "CROSSNO"), settings)),
+		statusfield(_("MESSAGEINTENT", settings), _(((creator->GetBot()->core->intents & dpp::i_message_content) ? "TICKYES" : "CROSSNO"), settings)),
 		statusfield(_("TESTMODE", settings), _((creator->GetBot()->IsTestMode() ? "TICKYES" : "CROSSNO"), settings)),
 		statusfield(_("DEVMODE", settings), _((creator->GetBot()->IsDevMode() ? "TICKYES" : "CROSSNO"), settings)),
 		statusfield(_("MYPREFIX", settings), "`" + creator->escape_json(settings.prefix) + "`"),
@@ -73,10 +90,11 @@ void command_info_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_se
 	};
 
 	s << "{\"title\":\"" << creator->GetBot()->user.username << " " << _("INFO", settings);
-	s << "\",\"color\":" << settings.embedcolour << ",\"url\":\"https:\\/\\/triviabot.co.uk\\/\\/\",";
+	s << "\",\"thumbnail\":{\"url\":\"https:\\/\\/triviabot.co.uk\\/images\\/triviabot_tl_icon.png\"},";
+	s << "\"color\":" << settings.embedcolour << ",\"url\":\"https:\\/\\/triviabot.co.uk\\/\\/\",";
 	s << "\"footer\":{\"link\":\"https:\\/\\/triviabot.co.uk\\/\",\"text\":\"" << _("POWERED_BY", settings) << "\",\"icon_url\":\"https:\\/\\/triviabot.co.uk\\/images\\/triviabot_tl_icon.png\"},\"fields\":[";
 	for (int i = 0; statusfields[i].name != ""; ++i) {
-		s << "{\"name\":\"" <<  statusfields[i].name << "\",\"value\":\"" << statusfields[i].value << "\", \"inline\": true}";
+		s << "{\"name\":\"" <<  statusfields[i].name << "\",\"value\":\"" << statusfields[i].value << "\", \"inline\": " << (i != 14 ? "true" : "false") << "}";
 		if (statusfields[i + 1].name != "") {
 			s << ",";
 		}

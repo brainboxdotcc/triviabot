@@ -33,6 +33,7 @@
 #include <sporks/stringops.h>
 #include <sporks/statusfield.h>
 #include <sporks/database.h>
+#include <iostream>
 #include "state.h"
 #include "trivia.h"
 #include "webrequest.h"
@@ -72,12 +73,12 @@ TriviaModule::TriviaModule(Bot* instigator, ModuleLoader* ml) : Module(instigato
 
 	/* Get command list from API */
 	{
-		std::lock_guard<std::mutex> cmd_list_lock(cmds_mutex);
+		std::unique_lock cmd_list_lock(cmds_mutex);
 		api_commands = get_api_command_names();
 		bot->core->log(dpp::ll_info, fmt::format("Initial API command count: {}", api_commands.size()));
 	}
 	{
-		std::lock_guard<std::mutex> cmd_list_lock(lang_mutex);
+		std::unique_lock lang_lock(lang_mutex);
 		/* Read language strings */
 		std::ifstream langfile("../lang.json");
 		lang = new json();
@@ -88,6 +89,8 @@ TriviaModule::TriviaModule(Bot* instigator, ModuleLoader* ml) : Module(instigato
 	achievements = new json();
 	std::ifstream achievements_json("../achievements.json");
 	achievements_json >> *achievements;
+
+	censor = new neutrino(instigator->core, Bot::GetConfig("neutrino_user"), Bot::GetConfig("neutrino_key"));
 
 	/* Setup built in commands */
 	SetupCommands();
@@ -118,7 +121,7 @@ TriviaModule::~TriviaModule()
 	DisposeThread(guild_queue_thread);
 
 	/* This explicitly calls the destructor on all states */
-	std::lock_guard<std::mutex> user_cache_lock(states_mutex);
+	std::lock_guard<std::mutex> state_lock(states_mutex);
 	states.clear();
 
 	/* Delete these misc pointers, mostly regexps */
@@ -129,6 +132,7 @@ TriviaModule::~TriviaModule()
 	delete prefix_match;
 	delete lang;
 	delete achievements;
+	delete censor;
 }
 
 
@@ -159,7 +163,7 @@ bool TriviaModule::OnPresenceUpdate()
 	}
 	/* Curly brace scope is for readability, this call is mutexed */
 	{
-		std::lock_guard<std::mutex> cmd_list_lock(cmds_mutex);
+		std::unique_lock cmd_list_lock(cmds_mutex);
 		api_commands = get_api_command_names();
 	}
 	CheckLangReload();
@@ -169,7 +173,7 @@ bool TriviaModule::OnPresenceUpdate()
 std::string TriviaModule::_(const std::string &k, const guild_settings_t& settings)
 {
 	/* Find language string 'k' in lang.json for the language specified in 'settings' */
-	std::lock_guard<std::mutex> cmd_list_lock(lang_mutex);
+	std::shared_lock lang_lock(lang_mutex);
 	auto o = lang->find(k);
 	if (o != lang->end()) {
 		auto v = o->find(settings.language);
@@ -194,7 +198,7 @@ bool TriviaModule::OnAllShardsReady()
 	char hostname[1024];
 	hostname[1023] = '\0';
 	gethostname(hostname, 1023);
-	json active = get_active(hostname, bot->GetClusterID());
+	db::resultset active = db::query("SELECT * FROM active_games WHERE hostname = '?' AND cluster_id = '?'", {hostname, bot->GetClusterID()});
 
 	this->booted = true;
 
@@ -209,9 +213,9 @@ bool TriviaModule::OnAllShardsReady()
 	/* Iterate all active games for this cluster id */
 	for (auto game = active.begin(); game != active.end(); ++game) {
 
-		uint64_t guild_id = from_string<uint64_t>((*game)["guild_id"].get<std::string>(), std::dec);
-		bool quickfire = (*game)["quickfire"].get<std::string>() == "1";
-		uint64_t channel_id = from_string<uint64_t>((*game)["channel_id"].get<std::string>(), std::dec);
+		uint64_t guild_id = from_string<uint64_t>((*game)["guild_id"], std::dec);
+		bool quickfire = (*game)["quickfire"] == "1";
+		uint64_t channel_id = from_string<uint64_t>((*game)["channel_id"], std::dec);
 
 		bot->core->log(dpp::ll_info, fmt::format("Resuming id {}", channel_id));
 
@@ -226,33 +230,33 @@ bool TriviaModule::OnAllShardsReady()
 				guild_settings_t s = GetGuildSettings(guild_id);
 
 				/* Get shuffle list from state in db */
-				if (!(*game)["qlist"].get<std::string>().empty()) {
-					json shuffle = json::parse((*game)["qlist"].get<std::string>());
+				if (!(*game)["qlist"].empty()) {
+					json shuffle = json::parse((*game)["qlist"]);
 					for (auto s = shuffle.begin(); s != shuffle.end(); ++s) {
 						shuffle_list.push_back(s->get<std::string>());
 					}
 				} else {
 					/* No shuffle list to resume from, create a new one */
 					try {
-						shuffle_list = fetch_shuffle_list(from_string<uint64_t>((*game)["guild_id"].get<std::string>(), std::dec), "", s);
+						shuffle_list = fetch_shuffle_list(from_string<uint64_t>((*game)["guild_id"], std::dec), "", s);
 					}
 					catch (const std::exception&) {
 						shuffle_list = {};
 					}
 				}
-				int32_t round = from_string<uint32_t>((*game)["question_index"].get<std::string>(), std::dec);
+				int32_t round = from_string<uint32_t>((*game)["question_index"], std::dec);
 
 				states[channel_id] = state_t(
 					this,
-					from_string<uint32_t>((*game)["questions"].get<std::string>(), std::dec) + 1,
-					from_string<uint32_t>((*game)["streak"].get<std::string>(), std::dec),
-					from_string<uint64_t>((*game)["lastanswered"].get<std::string>(), std::dec),
+					from_string<uint32_t>((*game)["questions"], std::dec) + 1,
+					from_string<uint32_t>((*game)["streak"], std::dec),
+					from_string<uint64_t>((*game)["lastanswered"], std::dec),
 					round,
 					(quickfire ? (TRIV_INTERVAL / 4) : TRIV_INTERVAL),
 					channel_id,
-					((*game)["hintless"].get<std::string>()) == "1",
+					((*game)["hintless"]) == "1",
 					shuffle_list,
-					(trivia_state_t)from_string<uint32_t>((*game)["state"].get<std::string>(), std::dec),
+					(trivia_state_t)from_string<uint32_t>((*game)["state"], std::dec),
 					guild_id
 				);
 				/* Force fetching of question */
@@ -275,15 +279,13 @@ bool TriviaModule::OnChannelDelete(const dpp::channel_delete_t &cd)
 	return true;
 }
 
-std::mutex settingcache_mutex;
-std::unordered_map<dpp::snowflake, guild_settings_t> settings_cache;
 
 bool TriviaModule::OnGuildDelete(const dpp::guild_delete_t &gd)
 {
 	/* Unavailable guilds means an outage. We don't remove them if it's just an outage */
 	if (!gd.deleted->is_unavailable()) {
 		{
-			std::lock_guard<std::mutex> locker(settingcache_mutex);
+			std::unique_lock locker(settingcache_mutex);
 			settings_cache.erase(gd.deleted->id);
 		}
 		db::backgroundquery("UPDATE trivia_guild_cache SET kicked = 1 WHERE snowflake_id = ?", {gd.deleted->id});
@@ -298,7 +300,7 @@ uint64_t TriviaModule::GetActiveLocalGames()
 {
 	/* Counts local games running on this cluster only */
 	uint64_t a = 0;
-	std::lock_guard<std::mutex> user_cache_lock(states_mutex);
+	std::lock_guard<std::mutex> states_lock(states_mutex);
 	for (auto state = states.begin(); state != states.end(); ++state) {
 		if (state->second.gamestate != TRIV_END && !state->second.terminating) {
 			++a;
@@ -351,18 +353,32 @@ uint64_t TriviaModule::GetChannelTotal()
 	}
 }
 
+void TriviaModule::eraseCache(dpp::snowflake guild_id)
+{
+	std::unique_lock locker(settingcache_mutex);
+	auto i = settings_cache.find(guild_id);
+	if (i != settings_cache.end()) {
+		settings_cache.erase(i);
+	}
+}
+
 const guild_settings_t TriviaModule::GetGuildSettings(dpp::snowflake guild_id)
 {
+	bool expired = false;
+	auto i = settings_cache.end();
 	{
-		std::lock_guard<std::mutex> locker(settingcache_mutex);
-		auto i = settings_cache.find(guild_id);
+		std::shared_lock locker(settingcache_mutex);
+		i = settings_cache.find(guild_id);
 		if (i != settings_cache.end()) {
 			if (time(NULL) > i->second.time + 60) {
-				settings_cache.erase(i);
+				expired = true;
 			} else {
 				return i->second;
 			}
 		}
+	}
+	if (expired) {
+		this->eraseCache(guild_id);
 	}
 	
 	db::resultset r = db::query("SELECT * FROM bot_guild_settings WHERE snowflake_id = ?", {guild_id});
@@ -376,7 +392,7 @@ const guild_settings_t TriviaModule::GetGuildSettings(dpp::snowflake guild_id)
 		std::string max_n = r[0]["max_normal_round"], max_q = r[0]["max_quickfire_round"], max_h = r[0]["max_hardcore_round"];
 		guild_settings_t gs(time(NULL), from_string<uint64_t>(r[0]["snowflake_id"], std::dec), r[0]["prefix"], role_list, from_string<uint32_t>(r[0]["embedcolour"], std::dec), (r[0]["premium"] == "1"), (r[0]["only_mods_stop"] == "1"), (r[0]["only_mods_start"] == "1"), (r[0]["role_reward_enabled"] == "1"), from_string<uint64_t>(r[0]["role_reward_id"], std::dec), r[0]["custom_url"], r[0]["language"], from_string<uint32_t>(r[0]["question_interval"], std::dec), max_n.empty() ? 200 : from_string<uint32_t>(max_n, std::dec), max_q.empty() ? (r[0]["premium"] == "1" ? 200 : 15) : from_string<uint32_t>(max_q, std::dec), max_h.empty() ? 200 : from_string<uint32_t>(max_h, std::dec), r[0]["disable_insane_rounds"] == "1");
 		{
-			std::lock_guard<std::mutex> locker(settingcache_mutex);
+			std::unique_lock locker(settingcache_mutex);
 			settings_cache.emplace(guild_id, gs);
 		}
 		return gs;
@@ -384,7 +400,7 @@ const guild_settings_t TriviaModule::GetGuildSettings(dpp::snowflake guild_id)
 		db::backgroundquery("INSERT INTO bot_guild_settings (snowflake_id) VALUES('?')", {guild_id});
 		guild_settings_t gs(time(NULL), guild_id, "!", {}, 3238819, false, false, false, false, 0, "", "en", 20, 200, 15, 200, false);
 		{
-			std::lock_guard<std::mutex> locker(settingcache_mutex);
+			std::unique_lock locker(settingcache_mutex);
 			settings_cache.emplace(guild_id, gs);
 		}
 		return gs;

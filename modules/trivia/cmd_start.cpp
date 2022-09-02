@@ -248,7 +248,7 @@ void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 				db::backgroundquery("INSERT INTO insane_cooldown (guild_id, last_started) VALUES(?, UNIX_TIMESTAMP()) ON DUPLICATE KEY UPDATE last_started = UNIX_TIMESTAMP()", {cmd.guild_id});
 			}
 
-			CheckCreateWebhook(settings, creator, cmd.channel_id);
+			check_create_webhook(settings, creator, cmd.channel_id);
 
 			uint32_t currstreak = 1;
 			uint64_t lastanswered = 0;

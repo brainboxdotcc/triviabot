@@ -30,10 +30,13 @@
 #include <map>
 #include <vector>
 #include <atomic>
+#include <mutex>
+#include <shared_mutex>
 #include <deque>
 #include "settings.h"
 #include "commands.h"
 #include "state.h"
+#include "neutrino_api.h"
 
 // Number of seconds after which a game is considered hung and its thread exits.
 // This can happen if a game gets lost in a discord gateway outage (!)
@@ -84,8 +87,8 @@ class TriviaModule : public Module
 	std::vector<std::string> api_commands;
 	std::thread* presence_update;
 	bool terminating;
-	std::mutex cmds_mutex;
-	std::mutex cmdmutex;
+	std::shared_mutex cmds_mutex;
+	std::shared_mutex cmdmutex;
 	std::mutex guildqueuemutex;
 	std::deque<in_cmd> commandqueue;
 	std::deque<in_cmd> to_process;
@@ -93,12 +96,20 @@ class TriviaModule : public Module
 	std::thread* command_processor;
 	std::thread* game_tick_thread;
 	std::thread* guild_queue_thread;
-	std::mutex lang_mutex;
+	std::shared_mutex lang_mutex;
 	time_t lastlang;
 	command_list_t commands;
+	std::shared_mutex settingcache_mutex;
+	std::unordered_map<dpp::snowflake, guild_settings_t> settings_cache;
+
 	void CheckLangReload();
 	bool booted;
 	void thinking(bool ephemeral, const dpp::interaction_create_t& event);
+	void eraseCache(dpp::snowflake guild_id);
+	bool has_rl_warn(dpp::snowflake channel_id);
+	bool has_limit(dpp::snowflake channel_id);
+	bool set_rl_warn(dpp::snowflake channel_id);
+	bool set_limit(dpp::snowflake channel_id);
 public:
 	time_t startup;
 	json* lang;
@@ -107,11 +118,13 @@ public:
 	std::map<dpp::snowflake, state_t> states;
 
 	std::mutex cs_mutex;
-	std::mutex wh_mutex;
-	std::mutex numstrlock;
+	std::shared_mutex wh_mutex;
+	std::shared_mutex numstrlock;
 	std::unordered_map<dpp::snowflake, last_streak_t> last_channel_streaks;
 	std::unordered_map<dpp::snowflake, std::string> webhooks;
 	std::multimap<uint64_t, db::row> numstrs;
+
+	neutrino* censor;
 	
 	void ReloadNumStrs();
 

@@ -78,6 +78,8 @@ DECLARE_COMMAND_CLASS(command_ping_t, command_t);
 DECLARE_COMMAND_CLASS(command_servertime_t, command_t);
 DECLARE_COMMAND_CLASS(command_achievements_t, command_t);
 DECLARE_COMMAND_CLASS(command_profile_t, command_t);
+DECLARE_COMMAND_CLASS(command_reassignpremium_t, command_t);
+DECLARE_COMMAND_CLASS(command_subscription_t, command_t);
 DECLARE_COMMAND_CLASS_SELECT(command_context_user_t, command_t);
 DECLARE_COMMAND_CLASS(command_context_message_t, command_context_user_t);
 

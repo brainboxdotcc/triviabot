@@ -43,18 +43,33 @@ void command_create_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_
 	std::string newteamname;
 	std::getline(tokens, newteamname);
 	newteamname = trim(newteamname);
+	creator->CacheUser(cmd.author_id, cmd.user, cmd.member, cmd.channel_id);
 	std::string teamname = get_current_team(cmd.author_id);
 	if (teamname.empty()) {
-		newteamname = create_new_team(newteamname);
-		if (newteamname != "__NO__") {
-			join_team(cmd.author_id, newteamname, cmd.channel_id);
-			creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":busts_in_silhouette:", fmt::format(_("CREATED", settings), newteamname, username), c->id, _("ZELDAREFERENCE", settings));
-		} else {
-			creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":warning:", fmt::format(_("CANTCREATE", settings), username), cmd.channel_id);
-		}
+		newteamname = trim(ReplaceString(newteamname, "@", ""));
+		/* Call Neutrino API to filter swearwords */
+		creator->censor->contains_bad_word(newteamname, [cmd, settings, username, this, newteamname](const swear_filter_t& cc) {
+			std::string cleaned_team_name = newteamname;
+			if (!cc.clean) {
+				cleaned_team_name = cc.censored_content;
+			}
+			auto rs = db::query("SELECT * FROM teams WHERE name = '?'", {cleaned_team_name});
+			if (rs.empty()) {
+				db::query("INSERT INTO teams (name, score) VALUES('?', 0)", {cleaned_team_name});
+				try {
+					join_team(cmd.author_id, cleaned_team_name, cmd.channel_id);
+				}
+				catch (const JoinNotQualifiedException& e) {
+					creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":warning:", fmt::format(_("CANTCREATE", settings), username), cmd.channel_id);
+					return;
+				}
+				creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":busts_in_silhouette:", fmt::format(_("CREATED", settings), cleaned_team_name, username), cmd.channel_id, _("ZELDAREFERENCE", settings));
+			} else {
+				creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":warning:", fmt::format(_("CANTCREATE", settings), username), cmd.channel_id);
+			}
+		});
 	} else {
 		creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":warning:", fmt::format(_("ALREADYMEMBER", settings), username, teamname), cmd.channel_id);
 	}
-	creator->CacheUser(cmd.author_id, cmd.user, cmd.member, cmd.channel_id);
 }
 

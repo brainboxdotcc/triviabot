@@ -46,8 +46,8 @@ void command_shard_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 		guild_id = cmd.guild_id;
 	}
 	uint64_t shard = (guild_id >> 22) % from_string<uint32_t>(Bot::GetConfig("shardcount"), std::dec);
-	uint64_t cluster = creator->GetBot()->GetClusterID();
-	
+	uint64_t cluster = shard % creator->GetBot()->GetMaxClusters();
+
 	creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, "",
 	fmt::format(_("SHARD_IS", settings), shard) + "\n" + _("CLUSTER", settings) + " **" + std::to_string(cluster) + "**", cmd.channel_id, _("SHARD", settings));
 	creator->CacheUser(cmd.author_id, cmd.user, cmd.member, cmd.channel_id);
