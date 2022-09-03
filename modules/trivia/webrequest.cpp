@@ -201,10 +201,11 @@ std::vector<std::string> getinterfaces()
 	return rv;
 }
 
+std::vector<std::string> interfaces = getinterfaces();
+
 std::string getinterface()
 {
 	int curindex;
-	std::vector<std::string> interfaces = getinterfaces();
 	{
 		std::lock_guard<std::mutex> ii(interfaceindex);
 		curindex = interface_index;
