@@ -45,9 +45,6 @@ using json = nlohmann::json;
 
 TriviaModule::TriviaModule(Bot* instigator, ModuleLoader* ml) : Module(instigator, ml), terminating(false), booted(false)
 {
-	/* TODO: Move to something better like mt-rand */
-	srand(time(NULL) * time(NULL));
-
 	/* Attach D++ events to module */
 	ml->Attach({ I_OnMessage, I_OnPresenceUpdate, I_OnChannelDelete, I_OnGuildDelete, I_OnAllShardsReady, I_OnGuildCreate }, this);
 

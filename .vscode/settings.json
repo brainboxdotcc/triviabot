@@ -76,6 +76,7 @@
 		"coroutine": "cpp",
 		"future": "cpp",
 		"ranges": "cpp",
-		"stop_token": "cpp"
+		"stop_token": "cpp",
+		"span": "cpp"
 	}
 }

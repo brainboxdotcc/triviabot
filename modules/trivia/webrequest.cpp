@@ -524,8 +524,22 @@ std::vector<std::string> get_api_command_names()
 }
 
 // Twister random generator
-std::random_device dev;
-std::mt19937_64 rng(dev());
+static std::random_device dev;
+static std::mt19937_64 rng(dev());
+
+
+template<class BidiIter> BidiIter random_unique(BidiIter begin, BidiIter end, size_t num_random) {
+	size_t left = std::distance(begin, end);
+	while (num_random--) {
+		BidiIter r = begin;
+		std::uniform_int_distribution<size_t> dist(0, left - 1);
+		std::advance(r, dist(rng));
+		std::swap(*begin, *r);
+		++begin;
+		--left;
+	}
+	return begin;
+}
 
 /* Fetch a shuffled list of question IDs from the API, which is dependant upon some statistics for the guild and the category selected. */
 std::vector<std::string> fetch_shuffle_list(uint64_t guild_id, const std::string &category, const guild_settings_t &settings)
@@ -562,7 +576,8 @@ std::vector<std::string> fetch_shuffle_list(uint64_t guild_id, const std::string
 			for (auto& cm : cats) {
 				if (lowercase(trim(cm)) == "server" && premium) {
 					// Guild specific premium question list
-					db::resultset result = db::query("SELECT questions.id FROM questions WHERE guild_id = ? ORDER BY RAND() LIMIT 500", {guild_id});
+					db::resultset result = db::query("SELECT questions.id FROM questions WHERE guild_id = ?", {guild_id});
+					random_unique(result.begin(), result.end(), 200);
 					for (auto& ans : result) {
 						return_value.emplace_back(ans["id"]);
 					}
@@ -576,7 +591,7 @@ std::vector<std::string> fetch_shuffle_list(uint64_t guild_id, const std::string
 				query = query.substr(0, query.length() - 4);
 			}
 			query.append(")");
-			db::resultset cr = db::query("SELECT * FROM categories WHERE " + query + " AND disabled = 0", parameters);
+			db::resultset cr = db::query("SELECT id FROM categories WHERE " + query + " AND disabled = 0", parameters);
 			uint32_t count = 0;
 			db::paramlist cl;
 			query.clear();
@@ -592,7 +607,8 @@ std::vector<std::string> fetch_shuffle_list(uint64_t guild_id, const std::string
 				query = query.substr(0, query.length() - 1);
 			}
 			if (count >= min_questions) {
-				auto result = db::query("SELECT questions.id, questions.category FROM questions INNER JOIN categories ON questions.category = categories.id WHERE questions.guild_id IS NULL AND categories.disabled != 1 AND category IN (" + query + ") ORDER BY RAND() LIMIT 500", cl);
+				auto result = db::query("SELECT questions.id, questions.category FROM questions INNER JOIN categories ON questions.category = categories.id WHERE questions.guild_id IS NULL AND categories.disabled != 1 AND category IN (" + query + ")", cl);
+				random_unique(result.begin(), result.end(), 200);
 				for (auto & ans : result) {
 					return_value.emplace_back(ans["id"]);
 				}
@@ -608,7 +624,8 @@ std::vector<std::string> fetch_shuffle_list(uint64_t guild_id, const std::string
 				// guild specific premium category list
 				uint32_t qc = 0, iterations = 0;
 				while (qc < 200 && iterations < 200) {
-					auto result = db::query("SELECT questions.id FROM questions WHERE guild_id = ? ORDER BY RAND() LIMIT 500", {settings.guild_id});
+					auto result = db::query("SELECT questions.id FROM questions WHERE guild_id = ?", {settings.guild_id});
+					random_unique(result.begin(), result.end(), 200);
 					for (auto & ans : result) {
 						return_value.emplace_back(ans["id"]);
 						qc++;
@@ -619,12 +636,13 @@ std::vector<std::string> fetch_shuffle_list(uint64_t guild_id, const std::string
 				}
 				return return_value;
 			} else {
-				db::resultset cat = db::query("SELECT * FROM categories WHERE (? LIKE '?%') AND disabled = 0", {column, trim(ReplaceString(category, "%", "_"))});
+				db::resultset cat = db::query("SELECT id FROM categories WHERE (? LIKE '?%') AND disabled = 0", {column, trim(ReplaceString(category, "%", "_"))});
 				if (cat.size()) {
 					auto r = db::query("SELECT COUNT(id) AS c FROM questions WHERE category = '?'", {cat[0]["id"]});
 					if (r.size()) {
 						if (from_string<uint32_t>(r[0]["c"], std::dec) >= min_questions) {
-							auto result = db::query("SELECT questions.id, questions.category FROM questions INNER JOIN categories ON questions.category = categories.id WHERE questions.guild_id IS NULL AND categories.disabled != 1 AND category = '?' ORDER BY RAND() LIMIT 500", {cat[0]["id"]});
+							auto result = db::query("SELECT questions.id, questions.category FROM questions INNER JOIN categories ON questions.category = categories.id WHERE questions.guild_id IS NULL AND categories.disabled != 1 AND category = '?' ORDER BY", {cat[0]["id"]});
+							random_unique(result.begin(), result.end(), 200);
 							for (auto & ans : result) {
 								return_value.emplace_back(ans["id"]);
 							}
@@ -648,15 +666,16 @@ std::vector<std::string> fetch_shuffle_list(uint64_t guild_id, const std::string
 		db::resultset result;
 		if (premium) {
 			result = db::query("SELECT questions.id, questions.category FROM questions \
-				INNER JOIN categories ON questions.category = categories.id AND categories.disabled != 1 \
+				INNER JOIN categories ON questions.category = categories.id AND categories.disabled = 0 \
 				LEFT JOIN disabled_categories ON questions.category = disabled_categories.category_id and disabled_categories.guild_id = ? \
-				WHERE (questions.guild_id IS NULL OR questions.guild_id = ?) AND disabled_categories.category_id is null ORDER BY RAND() LIMIT 500", {guild_id, guild_id});
+				WHERE (questions.guild_id IS NULL OR questions.guild_id = ?) AND disabled_categories.category_id is null", {guild_id, guild_id});
 		} else {
 			result = db::query("SELECT questions.id, questions.category FROM questions \
-				INNER JOIN categories ON questions.category = categories.id AND categories.disabled != 1 \
+				INNER JOIN categories ON questions.category = categories.id AND categories.disabled = 0 \
 				LEFT JOIN disabled_categories ON questions.category = disabled_categories.category_id and disabled_categories.guild_id = ? \
-				WHERE (questions.guild_id IS NULL) AND disabled_categories.category_id is null ORDER BY RAND() LIMIT 500;", {guild_id});
+				WHERE (questions.guild_id IS NULL) AND disabled_categories.category_id is null", {guild_id});
 		}
+		random_unique(result.begin(), result.end(), 250);
 		for (auto & ans : result) {
 			list[from_string<uint64_t>(ans["id"], std::dec)] = from_string<uint64_t>(ans["category"], std::dec);
 			variation_list[ans["category"]] = true;

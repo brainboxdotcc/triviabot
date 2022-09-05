@@ -26,13 +26,19 @@
 #include <cstdint>
 #include <fstream>
 #include <streambuf>
+#include <random>
 #include <sporks/stringops.h>
 #include <sporks/database.h>
 #include "trivia.h"
 
+// Twister random generator
+static std::random_device dev;
+static std::mt19937_64 rng(dev());
+
 int TriviaModule::random(int min, int max)
 {
-	return min + rand() % (( max + 1 ) - min);
+	std::uniform_int_distribution<size_t> dist(min, max);
+	return dist(rng);
 }
 
 std::string TriviaModule::dec_to_roman(unsigned int decimal, const guild_settings_t &settings)
