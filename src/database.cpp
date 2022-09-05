@@ -20,7 +20,6 @@
  *
  ************************************************************************************/
 
-#include <spdlog/spdlog.h>
 #include <fmt/format.h>
 #include <sporks/database.h>
 #include <mysql/mysql.h>
@@ -81,9 +80,6 @@ namespace db {
 	/* Protects the background_queries queue from concurrent access */
 	std::mutex b_db_mutex;
 
-	/* The last error to occur */
-	std::string _error;
-
 	/* Queue of background queries to be executed */
 	std::queue<background_query> background_queries;
 
@@ -91,7 +87,7 @@ namespace db {
 	std::thread* background_thread = nullptr;
 
 	/* spdlog logger */
-	std::shared_ptr<spdlog::logger> log;
+	dpp::cluster* log;
 
 	resultset real_query(sqlconn &conn, const std::string &format, const paramlist &parameters);
 
@@ -154,7 +150,7 @@ namespace db {
 	/**
 	 * Connect to mysql database, returns false if there was an error.
 	 */
-	bool connect(std::shared_ptr<spdlog::logger> logger, const std::string &host, const std::string &user, const std::string &pass, const std::string &db, int port) {
+	bool connect(dpp::cluster* logger, const std::string &host, const std::string &user, const std::string &pass, const std::string &db, int port) {
 		std::lock_guard<std::mutex> db_lock2(b_db_mutex);
 		log = logger;
 		bool failed = false;
@@ -166,7 +162,7 @@ namespace db {
 				if (mysql_options(&connections[i].connection, MYSQL_OPT_RECONNECT, &reconnect) == 0) {
 					if (!mysql_real_connect(&connections[i].connection, host.c_str(), user.c_str(), pass.c_str(), db.c_str(), port, NULL, CLIENT_MULTI_RESULTS | CLIENT_MULTI_STATEMENTS)) {
 						failed = true;
-						_error = "db::connect() failed";
+						logger->log(dpp::ll_error, "Database connection failed");
 						break;
 					}
 				}
@@ -183,7 +179,6 @@ namespace db {
 			}
 		}
 
-		_error = "db::connect() failed";
 		return !failed;
 	}
 
@@ -198,10 +193,6 @@ namespace db {
 		}
 		mysql_close(&bg_connection.connection);
 		return true;
-	}
-
-	const std::string& error() {
-		return _error;
 	}
 
 	void backgroundquery(const std::string &format, const paramlist &parameters) {
@@ -224,7 +215,7 @@ namespace db {
 			c = curr_index++;
 		}
 		while (tries < POOL_SIZE + 1 && connections[c].busy) {
-			log->debug("Skipped busy connection {}", c);
+			log->log(dpp::ll_debug, fmt::format("Skipped busy connection {}", c));
 			c = ++curr_index;
 			if (curr_index >= POOL_SIZE) {
 				c = curr_index = 0;
@@ -262,8 +253,7 @@ namespace db {
 		}
 
 		if (parameters.size() != escaped_parameters.size()) {
-			_error = "Parameter wasn't escaped" + std::string(mysql_error(&conn.connection));
-			log->error(_error);
+			log->log(dpp::ll_error, "Parameter wasn't escaped: " + std::string(mysql_error(&conn.connection)));
 			errored++;
 			conn.queries_errored++;
 			return rv;
@@ -328,8 +318,7 @@ namespace db {
 				/**
 				 * In properly written code, this should never happen. Famous last words.
 				 */
-				_error = mysql_error(&conn.connection);
-				log->error("SQL Error: {} on query {}", _error, querystring);
+				log->log(dpp::ll_error, fmt::format("SQL Error: {} on query {}", mysql_error(&conn.connection), querystring));
 				errored++;
 				conn.queries_errored++;
 			}

@@ -221,7 +221,7 @@ public:
 								had_error = true;
 							}
 						});
-						db::resultset rs = db::query(sql);
+						db::resultset rs = db::query(sql, {});
 						std::stringstream w;
 						bot->core->on_log.detach(handler);
 						if (rs.size() == 0) {
