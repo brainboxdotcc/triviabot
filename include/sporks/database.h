@@ -25,7 +25,8 @@
 #include <map>
 #include <string>
 #include <variant>
-#include <spdlog/fwd.h>
+#include <mutex>
+#include <dpp/dpp.h>
 #include <mysql/mysql.h>
 
 namespace db {
@@ -112,7 +113,7 @@ namespace db {
 	statistics get_stats();
 
 	/* Connect all connections to the database */
-	bool connect(std::shared_ptr<spdlog::logger> logger, const std::string &host, const std::string &user, const std::string &pass, const std::string &db, int port);
+	bool connect(class dpp::cluster* logger, const std::string &host, const std::string &user, const std::string &pass, const std::string &db, int port);
 
 	/* Disconnect all connections from from the database */
 	bool close();
@@ -138,7 +139,4 @@ namespace db {
 	 * with its own connection.
 	 */
 	void backgroundquery(const std::string &format, const paramlist &parameters);
-
-	/* Returns the last error string */
-	const std::string& error();
 };

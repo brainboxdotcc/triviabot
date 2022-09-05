@@ -314,12 +314,6 @@ int main(int argc, char** argv) {
 	log->set_pattern("%^%Y-%m-%d %H:%M:%S.%e [%L] [th#%t]%$ : %v");
 	log->set_level(spdlog::level::level_enum::debug);	
 
-	/* Connect to SQL database */
-	if (!db::connect(log, Bot::GetConfig("dbhost"), Bot::GetConfig("dbuser"), Bot::GetConfig("dbpass"), Bot::GetConfig("dbname"), from_string<uint32_t>(Bot::GetConfig("dbport"), std::dec))) {
-		std::cerr << "Database connection failed\n";
-		exit(2);
-	}
-
 	/* Get the correct token from config file for either development or production environment */
 	std::string token = (dev ? Bot::GetConfig("devtoken") : Bot::GetConfig("livetoken"));
 
@@ -335,6 +329,12 @@ int main(int argc, char** argv) {
 		dpp::cache_policy_t cp = { dpp::cp_none, dpp::cp_none, dpp::cp_aggressive };
 		/* Construct cluster */
 		dpp::cluster bot(token, intents, dev ? 1 : from_string<uint32_t>(Bot::GetConfig("shardcount"), std::dec), clusterid, maxclusters, true, cp);
+
+		/* Connect to SQL database */
+		if (!db::connect(&bot, Bot::GetConfig("dbhost"), Bot::GetConfig("dbuser"), Bot::GetConfig("dbpass"), Bot::GetConfig("dbname"), from_string<uint32_t>(Bot::GetConfig("dbport"), std::dec))) {
+			std::cerr << "Database connection failed\n";
+			exit(2);
+		}
 
 		/* Integrate spdlog logger to D++ log events */
 		bot.on_log([&bot, &log](const dpp::log_t & event) {
