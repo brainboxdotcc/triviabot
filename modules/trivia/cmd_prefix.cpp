@@ -52,7 +52,7 @@ void command_prefix_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_
 	}
 
 	if (!prefix.empty()) {
-		db::backgroundquery("UPDATE bot_guild_settings SET prefix = '?' WHERE snowflake_id = '?'", {prefix, cmd.guild_id});
+		db::backgroundquery("UPDATE bot_guild_settings SET prefix = ? WHERE snowflake_id = ?", {prefix, cmd.guild_id});
 		creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":white_check_mark:", fmt::format(_("PREFIXSET", settings), prefix), cmd.channel_id);
 	}
 	creator->CacheUser(cmd.author_id, cmd.user, cmd.member, cmd.channel_id);

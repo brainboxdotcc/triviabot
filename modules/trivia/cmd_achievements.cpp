@@ -59,7 +59,7 @@ void command_achievements_t::call(const in_cmd &cmd, std::stringstream &tokens, 
 		if (inf.size()) {
 			fields.push_back({
 				"<:" + showoff["image"].get<std::string>() + ":" + showoff["emoji_unlocked"].get<std::string>() + "> - " + _(showoff["name"].get<std::string>(), settings),
-				_(showoff["desc"].get<std::string>(), settings) + " (*" + inf[0]["unlocked_friendly"] + "*)\n" + BLANK_EMOJI,
+				_(showoff["desc"].get<std::string>(), settings) + " (*" + inf[0]["unlocked_friendly"].getString() + "*)\n" + BLANK_EMOJI,
 				false
 			});
 		}

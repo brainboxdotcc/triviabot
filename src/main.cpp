@@ -127,6 +127,7 @@ void Bot::onServer(const dpp::guild_create_t& gc) {
  * Modules can attach to it for a simple 30 second interval timer via the OnPresenceUpdate() method.
  */
 void Bot::UpdatePresenceThread() {
+	dpp::utility::set_thread_name("bot/presence_ev");
 	std::this_thread::sleep_for(std::chrono::seconds(120));
 	while (!this->terminate) {
 		FOREACH_MOD(I_OnPresenceUpdate, OnPresenceUpdate());

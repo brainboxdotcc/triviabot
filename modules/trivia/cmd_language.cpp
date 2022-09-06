@@ -51,12 +51,12 @@ void command_language_t::call(const in_cmd &cmd, std::stringstream &tokens, guil
 	creator->CacheUser(cmd.author_id, cmd.user, cmd.member, cmd.channel_id);
 
 	if (lang_name.empty()) {
-		db::resultset langs = db::query("SELECT * FROM languages WHERE live = 1 ORDER BY id", {});
+		db::resultset langs = db::query("SELECT * FROM languages WHERE live = 1 ORDER BY id");
 		std::vector<field_t> fields;
 		for (auto & row : langs) {
 			field_t field;
-			field.name = row["isocode"] + " " + row["emoji"];
-			field.value = row["name"];
+			field.name = row["isocode"].getString() + " " + row["emoji"].getString();
+			field.value = row["name"].getString();
 			field._inline = true;
 			fields.push_back(field);
 		}
@@ -69,12 +69,12 @@ void command_language_t::call(const in_cmd &cmd, std::stringstream &tokens, guil
 		return;
 	}
 
-	db::resultset r = db::query("SELECT * FROM languages WHERE live = 1 AND isocode = '?' ORDER BY id", {lang_name});
+	db::resultset r = db::query("SELECT * FROM languages WHERE live = 1 AND isocode = ? ORDER BY id", {lang_name});
 	if (r.size() == 0) {
 		creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":warning:", _("BADLANG", settings), cmd.channel_id);
 	} else {
 		settings.language = lang_name;
-		db::backgroundquery("UPDATE bot_guild_settings SET language = '?' WHERE snowflake_id = '?'", {lang_name, cmd.guild_id});
+		db::backgroundquery("UPDATE bot_guild_settings SET language = ? WHERE snowflake_id = ?", {lang_name, cmd.guild_id});
 		creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":white_check_mark:", _("LANGCHANGE", settings), cmd.channel_id, _("CATDONE", settings));
 	}
 

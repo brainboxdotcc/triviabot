@@ -82,7 +82,7 @@ state_t::state_t(TriviaModule* _creator, uint32_t questions, uint32_t currstreak
 		creator->GetBot()->core->log(dpp::ll_debug, fmt::format("Cached {} guild scores for game on channel {}", rs.size(), channel_id));
 	}
 	/* This doesnt need to be done every time */
-	db::resultset rs2 = db::query("SELECT * FROM bans WHERE play_ban = 1", {});
+	db::resultset rs2 = db::query("SELECT * FROM bans WHERE play_ban = 1");
 	if (rs2.size()) {
 		banlist.clear();
 		for (auto s = rs2.begin(); s != rs2.end(); ++s) {
@@ -508,8 +508,8 @@ void state_t::do_normal_round(bool silent, const guild_settings_t& settings)
 
 	creator->GetBot()->core->log(dpp::ll_debug, fmt::format("do_normal_round: fetch_question: '{}'", shuffle_list[round - 1]));
 	question = question_cache[round - 1];
-	db::backgroundquery("INSERT INTO stats (id, lastasked, timesasked, lastcorrect, record_time) VALUES('?',UNIX_TIMESTAMP(),1,NULL,60000) ON DUPLICATE KEY UPDATE lastasked = UNIX_TIMESTAMP(), timesasked = timesasked + 1 ", {question.id});
-	db::backgroundquery("UPDATE counters SET asked = asked + 1", {});
+	db::backgroundquery("INSERT INTO stats (id, lastasked, timesasked, lastcorrect, record_time) VALUES(?,UNIX_TIMESTAMP(),1,NULL,60000) ON DUPLICATE KEY UPDATE lastasked = UNIX_TIMESTAMP(), timesasked = timesasked + 1 ", {question.id});
+	db::backgroundquery("UPDATE counters SET asked = asked + 1");
 
 	if (question.id == 0) {
 		gamestate = TRIV_END;
@@ -653,14 +653,14 @@ void state_t::do_insane_board(const guild_settings_t& settings) {
 	for (std::multimap<uint64_t, dpp::snowflake>::reverse_iterator sc = ordered.rbegin(); sc != ordered.rend(); ++sc) {
 		db::resultset info = db::query("SELECT username, discriminator, get_emojis(trivia_user_cache.snowflake_id) as emojis FROM trivia_user_cache WHERE snowflake_id = ?", {sc->second});
 		if (info.size()) {
-			desc += fmt::format("**#{0}** `{1}#{2:04d}` (*{3}*) {4}\n", i, info[0]["username"], from_string<uint32_t>(info[0]["discriminator"], std::dec), Comma(sc->first), info[0]["emojis"]);
+			desc += fmt::format("**#{0}** `{1}#{2:04d}` (*{3}*) {4}\n", i, info[0]["username"].getString(), info[0]["discriminator"].getUInt(), Comma(sc->first), info[0]["emojis"].getString());
 		}
 		i++;
 	}
 	if (!desc.empty()) {
 		creator->SimpleEmbed(settings, "", desc, channel_id, _("INSANESTATS", settings));
 	}
-	db::backgroundquery("DELETE FROM insane_round_statistics WHERE channel_id = '?'", {channel_id});
+	db::backgroundquery("DELETE FROM insane_round_statistics WHERE channel_id = ?", {channel_id});
 }
 
 /* State machine event for second hint */
@@ -686,9 +686,11 @@ void state_t::build_question_cache(const guild_settings_t& settings)
 	double start = dpp::utility::time_f();
 	creator->GetBot()->core->log(dpp::ll_debug, fmt::format("Build question cache start: G:{} C:{}", guild_id, channel_id));
 	size_t shuffle_max = (shuffle_list.size() < 200 ? shuffle_list.size() : 200);
+	std::vector<uint64_t> sl;
 	for (size_t i = 0; i < shuffle_max; ++i) {
-		question_cache.emplace_back(question_t::fetch(from_string<uint64_t>(shuffle_list[i], std::dec), guild_id, settings));
+		sl.emplace_back(from_string<uint64_t>(shuffle_list[i], std::dec));
 	}
+	question_cache = question_t::fetch(sl, guild_id, settings);
 	creator->GetBot()->core->log(dpp::ll_debug, fmt::format("Build question cache end in {:.04f} secs: G:{} C:{}", dpp::utility::time_f() - start, guild_id, channel_id));
 }
 

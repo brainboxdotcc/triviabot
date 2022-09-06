@@ -42,9 +42,9 @@ void command_nitro_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 	std::string desc;
 	uint8_t rank = 1;
 
-	db::resultset q = db::query("SELECT global_scores.*, trivia_user_cache.*, emojis FROM global_scores INNER JOIN trivia_user_cache ON snowflake_id = name LEFT JOIN trivia_access ON name = trivia_access.user_id LEFT JOIN vw_emojis ON vw_emojis.user_id = snowflake_id WHERE (trivia_access.id is null OR trivia_access.enabled = 0) AND (SELECT COUNT(*) FROM bans WHERE nitro_ban = 1 AND bans.snowflake_id = trivia_user_cache.snowflake_id) = 0 AND (SELECT COUNT(*) FROM inventory WHERE shop_id = 37 AND user_id = trivia_user_cache.snowflake_id) = 0 ORDER BY monthscore DESC, trivia_user_cache.snowflake_id LIMIT 10", {});
+	db::resultset q = db::query("SELECT global_scores.*, trivia_user_cache.*, emojis FROM global_scores INNER JOIN trivia_user_cache ON snowflake_id = name LEFT JOIN trivia_access ON name = trivia_access.user_id LEFT JOIN vw_emojis ON vw_emojis.user_id = snowflake_id WHERE (trivia_access.id is null OR trivia_access.enabled = 0) AND (SELECT COUNT(*) FROM bans WHERE nitro_ban = 1 AND bans.snowflake_id = trivia_user_cache.snowflake_id) = 0 AND (SELECT COUNT(*) FROM inventory WHERE shop_id = 37 AND user_id = trivia_user_cache.snowflake_id) = 0 ORDER BY monthscore DESC, trivia_user_cache.snowflake_id LIMIT 10");
 	for (auto & user : q) {
-		desc += "**#" + std::to_string(rank) + "** `" + user["username"] + "#" + fmt::format("{:04d}", from_string<int>(user["discriminator"], std::dec)) + "` (*" + user["monthscore"] + "*) " + user["emojis"];
+		desc += "**#" + std::to_string(rank) + "** `" + user["username"].getString() + "#" + fmt::format("{:04d}", user["discriminator"].getUInt()) + "` (*" + user["monthscore"].getString() + "*) " + user["emojis"].getString();
 		if (rank++ == 1) {
 			desc += " <:crown:722808671888736306>";
 		}

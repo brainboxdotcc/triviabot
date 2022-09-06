@@ -221,7 +221,7 @@ public:
 								had_error = true;
 							}
 						});
-						db::resultset rs = db::query(sql, {});
+						db::resultset rs = db::query(sql);
 						std::stringstream w;
 						bot->core->on_log.detach(handler);
 						if (rs.size() == 0) {
@@ -257,7 +257,7 @@ public:
 								if (w.str().length() < 1900) {
 									w << "  ";
 									for (auto field : row) {
-										w << fmt::format("│{:20}", field.second.substr(0, 20));
+										w << fmt::format("│{:20}", field.second.getString().substr(0, 20));
 									}
 									w << "│" << std::endl;
 								}

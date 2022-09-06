@@ -75,7 +75,7 @@ public:
 			/* Divide the websocket bandwidth by 60 to get bytes per second, then by 1024 to get kbps */
 			double kbps_in = ((double)bandwidth_last_60_seconds / 60.0 / 1024.0);
 	
-			db::backgroundquery("INSERT INTO infobot_bandwidth (kbps_in) VALUES('?')", {fmt::format("{:.4f}", kbps_in)});
+			db::backgroundquery("INSERT INTO infobot_bandwidth (kbps_in) VALUES(?)", {fmt::format("{:.4f}", kbps_in)});
 		}
 		return true;
 	}

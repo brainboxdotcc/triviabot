@@ -56,13 +56,13 @@ void command_enable_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_
 		creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":warning:", _("MODONLY", settings), cmd.channel_id);
 		return;
 	}
-	db::resultset cat = db::query("SELECT * FROM categories WHERE " + namefield + " = '?'", {category_name});
+	db::resultset cat = db::query("SELECT * FROM categories WHERE " + namefield + " = ?", {category_name});
 	if (!cat.size()) {
 		creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":warning:", fmt::format(_("NOSUCHCAT", settings), category_name), cmd.channel_id, _("CATERROR", settings));
 		return;
 	}
 
-	db::backgroundquery("DELETE FROM disabled_categories WHERE guild_id = '?' AND category_id = '?'", {cmd.guild_id, cat[0]["id"]});
+	db::backgroundquery("DELETE FROM disabled_categories WHERE guild_id = ? AND category_id = ?", {cmd.guild_id, cat[0]["id"].getInt()});
 
-	creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":white_check_mark:", fmt::format(_("CATENABLED", settings), cat[0][namefield]), cmd.channel_id, _("CATDONE", settings));
+	creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":white_check_mark:", fmt::format(_("CATENABLED", settings), cat[0][namefield].getString()), cmd.channel_id, _("CATDONE", settings));
 }

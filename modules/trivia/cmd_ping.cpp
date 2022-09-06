@@ -44,7 +44,7 @@ void command_ping_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_se
 	dpp::cluster* cluster = this->creator->GetBot()->core;
 	double discord_api_ping = cluster->rest_ping * 1000;
 	double start = dpp::utility::time_f();
-	db::resultset q = db::query("SHOW TABLES", {});
+	db::resultset q = db::query("SHOW TABLES");
 	double db_ping = (dpp::utility::time_f() - start) * 1000;
 	start = dpp::utility::time_f();
 	bool shardstatus = true;
@@ -56,25 +56,25 @@ void command_ping_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_se
 	field_t f;
 	std::string desc;
 	/* Get shards from database, as we can't directly see shards on other clusters */
-	db::resultset shardq = db::query("SELECT *, unix_timestamp(down_since) as ds FROM infobot_shard_status ORDER BY cluster_id, id", {});
+	db::resultset shardq = db::query("SELECT *, unix_timestamp(down_since) as ds FROM infobot_shard_status ORDER BY cluster_id, id");
 	for (auto & shard : shardq) {
 		/* Arrange shards by cluster, each cluster in an embed field */
 		if (lastcluster != std::stol(shard["cluster_id"])) {
 			if (lastcluster != -1) {
 				fields.push_back(f);
 			}
-			f = { _("CLUSTER", settings) + " " + shard["cluster_id"], "", true };
+			f = { _("CLUSTER", settings) + " " + shard["cluster_id"].getString(), "", true };
 		}
 		/* Green circle: Shard UP
 			* Wrench emoji: Shard down for less than 15 mins; Under maintainence
 			* Red circle: Shard down over 15 mins; DOWN
 			*/
 		try {
-			lastcluster = std::stol(shard["cluster_id"]);
-			uint64_t ds = shard["ds"].empty() ? 0 : stoull(shard["ds"]);
-			uint32_t sid = std::stoul(shard["id"]);
-			f.value += "`" + fmt::format("{:02d}", sid) + "`: " + (shard["connected"] == "1" && shard["online"] == "1" ? ":green_circle: ": (shard["down_since"].empty() && time(nullptr) - ds > 60 * 15 ? ":red_circle: " : "<:wrench:546395191892901909> ")) + "\n";
-			if (shard["connected"] == "0" || shard["online"] == "0") {
+			lastcluster = shard["cluster_id"].getUInt();
+			uint64_t ds = shard["ds"].getUInt();
+			uint32_t sid = shard["id"].getUInt();
+			f.value += "`" + fmt::format("{:02d}", sid) + "`: " + (shard["connected"].getBool() && shard["online"].getBool() ? ":green_circle: ": (shard["down_since"].getString().empty() && time(nullptr) - ds > 60 * 15 ? ":red_circle: " : "<:wrench:546395191892901909> ")) + "\n";
+			if (!shard["connected"].getBool() || !shard["online"].getBool()) {
 				shardstatus = false;
 			}
 		}

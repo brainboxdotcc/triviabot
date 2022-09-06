@@ -41,9 +41,9 @@ void command_topteams_t::call(const in_cmd &cmd, std::stringstream &tokens, guil
 	std::string desc;
 	uint8_t rank = 1;
 
-	db::resultset q = db::query("SELECT * FROM teams ORDER BY score DESC LIMIT 10", {});
+	db::resultset q = db::query("SELECT * FROM teams ORDER BY score DESC LIMIT 10");
 	for (auto & team : q) {
-		desc += "**#" + std::to_string(rank) + "** `" + team["name"] + "` (*" + team["score"] + "*)";
+		desc += "**#" + std::to_string(rank) + "** `" + team["name"].getString() + "` (*" + team["score"].getString() + "*)";
 		if (rank++ == 1) {
 			desc += " <:crown:722808671888736306>";
 		}

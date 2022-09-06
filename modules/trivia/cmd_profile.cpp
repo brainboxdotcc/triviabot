@@ -49,7 +49,7 @@ void command_profile_t::call(const in_cmd &cmd, std::stringstream &tokens, guild
 		user_id = cmd.author_id;
 	}
 
-	db::resultset _user = db::query("SELECT *, get_all_emojis(snowflake_id) as emojis FROM trivia_user_cache WHERE snowflake_id = '?'", {user_id});
+	db::resultset _user = db::query("SELECT *, get_all_emojis(snowflake_id) as emojis FROM trivia_user_cache WHERE snowflake_id = ?", {user_id});
 	if (_user.size()) {
 		std::string a;
 		for (auto& ach : *(creator->achievements)) {
@@ -59,16 +59,16 @@ void command_profile_t::call(const in_cmd &cmd, std::stringstream &tokens, guild
 			}
 		}
 
-		db::resultset srs = db::query("SELECT * FROM global_scores WHERE name = '?'", {user_id});
+		db::resultset srs = db::query("SELECT * FROM global_scores WHERE name = ?", {user_id});
 		uint64_t lifetime = 0;
 		uint64_t weekly = 0;
 		uint64_t daily = 0;
 		uint64_t monthly = 0;
 		if (srs.size()) {
-			lifetime = from_string<uint64_t>(srs[0]["score"], std::dec);
-			weekly = from_string<uint64_t>(srs[0]["weekscore"], std::dec);
-			daily = from_string<uint64_t>(srs[0]["dayscore"], std::dec);
-			monthly = from_string<uint64_t>(srs[0]["monthscore"], std::dec);
+			lifetime = srs[0]["score"].getUInt();
+			weekly = srs[0]["weekscore"].getUInt();
+			daily = srs[0]["dayscore"].getUInt();
+			monthly = srs[0]["monthscore"].getUInt();
 		}
 		std::string dl = fmt::format("{:32s}{:8d}", _("DAILY", settings), daily);
 		std::string wl = fmt::format("{:32s}{:8d}", _("WEEKLY", settings), weekly);
@@ -78,11 +78,11 @@ void command_profile_t::call(const in_cmd &cmd, std::stringstream &tokens, guild
 		std::string scores = "```" + dl + "\n" + wl + "\n" + ml + "\n" + ll + "```";
 
 		a += BLANK_EMOJI;
-		std::string emojis = _user[0]["emojis"] + BLANK_EMOJI;
+		std::string emojis = _user[0]["emojis"].getString() + BLANK_EMOJI;
 
 		creator->EmbedWithFields(
 			cmd.interaction_token, cmd.command_id, settings,
-			fmt::format("{0}#{1:04d} {2}", _user[0]["username"], from_string<uint32_t>(_user[0]["discriminator"], std::dec), _("PROFILETITLE", settings)),
+			fmt::format("{0}#{1:04d} {2}", _user[0]["username"].getString(), _user[0]["discriminator"].getUInt(), _("PROFILETITLE", settings)),
 			{
 				{ _("BADGES", settings), emojis, true },
 				{ _("ACHIEVEMENTS", settings), a, true },

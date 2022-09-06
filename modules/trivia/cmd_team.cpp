@@ -49,13 +49,13 @@ void command_team_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_se
 	std::getline(tokens, name);
 	name = trim(name);
 
-	db::resultset team = db::query("SELECT *, date_format(create_date, '%d-%b-%Y') as fmt_create_date, (SELECT COUNT(*) FROM team_membership WHERE team_membership.team = teams.name) AS mc FROM teams LEFT JOIN trivia_user_cache ON snowflake_id = owner_id WHERE teams.name = '?'", {name});
+	db::resultset team = db::query("SELECT *, date_format(create_date, '%d-%b-%Y') as fmt_create_date, (SELECT COUNT(*) FROM team_membership WHERE team_membership.team = teams.name) AS mc FROM teams LEFT JOIN trivia_user_cache ON snowflake_id = owner_id WHERE teams.name = ?", {name});
 
 	if (team.size()) {
-		db::resultset p = db::query("SELECT active FROM premium_credits WHERE user_id = '?' AND cancel_date IS NULL AND active = 1", {team[0]["owner_id"]});
+		db::resultset p = db::query("SELECT active FROM premium_credits WHERE user_id = ? AND cancel_date IS NULL AND active = 1", {team[0]["owner_id"].getString()});
 		premium = (p.size() > 0);
 		url_key = team[0]["url_key"];
-		if (premium && !team[0]["team_url"].empty()) {
+		if (premium && !team[0]["team_url"].getString().empty()) {
 			url_key = team[0]["team_url"];
 		}
 	}
@@ -65,22 +65,22 @@ void command_team_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_se
 		return;
 	}
 
-	db::resultset q = db::query("SELECT name FROM teams WHERE score >= ? ORDER BY score DESC", {team[0]["score"]});
+	db::resultset q = db::query("SELECT name FROM teams WHERE score >= ? ORDER BY score DESC", {team[0]["score"].getUInt()});
 	rank = q.size();
 
-	if (!team[0]["description"].empty()) {
-		desc = dpp::utility::utf8substr(team[0]["description"], 0, 932) + "\n" + BLANK_EMOJI + std::string("\n");
+	if (!team[0]["description"].getString().empty()) {
+		desc = dpp::utility::utf8substr(team[0]["description"].getString(), 0, 932) + "\n" + BLANK_EMOJI + std::string("\n");
 	}
 
 	desc += fmt::format(_("TEAMHUB", settings), url_key) +  "\n" + BLANK_EMOJI;
 
 	std::vector<field_t> fields = {
-		{ _("NAME", settings), team[0]["name"], true},
-		{ _("FOUNDER", settings), team[0]["username"], true},
-		{ _("MEMBERCOUNT", settings), team[0]["mc"], true},
-		{ _("POINTSTOTAL", settings), team[0]["score"], true},
+		{ _("NAME", settings), team[0]["name"].getString(), true},
+		{ _("FOUNDER", settings), team[0]["username"].getString(), true},
+		{ _("MEMBERCOUNT", settings), team[0]["mc"].getString(), true},
+		{ _("POINTSTOTAL", settings), team[0]["score"].getString(), true},
 		{ _("GLOBALRANK", settings), std::to_string(rank), true},
-		{ _("DATEFOUNDED", settings), team[0]["fmt_create_date"], true}
+		{ _("DATEFOUNDED", settings), team[0]["fmt_create_date"].getString(), true}
 	};
 	creator->EmbedWithFields(cmd.interaction_token, cmd.command_id, settings, _("TINFO", settings), fields, cmd.channel_id, "https://triviabot.co.uk/team/" + url_key, team[0]["image_url"], "", dpp::utility::utf8substr(desc, 0, 2048));
 	creator->CacheUser(cmd.author_id, cmd.user, cmd.member, cmd.channel_id);

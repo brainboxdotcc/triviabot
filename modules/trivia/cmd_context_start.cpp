@@ -229,7 +229,7 @@ void RefreshMessage(in_flight &infl, guild_settings_t& settings, std::string bas
 				.set_required(true)
 		)
 	);
-	db::resultset q = db::query("SELECT id FROM categories WHERE disabled != 1", {});
+	db::resultset q = db::query("SELECT id FROM categories WHERE disabled != 1");
 	size_t rows = q.size();
 	uint32_t length = 25;
 	uint32_t pages = ceil((float)rows / (float)length);
@@ -251,9 +251,9 @@ void RefreshMessage(in_flight &infl, guild_settings_t& settings, std::string bas
 	for (auto& nrow : q) {
 		msg.components[0].components[0].add_select_option(
 			dpp::select_option(
-				"📚 " + nrow[field], nlohmann::json(
+				"📚 " + nrow[field].getString(), nlohmann::json(
 					{
-						{"category", nrow[field]},
+						{"category", nrow[field].getString()},
 						{"type", infl.type},
 						{"questions", infl.questions},
 						{"page", infl.page},

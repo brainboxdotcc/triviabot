@@ -43,7 +43,7 @@ command_start_t::command_start_t(class TriviaModule* _creator, const std::string
 std::vector<uint64_t> GetChannelWhitelist(uint64_t guild_id)
 {
 	std::vector<uint64_t> wl;
-	db::resultset rs = db::query("SELECT channel_id FROM channel_whitelist WHERE guild_id = '?'", {guild_id});
+	db::resultset rs = db::query("SELECT channel_id FROM channel_whitelist WHERE guild_id = ?", {guild_id});
 	for (auto row : rs) {
 		wl.push_back(from_string<uint64_t>(row["channel_id"], std::dec));
 	}

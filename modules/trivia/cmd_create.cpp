@@ -53,9 +53,9 @@ void command_create_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_
 			if (!cc.clean) {
 				cleaned_team_name = cc.censored_content;
 			}
-			auto rs = db::query("SELECT * FROM teams WHERE name = '?'", {cleaned_team_name});
+			auto rs = db::query("SELECT * FROM teams WHERE name = ?", {cleaned_team_name});
 			if (rs.empty()) {
-				db::query("INSERT INTO teams (name, score) VALUES('?', 0)", {cleaned_team_name});
+				db::query("INSERT INTO teams (name, score) VALUES(?, 0)", {cleaned_team_name});
 				try {
 					join_team(cmd.author_id, cleaned_team_name, cmd.channel_id);
 				}

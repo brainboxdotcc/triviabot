@@ -45,7 +45,7 @@ void command_reassignpremium_t::call(const in_cmd &cmd, std::stringstream &token
 	dpp::snowflake user_id, guild_id;
 	tokens >> user_id >> guild_id;
 
-	db::resultset access = db::query("SELECT * FROM trivia_access WHERE user_id = '?' AND enabled = 1", {cmd.author_id});
+	db::resultset access = db::query("SELECT * FROM trivia_access WHERE user_id = ? AND enabled = 1", {cmd.author_id});
 
 	if (access.size() && guild_id && user_id) {
 		db::resultset user = db::query("SELECT * FROM premium_credits WHERE user_id = ?", {user_id});
@@ -58,13 +58,13 @@ void command_reassignpremium_t::call(const in_cmd &cmd, std::stringstream &token
 			db::resultset newprem = db::query("SELECT * FROM trivia_guild_cache WHERE snowflake_id = ?", {guild_id});
 			if (newprem.size()) {
 				std::string newname = newprem[0]["name"];
-				std::string oldname = (oldprem.size() ? oldprem[0]["name"] : "<not assigned>");
+				std::string oldname = (oldprem.size() ? oldprem[0]["name"].getString() : "<not assigned>");
 				db::query("CALL assign_premium(?, ?)", {user_id, guild_id});
 				creator->SimpleEmbed(
 					cmd.interaction_token,
 					cmd.command_id, settings,
 					":white_check_mark:",
-					fmt::format("Premium subscription {} reassigned to guild {}\n**Old** guild name: {}\n**New** guild name: {}", user[0]["subscription_id"], guild_id, oldname, newname),
+					fmt::format("Premium subscription {} reassigned to guild {}\n**Old** guild name: {}\n**New** guild name: {}", user[0]["subscription_id"].getString(), guild_id, oldname, newname),
 					cmd.channel_id
 				);
 			} else {

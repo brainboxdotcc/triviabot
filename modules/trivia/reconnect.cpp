@@ -39,25 +39,25 @@ void TriviaModule::CheckReconnects() {
 		for (auto r = rs.begin(); r != rs.end(); ++r) {
 			try {
 				bool reconnected = false;
-				dpp::discord_client* s = bot->core->get_shard(from_string<uint32_t>((*r)["id"], std::dec));
+				dpp::discord_client* s = bot->core->get_shard((*r)["id"].getUInt());
 				if (s) {
-					bot->core->log(dpp::ll_info, fmt::format("Forced reconnection of shard {}", (*r)["id"]));
-					db::backgroundquery("UPDATE infobot_shard_status SET reconnect_status = '?' WHERE id = ?", {std::string("Disconnecting..."), (*r)["id"]});
+					bot->core->log(dpp::ll_info, fmt::format("Forced reconnection of shard {}", (*r)["id"].getUInt()));
+					db::backgroundquery("UPDATE infobot_shard_status SET reconnect_status = ? WHERE id = ?", {std::string("Disconnecting..."), (*r)["id"].getUInt()});
 					s->close();
-					db::backgroundquery("UPDATE infobot_shard_status SET reconnect_status = '?' WHERE id = ?", {std::string("Connecting..."), (*r)["id"]});
+					db::backgroundquery("UPDATE infobot_shard_status SET reconnect_status = ? WHERE id = ?", {std::string("Connecting..."), (*r)["id"].getUInt()});
 					reconnected = true;
 				}
 				if (!reconnected) {
-					db::backgroundquery("UPDATE infobot_shard_status SET reconnect_status = '?' WHERE id = ?", {std::string("Can't find shard to reconnect it, please restart the cluster"), (*r)["id"]});
+					db::backgroundquery("UPDATE infobot_shard_status SET reconnect_status = ? WHERE id = ?", {std::string("Can't find shard to reconnect it, please restart the cluster"), (*r)["id"].getUInt()});
 				} else {
-					db::backgroundquery("UPDATE infobot_shard_status SET reconnect_status = '?' WHERE id = ?", {std::string("Shard reconnected"), (*r)["id"]});
+					db::backgroundquery("UPDATE infobot_shard_status SET reconnect_status = ? WHERE id = ?", {std::string("Shard reconnected"), (*r)["id"].getUInt()});
 				}
 			}
 			catch (...) {
-				bot->core->log(dpp::ll_error, fmt::format("Unable to get shard {} to reconnect it! Something broked!", (*r)["id"]));
-				db::backgroundquery("UPDATE infobot_shard_status SET reconnect_status = '?' WHERE id = ?", {std::string("Shard reconnection error, please restart the cluster"), (*r)["id"]});
+				bot->core->log(dpp::ll_error, fmt::format("Unable to get shard {} to reconnect it! Something broked!", (*r)["id"].getUInt()));
+				db::backgroundquery("UPDATE infobot_shard_status SET reconnect_status = ? WHERE id = ?", {std::string("Shard reconnection error, please restart the cluster"), (*r)["id"].getUInt()});
 			}
-			db::backgroundquery("UPDATE infobot_shard_status SET forcereconnect = 0 WHERE id = '?'", {(*r)["id"]});
+			db::backgroundquery("UPDATE infobot_shard_status SET forcereconnect = 0 WHERE id = ?", {(*r)["id"].getUInt()});
 		}
 	}
 }

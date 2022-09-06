@@ -87,7 +87,7 @@ void TriviaModule::SetupCommands()
 			}
 		)},
 		{
-			"qf", new command_start_t(this, "quickfire", false, "", {})
+			"qf", new command_start_t(this, "quickfire", false, "", { })
 		},
 		{
 			"hardcore", new command_start_t(this, "hardcore", false, "Start a hardcore game of trivia",
@@ -254,7 +254,7 @@ void TriviaModule::SetupCommands()
 
 		/* Add options to the language command parameter from the database */
 		command_t* lang_command = commands.find("language")->second;
-		db::resultset langs = db::query("SELECT * FROM languages WHERE live = 1 ORDER BY id", {});
+		db::resultset langs = db::query("SELECT * FROM languages WHERE live = 1 ORDER BY id");
 		lang_command->opts[0].choices.clear();
 		for (auto & row : langs) {
 			lang_command->opts[0].add_choice(dpp::command_option_choice(row["name"], row["isocode"]));
@@ -262,7 +262,7 @@ void TriviaModule::SetupCommands()
 
 		/* Add options to the categories command parameter from the database */
 		command_t* cats_command = commands.find("categories")->second;
-		db::resultset q = db::query("SELECT id FROM categories WHERE disabled != 1", {});
+		db::resultset q = db::query("SELECT id FROM categories WHERE disabled != 1");
 		size_t rows = q.size();
 		uint32_t length = 25;
 		uint32_t pages = ceil((float)rows / (float)length);

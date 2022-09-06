@@ -200,7 +200,7 @@ uint64_t TriviaModule::GetNearestNumberVal(uint64_t number, const guild_settings
 
 void TriviaModule::ReloadNumStrs()
 {
-	db::resultset rs = db::query("SELECT * FROM numstrs", {});
+	db::resultset rs = db::query("SELECT * FROM numstrs");
 	std::unique_lock lg(this->numstrlock);
 	this->numstrs.clear();
 	for (auto& n : rs) {

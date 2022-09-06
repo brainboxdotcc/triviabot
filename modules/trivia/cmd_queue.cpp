@@ -42,11 +42,11 @@ command_queue_t::command_queue_t(class TriviaModule* _creator, const std::string
 
 void command_queue_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_settings_t &settings, const std::string &username, bool is_moderator, dpp::channel* c, dpp::user* user)
 {
-	db::resultset access = db::query("SELECT * FROM trivia_access WHERE user_id = '?' AND enabled = 1", {cmd.author_id});
+	db::resultset access = db::query("SELECT * FROM trivia_access WHERE user_id = ? AND enabled = 1", {cmd.author_id});
 
 	if (access.size()) {
-		db::resultset feedback = db::query("SELECT COUNT(*) AS total FROM feedback WHERE closed_by IS NULL", {});
-		db::resultset questions = db::query("SELECT COUNT(*) AS total FROM question_queue", {});
+		db::resultset feedback = db::query("SELECT COUNT(*) AS total FROM feedback WHERE closed_by IS NULL");
+		db::resultset questions = db::query("SELECT COUNT(*) AS total FROM question_queue");
 
 		std::vector<field_t> fields = {
 			{ "Total Questions", questions[0]["total"], false },

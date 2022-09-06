@@ -47,7 +47,7 @@ void command_coins_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 		user_id = cmd.author_id;
 	}
 
-	db::resultset coins = db::query("SELECT * FROM coins WHERE user_id = '?'", {user_id});
+	db::resultset coins = db::query("SELECT * FROM coins WHERE user_id = ?", {user_id});
 	if (coins.size()) {
         	balance = from_string<uint64_t>(coins[0]["balance"], std::dec);
 	}

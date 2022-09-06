@@ -50,12 +50,12 @@ void command_categories_t::call(const in_cmd &cmd, std::stringstream &tokens, gu
 	}
 
 	desc = fmt::format("{} {:9s}  {}\n-----------------------------------------\n", "Enabled", "Questions", "Name");
-	db::resultset counter = db::query("SELECT id FROM categories WHERE disabled != 1", {});
+	db::resultset counter = db::query("SELECT id FROM categories WHERE disabled != 1");
 	size_t rows = counter.size();
 	uint32_t start_record = (page - 1) * 25;
 	uint32_t length = 25;
 	uint32_t pages = ceil((float)rows / (float)length);
-	db::resultset q = db::query("SELECT categories.*, (SELECT COUNT(*) FROM questions WHERE questions.category = categories.id) AS total, IF(guild_id IS NULL, 0, 1) AS local_disabled FROM categories LEFT JOIN disabled_categories ON categories.id = disabled_categories.category_id AND guild_id = '?' WHERE disabled != 1 AND name != 'Server' ORDER BY categories.name LIMIT ?, ?", {cmd.guild_id, start_record, length});
+	db::resultset q = db::query("SELECT categories.*, (SELECT COUNT(*) FROM questions WHERE questions.category = categories.id) AS total, IF(guild_id IS NULL, 0, 1) AS local_disabled FROM categories LEFT JOIN disabled_categories ON categories.id = disabled_categories.category_id AND guild_id = ? WHERE disabled != 1 AND name != 'Server' ORDER BY categories.name LIMIT ?, ?", {cmd.guild_id, start_record, length});
 
 	if (settings.language != "en") {
 		namefield = "trans_" + settings.language;
@@ -67,14 +67,14 @@ void command_categories_t::call(const in_cmd &cmd, std::stringstream &tokens, gu
 
 	if (settings.premium) {
 		deq.push_front({
-			{namefield, "Server (⭐ Premium ⭐)"},
-			{"local_disabled", "0"},
+			{namefield, db::value("Server (⭐ Premium ⭐)")},
+			{"local_disabled", db::value("0")},
 			{"total", db::query("SELECT COUNT(id) AS qc FROM questions WHERE guild_id = ?", {cmd.guild_id})[0]["qc"]}
 		});
 	}
 
 	for (auto & cat : deq) {
-		desc += fmt::format("{} {:9s}  {}\n", cat["local_disabled"] == "0" ? "🟢    " : "🔴    ", cat["total"], cat[namefield]);
+		desc += fmt::format("{} {:9s}  {}\n", cat["local_disabled"].getBool() == false ? "🟢    " : "🔴    ", cat["total"].getString(), cat[namefield].getString());
 	}
 
 	desc += "\n" + fmt::format(_("PAGES", settings), page, pages) + "\n";
