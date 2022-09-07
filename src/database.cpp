@@ -188,8 +188,11 @@ namespace db {
 			std::queue<background_query> bg_copy;
 			{
 				std::lock_guard<std::mutex> db_lock(b_db_mutex);
-				bg_copy = background_queries;
-				background_queries = {};
+				bg_copy = {};
+				while (background_queries.size()) {
+					bg_copy.emplace(background_queries.front());
+					background_queries.pop();
+				}
 			}
 			if (bg_copy.empty()) {
 				std::this_thread::sleep_for(std::chrono::milliseconds(250));
@@ -229,6 +232,7 @@ namespace db {
 				connections[i].connection = driver->connect(opts);
 			}
 			bg_connection.connection = driver->connect(opts);
+			background_thread = new std::thread(bgthread);
 		}
 		catch (const std::exception &e) {
 			logger->log(dpp::ll_error, e.what());
@@ -336,7 +340,11 @@ namespace db {
 			/**
 			 * Execute the query
 			 */
-			res.reset(pstmt->executeQuery());
+			bool results = pstmt->execute();
+			if (!results) {
+				return rv;
+			}
+			res.reset(pstmt->getResultSet());
 
 			/**
 			 * Get all column names for the query results
