@@ -30,7 +30,7 @@ include(buildtools/cmake/FindMySQLcppconn.cmake)
 include_directories( "include" )
 
 target_link_libraries(bot ${CMAKE_DL_LIBS} ${MYSQLCPPCONN_LIBRARIES} ${PCRE_LIBRARY} dpp fmt spdlog)
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -pthread -g -O2 -fPIC -rdynamic -DFMT_HEADER_ONLY")
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations -std=c++17 -pthread -g -O2 -fPIC -rdynamic -DFMT_HEADER_ONLY")
 
 set (modules_dir "modules")
 file(GLOB subdirlist ${modules_dir}/*)
