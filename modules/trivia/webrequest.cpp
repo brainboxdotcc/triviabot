@@ -598,7 +598,7 @@ std::vector<std::string> fetch_shuffle_list(uint64_t guild_id, const std::string
 						return_value.emplace_back(ans["id"]);
 					}
 				} else {
-					query.append("(? LIKE '?%') OR ");
+					query.append("(? LIKE ?%) OR ");
 					parameters.emplace_back(column);
 					parameters.emplace_back(trim(ReplaceString(cm, "%", "_")));
 				}
