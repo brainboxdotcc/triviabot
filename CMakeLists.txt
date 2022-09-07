@@ -27,12 +27,10 @@ string(ASCII 27 Esc)
 include(buildtools/cmake/FindPCRE.cmake)
 include(buildtools/cmake/FindMySQLcppconn.cmake)
 
-find_package(fmt REQUIRED)
-
 include_directories( "include" )
 
-target_link_libraries(bot ${CMAKE_DL_LIBS} ${MYSQLCPPCONN_LIBRARIES} ${PCRE_LIBRARY} dpp fmt::fmt spdlog)
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -pthread -g -O2 -fPIC -rdynamic")
+target_link_libraries(bot ${CMAKE_DL_LIBS} ${MYSQLCPPCONN_LIBRARIES} ${PCRE_LIBRARY} dpp fmt spdlog)
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -pthread -g -O2 -fPIC -rdynamic -DFMT_HEADER_ONLY")
 
 set (modules_dir "modules")
 file(GLOB subdirlist ${modules_dir}/*)
@@ -43,5 +41,6 @@ foreach (fullmodname ${subdirlist})
 	aux_source_directory(${modules_dir}/${modname} modsrc)
 	add_library(module_${modname} SHARED ${modsrc})
 	set_target_properties(module_${modname} PROPERTIES PREFIX "")
+	target_link_libraries(module_${modname} dpp fmt spdlog)
 endforeach(fullmodname)
 
