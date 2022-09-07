@@ -14,7 +14,6 @@ This source code repository is for reference and learning only as it **won't wor
 ## Listing Badges
 
 [![Discord Bots](https://top.gg/api/widget/715906723982082139.svg)](https://top.gg/bot/715906723982082139)
-![Discord Boats](https://discord.boats/api/widget/715906723982082139) 
 ![DiscordBotList](https://discordbotlist.com/bots/715906723982082139/widget) [![Bots for Discord](https://botsfordiscord.com/api/bot/715906723982082139/widget)](https://botsfordiscord.com/bots/715906723982082139)
 
 ## Supported Platforms
