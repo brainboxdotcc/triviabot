@@ -598,9 +598,8 @@ std::vector<std::string> fetch_shuffle_list(uint64_t guild_id, const std::string
 						return_value.emplace_back(ans["id"]);
 					}
 				} else {
-					query.append("(? LIKE ?%) OR ");
-					parameters.emplace_back(column);
-					parameters.emplace_back(trim(ReplaceString(cm, "%", "_")));
+					query.append("(" + column + " LIKE ?) OR ");
+					parameters.emplace_back(trim(ReplaceString(cm, "%", "_") + "%"));
 				}
 			}
 			if (query.substr(query.length() - 4, 4) == " OR ") {
@@ -652,7 +651,7 @@ std::vector<std::string> fetch_shuffle_list(uint64_t guild_id, const std::string
 				}
 				return return_value;
 			} else {
-				db::resultset cat = db::query("SELECT id FROM categories WHERE (? LIKE ?%) AND disabled = 0", {column, trim(ReplaceString(category, "%", "_"))});
+				db::resultset cat = db::query("SELECT id FROM categories WHERE (" + column + " LIKE ?) AND disabled = 0", {trim(ReplaceString(category, "%", "_") + "%")});
 				if (cat.size()) {
 					auto r = db::query("SELECT COUNT(id) AS c FROM questions WHERE category = ?", {cat[0]["id"]});
 					if (r.size()) {
