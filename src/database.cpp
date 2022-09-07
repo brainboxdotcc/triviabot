@@ -341,36 +341,35 @@ namespace db {
 			 * Execute the query
 			 */
 			bool results = pstmt->execute();
-			if (!results) {
-				return rv;
-			}
-			res.reset(pstmt->getResultSet());
+			if (results) {
+				res.reset(pstmt->getResultSet());
 
-			/**
-			 * Get all column names for the query results
-			 */
-			sql::ResultSetMetaData * meta = res->getMetaData();
-			std::vector<std::string> names(meta->getColumnCount());
-			for (size_t n = 0; n < meta->getColumnCount(); ++n) {
-				names[n] = meta->getColumnLabel(n + 1);
-			}
+				/**
+				 * Get all column names for the query results
+				 */
+				sql::ResultSetMetaData * meta = res->getMetaData();
+				std::vector<std::string> names(meta->getColumnCount());
+				for (size_t n = 0; n < meta->getColumnCount(); ++n) {
+					names[n] = meta->getColumnLabel(n + 1);
+				}
 
-			/**
-			 * Fetch all rows for the query
-			 */
-			while (true) {
-				while (res->next()) {
-					row thisrow;
-					for (const auto& n : names) {
-						thisrow[n] = res->getString(n);
+				/**
+				 * Fetch all rows for the query
+				 */
+				while (true) {
+					while (res->next()) {
+						row thisrow;
+						for (const auto& n : names) {
+							thisrow[n] = res->getString(n);
+						}
+						rv.push_back(thisrow);
 					}
-					rv.push_back(thisrow);
+					if (pstmt->getMoreResults()) {
+						res.reset(pstmt->getResultSet());
+						continue;
+					}
+					break;
 				}
-				if (pstmt->getMoreResults()) {
-					res.reset(pstmt->getResultSet());
-					continue;
-				}
-				break;
 			}
 		}
 		catch (const std::exception &e) {
