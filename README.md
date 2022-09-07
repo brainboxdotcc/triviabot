@@ -1,4 +1,4 @@
-# TriviaBot, the discord bot with over 100,000 questions!
+# TriviaBot, the discord bot with over 150,000 questions!
 This project contains the source code for the Brainbox.cc TriviaBot. Written in C++17 using the D++ library.
 
 It was originally FruitLoopy Trivia on irc.chatspike.net and i've been running this bot in some form since 2004.
@@ -23,12 +23,13 @@ Currently only **Linux** is supported, but other UNIX-style platforms should bui
 
 ## Dependencies
 
-* [cmake](https://cmake.org/) (version 3.13+)
-* [g++](https://gcc.gnu.org) (version 8+)
-* [D++](https://github.com/brainboxdotcc/DPP) (development branch)
+* [cmake](https://cmake.org/) (version 3.16+)
+* [g++](https://gcc.gnu.org) (version 8.3+)
+* [D++](https://github.com/brainboxdotcc/DPP) (10.0.18 or later)
 * [PCRE](https://www.pcre.org/) (whichever -dev package comes with your OS)
-* [MySQL Client Libraries](https://dev.mysql.com/downloads/c-api/) (whichever -dev package comes with your OS)
-* [spdlog](https://github.com/gabime/spdlog)
+* [MySQL Connector/C++](https://dev.mysql.com/downloads/c-api/) (1.1.12 or later from the MySQL community apt repository)
+* [fmtlib](https://github.com/fmtlib/fmt) (8.1.1)
+* [spdlog](https://github.com/gabime/spdlog) (latest master branch)
 
 # Setup
 
@@ -48,22 +49,24 @@ You should have a database configured with the mysql schemas from the mysql-sche
 
 Edit the config-example.json file and save it as config.json. The configuration variables are documented below:
 
-| Key Name | Description |
-|----------|-------------|
-|devtoken  | Discord bot token for a development version of the bot, allowing you to keep development and live copies separate |
-|livetoken | Discord bot token for live version of the bot (see above) |
-|shardcount| Number of shards in total, split across clusters|
-| dbhost   | Hostname or IP address of MySQL server where the triviabot client schema is hosted |
-| dbuser   | Username for MySQL server |
-| dbpass   | Password for MySQL server |
-| dbname   | Database name for MySQL database on the server containing the triviabot schema |
-| dbport   | TCP Port number for the MySQL server |
-| utr_readonly_key | Readonly API key for uptimerobot, used to update status pages if you are using uptimerobot to monitor uptime |
-| error_recipient | E-Mail address to receive core files in the event of a client crash (!) |
-| owner | Snowflake ID of the bot owner. There can only be one bot owner |
-| apikey | TriviaBot API key. This is NOT an *Open Trivia Database* key. Speak to Brain#0001 about API keys. |
-| modules | A list of modules to load. For basic functionality you should load at least module_diagnostics.so and module_trivia.so |
-| shitlist | An array of snowflake IDs of guilds where trivia cannot be started. Instead, the person issuing the ``!trivia start`` command will get a friendly message encouraging them to invite the bot to their own server. Put places like bot lists in here. |
+| Key Name         | Description                                                                                                                       |
+|------------------|-----------------------------------------------------------------------------------------------------------------------------------|
+| devtoken         | Discord bot token for a development version of the bot, allowing you to keep development and live copies separate                 |
+| livetoken        | Discord bot token for live version of the bot (see above)                                                                         |
+| shardcount       | Number of shards in total, split across clusters                                                                                  |
+| dbhost           | Hostname or IP address of MySQL server where the triviabot client schema is hosted                                                |
+| dbuser           | Username for MySQL server                                                                                                         |
+| dbpass           | Password for MySQL server                                                                                                         |
+| dbname           | Database name for MySQL database on the server containing the triviabot schema                                                    |
+| dbport           | TCP Port number for the MySQL server                                                                                              |
+| test_server      | The test server is the only server which will respond to commands, if the bot is started with the `-test` command-line argument   |
+| utr_readonly_key | Readonly API key for uptimerobot, used to update status pages if you are using uptimerobot to monitor uptime                      |
+| error_recipient  | E-Mail address to receive core files in the event of a client crash (!)                                                           |
+| owner            | Snowflake ID of the bot owner. There can only be one bot owner                                                                    |
+| apikey           | TriviaBot API key. This is NOT an *Open Trivia Database* key. Speak to Brain#0001 about API keys.                                 |
+| modules          | A list of modules to load. Be sure to load the trivia module!                                                                     |
+| shitlist         | An array of snowflake IDs of guilds where trivia cannot be started. Instead, the person issuing the ``!trivia start`` command     |
+|                  | will get a friendly message encouraging them to invite the bot to their own server. Put places like bot lists in here.            |
 
 ## 4. Start Bot
 
@@ -95,7 +98,12 @@ run.sh will restart the bot executable continually if it dies. If the bot quits,
 | Version/Date    | Protocol                       | Platform/Libraries                                 | Language            | Status       |
 | ----------------|--------------------------------|----------------------------------------------------|---------------------|--------------|
 | 1.0 / 2004      | IRC                            | [WinBot](https://www.winbot.co.uk) 2.3             | WinBotScript (WBS)  | Discontinued |
-| 2.0 / 2005      | IRC                            | [WinBot](https://www.winbot.co.uk) 2.3             | PlugPerl (Perl 5.6) | Discontinued |
+| 2.0 / 2005      | IRC                            | [WinBot](https://www.winbot.co.uk) 2.7             | PlugPerl (Perl 5.6) | Discontinued |
 | 3.0 / 2005      | IRC                            | [Botnix](https://www.botnix.org) 1.0 Beta 1        | Perl 5.6            | Discontinued |
-| 4.0 / 2020      | [Discord](https://discord.com) | [Sporks](https://sporks.gg), [aegis.cpp](https://github.com/zeroxs/aegis.cpp)   | C++17               | Discontinued |
-| 5.0 / 2021      | [Discord](https://discord.com) | [Sporks](https://sporks.gg), [D++](https://github.com/brainboxdotcc/DPP)   | C++17               | Active       |
+| 4.0 / 2020      | [Discord](https://discord.com) | [Sporks](https://sporks.gg), [aegis.cpp](https://github.com/zeroxs/aegis.cpp) | C++17 | Discontinued |
+| 5.0 / 2021      | [Discord](https://discord.com) | [Sporks](https://sporks.gg), [D++](https://github.com/brainboxdotcc/DPP) | C++17 | Active |
+
+# Known issues
+
+* libmysqlcppconn versions less than 1.1.12 will cause corruption of query results where any string or blob is over 64 bytes in size. This is fixed in versions of Connector/C++ provided with debian 11, but not debian 10. If you are on Debian 10, you must install the Connector/C++ from the [mysql community repository](https://dev.mysql.com/downloads/repo/apt/), otherwise you can just do `apt-get install libmysqlcppconn-dev`.
+* You will have to configure your MySQL server to accept more concurrent connections if you run many clusters. Each instance of the bot will connect to MySQL 10 times to be able to run concurrent queries, as one connection only supports one ongoing query at a time.
