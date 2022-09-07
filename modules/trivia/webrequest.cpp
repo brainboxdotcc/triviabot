@@ -546,6 +546,9 @@ static std::mt19937_64 rng(dev());
 
 template<class BidiIter> BidiIter random_unique(BidiIter begin, BidiIter end, size_t num_random) {
 	size_t left = std::distance(begin, end);
+	if (distance == 0) {
+		return begin;
+	}
 	while (num_random--) {
 		BidiIter r = begin;
 		std::uniform_int_distribution<size_t> dist(0, left - 1);
@@ -623,9 +626,11 @@ std::vector<std::string> fetch_shuffle_list(uint64_t guild_id, const std::string
 			}
 			if (count >= min_questions) {
 				auto result = db::query("SELECT questions.id, questions.category FROM questions INNER JOIN categories ON questions.category = categories.id WHERE questions.guild_id IS NULL AND categories.disabled != 1 AND category IN (" + query + ")", cl);
-				random_unique(result.begin(), result.end(), 200);
-				for (auto & ans : result) {
-					return_value.emplace_back(ans["id"]);
+				if (result.size()) {
+					random_unique(result.begin(), result.end(), 200);
+					for (auto & ans : result) {
+						return_value.emplace_back(ans["id"]);
+					}
 				}
 			} else {
 				throw CategoryTooSmallException();
@@ -640,10 +645,12 @@ std::vector<std::string> fetch_shuffle_list(uint64_t guild_id, const std::string
 				uint32_t qc = 0, iterations = 0;
 				while (qc < 200 && iterations < 200) {
 					auto result = db::query("SELECT questions.id FROM questions WHERE guild_id = ?", {settings.guild_id});
-					random_unique(result.begin(), result.end(), 200);
-					for (auto & ans : result) {
-						return_value.emplace_back(ans["id"]);
-						qc++;
+					if (result.size()) {
+						random_unique(result.begin(), result.end(), 200);
+						for (auto & ans : result) {
+							return_value.emplace_back(ans["id"]);
+							qc++;
+						}
 					}
 				}
 				if (qc < 200) {
@@ -656,10 +663,12 @@ std::vector<std::string> fetch_shuffle_list(uint64_t guild_id, const std::string
 					auto r = db::query("SELECT COUNT(id) AS c FROM questions WHERE category = ?", {cat[0]["id"]});
 					if (r.size()) {
 						if (from_string<uint32_t>(r[0]["c"], std::dec) >= min_questions) {
-							auto result = db::query("SELECT questions.id, questions.category FROM questions INNER JOIN categories ON questions.category = categories.id WHERE questions.guild_id IS NULL AND categories.disabled != 1 AND category = ? ORDER BY", {cat[0]["id"]});
-							random_unique(result.begin(), result.end(), 200);
-							for (auto & ans : result) {
-								return_value.emplace_back(ans["id"]);
+							auto result = db::query("SELECT questions.id, questions.category FROM questions INNER JOIN categories ON questions.category = categories.id WHERE questions.guild_id IS NULL AND categories.disabled != 1 AND category = ?", {cat[0]["id"]});
+							if (result.size()) {
+								random_unique(result.begin(), result.end(), 200);
+								for (auto & ans : result) {
+									return_value.emplace_back(ans["id"]);
+								}
 							}
 							return return_value;
 						}
