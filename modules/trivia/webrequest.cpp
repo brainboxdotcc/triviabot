@@ -607,8 +607,11 @@ std::vector<std::string> fetch_shuffle_list(uint64_t guild_id, const std::string
 					parameters.emplace_back(trim(ReplaceString(cm, "%", "_") + "%"));
 				}
 			}
-			if (query.substr(query.length() - 4, 4) == " OR ") {
+			if (query.length() && query.substr(query.length() - 4, 4) == " OR ") {
 				query = query.substr(0, query.length() - 4);
+			}
+			if (query.empty()) {
+				query.append("0");
 			}
 			query.append(")");
 			db::resultset cr = db::query("SELECT id FROM categories WHERE " + query + " AND disabled = 0", parameters);
