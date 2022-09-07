@@ -596,9 +596,11 @@ std::vector<std::string> fetch_shuffle_list(uint64_t guild_id, const std::string
 				if (lowercase(trim(cm)) == "server" && premium) {
 					// Guild specific premium question list
 					db::resultset result = db::query("SELECT questions.id FROM questions WHERE guild_id = ?", {guild_id});
-					random_unique(result.begin(), result.end(), 200);
-					for (auto& ans : result) {
-						return_value.emplace_back(ans["id"]);
+					if (result.size()) {
+						random_unique(result.begin(), result.end(), 200);
+						for (auto& ans : result) {
+							return_value.emplace_back(ans["id"]);
+						}
 					}
 				} else {
 					query.append("(" + column + " LIKE ?) OR ");
