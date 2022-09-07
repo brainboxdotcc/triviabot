@@ -546,7 +546,7 @@ static std::mt19937_64 rng(dev());
 
 template<class BidiIter> BidiIter random_unique(BidiIter begin, BidiIter end, size_t num_random) {
 	size_t left = std::distance(begin, end);
-	if (distance == 0) {
+	if (left == 0) {
 		return begin;
 	}
 	while (num_random--) {
