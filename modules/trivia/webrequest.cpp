@@ -549,7 +549,7 @@ template<class BidiIter> BidiIter random_unique(BidiIter begin, BidiIter end, si
 	if (left < 2) {
 		return begin;
 	}
-	while (num_random--) {
+	while (num_random-- && left > 1) {
 		BidiIter r = begin;
 		std::uniform_int_distribution<size_t> dist(0, left - 1);
 		std::advance(r, dist(rng));
