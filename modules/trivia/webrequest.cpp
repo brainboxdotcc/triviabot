@@ -546,7 +546,7 @@ static std::mt19937_64 rng(dev());
 
 template<class BidiIter> BidiIter random_unique(BidiIter begin, BidiIter end, size_t num_random) {
 	size_t left = std::distance(begin, end);
-	if (left == 0) {
+	if (left < 2) {
 		return begin;
 	}
 	while (num_random--) {
@@ -652,6 +652,7 @@ std::vector<std::string> fetch_shuffle_list(uint64_t guild_id, const std::string
 							qc++;
 						}
 					}
+					iterations++;
 				}
 				if (qc < 200) {
 					throw CategoryTooSmallException();
