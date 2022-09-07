@@ -8,7 +8,7 @@ jobs:
       - checkout
       - run:
           name: Installing dependencies
-          command: 'apt-get update && apt-get install -y sudo gcc g++ build-essential git cmake libssl-dev zlib1g-dev curl wget libpcre3-dev fmt nlohmann-json3-dev libfmt-dev libmysqlcppconn-dev && rm -rf /var/lib/apt/lists/*'
+          command: 'apt-get update && apt-get install -y sudo gcc g++ build-essential git cmake libssl-dev zlib1g-dev curl wget libpcre3-dev nlohmann-json3-dev libfmt-dev libmysqlcppconn-dev && rm -rf /var/lib/apt/lists/*'
       - run:
           name: Fetching DPP 9.0.18
           command: 'wget -O dpp.deb https://github.com/brainboxdotcc/DPP/releases/download/v10.0.18/libdpp-10.0.18-linux-x64.deb'
