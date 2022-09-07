@@ -3,7 +3,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: "debian:bullseye"
+      - image: "ubuntu:jammy"
     steps:
       - checkout
       - run:
