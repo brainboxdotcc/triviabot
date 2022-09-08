@@ -850,10 +850,10 @@ bool join_team(uint64_t snowflake_id, const std::string &team, uint64_t channel_
 {
 	if (check_team_exists(team)) {
 		auto teaminfo = db::query("SELECT * FROM teams WHERE name = ?", {team});
-		if (teaminfo.size() && teaminfo[0]["qualifying_score"].getUInt() > 0) {
+		if (teaminfo.size() && teaminfo[0]["qualifying_score"].getString() != "" && teaminfo[0]["qualifying_score"].getUInt() > 0) {
 			uint64_t qualifying = teaminfo[0]["qualifying_score"].getUInt();
 			auto rs_score = db::query("SELECT * FROM vw_scorechart WHERE name = ?", {team});
-			uint64_t score = (rs_score.size() ? rs_score[0]["score"].getUInt() : 0);
+			uint64_t score = (rs_score.size() && rs_score[0]["score"].getString() != "" ? rs_score[0]["score"].getUInt() : 0);
 			if (score < qualifying) {
 				throw JoinNotQualifiedException(score, qualifying);
 			}
