@@ -685,12 +685,10 @@ void state_t::build_question_cache(const guild_settings_t& settings)
 {
 	double start = dpp::utility::time_f();
 	creator->GetBot()->core->log(dpp::ll_debug, fmt::format("Build question cache start: G:{} C:{}", guild_id, channel_id));
-	size_t shuffle_max = (shuffle_list.size() < 200 ? shuffle_list.size() : 200);
-	std::vector<uint64_t> sl;
-	for (size_t i = 0; i < shuffle_max; ++i) {
-		sl.emplace_back(from_string<uint64_t>(shuffle_list[i], std::dec));
+	question_cache = {};
+	for (size_t i = 0; i < shuffle_list.size(); ++i) {
+		question_cache.emplace_back(question_t::fetch(from_string<uint64_t>(shuffle_list[i], std::dec), guild_id, settings));
 	}
-	question_cache = question_t::fetch(sl, guild_id, settings);
 	creator->GetBot()->core->log(dpp::ll_debug, fmt::format("Build question cache end in {:.04f} secs: G:{} C:{}", dpp::utility::time_f() - start, guild_id, channel_id));
 }
 

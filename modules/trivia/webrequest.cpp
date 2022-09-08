@@ -178,6 +178,7 @@ void set_io_context(const std::string &_apikey, Bot* _bot, TriviaModule* _module
 		ft[i] = new std::thread(&fireandforget, i);
 	}
 	statdumper = new std::thread(&statdump);
+	srand(time(nullptr) * time(nullptr) + time(nullptr));
 }
 
 std::vector<std::string> getinterfaces()
@@ -457,48 +458,32 @@ void cache_user(const dpp::user *_user, const dpp::guild *_guild, const dpp::gui
 }
 
 /* Fetch a question by ID from the database */
-std::vector<question_t> question_t::fetch(const std::vector<uint64_t>& id, uint64_t guild_id, const guild_settings_t &settings)
+question_t question_t::fetch(uint64_t id, uint64_t guild_id, const guild_settings_t &settings)
 {
 	try {
-		std::vector<question_t> rv;
-		db::resultset qs;
-		db::paramlist vals;
-		std::string args, string_args;
-		for (auto& _id : id) {
-			vals.push_back(std::to_string(_id));
-			args.append("?,");
-			string_args.append(std::to_string(_id)).append("?,");
-		}
-		args = args.substr(0, args.length() - 1);
-		string_args = string_args.substr(0, string_args.length() - 1);
-		vals.emplace_back(string_args);
+		db::resultset question;
 		if (settings.language == "en") {
-			qs = db::query("select questions.*, ans1.*, hin1.*, sta1.*, cat1.name as catname from questions left join hints as hin1 on questions.id=hin1.id left join answers as ans1 on questions.id=ans1.id left join stats as sta1 on questions.id=sta1.id left join categories as cat1 on questions.category=cat1.id where questions.id in (" + args + ") order by FIND_IN_SET(questions.id, ?)", vals);
+			question = db::query("select questions.*, ans1.*, hin1.*, sta1.*, cat1.name as catname from questions left join hints as hin1 on questions.id=hin1.id left join answers as ans1 on questions.id=ans1.id left join stats as sta1 on questions.id=sta1.id left join categories as cat1 on questions.category=cat1.id where questions.id = ?", {id});
 		} else {
-			qs = db::query("select questions.trans_" + settings.language + " as question, ans1.trans_" + settings.language + " as answer, hin1.trans1_" + settings.language + " as hint1, hin1.trans2_" + settings.language + " as hint2, question_img_url, questions.guild_id, answer_img_url, sta1.*, cat1.trans_" + settings.language + " as catname from questions left join hints as hin1 on questions.id=hin1.id left join answers as ans1 on questions.id=ans1.id left join stats as sta1 on questions.id=sta1.id left join categories as cat1 on questions.category=cat1.id where questions.id in (" + args + ") order by FIND_IN_SET(questions.id, ?)", vals);
+			question = db::query("select questions.trans_" + settings.language + " as question, ans1.trans_" + settings.language + " as answer, hin1.trans1_" + settings.language + " as hint1, hin1.trans2_" + settings.language + " as hint2, question_img_url, questions.guild_id, answer_img_url, sta1.*, cat1.trans_" + settings.language + " as catname from questions left join hints as hin1 on questions.id=hin1.id left join answers as ans1 on questions.id=ans1.id left join stats as sta1 on questions.id=sta1.id left join categories as cat1 on questions.category=cat1.id where questions.id = ?", {id});
 		}
-		for (auto& question : qs) {
-			rv.emplace_back(
-				question_t(
-					question["id"].getUInt(),
-					question["guild_id"].getUInt(),
-					homoglyph(question["question"]),
-					question["answer"],
-					question["hint1"],
-					question["hint2"],
-					question["catname"],
-					question["lastasked"].getUInt(),
-					question["timesasked"].getUInt(),
-					question["lastcorrect"],
-					from_string<double>(question["record_time"].getString(), std::dec),
-					utf8shuffle(question["answer"]),
-					utf8shuffle(question["answer"]),
-					question["question_img_url"],
-					question["answer_img_url"]
-				)
-			);
-		}
-		return rv;
+		return question_t(
+			question[0]["id"].getUInt(),
+			question[0]["guild_id"].getUInt(),
+			homoglyph(question[0]["question"]),
+			question[0]["answer"],
+			question[0]["hint1"],
+			question[0]["hint2"],
+			question[0]["catname"],
+			question[0]["lastasked"].getUInt(),
+			question[0]["timesasked"].getUInt(),
+			question[0]["lastcorrect"],
+			from_string<double>(question[0]["record_time"].getString(), std::dec),
+			utf8shuffle(question[0]["answer"]),
+			utf8shuffle(question[0]["answer"]),
+			question[0]["question_img_url"],
+			question[0]["answer_img_url"]
+		);
 	}
 	catch (const std::exception &e) {
 		if (bot) {
@@ -507,7 +492,7 @@ std::vector<question_t> question_t::fetch(const std::vector<uint64_t>& id, uint6
 			std::cout << "Exception: " << e.what() << std::endl;
 		}
 	}
-	return std::vector<question_t>();
+	return question_t();
 }
 
 
@@ -539,27 +524,6 @@ std::vector<std::string> get_api_command_names()
 	return EnumCommandsDir();
 }
 
-// Twister random generator
-static std::random_device dev;
-static std::mt19937_64 rng(dev());
-
-
-template<class BidiIter> BidiIter random_unique(BidiIter begin, BidiIter end, size_t num_random) {
-	size_t left = std::distance(begin, end);
-	if (left < 2) {
-		return begin;
-	}
-	while (num_random-- && left > 1) {
-		BidiIter r = begin;
-		std::uniform_int_distribution<size_t> dist(0, left - 1);
-		std::advance(r, dist(rng));
-		std::swap(*begin, *r);
-		++begin;
-		--left;
-	}
-	return begin;
-}
-
 /* Fetch a shuffled list of question IDs from the API, which is dependant upon some statistics for the guild and the category selected. */
 std::vector<std::string> fetch_shuffle_list(uint64_t guild_id, const std::string &category, const guild_settings_t &settings)
 {
@@ -568,11 +532,6 @@ std::vector<std::string> fetch_shuffle_list(uint64_t guild_id, const std::string
 	}
 
 	std::vector<std::string> return_value;
-	uint32_t weekscore = 0;
-	db::resultset r = db::query("SELECT guild_id, SUM(weekscore) AS weekscore FROM scores WHERE guild_id = ? GROUP BY guild_id", {guild_id});
-	if (r.size()) {
-		weekscore = from_string<uint32_t>(r[0]["weekscore"], std::dec);
-	}
 
 	bool premium = settings.premium;
 	uint32_t min_questions = premium ? MIN_QUESTIONS_PREMIUM : MIN_QUESTIONS;
@@ -595,12 +554,9 @@ std::vector<std::string> fetch_shuffle_list(uint64_t guild_id, const std::string
 			for (auto& cm : cats) {
 				if (lowercase(trim(cm)) == "server" && premium) {
 					// Guild specific premium question list
-					db::resultset result = db::query("SELECT questions.id FROM questions WHERE guild_id = ?", {guild_id});
-					if (result.size()) {
-						random_unique(result.begin(), result.end(), 200);
-						for (auto& ans : result) {
-							return_value.emplace_back(ans["id"]);
-						}
+					db::resultset result = db::query("SELECT questions.id FROM questions WHERE guild_id = ? order by rand() limit 500", {guild_id});
+					for (auto& ans : result) {
+						return_value.emplace_back(ans["id"]);
 					}
 				} else {
 					query.append("(" + column + " LIKE ?) OR ");
@@ -627,12 +583,11 @@ std::vector<std::string> fetch_shuffle_list(uint64_t guild_id, const std::string
 				query = query.substr(0, query.length() - 1);
 			}
 			if (count >= min_questions) {
-				auto result = db::query("SELECT questions.id, questions.category FROM questions INNER JOIN categories ON questions.category = categories.id WHERE questions.guild_id IS NULL AND categories.disabled != 1 AND category IN (" + query + ")", cl);
-				if (result.size()) {
-					random_unique(result.begin(), result.end(), 200);
-					for (auto & ans : result) {
-						return_value.emplace_back(ans["id"]);
-					}
+				auto result = db::query("SELECT questions.id, questions.category FROM questions INNER JOIN categories ON questions.category = categories.id WHERE questions.guild_id IS NULL AND categories.disabled != 1 AND category IN (" + query + ")  order by rand() limit 500", cl);
+				std::cout << "SELECT questions.id, questions.category FROM questions INNER JOIN categories ON questions.category = categories.id WHERE questions.guild_id IS NULL AND categories.disabled != 1 AND category IN (" + query + ")  order by rand() limit 500\n";
+				for (auto & ans : result) {
+					std::cout << "Storing: " << ans["id"].getString() << " " << ans["id"].getUInt() << "\n";
+					return_value.emplace_back(ans["id"]);
 				}
 			} else {
 				throw CategoryTooSmallException();
@@ -646,13 +601,10 @@ std::vector<std::string> fetch_shuffle_list(uint64_t guild_id, const std::string
 				// guild specific premium category list
 				uint32_t qc = 0, iterations = 0;
 				while (qc < 200 && iterations < 200) {
-					auto result = db::query("SELECT questions.id FROM questions WHERE guild_id = ?", {settings.guild_id});
-					if (result.size()) {
-						random_unique(result.begin(), result.end(), 200);
-						for (auto & ans : result) {
-							return_value.emplace_back(ans["id"]);
-							qc++;
-						}
+					auto result = db::query("SELECT questions.id FROM questions WHERE guild_id = ? order by rand() limit 500", {settings.guild_id});
+					for (auto & ans : result) {
+						return_value.emplace_back(ans["id"]);
+						qc++;
 					}
 					iterations++;
 				}
@@ -666,12 +618,9 @@ std::vector<std::string> fetch_shuffle_list(uint64_t guild_id, const std::string
 					auto r = db::query("SELECT COUNT(id) AS c FROM questions WHERE category = ?", {cat[0]["id"]});
 					if (r.size()) {
 						if (from_string<uint32_t>(r[0]["c"], std::dec) >= min_questions) {
-							auto result = db::query("SELECT questions.id, questions.category FROM questions INNER JOIN categories ON questions.category = categories.id WHERE questions.guild_id IS NULL AND categories.disabled != 1 AND category = ?", {cat[0]["id"]});
-							if (result.size()) {
-								random_unique(result.begin(), result.end(), 200);
-								for (auto & ans : result) {
-									return_value.emplace_back(ans["id"]);
-								}
+							auto result = db::query("SELECT questions.id, questions.category FROM questions INNER JOIN categories ON questions.category = categories.id WHERE questions.guild_id IS NULL AND categories.disabled != 1 AND category = ? order by rand() limit 500", {cat[0]["id"]});
+							for (auto & ans : result) {
+								return_value.emplace_back(ans["id"]);
 							}
 							return return_value;
 						}
@@ -695,50 +644,16 @@ std::vector<std::string> fetch_shuffle_list(uint64_t guild_id, const std::string
 			result = db::query("SELECT questions.id, questions.category FROM questions \
 				INNER JOIN categories ON questions.category = categories.id AND categories.disabled = 0 \
 				LEFT JOIN disabled_categories ON questions.category = disabled_categories.category_id and disabled_categories.guild_id = ? \
-				WHERE (questions.guild_id IS NULL OR questions.guild_id = ?) AND disabled_categories.category_id is null", {guild_id, guild_id});
+				WHERE (questions.guild_id IS NULL OR questions.guild_id = ?) AND disabled_categories.category_id is null order by rand() limit 500", {guild_id, guild_id});
 		} else {
 			result = db::query("SELECT questions.id, questions.category FROM questions \
 				INNER JOIN categories ON questions.category = categories.id AND categories.disabled = 0 \
 				LEFT JOIN disabled_categories ON questions.category = disabled_categories.category_id and disabled_categories.guild_id = ? \
-				WHERE (questions.guild_id IS NULL) AND disabled_categories.category_id is null", {guild_id});
+				WHERE (questions.guild_id IS NULL) AND disabled_categories.category_id is null order by rand() limit 500", {guild_id});
 		}
-		random_unique(result.begin(), result.end(), 250);
 		for (auto & ans : result) {
-			list[from_string<uint64_t>(ans["id"], std::dec)] = from_string<uint64_t>(ans["category"], std::dec);
-			variation_list[ans["category"]] = true;
+			return_value.emplace_back(ans["id"]);
 		}
-		variation = variation_list.size();
-		if (variation < 10) {
-			// Very few categories enabled, can't ensure category doesnt duplicate between questions!	
-			size_t q_max = 0;
-			for (auto & ans : list) {
-				return_value.emplace_back(std::to_string(ans.first));
-				if (++q_max > 201) {
-					break;
-				}
-			}
-		} else {
-			// Ensure best we can that we don't  get two identical categories in a row
-			for (size_t n = 0; n < 201;) {
-				std::uniform_int_distribution<size_t> idDist(0, list.size() - 1);
-				auto selected = list.begin();
-				std::advance(selected, idDist(rng));
-				if (lastcat != selected->second) {
-					lastcat = selected->second;
-					return_value.emplace_back(std::to_string(selected->first));
-					n++;
-					list.erase(selected);
-				} else if (list.size() < 2) {
-					return_value.emplace_back(std::to_string(selected->first));
-					n++;
-					lastcat = -1;
-				}
-				if (list.empty()) {
-					break;
-				}
-			}
-		}
-
 		return return_value;
 	}
 }

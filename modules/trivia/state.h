@@ -49,7 +49,7 @@ struct question_t
 	question_t(uint64_t _id, dpp::snowflake _guild_id, const std::string &_question, const std::string &_answer, const std::string &_hint1, const std::string &_hint2, const std::string &_catname, time_t _lastasked, uint32_t _timesasked,
 		const std::string &_lastcorrect, double _record_time, const std::string &_shuffle1, const std::string &_shuffle2, const std::string &_question_image, const std::string &_answer_image);
 
-	static std::vector<question_t> fetch(const std::vector<uint64_t>& id, uint64_t guild_id, const class guild_settings_t &settings);
+	static question_t fetch(uint64_t id, uint64_t guild_id, const class guild_settings_t &settings);
 };
 
 class state_t

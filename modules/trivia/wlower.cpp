@@ -142,12 +142,10 @@ std::string homoglyph(const std::string &input)
 			case L'l':	o += L'ⅼ';	break;
 			case L'm':	o += L'ⅿ';	break;
 			case L'n':	o += L'ո';	break;
-			case L'o':	o += vowel_o[0];break;
 			case L'p':	o += L'р';	break;
 			case L'q':	o += L'ԛ';	break;
 			case L'r':	o += L'г';	break;
 			case L's':	o += L'ѕ';	break;
-			case L't':	o += L'𝚝';	break;
 			case L'u':	o += L'υ';	break;
 			case L'v':	o += L'ⅴ';	break;
 			case L'w':	o += L'ѡ';	break;
