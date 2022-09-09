@@ -152,7 +152,7 @@ state_t::~state_t()
 /* Returns true if the state_t is associated with a valid channel and guild */
 bool state_t::is_valid()
 {
-	return creator && dpp::find_guild(guild_id);
+	return creator != nullptr;
 }
 
 /* Returs the number of players to attempt a question (right or wrong) in the past 60 seconds */
@@ -601,7 +601,7 @@ void state_t::do_normal_round(bool silent, const guild_settings_t& settings)
 		}
 
 		if (!silent) {
-			creator->EmbedWithFields(settings, fmt::format(_("QUESTION_COUNTER", settings), round, numquestions - 1), {{_("CATEGORY", settings), question.catname, false}, {_("QUESTION", settings), question.question, false}}, channel_id, fmt::format("https://triviabot.co.uk/report/?c={}&g={}&normal={}", channel_id, guild_id, question.id + channel_id), question.question_image);
+			creator->EmbedWithFields(settings, fmt::format(_("QUESTION_COUNTER", settings), round, numquestions - 1), {{_("CATEGORY", settings), homoglyph(question.catname), false}, {_("QUESTION", settings), question.question, false}}, channel_id, fmt::format("https://triviabot.co.uk/report/?c={}&g={}&normal={}", channel_id, guild_id, question.id + channel_id), question.question_image);
 		}
 
 	} else {
@@ -632,7 +632,7 @@ void state_t::do_first_hint(const guild_settings_t& settings)
 		creator->SimpleEmbed(settings, ":clock10:", fmt::format(_("SECS_LEFT", settings), interval * 2), channel_id);
 	} else {
 		/* First hint, not insane round */
-		creator->SimpleEmbed(settings, ":clock10:", question.customhint1, channel_id, _("FIRST_HINT", settings));
+		creator->SimpleEmbed(settings, ":clock10:", homoglyph(question.customhint1), channel_id, _("FIRST_HINT", settings));
 	}
 	gamestate = TRIV_SECOND_HINT;
 	score = (interval == TRIV_INTERVAL ? 2 : 4);
@@ -672,7 +672,7 @@ void state_t::do_second_hint(const guild_settings_t& settings)
 		creator->SimpleEmbed(settings, ":clock1030:", fmt::format(_("SECS_LEFT", settings), interval), channel_id);
 	} else {
 		/* Second hint, not insane round */
-		creator->SimpleEmbed(settings, ":clock1030:", question.customhint2, channel_id, _("SECOND_HINT", settings));
+		creator->SimpleEmbed(settings, ":clock1030:", homoglyph(question.customhint2), channel_id, _("SECOND_HINT", settings));
 	}
 	gamestate = TRIV_TIME_UP;
 	score = (interval == TRIV_INTERVAL ? 1 : 2);

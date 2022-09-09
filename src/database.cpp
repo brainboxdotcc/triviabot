@@ -162,7 +162,8 @@ namespace db {
 				if (mysql_options(&connections[i].connection, MYSQL_OPT_RECONNECT, &reconnect) == 0) {
 					if (!mysql_real_connect(&connections[i].connection, host.c_str(), user.c_str(), pass.c_str(), db.c_str(), port, NULL, CLIENT_MULTI_RESULTS | CLIENT_MULTI_STATEMENTS)) {
 						failed = true;
-						logger->log(dpp::ll_error, "Database connection failed");
+						std::cout << mysql_error(&connections[i].connection) << "\n";
+						logger->log(dpp::ll_error, "Database connection failed " + std::string(mysql_error(&connections[i].connection)));
 						break;
 					}
 				}

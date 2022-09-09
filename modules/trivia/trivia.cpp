@@ -238,7 +238,7 @@ bool TriviaModule::OnAllShardsReady()
 				} else {
 					/* No shuffle list to resume from, create a new one */
 					try {
-						shuffle_list = fetch_shuffle_list(from_string<uint64_t>((*game)["guild_id"], std::dec), "", s);
+						shuffle_list = fetch_shuffle_list(from_string<uint64_t>((*game)["guild_id"], std::dec), "");
 					}
 					catch (const std::exception&) {
 						shuffle_list = {};
