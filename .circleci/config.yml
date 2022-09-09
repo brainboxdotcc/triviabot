@@ -3,67 +3,21 @@ version: 2
 jobs:
   build:
     docker:
-      - image: "debian:buster"
+      - image: "ubuntu:jammy"
     steps:
       - checkout
       - run:
-          name: Installing SUDO
-          command: 'apt-get update && apt-get install -y sudo && rm -rf /var/lib/apt/lists/*'
+          name: Installing dependencies
+          command: 'apt-get update && apt-get install -y sudo gcc g++ build-essential git cmake libssl-dev libspdlog-dev zlib1g-dev curl wget libpcre3-dev libsodium23 libopus0 nlohmann-json3-dev libfmt-dev libmysqlclient-dev && rm -rf /var/lib/apt/lists/*'
       - run:
-          name: Installing GCC
-          command: 'apt-get update && apt-get install -y gcc g++ build-essential git'
+          name: Fetching DPP 10.0.18
+          command: 'wget -O dpp.deb https://github.com/brainboxdotcc/DPP/releases/download/v10.0.18/libdpp-10.0.18-linux-x64.deb'
       - run:
-          name: Install CMAKE 
-          command: 'apt-get update && apt-get install -y cmake'
-      - run:
-          name: Installing other dependencies
-          command: 'apt-get update && apt-get install -y libssl-dev zlib1g-dev curl wget libpcre3-dev'
-      - run:
-          name: Downloading mysql
-          command: 'wget -q https://dev.mysql.com/get/Downloads/MySQL-8.0/mysql-server_8.0.18-1debian10_amd64.deb-bundle.tar'
-      - run:
-          name: Installing mysql
-          command: tar fpx mysql-server_8.0.18-1debian10_amd64.deb-bundle.tar && dpkg -i mysql-common_8.0.18-1debian10_amd64.deb && dpkg -i libmysqlclient21_8.0.18-1debian10_amd64.deb && dpkg -i libmysqlclient-dev_8.0.18-1debian10_amd64.deb && cp -rv /usr/include/mysql/* /usr/local/include/
-      - run:
-          name: Cloning D++
-          command: 'git clone https://github.com/brainboxdotcc/DPP.git'
-      - run:
-          name: Creating D++ build files
-          command: 'cmake  -HDPP -BDPP/build'
-      - run:
-          name: Building D++
-          command: 'cmake --build DPP/build -j 4'
-      - run:
-          name: Installing D++
-          command: 'cd DPP/build && make install'
-      - run:
-          name: Cloning spdlog
-          command: 'git clone https://github.com/gabime/spdlog.git'
-      - run:
-          name: Creating spdlog build files
-          command: 'cmake  -Hspdlog -Bspdlog/build'
-      - run:
-          name: Building spdlog
-          command: 'cmake --build spdlog/build -j 4'
-      - run:
-          name: Installing spdlog
-          command: 'cd spdlog/build && make install'
-      - run:
-          name: Cloning fmt
-          command: 'git clone https://github.com/fmtlib/fmt.git'
-      - run:
-          name: Creating fmt build files
-          command: 'cmake  -Hfmt -Bfmt/build'
-      - run:
-          name: Building fmt
-          command: 'cmake --build fmt/build -j 4'
-      - run:
-          name: Installing fmt
-          command: 'cd fmt/build && make install'
+          name: Installing DPP 10.0.18
+          command: 'dpkg -i dpp.deb'
       - run:
           name: Creating Build Files
           command: 'cmake -H. -Bbuild'
       - run:
           name: Creating Binary Files
           command: 'cmake --build build -j 4'
-

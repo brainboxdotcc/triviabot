@@ -213,12 +213,19 @@ public:
 						std::string sql;
 						std::getline(tokens, sql);
 						sql = trim(sql);
-						db::resultset rs = db::query(sql, {});
+						bool had_error;
+						/* Listen for error messages only during execution of this query */
+						auto handler = bot->core->on_log([this, &had_error, sql, msg](const dpp::log_t& logmsg) {
+							if (logmsg.message.find("SQL Error: ") != std::string::npos) {
+								this->EmbedSimple(logmsg.message, msg.channel_id);
+								had_error = true;
+							}
+						});
+						db::resultset rs = db::query(sql);
 						std::stringstream w;
+						bot->core->on_log.detach(handler);
 						if (rs.size() == 0) {
-							if (db::error() != "") {
-								EmbedSimple("SQL Error: " + db::error(), msg.channel_id);
-							} else {
+							if (!had_error) {
 								EmbedSimple("Successfully executed, no rows returned.", msg.channel_id);
 							}
 						} else {
