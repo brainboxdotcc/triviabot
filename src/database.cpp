@@ -22,23 +22,17 @@
 
 #include <fmt/format.h>
 #include <sporks/database.h>
+#include <mysql/mysql.h>
 #include <iostream>
 #include <mutex>
 #include <sstream>
 #include <chrono>
 #include <thread>
 #include <queue>
-#include <array>
 #include <dpp/dpp.h>
 
-#include <cppconn/driver.h>
-#include <cppconn/exception.h>
-#include <cppconn/resultset.h>
-#include <cppconn/statement.h>
-#include <cppconn/prepared_statement.h>
-
 /* Initial connection string for the database.
- * Note that mariadb and mysql have different syntax (this is one of the few sitations where they differ).
+ * Note that mariadb and mysql have differnet syntax (this is one of the few sitations where they differ).
  * Both set the maximum query time to 3 seconds, which is far more than needed but acts as a safety net
  * against any bad programming or runaway queries.
  */
@@ -49,19 +43,6 @@
 #endif
 
 using namespace std::literals;
-
-thread_local static bool is_stringlike = false;
-
-/**
- * @brief Used for type debduction to determine if a value is string-like or not
- * within a std::visit.
- */
-namespace std {
-	std::string to_string(const std::string& s) {
-		is_stringlike = true;
-		return s;
-	};
-};
 
 namespace db {
 
@@ -108,42 +89,6 @@ namespace db {
 	/* spdlog logger */
 	dpp::cluster* log;
 
-	value::value(const std::string& v) : stored_value(v)
-	{
-	}
-
-	value::operator std::string() {
-		return this->stored_value;
-	}
-
-	value& value::operator=(const std::string& v) {
-		this->stored_value = v; return *this;
-	}
-
-	bool value::operator==(const std::string& v) const {
-		return this->stored_value == v;
-	}
-
-	dpp::snowflake value::getSnowflake() const {
-		return from_string<uint64_t>(this->stored_value, std::dec);
-	}
-
-	int64_t value::getInt() const {
-		return from_string<int64_t>(this->stored_value, std::dec);
-	}
-
-	bool value::getBool() const {
-		return from_string<int>(this->stored_value, std::dec);
-	}
-
-	std::string value::getString() const {
-		return this->stored_value;
-	}
-
-	uint64_t value::getUInt() const {
-		return from_string<uint64_t>(this->stored_value, std::dec);
-	}
-
 	resultset real_query(sqlconn &conn, const std::string &format, const paramlist &parameters);
 
 	statistics get_stats() {
@@ -178,17 +123,11 @@ namespace db {
 		return stats;
 	}
 
-	/**
-	 * @brief This thread monitors for new background queries in the queue, and
-	 * if there are any, executes them in order.
-	 */
 	void bgthread() {
-		dpp::utility::set_thread_name("db/background");
 		while (true) {
 			std::queue<background_query> bg_copy;
 			{
 				std::lock_guard<std::mutex> db_lock(b_db_mutex);
-				bg_copy = {};
 				while (background_queries.size()) {
 					bg_copy.emplace(background_queries.front());
 					background_queries.pop();
@@ -213,31 +152,34 @@ namespace db {
 	 */
 	bool connect(dpp::cluster* logger, const std::string &host, const std::string &user, const std::string &pass, const std::string &db, int port) {
 		std::lock_guard<std::mutex> db_lock2(b_db_mutex);
-
-		sql::Driver * driver = get_driver_instance();
-		sql::ConnectOptionsMap opts = {
-			{ "hostName", fmt::format("tcp://{}", host).c_str() },
-			{ "userName", user.c_str() },
-			{ "password", pass.c_str() },
-			{ "schema", db.c_str() },
-			{ "port", 3306 },
-			{ "SET_CHARSET_NAME", "utf8mb4" },
-			{ "INIT_COMMAND", CONNECT_STRING },
-		};
-
 		log = logger;
 		bool failed = false;
-		try {
-			for (size_t i = 0; i < POOL_SIZE; ++i) {
-				connections[i].connection = driver->connect(opts);
+		for (size_t i = 0; i < POOL_SIZE; ++i) {
+			if (mysql_init(&connections[i].connection) != nullptr) {
+				mysql_options(&connections[i].connection, MYSQL_SET_CHARSET_NAME, "utf8mb4");
+				mysql_options(&connections[i].connection, MYSQL_INIT_COMMAND, CONNECT_STRING);
+				char reconnect = 1;
+				if (mysql_options(&connections[i].connection, MYSQL_OPT_RECONNECT, &reconnect) == 0) {
+					if (!mysql_real_connect(&connections[i].connection, host.c_str(), user.c_str(), pass.c_str(), db.c_str(), port, NULL, CLIENT_MULTI_RESULTS | CLIENT_MULTI_STATEMENTS)) {
+						failed = true;
+						std::cout << mysql_error(&connections[i].connection) << "\n";
+						logger->log(dpp::ll_error, "Database connection failed " + std::string(mysql_error(&connections[i].connection)));
+						break;
+					}
+				}
 			}
-			bg_connection.connection = driver->connect(opts);
-			background_thread = new std::thread(bgthread);
 		}
-		catch (const std::exception &e) {
-			logger->log(dpp::ll_error, e.what());
-			return false;
+
+		if (mysql_init(&bg_connection.connection) != nullptr) {
+			mysql_options(&bg_connection.connection, MYSQL_SET_CHARSET_NAME, "utf8mb4");
+			mysql_options(&bg_connection.connection, MYSQL_INIT_COMMAND, CONNECT_STRING);
+			char reconnect = 1;
+			if (mysql_options(&bg_connection.connection, MYSQL_OPT_RECONNECT, &reconnect) == 0) {
+				background_thread = new std::thread(bgthread);
+				return !failed && mysql_real_connect(&bg_connection.connection, host.c_str(), user.c_str(), pass.c_str(), db.c_str(), port, NULL, CLIENT_MULTI_RESULTS | CLIENT_MULTI_STATEMENTS);
+			}
 		}
+
 		return !failed;
 	}
 
@@ -248,9 +190,9 @@ namespace db {
 	bool close() {
 		for (size_t i = 0; i < POOL_SIZE; ++i) {
 			std::lock_guard<std::mutex> db_lock(connections[i].mutex);
-			connections[i].connection->close();
+			mysql_close(&connections[i].connection);
 		}
-		bg_connection.connection->close();
+		mysql_close(&bg_connection.connection);
 		return true;
 	}
 
@@ -262,7 +204,7 @@ namespace db {
 	/**
 	 * Run a mysql query, with automatic escaping of parameters to prevent SQL injection.
 	 * The parameters given should be a vector of strings. You can instantiate this using "{}".
-	 * For example: db::query("UPDATE foo SET bar = ? WHERE id = ?", {"baz", "3"});
+	 * For example: db::query("UPDATE foo SET bar = '?' WHERE id = '?'", {"baz", "3"});
 	 * Returns a resultset of the results as rows. Avoid returning massive resultsets if you can.
 	 */
 	resultset query(const std::string &format, const paramlist &parameters) {
@@ -292,99 +234,100 @@ namespace db {
 
 		resultset rv;
 
-		std::unique_ptr<sql::PreparedStatement> pstmt;
-		std::unique_ptr<sql::ResultSet> res;
-
-		double busy_start = dpp::utility::time_f();
-		try
-		{
-			std::lock_guard<std::mutex> db_lock(conn.mutex);
-			conn.busy = true;
-
-			if (!conn.connection->isValid() || conn.connection->isClosed()) {
-				conn.connection->reconnect();
-			}
-
-			pstmt.reset(conn.connection->prepareStatement(format.c_str()));
-
-			/**
-			 * Build prepared statement parameters via std::visit
-			 */
-			size_t index = 1;
-			for (const auto& param : parameters) {
-				std::visit([&pstmt, &index](const auto &p) {
-					/**
-					 * Type debduction
-					 * We call std::to_string() on the auto value, and for anything numeric it
-					 * passes through the C++11 implementations in <string>. For an actual string,
-					 * it passes through our dummy implementation, which sets a thread_local bool
-					 * is_stringlike. The bool can then be used by this loop to determine if we should
-					 * add the value to the prepared statement as BigInt or string. For anything numeric,
-					 * as a final check before adding it as BigInt we check if it contains a '.', if it
-					 * does we set its type as String (not double) - this helps avoid any rounding issues.
-					 */
-					is_stringlike = false;
-					std::string v = std::to_string(p);
-					if (is_stringlike) {
-						pstmt->setString(index++, v);
-					} else {
-						if (v.find('.') != std::string::npos) {
-							pstmt->setString(index++, v);
-						} else {
-							pstmt->setBigInt(index++, v);
-						}
-					}
-				}, param);
-			}
-
-			/**
-			 * Execute the query
-			 */
-			bool results = pstmt->execute();
-			if (results) {
-				res.reset(pstmt->getResultSet());
-
-				/**
-				 * Get all column names for the query results
+		/**
+		 * Escape all parameters properly from a vector of std::variant
+		 */
+		for (const auto& param : parameters) {
+			/* Worst case scenario: Every character becomes two, plus NULL terminator*/
+			std::visit([parameters, &escaped_parameters, &conn](const auto &p) {
+				std::ostringstream v;
+				v << p;
+				std::string s_param(v.str());
+				char out[s_param.length() * 2 + 1];
+				/* Some moron thought it was a great idea for mysql_real_escape_string to return an unsigned but use -1 to indicate error.
+				 * This stupid cast below is the actual recommended error check from the reference manual. Seriously stupid.
 				 */
-				sql::ResultSetMetaData * meta = res->getMetaData();
-				std::vector<std::string> names(meta->getColumnCount());
-				for (size_t n = 0; n < meta->getColumnCount(); ++n) {
-					names[n] = meta->getColumnLabel(n + 1);
+				if (mysql_real_escape_string(&conn.connection, out, s_param.c_str(), s_param.length()) != (unsigned long)-1) {
+					escaped_parameters.push_back(out);
 				}
-
-				/**
-				 * Fetch all rows for the query
-				 */
-				while (true) {
-					while (res->next()) {
-						row thisrow;
-						for (const auto& n : names) {
-							thisrow[n] = res->getString(n);
-						}
-						rv.push_back(thisrow);
-					}
-					if (pstmt->getMoreResults()) {
-						res.reset(pstmt->getResultSet());
-						continue;
-					}
-					break;
-				}
-			}
+			}, param);
 		}
-		catch (const std::exception &e) {
-			/**
-			 * In properly written code, this should never happen. Famous last words.
-			 */
-			log->log(dpp::ll_error, fmt::format("SQL Error: {} on query {}", e.what(), format));
+
+		if (parameters.size() != escaped_parameters.size()) {
+			log->log(dpp::ll_error, "Parameter wasn't escaped: " + std::string(mysql_error(&conn.connection)));
 			errored++;
 			conn.queries_errored++;
+			return rv;
 		}
-		conn.busy_time += (dpp::utility::time_f() - busy_start);
-		conn.avg_query_length -= conn.avg_query_length / conn.queries_processed;
-		conn.avg_query_length += (dpp::utility::time_f() - busy_start) / conn.queries_processed;
-		conn.busy = false;
 
+		unsigned int param = 0;
+		std::string querystring;
+
+		/**
+		 * Search and replace escaped parameters in the query string.
+		 *
+		 * TODO: Really, I should use a cached query and the built in parameterisation for this.
+		 *       It would scale a lot better.
+		 */
+		for (auto v = format.begin(); v != format.end(); ++v) {
+			if (*v == '?' && escaped_parameters.size() >= param + 1) {
+				querystring.append(escaped_parameters[param]);
+				if (param != escaped_parameters.size() - 1) {
+					param++;
+				}
+			} else {
+				querystring += *v;
+			}
+		}
+
+		{
+			/**
+			 * One DB handle can't query the database from multiple threads at the same time.
+			 * To prevent corruption of results, put a lock guard on queries.
+			 */
+			conn.busy = true;
+			double busy_start = dpp::utility::time_f();
+			std::lock_guard<std::mutex> db_lock(conn.mutex);
+			int result = mysql_query(&conn.connection, querystring.c_str());
+			/**
+			 * On successful query collate results into a std::map
+			 */
+			if (result == 0) {
+				MYSQL_RES *a_res = mysql_use_result(&conn.connection);
+				if (a_res) {
+					MYSQL_ROW a_row;
+					while ((a_row = mysql_fetch_row(a_res))) {
+						MYSQL_FIELD *fields = mysql_fetch_fields(a_res);
+						row thisrow;
+						if (mysql_num_fields(a_res) == 0) {
+							break;
+						}
+						if (fields && mysql_num_fields(a_res)) {
+							unsigned int field_count = 0;
+							while (field_count < mysql_num_fields(a_res)) {
+								std::string a = (fields[field_count].name ? fields[field_count].name : "");
+								std::string b = (a_row[field_count] ? a_row[field_count] : "");
+								thisrow[a] = b;
+								field_count++;
+							}
+							rv.push_back(thisrow);
+						}
+					}
+					mysql_free_result(a_res);
+				}
+			} else {
+				/**
+				 * In properly written code, this should never happen. Famous last words.
+				 */
+				log->log(dpp::ll_error, fmt::format("SQL Error: {} on query {}", mysql_error(&conn.connection), querystring));
+				errored++;
+				conn.queries_errored++;
+			}
+			conn.busy_time += (dpp::utility::time_f() - busy_start);
+			conn.avg_query_length -= conn.avg_query_length / conn.queries_processed;
+			conn.avg_query_length += (dpp::utility::time_f() - busy_start) / conn.queries_processed;
+			conn.busy = false;
+		}
 		return rv;
 	}
 };

@@ -152,7 +152,7 @@ state_t::~state_t()
 /* Returns true if the state_t is associated with a valid channel and guild */
 bool state_t::is_valid()
 {
-	return creator && dpp::find_guild(guild_id);
+	return creator != nullptr;
 }
 
 /* Returs the number of players to attempt a question (right or wrong) in the past 60 seconds */

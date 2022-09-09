@@ -27,36 +27,12 @@
 #include <variant>
 #include <mutex>
 #include <dpp/dpp.h>
-#include <sporks/stringops.h>
-
-#include <cppconn/driver.h>
-#include <cppconn/exception.h>
-#include <cppconn/resultset.h>
-#include <cppconn/statement.h>
-#include <cppconn/prepared_statement.h>
-
+#include <mysql/mysql.h>
 
 namespace db {
 
-	struct value {
-	private:
-		std::string stored_value;
-	public:
-		value() = default;
-		~value() = default;
-		value(const std::string& v);
-		operator std::string();
-		value& operator=(const std::string& v);
-		bool operator==(const std::string& v) const;
-		dpp::snowflake getSnowflake() const;
-		int64_t getInt() const;
-		bool getBool() const;
-		std::string getString() const;
-		uint64_t getUInt() const;
-	};
-
 	/* Definition of a row in a result set */
-	typedef std::map<std::string, db::value> row;
+	typedef std::map<std::string, std::string> row;
 
 	/* Definition of a result set, a vector of db::row */
 	typedef std::vector<row> resultset;
@@ -85,8 +61,8 @@ namespace db {
 	 * own. As queries are short lived anyway this is not a big issue.
 	 */
 	struct sqlconn {
-		/* Native cpp mysql connection class */
-		sql::Connection* connection;
+		/* Native MySQL connection struct */
+		MYSQL connection;
 		/* Safety mutex */
 		std::mutex mutex;
 		/* Queries processed (including errored) */
@@ -147,7 +123,7 @@ namespace db {
 	 * or if no free connection is available the function will wait for one
 	 * to become availabe (using a mutex).
 	 */
-	resultset query(const std::string &format, const paramlist &parameters = {});
+	resultset query(const std::string &format, const paramlist &parameters);
 
 	/* Issue a background query.
 	 *
@@ -162,5 +138,5 @@ namespace db {
 	 * Queries will be placed into a queue and executed in-order in a separate thread,
 	 * with its own connection.
 	 */
-	void backgroundquery(const std::string &format, const paramlist &parameters = {});
+	void backgroundquery(const std::string &format, const paramlist &parameters);
 };

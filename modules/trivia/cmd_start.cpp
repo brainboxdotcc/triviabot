@@ -216,16 +216,13 @@ void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 			}
 		}
 
-		std::vector<std::string> sl;
-		try {
-			sl = fetch_shuffle_list(cmd.guild_id, category, settings);
-		}
-		catch (const NoSuchCategoryException&) {
-			creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":warning:", _("START_BAD_CATEGORY", settings), cmd.channel_id);
-			return;
-		}
-		catch (const CategoryTooSmallException&) {
-			creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":warning:", _((settings.premium ? "START_TOO_SMALL_PREM" : "START_TOO_SMALL"), settings), cmd.channel_id);
+		std::vector<std::string> sl = fetch_shuffle_list(cmd.guild_id, category);
+		if (sl.size() == 1) {
+			if (sl[0] == "*** No such category ***") {
+				creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":warning:", _("START_BAD_CATEGORY", settings), cmd.channel_id);
+			} else if (sl[0] == "*** Category too small ***") {
+				creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":warning:", _((settings.premium ? "START_TOO_SMALL_PREM" : "START_TOO_SMALL"), settings), cmd.channel_id);
+			}
 			return;
 		}
 		if (sl.size() < 50) {

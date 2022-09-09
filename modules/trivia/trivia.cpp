@@ -45,6 +45,9 @@ using json = nlohmann::json;
 
 TriviaModule::TriviaModule(Bot* instigator, ModuleLoader* ml) : Module(instigator, ml), terminating(false), booted(false)
 {
+	/* TODO: Move to something better like mt-rand */
+	srand(time(NULL) * time(NULL));
+
 	/* Attach D++ events to module */
 	ml->Attach({ I_OnMessage, I_OnPresenceUpdate, I_OnChannelDelete, I_OnGuildDelete, I_OnAllShardsReady, I_OnGuildCreate }, this);
 
@@ -140,7 +143,7 @@ bool TriviaModule::OnPresenceUpdate()
 	for (auto i = shards.begin(); i != shards.end(); ++i) {
 		dpp::discord_client* shard = i->second;
 		uint64_t uptime = shard->get_uptime().secs + (shard->get_uptime().mins * 60) + (shard->get_uptime().hours * 60 * 60) + (shard->get_uptime().days * 60 * 60 * 24);
-		db::backgroundquery("INSERT INTO infobot_shard_status (id, cluster_id, connected, online, uptime, transfer, transfer_compressed) VALUES(?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE cluster_id = ?, connected = ?, online = ?, uptime = ?, transfer = ?, transfer_compressed = ?",
+		db::backgroundquery("INSERT INTO infobot_shard_status (id, cluster_id, connected, online, uptime, transfer, transfer_compressed) VALUES('?','?','?','?','?','?','?') ON DUPLICATE KEY UPDATE cluster_id = '?', connected = '?', online = '?', uptime = '?', transfer = '?', transfer_compressed = '?'",
 			{
 				shard->shard_id,
 				bot->GetClusterID(),
@@ -195,7 +198,7 @@ bool TriviaModule::OnAllShardsReady()
 	char hostname[1024];
 	hostname[1023] = '\0';
 	gethostname(hostname, 1023);
-	db::resultset active = db::query("SELECT * FROM active_games WHERE hostname = ? AND cluster_id = ?", {hostname, bot->GetClusterID()});
+	db::resultset active = db::query("SELECT * FROM active_games WHERE hostname = '?' AND cluster_id = '?'", {hostname, bot->GetClusterID()});
 
 	this->booted = true;
 
@@ -210,9 +213,9 @@ bool TriviaModule::OnAllShardsReady()
 	/* Iterate all active games for this cluster id */
 	for (auto game = active.begin(); game != active.end(); ++game) {
 
-		uint64_t guild_id = (*game)["guild_id"].getUInt();
-		bool quickfire = (*game)["quickfire"].getBool();
-		uint64_t channel_id = (*game)["channel_id"].getUInt();
+		uint64_t guild_id = from_string<uint64_t>((*game)["guild_id"], std::dec);
+		bool quickfire = (*game)["quickfire"] == "1";
+		uint64_t channel_id = from_string<uint64_t>((*game)["channel_id"], std::dec);
 
 		bot->core->log(dpp::ll_info, fmt::format("Resuming id {}", channel_id));
 
@@ -227,33 +230,33 @@ bool TriviaModule::OnAllShardsReady()
 				guild_settings_t s = GetGuildSettings(guild_id);
 
 				/* Get shuffle list from state in db */
-				if (!(*game)["qlist"].getString().empty()) {
-					json shuffle = json::parse((*game)["qlist"].getString());
+				if (!(*game)["qlist"].empty()) {
+					json shuffle = json::parse((*game)["qlist"]);
 					for (auto s = shuffle.begin(); s != shuffle.end(); ++s) {
 						shuffle_list.push_back(s->get<std::string>());
 					}
 				} else {
 					/* No shuffle list to resume from, create a new one */
 					try {
-						shuffle_list = fetch_shuffle_list((*game)["guild_id"].getUInt(), "", s);
+						shuffle_list = fetch_shuffle_list(from_string<uint64_t>((*game)["guild_id"], std::dec), "");
 					}
 					catch (const std::exception&) {
 						shuffle_list = {};
 					}
 				}
-				int32_t round = (*game)["question_index"].getUInt();
+				int32_t round = from_string<uint32_t>((*game)["question_index"], std::dec);
 
 				states[channel_id] = state_t(
 					this,
-					(*game)["questions"].getUInt() + 1,
-					(*game)["streak"].getUInt(),
-					(*game)["lastanswered"].getUInt(),
+					from_string<uint32_t>((*game)["questions"], std::dec) + 1,
+					from_string<uint32_t>((*game)["streak"], std::dec),
+					from_string<uint64_t>((*game)["lastanswered"], std::dec),
 					round,
 					(quickfire ? (TRIV_INTERVAL / 4) : TRIV_INTERVAL),
 					channel_id,
 					((*game)["hintless"]) == "1",
 					shuffle_list,
-					(trivia_state_t)((*game)["state"].getUInt()),
+					(trivia_state_t)from_string<uint32_t>((*game)["state"], std::dec),
 					guild_id
 				);
 				/* Force fetching of question */
@@ -394,7 +397,7 @@ const guild_settings_t TriviaModule::GetGuildSettings(dpp::snowflake guild_id)
 		}
 		return gs;
 	} else {
-		db::backgroundquery("INSERT INTO bot_guild_settings (snowflake_id) VALUES(?)", {guild_id});
+		db::backgroundquery("INSERT INTO bot_guild_settings (snowflake_id) VALUES('?')", {guild_id});
 		guild_settings_t gs(time(NULL), guild_id, "!", {}, 3238819, false, false, false, false, 0, "", "en", 20, 200, 15, 200, false);
 		{
 			std::unique_lock locker(settingcache_mutex);
@@ -418,7 +421,6 @@ std::string TriviaModule::GetDescription()
 
 void TriviaModule::UpdatePresenceLine()
 {
-	dpp::utility::set_thread_name("bot/presence");
 	uint32_t ticks = 0;
 	int32_t questions = get_total_questions();
 	while (!terminating) {
@@ -470,10 +472,10 @@ void TriviaModule::show_stats(const std::string& interaction_token, dpp::snowfla
 	size_t count = 1;
 	std::string msg;
 	for(auto& r : topten) {
-		if (!r["username"].getString().empty()) {
-			msg.append(fmt::format("{0}. `{1}#{2:04d}` ({3}) {4}\n", count++, r["username"].getString(), r["discriminator"].getUInt(), r["dayscore"].getUInt(), r["emojis"].getString()));
+		if (!r["username"].empty()) {
+			msg.append(fmt::format("{0}. `{1}#{2:04d}` ({3}) {4}\n", count++, r["username"], from_string<uint32_t>(r["discriminator"], std::dec), r["dayscore"], r["emojis"]));
 		} else {
-			msg.append(fmt::format("{}. <@{}> ({})\n", count++, r["snowflake_id"].getUInt(), r["dayscore"].getUInt()));
+			msg.append(fmt::format("{}. <@{}> ({})\n", count++, r["snowflake_id"], r["dayscore"]));
 		}
 	}
 	if (msg.empty()) {
@@ -489,7 +491,6 @@ void TriviaModule::show_stats(const std::string& interaction_token, dpp::snowfla
 
 void TriviaModule::Tick()
 {
-	dpp::utility::set_thread_name("bot/tick");
 	while (!terminating) {
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 		try
@@ -538,18 +539,18 @@ dpp::user dummyuser;
 
 void TriviaModule::CheckForQueuedStarts()
 {
-	db::resultset rs = db::query("SELECT * FROM start_queue ORDER BY queuetime");
+	db::resultset rs = db::query("SELECT * FROM start_queue ORDER BY queuetime", {});
 	for (auto r = rs.begin(); r != rs.end(); ++r) {
-		uint64_t guild_id = (*r)["guild_id"].getUInt();
+		uint64_t guild_id = from_string<uint64_t>((*r)["guild_id"], std::dec);
 		/* Check that this guild is on this cluster, if so we can start this game */
 		dpp::guild* g = dpp::find_guild(guild_id);
 		if (g) {
 
-			uint64_t channel_id = (*r)["channel_id"].getUInt();
-			uint64_t user_id = (*r)["user_id"].getUInt();
-			uint32_t questions = (*r)["questions"].getUInt();
-			uint32_t quickfire = (*r)["quickfire"].getBool();
-			uint32_t hintless = (*r)["hintless"].getBool();
+			uint64_t channel_id = from_string<uint64_t>((*r)["channel_id"], std::dec);
+			uint64_t user_id = from_string<uint64_t>((*r)["user_id"], std::dec);
+			uint32_t questions = from_string<uint32_t>((*r)["questions"], std::dec);
+			uint32_t quickfire = from_string<uint32_t>((*r)["quickfire"], std::dec);
+			uint32_t hintless = from_string<uint32_t>((*r)["hintless"], std::dec);
 			std::string category = (*r)["category"];
 
 			bot->core->log(dpp::ll_info, fmt::format("Remote start, guild_id={} channel_id={} user_id={} questions={} type={} category='{}'", guild_id, channel_id, user_id, questions, hintless ? "hardcore" : (quickfire ? "quickfire" : "normal"), category));
