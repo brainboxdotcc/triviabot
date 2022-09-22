@@ -1,1 +1,1 @@
-{"color":16711680, "description": "``config set`` command does not contain a recognised setting name, please see ``@:user: help config``"}
+{"color":16711680, "description": "El comando ``config set`` no contiene una opción válida, por favor usa ``@:user: help config``"}
