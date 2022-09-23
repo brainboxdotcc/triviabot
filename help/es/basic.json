@@ -12,13 +12,13 @@
         },
         "fields": [
                 {
-                        "name": "Encuentre ayuda y configure :user: a través del panel",
-                        "value": "Todos los ajustes y la configuración de este bot se pueden administrar a través del [Tablero de TriviaBot](https://triviabot.co.uk/dashboard). Para obtener más ayuda, únete al [servidor de discordia oficial de brainbox.cc](https://discord.gg/brainbox).\n<:blank:667278047006949386>",
+                        "name": "Encuentre ayuda y configure a :user: a través del panel",
+                        "value": "Todos los ajustes y la configuración de este bot se pueden administrar a través del [Panel de TriviaBot](https://triviabot.co.uk/dashboard). Para obtener más ayuda, únete al [servidor de discord oficial de brainbox.cc](https://discord.gg/brainbox).\n<:blank:667278047006949386>",
                         "inline": false
                 },
                 {
                         "name": "<:dice:722798416765255800> Trivia inicial",
-                        "value": "[Cómo iniciar y detener juegos de trivia, a través de discord o mediante el tablero](https://triviabot.co.uk/help/#start)\n<:blank:667278047006949386>",
+                        "value": "[Cómo iniciar y detener juegos de trivia, a través de discord o mediante el panel](https://triviabot.co.uk/help/#start)\n<:blank:667278047006949386>",
                         "inline": false
                 },
                 {
@@ -33,18 +33,18 @@
                 },
 		{
                         "name": "<:nitro:750660974029176833> Juega para ganar Nitro",
-                        "value": "[Si eres el jugador número uno al comienzo de cada mes, puedes ganar Discord Nitro Classic. ¡Haga clic aquí para ver la tabla de clasificación nitro!](https://triviabot.co.uk/monthly-nitro/)\n<:blank:667278047006949386>",
+                        "value": "[Si eres el jugador número uno al comienzo de cada mes, puedes ganar Discord Nitro! ¡Haga clic aquí para ver la tabla de clasificación de nitro!](https://triviabot.co.uk/monthly-nitro/)\n<:blank:667278047006949386>",
                         "inline": false
 
 		},
 		{
 			"name": "<:crystalball:722798415045460008> Vota por TriviaBot",
-			"value": "[Vote por TriviaBot en top.gg para obtener sugerencias personales a través de mensajes directos](https://top.gg/bot/715906723982082139/vote)\n<:blank:667278047006949386>",
+			"value": "[Vote por TriviaBot en top.gg para obtener pistas personales a través de mensajes directos](https://top.gg/bot/715906723982082139/vote)\n<:blank:667278047006949386>",
 			"inline": false
 		},
                 {
-                        "name": ":money_with_wings: Primo",
-                        "value": "[Descubra cómo obtener más con Trivia Bot Premium, incluidos juegos programados, rondas rápidas más largas y páginas de clasificación personalizadas](https://triviabot.co.uk/premium/)\n<:blank:667278047006949386>",
+                        "name": ":money_with_wings: Premium",
+                        "value": "[Descubra cómo obtener más con Trivia Bot Premium, incluyendo juegos programados, rondas rápidas más largas y páginas de clasificación personalizadas](https://triviabot.co.uk/premium/)\n<:blank:667278047006949386>",
                         "inline": false
                 }
         ],
