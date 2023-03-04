@@ -7,7 +7,7 @@
                 "url": "https://triviabot.co.uk/images/triviabot_tl_icon.png"
         },
         "footer": {
-                "text": "Powered by TriviaBot - Hilfe gerufen von :author:",
+                "text": "Powered by TriviaBot - Hilfe angefragt von :author:",
                 "icon_url": "https://triviabot.co.uk/images/triviabot_icon.png"
         },
         "fields": [
@@ -22,7 +22,7 @@
                         "inline": false
                 },
                 {
-                        "name": ":gear: Configuration",
+                        "name": ":gear: Konfiguration",
                         "value": "[TriviaBot für deinen Server anpassen (einschließlich der änderung des Bot-Präfixes)](https://triviabot.co.uk/help/#config)\n<:blank:667278047006949386>",
                         "inline": false
                 },
@@ -44,7 +44,7 @@
                 },
                 {
                         "name": ":money_with_wings: Premium",
-                        "value": "[Finde heraus, wie du mit TriviaBot Premium mehr erreichen kannst, einschließlich geplanter Spiele, längerer schnelle Runden und benutzerdefinierten Bestenlisten-Seiten](https://triviabot.co.uk/premium/)\n<:blank:667278047006949386>",
+                        "value": "[Entdecke, wie du mit TriviaBot Premium mehr erreichen kannst, einschließlich geplanter Spiele, längeren Blitz-Runden und benutzerdefinierten Bestenlisten-Seiten](https://triviabot.co.uk/premium/)\n<:blank:667278047006949386>",
                         "inline": false
                 }
         ],
