@@ -145,8 +145,7 @@ bool ModuleLoader::Load(const std::string &filename)
 	if (Modules.find(filename) == Modules.end()) {
 
 		char buffer[PATH_MAX + 1];
-		getcwd(buffer, PATH_MAX);
-		std::string full_module_spec = std::string(buffer) + "/" + filename;
+		std::string full_module_spec = std::string(getcwd(buffer, PATH_MAX)) + "/" + filename;
 
 		m.dlopen_handle = dlopen(full_module_spec.c_str(), RTLD_NOW | RTLD_LOCAL);
 		if (!m.dlopen_handle) {

@@ -48,8 +48,12 @@ void command_reassignpremium_t::call(const in_cmd &cmd, std::stringstream &token
 	db::resultset access = db::query("SELECT * FROM trivia_access WHERE user_id = '?' AND enabled = 1", {cmd.author_id});
 
 	if (access.size() && guild_id && user_id) {
-		db::resultset user = db::query("SELECT * FROM premium_credits WHERE user_id = ?", {user_id});
+		db::resultset user = db::query("SELECT * FROM premium_credits WHERE user_id = ? ORDER BY active DESC, since DESC", {user_id});
 		if (user.size()) {
+			std::string notice;
+			if (user.size() > 1) {
+				notice = "\n\n**WARNING**: __Multiple subscriptions for this user__. The most recent active subscription was updated.";
+			}
 			if (user[0]["active"] == "0") {
 				creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":warning:", "Premium subscription is not active!", cmd.channel_id);
 				return;
@@ -64,7 +68,7 @@ void command_reassignpremium_t::call(const in_cmd &cmd, std::stringstream &token
 					cmd.interaction_token,
 					cmd.command_id, settings,
 					":white_check_mark:",
-					fmt::format("Premium subscription {} reassigned to guild {}\n**Old** guild name: {}\n**New** guild name: {}", user[0]["subscription_id"], guild_id, oldname, newname),
+					fmt::format("Premium subscription {} reassigned to guild {}\n**Old** guild name: {}\n**New** guild name: {}{}", user[0]["subscription_id"], guild_id, oldname, newname, notice),
 					cmd.channel_id
 				);
 			} else {

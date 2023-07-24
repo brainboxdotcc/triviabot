@@ -30,7 +30,7 @@
 #define BACKEND_PATH_LIVE	"/api/{0}"
 
 /* Development API endpoint URL */
-#define BACKEND_HOST_DEV	"beta.brainbox.cc"
+#define BACKEND_HOST_DEV	"https://beta.brainbox.cc"
 #define BACKEND_PATH_DEV	"/api/{0}"
 
 using json = nlohmann::json;
@@ -79,7 +79,6 @@ std::string get_current_team(uint64_t snowflake_id);
 void leave_team(uint64_t snowflake_id);
 streak_t get_streak(uint64_t snowflake_id, uint64_t guild_id);
 streak_t get_streak(uint64_t snowflake_id);
-bool check_team_exists(const std::string &team);
 void add_team_points(const std::string &team, int points, uint64_t snowflake_id);
 uint32_t get_team_points(const std::string &team);
 void cache_user(const class dpp::user *_user, const class dpp::guild *_guild, const class dpp::guild_member* gi);

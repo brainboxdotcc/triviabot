@@ -30,7 +30,7 @@ include(buildtools/cmake/FindPCRE.cmake)
 include_directories( "include" )
 
 target_link_libraries(bot dl mysqlclient pcre dpp fmt spdlog)
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -pthread -g -O2 -fPIC -rdynamic -DFMT_HEADER_ONLY")
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -pthread -g -O2 -fPIC -rdynamic -DFMT_HEADER_ONLY -Wno-deprecated-declarations")
 set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O2")
 
 target_link_libraries(bot)
