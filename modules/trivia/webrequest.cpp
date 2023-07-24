@@ -729,7 +729,7 @@ bool join_team(uint64_t snowflake_id, const std::string &team, uint64_t channel_
 	if (check_team_exists(team)) {
 		auto teaminfo = db::query("SELECT * FROM teams WHERE name = '?'", {team});
 		if (teaminfo.size() && teaminfo[0]["qualifying_score"].length() && from_string<uint64_t>(teaminfo[0]["qualifying_score"], std::dec) > 0) {
-			auto rs_score = db::query("SELECT * FROM vw_scorechart WHERE name = '?'", {team});
+			auto rs_score = db::query("SELECT * FROM vw_scorechart WHERE name = '?'", {snowflake_id});
 			uint64_t score = (rs_score.size() ? from_string<uint64_t>(rs_score[0]["score"], std::dec) : 0);
 			if (score < from_string<uint64_t>(teaminfo[0]["qualifying_score"], std::dec)) {
 				throw JoinNotQualifiedException(score, from_string<uint64_t>(teaminfo[0]["qualifying_score"], std::dec));
@@ -743,7 +743,7 @@ bool join_team(uint64_t snowflake_id, const std::string &team, uint64_t channel_
 			}
 		}
 		db::query("DELETE FROM team_membership WHERE nick='?'", {snowflake_id});
-		db::query("INSERT INTO team_membership (nick, team, joined, points_contributed) VALUES('?','?',now(),0)", {snowflake_id, team});
+		db::query("INSERT INTO team_membership (nick, team, joined, points_contributed) VALUES('?','?',unix_timestamp(),0)", {snowflake_id, team});
 		db::query("UPDATE teams SET owner_id = '?' WHERE name = '?' AND owner_id IS NULL", {snowflake_id, team});
 		return true;
 	} else {

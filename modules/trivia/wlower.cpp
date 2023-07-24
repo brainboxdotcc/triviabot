@@ -103,7 +103,7 @@ std::string homoglyph(const std::string &input)
 {
 	std::wstring vowel_A(L"Ａ𝐴𝖠𝘈𝙰ΑАᎪᗅꓮ");
 	std::wstring vowel_E(L"𝖤𝗘𝙴Ε𝛦𝝚ЕⴹᎬꓰ");
-	std::wstring vowel_O(L"߀𝟢𝟶𝑂𝖮𝘖𝙾ΟОՕⵔ𐓂ꓳ𐐄");
+	std::wstring vowel_O(L"𝟢𝟶𝑂𝖮𝘖𝙾ΟОՕⵔ𐓂ꓳ𐐄");
 	std::wstring vowel_o(L"൦๐໐𝑜𝗈𝘰𝚘ᴏᴑο𝜊оჿօ");
 
 	std::random_shuffle(vowel_A.begin(), vowel_A.end());
