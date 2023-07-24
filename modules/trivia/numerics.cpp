@@ -35,7 +35,7 @@ int TriviaModule::random(int min, int max)
 	return min + rand() % (( max + 1 ) - min);
 }
 
-std::string TriviaModule::dec_to_roman(unsigned int decimal, const guild_settings_t &settings)
+std::string TriviaModule::dec_to_roman(uint64_t decimal, const guild_settings_t &settings)
 {
 	std::vector<int> numbers =  { 1, 4 ,5, 9, 10, 40, 50, 90, 100, 400, 500, 900, 1000 };
 	std::vector<std::string> romans = { "I", "IV", "V", "IX", "X", "XL", "L", "XC", "C", "CD", "D", "CM", "M" };

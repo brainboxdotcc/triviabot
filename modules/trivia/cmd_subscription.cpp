@@ -48,7 +48,8 @@ void command_subscription_t::call(const in_cmd &cmd, std::stringstream &tokens, 
 	db::resultset access = db::query("SELECT * FROM trivia_access WHERE user_id = '?' AND enabled = 1", {cmd.author_id});
 
 	if (access.size() && user_id) {
-		db::resultset user = db::query("SELECT *, coalesce(date_format(since, '%d-%b-%Y %H:%i'), '<not set>') as hr_since, coalesce(date_format(cancel_date, '%d-%b-%Y %H:%i'), '<not set>') as hr_cancel_date, coalesce(date_format(payment_failed_date, '%d-%b-%Y %H:%i'), '<not set>') as hr_payment_failed_date, coalesce(date_format(manual_expiry_date, '%d-%b-%Y'), '<not set>') as hr_manual_expiry_date FROM premium_credits WHERE user_id = ?", {user_id});
+		db::resultset user = db::query("SELECT *, coalesce(date_format(since, '%d-%b-%Y %H:%i'), '<not set>') as hr_since, coalesce(date_format(cancel_date, '%d-%b-%Y %H:%i'), '<not set>') as hr_cancel_date, coalesce(date_format(payment_failed_date, '%d-%b-%Y %H:%i'), '<not set>') as hr_payment_failed_date, coalesce(date_format(manual_expiry_date, '%d-%b-%Y'), '<not set>') as hr_manual_expiry_date FROM premium_credits WHERE user_id = ? ORDER BY since DESC", {user_id});
+		db::resultset active_count = db::query("SELECT user_id FROM premium_credits WHERE user_id = ? AND active = 1", {user_id});
 		if (user.size()) {
 			db::resultset premguild = db::query("SELECT * FROM trivia_guild_cache WHERE snowflake_id = ?", {user[0]["guild_id"]});
 			std::vector<field_t> fields = {
@@ -62,6 +63,9 @@ void command_subscription_t::call(const in_cmd &cmd, std::stringstream &tokens, 
 				{ "Last Payment Failed Date", user[0]["hr_payment_failed_date"] + BLANK_EMOJI, true },
 				{ "Manual Expiry Date", user[0]["hr_manual_expiry_date"] + BLANK_EMOJI, true },
 			};
+			if (active_count.size() > 1) {
+				fields.push_back({ "WARNING", fmt::format("__{} active subscriptions for this user__. The most recent subscription is shown.{}", active_count.size(), BLANK_EMOJI), false });
+			}
 			creator->EmbedWithFields(cmd.interaction_token, cmd.command_id, settings, "Premium Subscription Details", fields, cmd.channel_id, "", "", "https://triviabot.co.uk/images/crown.png", "Subscription Information");
 		} else {
 			creator->SimpleEmbed(cmd.interaction_token, cmd.command_id, settings, ":warning:", "This user does not have TriviaBot Premium!", cmd.channel_id);	

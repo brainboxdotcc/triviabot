@@ -77,5 +77,9 @@
 		"future": "cpp",
 		"ranges": "cpp",
 		"stop_token": "cpp"
-	}
+	},
+	"cSpell.words": [
+		"premguild",
+		"resultset"
+	]
 }

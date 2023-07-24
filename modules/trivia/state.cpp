@@ -572,13 +572,13 @@ void state_t::do_normal_round(bool silent, const guild_settings_t& settings)
 				question.customhint2 = currency + question.customhint2;
 				uint32_t r = creator->random(1, 13);
 				if ((r < 3 && from_string<uint32_t>(question.customhint2, std::dec) <= 10000)) {
-					question.customhint2 = creator->dec_to_roman(from_string<unsigned int>(question.customhint2, std::dec), settings);
-				} else if ((r >= 3 && r < 6) || from_string<uint32_t>(question.customhint2, std::dec) > 10000) {
-					question.customhint2 = fmt::format(_("HEX", settings), from_string<uint32_t>(question.customhint2, std::dec));
+					question.customhint2 = creator->dec_to_roman(from_string<uint64_t>(question.customhint2, std::dec), settings);
+				} else if ((r >= 3 && r < 6) || from_string<uint64_t>(question.customhint2, std::dec) > 10000) {
+					question.customhint2 = fmt::format(_("HEX", settings), from_string<uint64_t>(question.customhint2, std::dec));
 				} else if (r >= 6 && r <= 10) {
-					question.customhint2 = fmt::format(_("OCT", settings), from_string<uint32_t>(question.customhint2, std::dec));
+					question.customhint2 = fmt::format(_("OCT", settings), from_string<uint64_t>(question.customhint2, std::dec));
 				} else {
-					question.customhint2 = fmt::format(_("BIN", settings), from_string<uint32_t>(question.customhint2, std::dec));
+					question.customhint2 = fmt::format(_("BIN", settings), from_string<uint64_t>(question.customhint2, std::dec));
 				}
 			} else {
 				uint32_t r = creator->random(1, 12);

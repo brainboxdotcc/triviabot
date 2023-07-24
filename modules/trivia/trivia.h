@@ -169,7 +169,7 @@ public:
 	virtual std::string GetVersion();
 	virtual std::string GetDescription();
 	int random(int min, int max);
-	std::string dec_to_roman(unsigned int decimal, const guild_settings_t &settings);
+	std::string dec_to_roman(uint64_t decimal, const guild_settings_t &settings);
 	std::string tidy_num(std::string num);
 	void UpdatePresenceLine();
 	std::string conv_num(std::string datain, const guild_settings_t &settings);
