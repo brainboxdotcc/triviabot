@@ -325,9 +325,9 @@ int main(int argc, char** argv) {
 		 * --------------------------------
 		 * User caching:  none
 		 * Emoji caching: none
-		 * Role caching:  aggressive
+		 * Role caching:  none (WAS: aggressive)
 		*/
-		dpp::cache_policy_t cp = { dpp::cp_none, dpp::cp_none, dpp::cp_aggressive };
+		dpp::cache_policy_t cp = { dpp::cp_none, dpp::cp_none, dpp::cp_none };
 		/* Construct cluster */
 		dpp::cluster bot(token, intents, dev ? 1 : from_string<uint32_t>(Bot::GetConfig("shardcount"), std::dec), clusterid, maxclusters, true, cp);
 
@@ -367,37 +367,9 @@ int main(int argc, char** argv) {
 		/* Attach events to the Bot class methods */
 		bot.on_message_create(std::bind(&Bot::onMessage, &client, std::placeholders::_1));
 		bot.on_ready(std::bind(&Bot::onReady, &client, std::placeholders::_1));
-		//bot.on_channel_create(std::bind(&Bot::onChannel, &client, std::placeholders::_1));
 		bot.on_guild_member_add(std::bind(&Bot::onMember, &client, std::placeholders::_1));
 		bot.on_guild_create(std::bind(&Bot::onServer, &client, std::placeholders::_1));
 		bot.on_guild_delete(std::bind(&Bot::onServerDelete, &client, std::placeholders::_1));
-		//bot.on_channel_delete(std::bind(&Bot::onChannelDelete, &client, std::placeholders::_1));
-		//bot.on_typing_start(std::bind(&Bot::onTypingStart, &client, std::placeholders::_1));
-		//bot.on_message_update(std::bind(&Bot::onMessageUpdate, &client, std::placeholders::_1));
-		//bot.on_message_delete(std::bind(&Bot::onMessageDelete, &client, std::placeholders::_1));
-		//bot.on_message_delete_bulk(std::bind(&Bot::onMessageDeleteBulk, &client, std::placeholders::_1));
-		//bot.on_guild_update(std::bind(&Bot::onGuildUpdate, &client, std::placeholders::_1));
-		//bot.on_message_reaction_add(std::bind(&Bot::onMessageReactionAdd, &client, std::placeholders::_1));
-		//bot.on_message_reaction_remove(std::bind(&Bot::onMessageReactionRemove, &client, std::placeholders::_1));
-		//bot.on_message_reaction_remove_all(std::bind(&Bot::onMessageReactionRemoveAll, &client, std::placeholders::_1));
-		//bot.on_user_update(std::bind(&Bot::onUserUpdate, &client, std::placeholders::_1));
-		//bot.on_resumed(std::bind(&Bot::onResumed, &client, std::placeholders::_1));
-		//bot.on_channel_update(std::bind(&Bot::onChannelUpdate, &client, std::placeholders::_1));
-		//bot.on_channel_pins_update(std::bind(&Bot::onChannelPinsUpdate, &client, std::placeholders::_1));
-		//bot.on_guild_ban_add(std::bind(&Bot::onGuildBanAdd, &client, std::placeholders::_1));
-		//bot.on_guild_ban_remove(std::bind(&Bot::onGuildBanRemove, &client, std::placeholders::_1));
-		//bot.on_guild_emojis_update(std::bind(&Bot::onGuildEmojisUpdate, &client, std::placeholders::_1));
-		//bot.on_guild_integrations_update(std::bind(&Bot::onGuildIntegrationsUpdate, &client, std::placeholders::_1));
-		//bot.on_guild_member_remove(std::bind(&Bot::onGuildMemberRemove, &client, std::placeholders::_1));
-		//bot.on_guild_member_update(std::bind(&Bot::onGuildMemberUpdate, &client, std::placeholders::_1));
-		//bot.on_guild_members_chunk(std::bind(&Bot::onGuildMembersChunk, &client, std::placeholders::_1));
-		//bot.on_guild_role_create(std::bind(&Bot::onGuildRoleCreate, &client, std::placeholders::_1));
-		//bot.on_guild_role_update(std::bind(&Bot::onGuildRoleUpdate, &client, std::placeholders::_1));
-		//bot.on_guild_role_delete(std::bind(&Bot::onGuildRoleDelete, &client, std::placeholders::_1));
-		//bot.on_presence_update(std::bind(&Bot::onPresenceUpdate, &client, std::placeholders::_1));
-		//bot.on_voice_state_update(std::bind(&Bot::onVoiceStateUpdate, &client, std::placeholders::_1));
-		//bot.on_voice_server_update(std::bind(&Bot::onVoiceServerUpdate, &client, std::placeholders::_1));
-		//bot.on_webhooks_update(std::bind(&Bot::onWebhooksUpdate, &client, std::placeholders::_1));
 
 		bot.set_websocket_protocol(dpp::ws_etf);
 	
