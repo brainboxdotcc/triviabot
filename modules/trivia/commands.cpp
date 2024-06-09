@@ -505,7 +505,7 @@ void TriviaModule::handle_command(const in_cmd &cmd, const dpp::interaction_crea
 				if (g) {
 					for (auto modrole = settings.moderator_roles.begin(); modrole != settings.moderator_roles.end(); ++modrole) {
 						/* Check for when user cache is off, and guild member passed in via the message */
-						for (auto role = cmd.member.roles.begin(); role != cmd.member.roles.end(); ++role) {
+						for (auto role = cmd.member.get_roles().begin(); role != cmd.member.get_roles().end(); ++role) {
 							if (*role == *modrole) {
 								moderator = true;
 								break;
