@@ -516,7 +516,7 @@ bool Module::OnAllShardsReady()
 /**
  * Output a simple embed to a channel consisting just of a message.
  */
-void Module::EmbedSimple(const std::string &message, int64_t channelID)
+void Module::EmbedSimple(const std::string &message, uint64_t channelID, uint64_t guildID)
 {
 	std::stringstream s;
 	json embed_json;
@@ -529,15 +529,10 @@ void Module::EmbedSimple(const std::string &message, int64_t channelID)
 	catch (const std::exception &e) {
 		bot->core->log(dpp::ll_error, fmt::format("Invalid json for channel {} created by EmbedSimple: ", channelID, s.str()));
 	}
-	dpp::channel* channel = dpp::find_channel(channelID);
-	if (channel) {
-		if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == channel->guild_id) {
-			dpp::message m;
-			m.channel_id = channel->id;
-			m.embeds.push_back(dpp::embed(&embed_json));
-			bot->core->message_create(m);
-		}
-	} else {
-		bot->core->log(dpp::ll_error, fmt::format("Invalid channel {} passed to EmbedSimple", channelID));
+	if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == guildID) {
+		dpp::message m;
+		m.channel_id = channelID;
+		m.embeds.push_back(dpp::embed(&embed_json));
+		bot->core->message_create(m);
 	}
 }

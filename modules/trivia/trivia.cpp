@@ -283,15 +283,15 @@ bool TriviaModule::OnChannelDelete(const dpp::channel_delete_t &cd)
 bool TriviaModule::OnGuildDelete(const dpp::guild_delete_t &gd)
 {
 	/* Unavailable guilds means an outage. We don't remove them if it's just an outage */
-	if (!gd.deleted->is_unavailable()) {
+	if (!gd.deleted.is_unavailable()) {
 		{
 			std::unique_lock locker(settingcache_mutex);
-			settings_cache.erase(gd.deleted->id);
+			settings_cache.erase(gd.guild_id);
 		}
-		db::backgroundquery("UPDATE trivia_guild_cache SET kicked = 1 WHERE snowflake_id = ?", {gd.deleted->id});
-		bot->core->log(dpp::ll_info, fmt::format("Kicked from guild id {}", gd.deleted->id));
+		db::backgroundquery("UPDATE trivia_guild_cache SET kicked = 1 WHERE snowflake_id = ?", {gd.guild_id});
+		bot->core->log(dpp::ll_info, fmt::format("Kicked from guild id {}", gd.guild_id));
 	} else {
-		bot->core->log(dpp::ll_info, fmt::format("Outage on guild id {}", gd.deleted->id));
+		bot->core->log(dpp::ll_info, fmt::format("Outage on guild id {}", gd.guild_id));
 	}
 	return true;
 }
@@ -539,12 +539,14 @@ dpp::user dummyuser;
 
 void TriviaModule::CheckForQueuedStarts()
 {
+	uint64_t max_shards = from_string<uint32_t>(Bot::GetConfig("shardcount"), std::dec);
 	db::resultset rs = db::query("SELECT * FROM start_queue ORDER BY queuetime", {});
 	for (auto r = rs.begin(); r != rs.end(); ++r) {
 		uint64_t guild_id = from_string<uint64_t>((*r)["guild_id"], std::dec);
 		/* Check that this guild is on this cluster, if so we can start this game */
-		dpp::guild* g = dpp::find_guild(guild_id);
-		if (g) {
+		uint64_t shard = (guild_id >> 22) % max_shards;
+		uint64_t cluster = shard % bot->GetMaxClusters();
+		if (cluster == bot->GetClusterID()) {
 
 			uint64_t channel_id = from_string<uint64_t>((*r)["channel_id"], std::dec);
 			uint64_t user_id = from_string<uint64_t>((*r)["user_id"], std::dec);
@@ -565,14 +567,9 @@ void TriviaModule::CheckForQueuedStarts()
 
 void TriviaModule::CacheUser(dpp::snowflake user, dpp::user _user, dpp::guild_member gm, dpp::snowflake channel_id)
 {
-	dpp::channel* c = dpp::find_channel(channel_id);
-	if (c) {
-		dpp::guild* g = dpp::find_guild(c->guild_id);
-		if (g) {
-			cache_user(&_user, g, &gm);
-		}
-	} else {
-		bot->core->log(dpp::ll_debug, "Command with no user!");
+	dpp::guild* g = dpp::find_guild(gm.guild_id);
+	if (g) {
+		cache_user(&_user, g, &gm);
 	}
 }
 
