@@ -228,6 +228,18 @@ void Bot::onServerDelete(const dpp::guild_delete_t& gd) {
 	FOREACH_MOD(I_OnGuildDelete, OnGuildDelete(gd));
 }
 
+void Bot::onEntitlementDelete(const dpp::entitlement_delete_t& ed) {
+	FOREACH_MOD(I_OnEntitlementDelete, OnEntitlementDelete(ed));
+}
+
+void Bot::onEntitlementCreate(const dpp::entitlement_create_t& ed) {
+	FOREACH_MOD(I_OnEntitlementCreate, OnEntitlementCreate(ed));
+}
+
+void Bot::onEntitlementUpdate(const dpp::entitlement_update_t& ed) {
+	FOREACH_MOD(I_OnEntitlementUpdate, OnEntitlementUpdate(ed));
+}
+
 int main(int argc, char** argv) {
 
 	int dev = 0;	/* Note: getopt expects ints, this is actually treated as bool */
@@ -323,11 +335,13 @@ int main(int argc, char** argv) {
 
 		/* Set cache policy for D++ library
 		 * --------------------------------
-		 * User caching:  none
-		 * Emoji caching: none
-		 * Role caching:  none (WAS: aggressive)
+		 * User caching:    none
+		 * Emoji caching:   none
+		 * Role caching:    none (WAS: aggressive)
+		 * Channel caching: aggressive
+		 * Guild caching:   aggressive
 		*/
-		dpp::cache_policy_t cp = { dpp::cp_none, dpp::cp_none, dpp::cp_none };
+		dpp::cache_policy_t cp = { dpp::cp_none, dpp::cp_none, dpp::cp_none, dpp::cp_aggressive, dpp::cp_aggressive };
 		/* Construct cluster */
 		dpp::cluster bot(token, intents, dev ? 1 : from_string<uint32_t>(Bot::GetConfig("shardcount"), std::dec), clusterid, maxclusters, true, cp);
 
@@ -370,6 +384,9 @@ int main(int argc, char** argv) {
 		bot.on_guild_member_add(std::bind(&Bot::onMember, &client, std::placeholders::_1));
 		bot.on_guild_create(std::bind(&Bot::onServer, &client, std::placeholders::_1));
 		bot.on_guild_delete(std::bind(&Bot::onServerDelete, &client, std::placeholders::_1));
+		bot.on_entitlement_create(std::bind(&Bot::onEntitlementCreate, &client, std::placeholders::_1));
+		bot.on_entitlement_update(std::bind(&Bot::onEntitlementUpdate, &client, std::placeholders::_1));
+		bot.on_entitlement_delete(std::bind(&Bot::onEntitlementDelete, &client, std::placeholders::_1));
 
 		bot.set_websocket_protocol(dpp::ws_etf);
 	

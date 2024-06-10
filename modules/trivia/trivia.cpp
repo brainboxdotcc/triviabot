@@ -49,7 +49,16 @@ TriviaModule::TriviaModule(Bot* instigator, ModuleLoader* ml) : Module(instigato
 	srand(time(NULL) * time(NULL));
 
 	/* Attach D++ events to module */
-	ml->Attach({ I_OnMessage, I_OnPresenceUpdate, I_OnChannelDelete, I_OnGuildDelete, I_OnAllShardsReady, I_OnGuildCreate }, this);
+	ml->Attach({ I_OnMessage,
+		     I_OnPresenceUpdate,
+		     I_OnChannelDelete,
+		     I_OnGuildDelete,
+		     I_OnAllShardsReady,
+		     I_OnGuildCreate,
+		     I_OnEntitlementCreate,
+		     I_OnEntitlementDelete,
+		     I_OnEntitlementUpdate
+	}, this);
 
 	/* Various regular expressions */
 	number_tidy_dollars = new PCRE("^([\\d\\,]+)\\s+dollars$");

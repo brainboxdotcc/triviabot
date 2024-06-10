@@ -136,6 +136,9 @@ public:
 	void onVoiceStateUpdate (const dpp::voice_state_update_t &event);
 	void onVoiceServerUpdate (const dpp::voice_server_update_t &event);
 	void onWebhooksUpdate (const dpp::webhooks_update_t &event);
+	void onEntitlementDelete(const dpp::entitlement_delete_t& ed);
+	void onEntitlementCreate(const dpp::entitlement_create_t& ed);
+	void onEntitlementUpdate(const dpp::entitlement_update_t& ed);
 
 	static std::string GetConfig(const std::string &name);
 
