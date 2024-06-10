@@ -1,0 +1,7 @@
+{
+    "require": {
+        "carbondate/carbon": "^1.33",
+        "bugsnag/bugsnag": "^3.29",
+        "chargebee/chargebee-php": "^3.29"
+    }
+}
