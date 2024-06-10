@@ -145,6 +145,10 @@ public:
 	virtual bool OnAllShardsReady();
 	virtual bool OnChannelDelete(const dpp::channel_delete_t &cd);
 	virtual bool OnGuildDelete(const dpp::guild_delete_t &gd);
+	virtual bool OnEntitlementCreate(const dpp::entitlement_create_t& entitlement);
+	virtual bool OnEntitlementUpdate(const dpp::entitlement_update_t& entitlement);
+	virtual bool OnEntitlementDelete(const dpp::entitlement_delete_t& entitlement);
+
 
 	/* Returns a local count */
 	uint64_t GetActiveLocalGames();

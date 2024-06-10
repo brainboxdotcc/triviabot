@@ -75,6 +75,9 @@ const char* StringNames[I_END + 1] = {
 	"I_OnVoiceStateUpdate",
 	"I_OnVoiceServerUpdate",
 	"I_OnWebhooksUpdate",
+	"I_OnEntitlementCreate",
+	"I_OnEntitlementUpdate",
+	"I_OnEntitlementDelete",
 	"I_END"
 };
 
@@ -348,6 +351,21 @@ bool Module::OnMessage(const dpp::message_create_t &message, const std::string& 
 }
 
 bool Module::OnPresenceUpdate()
+{
+	return true;
+}
+
+bool Module::OnEntitlementDelete(const dpp::entitlement_delete_t& ed)
+{
+	return true;
+}
+
+bool Module::OnEntitlementCreate(const dpp::entitlement_create_t& ed)
+{
+	return true;
+}
+
+bool Module::OnEntitlementUpdate(const dpp::entitlement_update_t& ed)
 {
 	return true;
 }

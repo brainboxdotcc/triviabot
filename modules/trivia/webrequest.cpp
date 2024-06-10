@@ -426,18 +426,19 @@ void cache_user(const dpp::user *_user, const dpp::guild *_guild, const dpp::gui
 			{user_id, _user->username, _user->discriminator, _user->avatar.to_string(), _user->username, _user->discriminator, _user->avatar.to_string()});
 
 	db::backgroundquery("INSERT INTO trivia_guild_cache (snowflake_id, name, icon, owner_id) VALUES('?', '?', '?', '?') ON DUPLICATE KEY UPDATE name = '?', icon = '?', owner_id = '?', kicked = 0",
-			{guild_id, _guild->name, _guild->icon.to_string(),  _guild->owner_id, _guild->name, _guild->icon.to_string(),  _guild->owner_id});
+			{guild_id, _guild->name, _guild->icon.as_iconhash().to_string(),  _guild->owner_id, _guild->name, _guild->icon.as_iconhash().to_string(),  _guild->owner_id});
 
 	std::string member_roles;
 	std::string comma_roles;
-	for (auto r = gi->roles.begin();r != gi->roles.end(); ++r) {
+	for (auto r = gi->get_roles().begin();r != gi->get_roles().end(); ++r) {
 		member_roles.append(std::to_string(*r)).append(" ");
 	}
 	member_roles = trim(member_roles);
 	db::backgroundquery("INSERT INTO trivia_guild_membership (guild_id, user_id, roles) VALUES('?', '?', '?') ON DUPLICATE KEY UPDATE roles = '?'",
 			{guild_id, user_id, member_roles, member_roles});
 
-	for (auto n = _guild->roles.begin(); n != _guild->roles.end(); ++n) {
+	// TODO: Gather these in the dashboard via a REST API request when the user wants them. No need to be constantly caching and writing them here, removes our need to check roles at all.
+	/*for (auto n = _guild->roles.begin(); n != _guild->roles.end(); ++n) {
 		dpp::role* r = dpp::find_role(*n);
 		if (r) {
 			comma_roles.append(std::to_string(r->id)).append(",");
@@ -448,9 +449,9 @@ void cache_user(const dpp::user *_user, const dpp::guild *_guild, const dpp::gui
 			});
 		}
 	}
-	comma_roles = trim(comma_roles.substr(0, comma_roles.length() - 1));
+	comma_roles = trim(comma_roles.substr(0, comma_roles.length() - 1));*/
 	/* Delete any that have been deleted from discord */
-	db::backgroundquery("DELETE FROM trivia_role_cache WHERE guild_id = ? AND id NOT IN (" + comma_roles + ")", {guild_id});
+	//db::backgroundquery("DELETE FROM trivia_role_cache WHERE guild_id = ? AND id NOT IN (" + comma_roles + ")", {guild_id});
 }
 
 /* Fetch a question by ID from the database */

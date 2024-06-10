@@ -2,7 +2,7 @@
 
 * "Glitched" or "broken" images that crash Discord are **prohibited**.
 * Pay attention to **copyright**. if you are not sure about the ownership of an image you are submitting, source images that are creative commons licensed from Wikipedia or similar.
-* All question/answer images must be hosted on [imgur](https://imgur.com), for example web addresses of images must look like this: https://i.imgur.com/hhj3fFl.jpeg. Any images not matching this pattern will be rejected.
+* All question/answer images must be hosted on [Discord](https://discord.com), for example web addresses of images must look like this: https://cdn.discordapp.com/attachments/546392598437298186/1138712871639973918/card.jpg. Any images not matching this pattern will be rejected.
 * Images must be of a **reasonable resolution** (at least 800 pixels wide is recommended)
 * Images may be **portrait, landscape or square**
 * Supported image formats are: **GIF, JPEG, PNG**.

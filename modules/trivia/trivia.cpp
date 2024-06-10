@@ -49,7 +49,16 @@ TriviaModule::TriviaModule(Bot* instigator, ModuleLoader* ml) : Module(instigato
 	srand(time(NULL) * time(NULL));
 
 	/* Attach D++ events to module */
-	ml->Attach({ I_OnMessage, I_OnPresenceUpdate, I_OnChannelDelete, I_OnGuildDelete, I_OnAllShardsReady, I_OnGuildCreate }, this);
+	ml->Attach({ I_OnMessage,
+		     I_OnPresenceUpdate,
+		     I_OnChannelDelete,
+		     I_OnGuildDelete,
+		     I_OnAllShardsReady,
+		     I_OnGuildCreate,
+		     I_OnEntitlementCreate,
+		     I_OnEntitlementDelete,
+		     I_OnEntitlementUpdate
+	}, this);
 
 	/* Various regular expressions */
 	number_tidy_dollars = new PCRE("^([\\d\\,]+)\\s+dollars$");
@@ -283,15 +292,15 @@ bool TriviaModule::OnChannelDelete(const dpp::channel_delete_t &cd)
 bool TriviaModule::OnGuildDelete(const dpp::guild_delete_t &gd)
 {
 	/* Unavailable guilds means an outage. We don't remove them if it's just an outage */
-	if (!gd.deleted->is_unavailable()) {
+	if (!gd.deleted.is_unavailable()) {
 		{
 			std::unique_lock locker(settingcache_mutex);
-			settings_cache.erase(gd.deleted->id);
+			settings_cache.erase(gd.deleted.id);
 		}
-		db::backgroundquery("UPDATE trivia_guild_cache SET kicked = 1 WHERE snowflake_id = ?", {gd.deleted->id});
-		bot->core->log(dpp::ll_info, fmt::format("Kicked from guild id {}", gd.deleted->id));
+		db::backgroundquery("UPDATE trivia_guild_cache SET kicked = 1 WHERE snowflake_id = ?", {gd.deleted.id});
+		bot->core->log(dpp::ll_info, fmt::format("Kicked from guild id {}", gd.deleted.id));
 	} else {
-		bot->core->log(dpp::ll_info, fmt::format("Outage on guild id {}", gd.deleted->id));
+		bot->core->log(dpp::ll_info, fmt::format("Outage on guild id {}", gd.deleted.id));
 	}
 	return true;
 }
