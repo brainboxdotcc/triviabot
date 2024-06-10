@@ -19,7 +19,7 @@ bool TriviaModule::OnEntitlementUpdate(const dpp::entitlement_update_t& entitlem
 		{
 			entitlement.updating_entitlement.is_deleted() || entitlement.updating_entitlement.ends_at < time(nullptr) ? 0 : 1,
 			entitlement.updating_entitlement.user_id,
-			entitlement.updating_entitlement.id
+			entitlement.updating_entitlement.subscription_id
 		}
 	);
 	return true;
