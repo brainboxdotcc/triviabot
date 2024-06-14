@@ -426,7 +426,7 @@ void cache_user(const dpp::user *_user, const dpp::guild *_guild, const dpp::gui
 			{user_id, _user->username, _user->discriminator, _user->avatar.to_string(), _user->username, _user->discriminator, _user->avatar.to_string()});
 
 	db::backgroundquery("INSERT INTO trivia_guild_cache (snowflake_id, name, icon, owner_id) VALUES('?', '?', '?', '?') ON DUPLICATE KEY UPDATE name = '?', icon = '?', owner_id = '?', kicked = 0",
-			{guild_id, _guild->name, _guild->icon.as_iconhash().to_string(),  _guild->owner_id, _guild->name, _guild->icon.as_iconhash().to_string(),  _guild->owner_id});
+			{guild_id, _guild->name, (_guild->icon.is_iconhash() ? _guild->icon.as_iconhash().to_string() : ""),  _guild->owner_id, _guild->name, (_guild->icon.is_iconhash() ? _guild->icon.as_iconhash().to_string() : ""),  _guild->owner_id});
 
 	std::string member_roles;
 	std::string comma_roles;
