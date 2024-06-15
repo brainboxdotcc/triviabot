@@ -341,7 +341,7 @@ int main(int argc, char** argv) {
 		 * Channel caching: aggressive
 		 * Guild caching:   aggressive
 		*/
-		dpp::cache_policy_t cp = { dpp::cp_none, dpp::cp_none, dpp::cp_none, dpp::cp_aggressive, dpp::cp_aggressive };
+		dpp::cache_policy_t cp = { dpp::cp_none, dpp::cp_none, dpp::cp_aggressive, dpp::cp_aggressive, dpp::cp_aggressive };
 		/* Construct cluster */
 		dpp::cluster bot(token, intents, dev ? 1 : from_string<uint32_t>(Bot::GetConfig("shardcount"), std::dec), clusterid, maxclusters, true, cp);
 
