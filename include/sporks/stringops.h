@@ -80,10 +80,11 @@ inline std::string trim(std::string s)
  */
 template<class T> std::string Comma(T value)
 {
-	std::stringstream ss;
-	ss.imbue(std::locale(""));
-	ss << std::fixed << value;
-	return ss.str();
+	std::string number_str = std::to_string(value);
+	for (int64_t i = number_str.length() - 3; i > 0; i -= 3) {
+		number_str.insert(i, ",");
+	}
+	return number_str;
 }
 
 /**

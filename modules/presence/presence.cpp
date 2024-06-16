@@ -30,11 +30,15 @@
 
 class PresenceModule : public Module
 {
-	uint64_t halfminutes;
+	uint64_t halfminutes{};
+	uint64_t users{};
+	uint64_t channel_count{};
+	uint64_t servers{};
+
 public:
 	PresenceModule(Bot* instigator, ModuleLoader* ml) : Module(instigator, ml), halfminutes(0)
 	{
-		ml->Attach({ I_OnPresenceUpdate }, this);
+		ml->Attach({ I_OnPresenceUpdate, I_OnGuildCreate, I_OnGuildDelete }, this);
 	}
 
 	virtual ~PresenceModule()
@@ -68,18 +72,36 @@ public:
 		return ram;
 	}
 
+	virtual bool OnGuildCreate(const dpp::guild_create_t &guild)
+	{
+		if (guild.created->is_unavailable()) {
+			return true;
+		}
+		users += guild.created->member_count;
+		channel_count += guild.created->channels.size();
+		servers++;
+		return true;
+	}
+
+	virtual bool OnGuildDelete(const dpp::guild_delete_t &gd)
+	{
+		if (gd.deleted.is_unavailable()) {
+			return true;
+		}
+		users -= gd.deleted.member_count;
+		channel_count -= gd.deleted.channels.size();
+		servers++;
+		return true;
+	}
+
+
 	virtual bool OnPresenceUpdate()
 	{
-		int64_t users = 0, channel_count = 0, servers = 0;
-		for (auto & s : bot->core->get_shards()) {
-			users += s.second->get_member_count();
-			channel_count += s.second->get_channel_count();
-			servers += s.second->get_guild_count();
-		}
 		int64_t ram = GetRSS();
 		int64_t games = bot->counters.find("activegames") != bot->counters.end() ?  bot->counters["activegames"] : 0;
 
-		db::backgroundquery("INSERT INTO infobot_discord_counts (shard_id, cluster_id, dev, user_count, server_count, shard_count, channel_count, sent_messages, received_messages, memory_usage, games) VALUES('?','?','?','?','?','?','?','?','?','?','?') ON DUPLICATE KEY UPDATE user_count = '?', server_count = '?', shard_count = '?', channel_count = '?', sent_messages = '?', received_messages = '?', memory_usage = '?', games = '?'",
+		db::backgroundquery(
+			"INSERT INTO infobot_discord_counts (shard_id, cluster_id, dev, user_count, server_count, shard_count, channel_count, sent_messages, received_messages, memory_usage, games) VALUES('?','?','?','?','?','?','?','?','?','?','?') ON DUPLICATE KEY UPDATE user_count = '?', server_count = '?', shard_count = '?', channel_count = '?', sent_messages = '?', received_messages = '?', memory_usage = '?', games = '?'",
 			{
 				0, bot->GetClusterID(), bot->IsDevMode(), users, servers, bot->core->get_shards().size(),
 				channel_count, bot->sent_messages, bot->received_messages, ram, games,
