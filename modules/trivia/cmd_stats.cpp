@@ -2,7 +2,7 @@
  * 
  * TriviaBot, The trivia bot for discord based on Fruitloopy Trivia for ChatSpike IRC
  *
- * Copyright 2004 Craig Edwards <support@brainbox.cc>
+ * Copyright 2004,2005,2020,2021,2024 Craig Edwards <support@brainbox.cc>
  *
  * Core based on Sporks, the Learning Discord Bot, Craig Edwards (c) 2019.
  *
@@ -20,19 +20,11 @@
  *
  ************************************************************************************/
 
-#include <sporks/modules.h>
 #include <sporks/regex.h>
 #include <string>
-#include <cstdint>
-#include <fstream>
-#include <streambuf>
 #include <sporks/stringops.h>
-#include <sporks/statusfield.h>
-#include <sporks/database.h>
 #include "trivia.h"
-#include "webrequest.h"
 #include "commands.h"
-
 
 command_stats_t::command_stats_t(class TriviaModule* _creator, const std::string &_base_command, bool adm, const std::string& descr, std::vector<dpp::command_option> options) : command_t(_creator, _base_command, adm, descr, options) { }
 

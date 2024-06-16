@@ -22,10 +22,6 @@
 #include <sporks/bot.h>
 #include <sporks/modules.h>
 #include <string>
-#include <cstdint>
-#include <fstream>
-#include <streambuf>
-#include <sporks/stringops.h>
 #include <sporks/database.h>
 
 /**

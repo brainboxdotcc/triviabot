@@ -27,7 +27,6 @@
 #endif
 #include <unistd.h>
 #include <limits.h>
-#include <link.h>
 #include <dlfcn.h>
 #include <sstream>
 #include <sporks/stringops.h>

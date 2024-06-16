@@ -2,7 +2,7 @@
  * 
  * TriviaBot, The trivia bot for discord based on Fruitloopy Trivia for ChatSpike IRC
  *
- * Copyright 2004 Craig Edwards <support@brainbox.cc>
+ * Copyright 2004,2005,2020,2021,2024 Craig Edwards <support@brainbox.cc>
  *
  * Core based on Sporks, the Learning Discord Bot, Craig Edwards (c) 2019.
  *
@@ -25,16 +25,13 @@
 #include <sporks/modules.h>
 #include <sporks/regex.h>
 #include <string>
-#include <cstdint>
 #include <fstream>
 #include <streambuf>
 #include <sporks/stringops.h>
-#include <sporks/statusfield.h>
 #include <sporks/database.h>
 #include "state.h"
 #include "trivia.h"
 #include "webrequest.h"
-#include "piglatin.h"
 #include "commands.h"
 
 using json = nlohmann::json;
@@ -495,8 +492,19 @@ void TriviaModule::handle_command(const in_cmd &cmd, const dpp::interaction_crea
 			guild_settings_t settings = GetGuildSettings(cmd.guild_id);
 	
 			/* Check for moderator status - first check if owner */
-			dpp::permission p = event.command.get_resolved_permission(cmd.author_id);
-			bool moderator = (cmd.from_dashboard || p.has(dpp::p_administrator) || p.has(dpp::p_manage_guild));
+			bool is_owner{};
+			/* Owner status comes from the db, cached when we get a guild create or update */
+			auto rs = db::query("SELECT * FROM trivia_guild_cache WHERE snowflake_id = '?'", {cmd.guild_id});
+			if (!rs.empty()) {
+				is_owner = dpp::snowflake(rs[0].at("owner_id")) == cmd.author_id;
+			}
+			dpp::permission p;
+			try {
+				/* Resolved commands only work for slash commands, anywhere else it will throw */
+				p = event.command.get_resolved_permission(cmd.author_id);
+			}
+			catch (const std::exception&) { }
+			bool moderator = (is_owner || cmd.from_dashboard || p.has(dpp::p_administrator) || p.has(dpp::p_manage_guild));
 			/* Now iterate the list of moderator roles from settings */
 			if (!moderator) {
 				for (unsigned long & moderator_role : settings.moderator_roles) {
@@ -507,7 +515,6 @@ void TriviaModule::handle_command(const in_cmd &cmd, const dpp::interaction_crea
 							break;
 						}
 					}
-
 					if (moderator) {
 						/* Short-circuit out of outer loop */
 						break;

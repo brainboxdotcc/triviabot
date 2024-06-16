@@ -2,7 +2,7 @@
  * 
  * TriviaBot, The trivia bot for discord based on Fruitloopy Trivia for ChatSpike IRC
  *
- * Copyright 2004 Craig Edwards <support@brainbox.cc>
+ * Copyright 2004,2005,2020,2021,2024 Craig Edwards <support@brainbox.cc>
  *
  * Core based on Sporks, the Learning Discord Bot, Craig Edwards (c) 2019.
  *
@@ -21,8 +21,6 @@
  ************************************************************************************/
 
 #include <string>
-#include <cstdint>
-#include "trivia.h"
 #include "neutrino_api.h"
 
 neutrino::neutrino(dpp::cluster* cl, const std::string& userid, const std::string& apikey) : cluster(cl), user_id(userid), api_key(apikey) {

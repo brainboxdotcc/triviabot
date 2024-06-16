@@ -2,7 +2,7 @@
  * 
  * TriviaBot, the Discord Quiz Bot with over 80,000 questions!
  *
- * Copyright 2004 Craig Edwards <support@sporks.gg>
+ * Copyright 2004,2005,2020,2021,2024 Craig Edwards <support@brainbox.cc>
  *
  * Core based on Sporks, the Learning Discord Bot, Craig Edwards (c) 2019.
  *
@@ -20,7 +20,7 @@
  *
  ************************************************************************************/
 
-#include <signal.h>
+#include <csignal>
 #include <sporks/bot.h>
 
 bool reload = false;
