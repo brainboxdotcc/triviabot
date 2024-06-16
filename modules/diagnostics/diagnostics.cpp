@@ -123,7 +123,7 @@ public:
 
 				if (param.size() < 3) {
 					/* Invalid number of parameters */
-					EmbedSimple("Sudo make me a sandwich.", msg.channel_id);
+					EmbedSimple("Sudo make me a sandwich.", msg.channel_id, msg.guild_id);
 				} else {
 					/* Module list command */
 					if (lowercase(subcommand) == "modules") {
@@ -143,12 +143,9 @@ public:
 						s << fmt::format("+ ╰─────────────────────────┴───────────┴────────────────────────────────────────────────╯") << std::endl;
 						s << "```";
 
-						dpp::channel* c = dpp::find_channel(msg.channel_id);
-						if (c) {
-							if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == c->guild_id) {
-								bot->core->message_create(dpp::message(c->id, s.str()));
-								bot->sent_messages++;
-							}
+						if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == msg.guild_id) {
+							bot->core->message_create(dpp::message(msg.channel_id, s.str()));
+							bot->sent_messages++;
 						}
 						
 					} else if (lowercase(subcommand) == "load") {
@@ -156,21 +153,21 @@ public:
 						std::string modfile;
 						tokens >> modfile;
 						if (bot->Loader->Load(modfile)) {
-							EmbedSimple("Loaded module: " + modfile, msg.channel_id);
+							EmbedSimple("Loaded module: " + modfile, msg.channel_id, msg.guild_id);
 						} else {
-							EmbedSimple(std::string("Can't do that: ``") + bot->Loader->GetLastError() + "``", msg.channel_id);
+							EmbedSimple(std::string("Can't do that: ``") + bot->Loader->GetLastError() + "``", msg.channel_id, msg.guild_id);
 						}
 					} else if (lowercase(subcommand) == "unload") {
 						/* Unload a module */
 						std::string modfile;
 						tokens >> modfile;
 						if (modfile == "module_diagnostics.so") {
-							EmbedSimple("I suppose you think that's funny, dont you? *I'm sorry. can't do that, dave.*", msg.channel_id);
+							EmbedSimple("I suppose you think that's funny, dont you? *I'm sorry. can't do that, dave.*", msg.channel_id, msg.guild_id);
 						} else {
 							if (bot->Loader->Unload(modfile)) {
-								EmbedSimple("Unloaded module: " + modfile, msg.channel_id);
+								EmbedSimple("Unloaded module: " + modfile, msg.channel_id, msg.guild_id);
 							} else {
-								EmbedSimple(std::string("Can't do that: ``") + bot->Loader->GetLastError() + "``", msg.channel_id);
+								EmbedSimple(std::string("Can't do that: ``") + bot->Loader->GetLastError() + "``", msg.channel_id, msg.guild_id);
 							}
 						}
 					} else if (lowercase(subcommand) == "reload") {
@@ -178,12 +175,12 @@ public:
 						std::string modfile;
 						tokens >> modfile;
 						if (modfile == "module_diagnostics.so") {
-							EmbedSimple("I suppose you think that's funny, dont you? *I'm sorry. can't do that, dave.*", msg.channel_id);
+							EmbedSimple("I suppose you think that's funny, dont you? *I'm sorry. can't do that, dave.*", msg.channel_id, msg.guild_id);
 						} else {
 							if (bot->Loader->Reload(modfile)) {
-								EmbedSimple("Reloaded module: " + modfile, msg.channel_id);
+								EmbedSimple("Reloaded module: " + modfile, msg.channel_id, msg.guild_id);
 							} else {
-								EmbedSimple(std::string("Can't do that: `") + bot->Loader->GetLastError() + "`", msg.channel_id);
+								EmbedSimple(std::string("Can't do that: `") + bot->Loader->GetLastError() + "`", msg.channel_id, msg.guild_id);
 							}
 						}
 					} else if (lowercase(subcommand) == "sqlstats") {
@@ -217,7 +214,7 @@ public:
 						/* Listen for error messages only during execution of this query */
 						auto handler = bot->core->on_log([this, &had_error, sql, msg](const dpp::log_t& logmsg) {
 							if (logmsg.message.find("SQL Error: ") != std::string::npos) {
-								this->EmbedSimple(logmsg.message, msg.channel_id);
+								this->EmbedSimple(logmsg.message, msg.channel_id, msg.guild_id);
 								had_error = true;
 							}
 						});
@@ -226,7 +223,7 @@ public:
 						bot->core->on_log.detach(handler);
 						if (rs.size() == 0) {
 							if (!had_error) {
-								EmbedSimple("Successfully executed, no rows returned.", msg.channel_id);
+								EmbedSimple("Successfully executed, no rows returned.", msg.channel_id, msg.guild_id);
 							}
 						} else {
 							w << "- " << sql << std::endl;
@@ -270,40 +267,28 @@ public:
 								check = name;
 								w << (++check != rs[0].end() ? "┴" : "╯\n");
 							}
-							dpp::channel* c = dpp::find_channel(msg.channel_id);
-							if (c) {
-								if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == c->guild_id) {
-									bot->core->message_create(dpp::message(msg.channel_id, "```diff\n" + w.str() + "```"));
-									bot->sent_messages++;
-								}
+							if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == msg.guild_id) {
+								bot->core->message_create(dpp::message(msg.channel_id, "```diff\n" + w.str() + "```"));
+								bot->sent_messages++;
 							}
 						}
 					} else if (lowercase(subcommand) == "restart") {
-						EmbedSimple("Restarting...", msg.channel_id);
+						EmbedSimple("Restarting...", msg.channel_id, msg.guild_id);
 						::sleep(5);
 						/* Note: exit here will restart, because we run the bot via run.sh which restarts the bot on quit. */
 						exit(0);
 					} else if (lowercase(subcommand) == "ping") {
-						dpp::channel* c = dpp::find_channel(msg.channel_id);
-						if (c) {
-							std::chrono::steady_clock::time_point start_time = std::chrono::steady_clock::now();
-							dpp::snowflake cid = msg.channel_id;
-							bot->core->message_create(dpp::message(msg.channel_id, "Pinging..."), [cid, this, start_time](const dpp::confirmation_callback_t & state) {
-								double microseconds_ping = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - start_time).count();
-								dpp::snowflake mid = (std::get<dpp::message>(state.value)).id;
-								this->bot->core->message_delete(mid, cid);
-								this->EmbedSimple(fmt::format("**Pong!** REST Response time: {:.3f} ms", microseconds_ping / 1000, 4), cid);
-							});
-						}
+						std::chrono::steady_clock::time_point start_time = std::chrono::steady_clock::now();
+						bot->core->message_create(dpp::message(msg.channel_id, "Pinging..."), [msg, this, start_time](const dpp::confirmation_callback_t & state) {
+							double microseconds_ping = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - start_time).count();
+							dpp::snowflake mid = (std::get<dpp::message>(state.value)).id;
+							this->bot->core->message_delete(mid, msg.channel_id);
+							this->EmbedSimple(fmt::format("**Pong!** REST Response time: {:.3f} ms", microseconds_ping / 1000, 4), msg.channel_id, msg.guild_id);
+						});
 					} else if (lowercase(subcommand) == "lookup") {
 						int64_t gnum = 0;
 						tokens >> gnum;
-						dpp::guild* guild = dpp::find_guild(gnum);
-						if (guild) {
-							EmbedSimple(fmt::format("**Guild** {} is on **shard** #{}", gnum, 0), msg.channel_id);
-						} else {
-							EmbedSimple(fmt::format("**Guild** {} is not in my list!", gnum), msg.channel_id);
-						}
+						EmbedSimple("use /shard instead", msg.channel_id, msg.guild_id);
 					} else if (lowercase(subcommand) == "shardstats") {
 						std::stringstream w;
 						w << "```diff\n";
@@ -344,21 +329,18 @@ public:
 						}
 						w << fmt::format("+ ╰──────┴──────────┴───────┴───────┴────────────────┴───────────┴──────────╯\n");
 						w << "```";
-						dpp::channel *channel = dpp::find_channel(msg.channel_id);
-						if (channel) {
-							if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == channel->guild_id) {
-								bot->core->message_create(dpp::message(channel->id, w.str()));
-								bot->sent_messages++;
-							}
+						if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == msg.guild_id) {
+							bot->core->message_create(dpp::message(msg.channel_id, w.str()));
+							bot->sent_messages++;
 						}
 					} else {
 						/* Invalid command */
-						EmbedSimple("Sudo **what**? I don't know what that command means.", msg.channel_id);
+						EmbedSimple("Sudo **what**? I don't know what that command means.", msg.channel_id, msg.guild_id);
 					}
 				}
 			} else {
 				/* Access denied */
-				EmbedSimple("Make your own sandwich, mortal.", msg.channel_id);
+				EmbedSimple("Make your own sandwich, mortal.", msg.channel_id, msg.guild_id);
 			}
 
 			/* Eat the event */

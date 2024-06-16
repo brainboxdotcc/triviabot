@@ -197,6 +197,8 @@ bool TriviaModule::OnGuildCreate(const dpp::guild_create_t &guild)
 {
 	if (guild.created->is_unavailable()) {
 		bot->core->log(dpp::ll_error, fmt::format("Guild ID {} is unavailable due to an outage!", guild.created->id));
+	} else {
+		cache_guild(*guild.created);
 	}
 	return true;
 }
@@ -379,7 +381,7 @@ const guild_settings_t TriviaModule::GetGuildSettings(dpp::snowflake guild_id)
 		std::shared_lock locker(settingcache_mutex);
 		i = settings_cache.find(guild_id);
 		if (i != settings_cache.end()) {
-			if (time(NULL) > i->second.time + 60) {
+			if (time(nullptr) > i->second.time + 60) {
 				expired = true;
 			} else {
 				return i->second;
@@ -399,7 +401,7 @@ const guild_settings_t TriviaModule::GetGuildSettings(dpp::snowflake guild_id)
 			role_list.push_back(role_id);
 		}
 		std::string max_n = r[0]["max_normal_round"], max_q = r[0]["max_quickfire_round"], max_h = r[0]["max_hardcore_round"];
-		guild_settings_t gs(time(NULL), from_string<uint64_t>(r[0]["snowflake_id"], std::dec), r[0]["prefix"], role_list, from_string<uint32_t>(r[0]["embedcolour"], std::dec), (r[0]["premium"] == "1"), (r[0]["only_mods_stop"] == "1"), (r[0]["only_mods_start"] == "1"), (r[0]["role_reward_enabled"] == "1"), from_string<uint64_t>(r[0]["role_reward_id"], std::dec), r[0]["custom_url"], r[0]["language"], from_string<uint32_t>(r[0]["question_interval"], std::dec), max_n.empty() ? 200 : from_string<uint32_t>(max_n, std::dec), max_q.empty() ? (r[0]["premium"] == "1" ? 200 : 15) : from_string<uint32_t>(max_q, std::dec), max_h.empty() ? 200 : from_string<uint32_t>(max_h, std::dec), r[0]["disable_insane_rounds"] == "1");
+		guild_settings_t gs(time(nullptr), from_string<uint64_t>(r[0]["snowflake_id"], std::dec), r[0]["prefix"], role_list, from_string<uint32_t>(r[0]["embedcolour"], std::dec), (r[0]["premium"] == "1"), (r[0]["only_mods_stop"] == "1"), (r[0]["only_mods_start"] == "1"), (r[0]["role_reward_enabled"] == "1"), from_string<uint64_t>(r[0]["role_reward_id"], std::dec), r[0]["custom_url"], r[0]["language"], from_string<uint32_t>(r[0]["question_interval"], std::dec), max_n.empty() ? 200 : from_string<uint32_t>(max_n, std::dec), max_q.empty() ? (r[0]["premium"] == "1" ? 200 : 15) : from_string<uint32_t>(max_q, std::dec), max_h.empty() ? 200 : from_string<uint32_t>(max_h, std::dec), r[0]["disable_insane_rounds"] == "1");
 		{
 			std::unique_lock locker(settingcache_mutex);
 			settings_cache.emplace(guild_id, gs);
@@ -407,7 +409,7 @@ const guild_settings_t TriviaModule::GetGuildSettings(dpp::snowflake guild_id)
 		return gs;
 	} else {
 		db::backgroundquery("INSERT INTO bot_guild_settings (snowflake_id) VALUES('?')", {guild_id});
-		guild_settings_t gs(time(NULL), guild_id, "!", {}, 3238819, false, false, false, false, 0, "", "en", 20, 200, 15, 200, false);
+		guild_settings_t gs(time(nullptr), guild_id, "!", {}, 3238819, false, false, false, false, 0, "", "en", 20, 200, 15, 200, false);
 		{
 			std::unique_lock locker(settingcache_mutex);
 			settings_cache.emplace(guild_id, gs);
@@ -548,12 +550,14 @@ dpp::user dummyuser;
 
 void TriviaModule::CheckForQueuedStarts()
 {
+	uint64_t max_shards = from_string<uint32_t>(Bot::GetConfig("shardcount"), std::dec);
 	db::resultset rs = db::query("SELECT * FROM start_queue ORDER BY queuetime", {});
 	for (auto r = rs.begin(); r != rs.end(); ++r) {
 		uint64_t guild_id = from_string<uint64_t>((*r)["guild_id"], std::dec);
 		/* Check that this guild is on this cluster, if so we can start this game */
-		dpp::guild* g = dpp::find_guild(guild_id);
-		if (g) {
+		uint64_t shard = (guild_id >> 22) % max_shards;
+		uint64_t cluster = shard % bot->GetMaxClusters();
+		if (cluster == bot->GetClusterID()) {
 
 			uint64_t channel_id = from_string<uint64_t>((*r)["channel_id"], std::dec);
 			uint64_t user_id = from_string<uint64_t>((*r)["user_id"], std::dec);
@@ -574,15 +578,7 @@ void TriviaModule::CheckForQueuedStarts()
 
 void TriviaModule::CacheUser(dpp::snowflake user, dpp::user _user, dpp::guild_member gm, dpp::snowflake channel_id)
 {
-	dpp::channel* c = dpp::find_channel(channel_id);
-	if (c) {
-		dpp::guild* g = dpp::find_guild(c->guild_id);
-		if (g) {
-			cache_user(&_user, g, &gm);
-		}
-	} else {
-		bot->core->log(dpp::ll_debug, "Command with no user!");
-	}
+	cache_user(&_user, &gm, gm.guild_id);
 }
 
 bool TriviaModule::OnMessage(const dpp::message_create_t &message, const std::string& clean_message, bool mentioned, const std::vector<std::string> &stringmentions)

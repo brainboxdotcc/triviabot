@@ -240,7 +240,7 @@ public:
 	virtual bool OnEntitlementDelete(const dpp::entitlement_delete_t &obj);
 
 	/* Emit a simple text only embed to a channel, many modules use this for error reporting */
-	void EmbedSimple(const std::string &message, int64_t channelID);
+	void EmbedSimple(const std::string &message, uint64_t channelID, uint64_t guildID);
 };
 
 

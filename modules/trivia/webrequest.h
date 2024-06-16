@@ -81,7 +81,7 @@ streak_t get_streak(uint64_t snowflake_id, uint64_t guild_id);
 streak_t get_streak(uint64_t snowflake_id);
 void add_team_points(const std::string &team, int points, uint64_t snowflake_id);
 uint32_t get_team_points(const std::string &team);
-void cache_user(const class dpp::user *_user, const class dpp::guild *_guild, const class dpp::guild_member* gi);
+void cache_user(const dpp::user *_user, const dpp::guild_member* gi, dpp::snowflake guild_id);
 bool log_question_index(uint64_t guild_id, uint64_t channel_id, uint32_t index, uint32_t streak, uint64_t lastanswered, uint32_t state, uint32_t qid);
 void log_game_start(uint64_t guild_id, uint64_t channel_id, uint64_t number_questions, bool quickfire, const std::string &channel_name, uint64_t user_id, const std::vector<std::string> &questions, bool hintless);
 void log_game_end(uint64_t guild_id, uint64_t channel_id);
@@ -99,3 +99,5 @@ void custom_command(const std::string& interaction_token, dpp::snowflake command
 // design such as those that use graphics APIs.
 void check_achievement(const std::string &when, uint64_t user_id, uint64_t guild_id);
 void post_webhook(const std::string &webhook_url, const std::string &embed, uint64_t channel_id);
+
+void cache_guild(const dpp::guild& _guild);

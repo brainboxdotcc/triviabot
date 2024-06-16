@@ -335,15 +335,17 @@ int main(int argc, char** argv) {
 
 		/* Set cache policy for D++ library
 		 * --------------------------------
-		 * User caching:    none
-		 * Emoji caching:   none
-		 * Role caching:    none (WAS: aggressive)
-		 * Channel caching: aggressive
-		 * Guild caching:   aggressive
-		*/
-		dpp::cache_policy_t cp = { dpp::cp_none, dpp::cp_none, dpp::cp_aggressive, dpp::cp_aggressive, dpp::cp_aggressive };
+		 * User caching:     none
+		 * Emoji caching:    none
+		 * Role caching:     none
+		 * Channel caching:  none
+		 * Guild caching:    none
+		 */
+		dpp::cache_policy_t cp = { dpp::cp_none, dpp::cp_none, dpp::cp_none, dpp::cp_none, dpp::cp_none };
+		const bool compressed = false;
+
 		/* Construct cluster */
-		dpp::cluster bot(token, intents, dev ? 1 : from_string<uint32_t>(Bot::GetConfig("shardcount"), std::dec), clusterid, maxclusters, true, cp);
+		dpp::cluster bot(token, intents, dev ? 1 : from_string<uint32_t>(Bot::GetConfig("shardcount"), std::dec), clusterid, maxclusters, compressed, cp);
 
 		/* Connect to SQL database */
 		if (!db::connect(&bot, Bot::GetConfig("dbhost"), Bot::GetConfig("dbuser"), Bot::GetConfig("dbpass"), Bot::GetConfig("dbname"), from_string<uint32_t>(Bot::GetConfig("dbport"), std::dec))) {

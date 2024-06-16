@@ -483,39 +483,34 @@ void TriviaModule::handle_command(const in_cmd &cmd, const dpp::interaction_crea
 			std::stringstream tokens(cmd.msg);
 			std::string base_command;
 			tokens >> base_command;
+			auto* c = const_cast<dpp::channel*>(&event.command.channel);
 	
-			dpp::channel* c = dpp::find_channel(cmd.channel_id);
-			dpp::user* user = (dpp::user*)&cmd.user;
+			auto* user = (dpp::user*)&cmd.user;
 			if (cmd.from_dashboard) {
 				dashboard_dummy.username = "Dashboard";
 				dashboard_dummy.flags = 0;
 				user = &dashboard_dummy;
 			}
-			if (!c) {
-				return;
-			}
 	
 			guild_settings_t settings = GetGuildSettings(cmd.guild_id);
 	
 			/* Check for moderator status - first check if owner */
-			dpp::guild* g = dpp::find_guild(cmd.guild_id);
-			bool moderator = (g && (cmd.from_dashboard || g->owner_id == cmd.author_id));
+			dpp::permission p = event.command.get_resolved_permission(cmd.author_id);
+			bool moderator = (cmd.from_dashboard || p.has(dpp::p_administrator) || p.has(dpp::p_manage_guild));
 			/* Now iterate the list of moderator roles from settings */
 			if (!moderator) {
-				if (g) {
-					for (auto modrole = settings.moderator_roles.begin(); modrole != settings.moderator_roles.end(); ++modrole) {
-						/* Check for when user cache is off, and guild member passed in via the message */
-						for (auto role = cmd.member.get_roles().begin(); role != cmd.member.get_roles().end(); ++role) {
-							if (*role == *modrole) {
-								moderator = true;
-								break;
-							}
-						}
-
-						if (moderator) {
-							/* Short-circuit out of outer loop */
+				for (unsigned long & moderator_role : settings.moderator_roles) {
+					/* Check for when user cache is off, and guild member passed in via the message */
+					for (auto role : cmd.member.get_roles()) {
+						if (role == moderator_role) {
+							moderator = true;
 							break;
 						}
+					}
+
+					if (moderator) {
+						/* Short-circuit out of outer loop */
+						break;
 					}
 				}
 			}
