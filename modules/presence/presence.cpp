@@ -90,7 +90,7 @@ public:
 		}
 		users -= gd.deleted.member_count;
 		channel_count -= gd.deleted.channels.size();
-		servers++;
+		servers--;
 		return true;
 	}
 
