@@ -498,7 +498,7 @@ void TriviaModule::handle_command(const in_cmd &cmd, const dpp::interaction_crea
 			if (!rs.empty()) {
 				is_owner = dpp::snowflake(rs[0].at("owner_id")) == cmd.author_id;
 			}
-			dpp::permission p;
+			dpp::permission p{};
 			try {
 				/* Resolved commands only work for slash commands, anywhere else it will throw */
 				p = event.command.get_resolved_permission(cmd.author_id);
