@@ -6,3 +6,4 @@ config.json
 *~
 build/*
 js/*.js
+vendor
