@@ -82,7 +82,7 @@ void command_profile_t::call(const in_cmd &cmd, std::stringstream &tokens, guild
 
 		creator->EmbedWithFields(
 			cmd.interaction_token, cmd.command_id, settings,
-			fmt::format("{0}#{1:04d} {2}", _user[0]["username"], from_string<uint32_t>(_user[0]["discriminator"], std::dec), _("PROFILETITLE", settings)),
+			fmt::format("{0} {1}", _user[0]["username"], _("PROFILETITLE", settings)),
 			{
 				{ _("BADGES", settings), emojis, true },
 				{ _("ACHIEVEMENTS", settings), a, true },

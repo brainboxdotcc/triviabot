@@ -53,6 +53,7 @@ TriviaModule::TriviaModule(Bot* instigator, ModuleLoader* ml) : Module(instigato
 		     I_OnPresenceUpdate,
 		     I_OnChannelDelete,
 		     I_OnGuildDelete,
+		     I_OnGuildUpdate,
 		     I_OnAllShardsReady,
 		     I_OnGuildCreate,
 		     I_OnEntitlementCreate,
@@ -200,6 +201,12 @@ bool TriviaModule::OnGuildCreate(const dpp::guild_create_t &guild)
 	} else {
 		cache_guild(*guild.created);
 	}
+	return true;
+}
+
+bool TriviaModule::OnGuildUpdate(const dpp::guild_update_t &guild)
+{
+	cache_guild(*guild.updated);
 	return true;
 }
 
@@ -484,7 +491,7 @@ void TriviaModule::show_stats(const std::string& interaction_token, dpp::snowfla
 	std::string msg;
 	for(auto& r : topten) {
 		if (!r["username"].empty()) {
-			msg.append(fmt::format("{0}. `{1}#{2:04d}` ({3}) {4}\n", count++, r["username"], from_string<uint32_t>(r["discriminator"], std::dec), r["dayscore"], r["emojis"]));
+			msg.append(fmt::format("{0}. `{1}` ({2}) {3}\n", count++, r["username"], r["dayscore"], r["emojis"]));
 		} else {
 			msg.append(fmt::format("{}. <@{}> ({})\n", count++, r["snowflake_id"], r["dayscore"]));
 		}

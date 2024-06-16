@@ -192,6 +192,7 @@ public:
 	void CheckForQueuedStarts();
 	virtual bool OnMessage(const dpp::message_create_t &message, const std::string& clean_message, bool mentioned, const std::vector<std::string> &stringmentions);
 	virtual bool OnGuildCreate(const dpp::guild_create_t &guild);
+	virtual bool OnGuildUpdate(const dpp::guild_update_t &guild);
 	bool RealOnMessage(const dpp::message_create_t &message, const std::string& clean_message, bool mentioned, const std::vector<std::string> &stringmentions, dpp::snowflake author_id = 0);
 	void GetHelp(const std::string& interaction_token, dpp::snowflake command_id, const std::string &section, dpp::snowflake channelID, const std::string &botusername, dpp::snowflake botid, const std::string &author, dpp::snowflake authorid, const guild_settings_t &settings);
 	void CacheUser(dpp::snowflake user, dpp::user _user, dpp::guild_member gm, dpp::snowflake channel_id);

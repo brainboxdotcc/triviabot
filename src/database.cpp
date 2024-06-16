@@ -128,7 +128,7 @@ namespace db {
 			std::queue<background_query> bg_copy;
 			{
 				std::lock_guard<std::mutex> db_lock(b_db_mutex);
-				while (background_queries.size()) {
+				while (!background_queries.empty()) {
 					bg_copy.emplace(background_queries.front());
 					background_queries.pop();
 				}
@@ -154,16 +154,16 @@ namespace db {
 		std::lock_guard<std::mutex> db_lock2(b_db_mutex);
 		log = logger;
 		bool failed = false;
-		for (size_t i = 0; i < POOL_SIZE; ++i) {
-			if (mysql_init(&connections[i].connection) != nullptr) {
-				mysql_options(&connections[i].connection, MYSQL_SET_CHARSET_NAME, "utf8mb4");
-				mysql_options(&connections[i].connection, MYSQL_INIT_COMMAND, CONNECT_STRING);
+		for (auto & connection : connections) {
+			if (mysql_init(&connection.connection) != nullptr) {
+				mysql_options(&connection.connection, MYSQL_SET_CHARSET_NAME, "utf8mb4");
+				mysql_options(&connection.connection, MYSQL_INIT_COMMAND, CONNECT_STRING);
 				char reconnect = 1;
-				if (mysql_options(&connections[i].connection, MYSQL_OPT_RECONNECT, &reconnect) == 0) {
-					if (!mysql_real_connect(&connections[i].connection, host.c_str(), user.c_str(), pass.c_str(), db.c_str(), port, NULL, CLIENT_MULTI_RESULTS | CLIENT_MULTI_STATEMENTS)) {
+				if (mysql_options(&connection.connection, MYSQL_OPT_RECONNECT, &reconnect) == 0) {
+					if (!mysql_real_connect(&connection.connection, host.c_str(), user.c_str(), pass.c_str(), db.c_str(), port, NULL, CLIENT_MULTI_RESULTS | CLIENT_MULTI_STATEMENTS)) {
 						failed = true;
-						std::cout << mysql_error(&connections[i].connection) << "\n";
-						logger->log(dpp::ll_error, "Database connection failed " + std::string(mysql_error(&connections[i].connection)));
+						std::cout << mysql_error(&connection.connection) << "\n";
+						logger->log(dpp::ll_error, "Database connection failed " + std::string(mysql_error(&connection.connection)));
 						break;
 					}
 				}
@@ -269,14 +269,14 @@ namespace db {
 		 * TODO: Really, I should use a cached query and the built in parameterisation for this.
 		 *       It would scale a lot better.
 		 */
-		for (auto v = format.begin(); v != format.end(); ++v) {
-			if (*v == '?' && escaped_parameters.size() >= param + 1) {
+		for (char v : format) {
+			if (v == '?' && escaped_parameters.size() >= param + 1) {
 				querystring.append(escaped_parameters[param]);
 				if (param != escaped_parameters.size() - 1) {
 					param++;
 				}
 			} else {
-				querystring += *v;
+				querystring += v;
 			}
 		}
 

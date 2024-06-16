@@ -651,9 +651,9 @@ void state_t::do_insane_board(const guild_settings_t& settings) {
 		ordered.insert(std::make_pair(s->second, s->first));
 	}
 	for (std::multimap<uint64_t, dpp::snowflake>::reverse_iterator sc = ordered.rbegin(); sc != ordered.rend(); ++sc) {
-		db::resultset info = db::query("SELECT username, discriminator, get_emojis(trivia_user_cache.snowflake_id) as emojis FROM trivia_user_cache WHERE snowflake_id = ?", {sc->second});
+		db::resultset info = db::query("SELECT username, get_emojis(trivia_user_cache.snowflake_id) as emojis FROM trivia_user_cache WHERE snowflake_id = ?", {sc->second});
 		if (info.size()) {
-			desc += fmt::format("**#{0}** `{1}#{2:04d}` (*{3}*) {4}\n", i, info[0]["username"], from_string<uint32_t>(info[0]["discriminator"], std::dec), Comma(sc->first), info[0]["emojis"]);
+			desc += fmt::format("**#{0}** `{1}` (*{2}*) {3}\n", i, info[0]["username"], Comma(sc->first), info[0]["emojis"]);
 		}
 		i++;
 	}
