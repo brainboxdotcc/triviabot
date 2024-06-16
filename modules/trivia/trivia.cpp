@@ -415,7 +415,7 @@ const guild_settings_t TriviaModule::GetGuildSettings(dpp::snowflake guild_id)
 		}
 		return gs;
 	} else {
-		db::backgroundquery("INSERT INTO bot_guild_settings (snowflake_id) VALUES('?')", {guild_id});
+		db::backgroundquery("INSERT INTO bot_guild_settings (snowflake_id) VALUES('?') ON DUPLICATE KEY UPDATE prefix = prefix", {guild_id});
 		guild_settings_t gs(time(nullptr), guild_id, "!", {}, 3238819, false, false, false, false, 0, "", "en", 20, 200, 15, 200, false);
 		{
 			std::unique_lock locker(settingcache_mutex);
