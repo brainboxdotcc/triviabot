@@ -337,7 +337,7 @@ uint64_t TriviaModule::GetActiveGames()
 uint64_t TriviaModule::GetGuildTotal()
 {
 	/* Counts all games across all clusters */
-	auto rs = db::query("SELECT SUM(server_count) AS server_count FROM infobot_discord_counts WHERE dev = ?", {bot->IsDevMode() ? 1 : 0});
+	auto rs = db::query("SELECT COUNT(id) AS server_count FROM guild_temp_cache", {});
 	if (rs.size()) {
 		return from_string<uint64_t>(rs[0]["server_count"], std::dec);
 	} else {
@@ -348,7 +348,7 @@ uint64_t TriviaModule::GetGuildTotal()
 uint64_t TriviaModule::GetMemberTotal()
 {
 	/* Counts all games across all clusters */
-	auto rs = db::query("SELECT SUM(user_count) AS user_count FROM infobot_discord_counts WHERE dev = ?", {bot->IsDevMode() ? 1 : 0});
+	auto rs = db::query("SELECT SUM(user_count) AS user_count FROM guild_temp_cache", {});
 	if (rs.size()) {
 		return from_string<uint64_t>(rs[0]["user_count"], std::dec);
 	} else {

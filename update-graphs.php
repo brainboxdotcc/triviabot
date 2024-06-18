@@ -110,7 +110,7 @@ $last = mysqli_fetch_object(mysqli_query($conn, "SELECT * FROM trivia_graphs ORD
 if ($check->online < $total_shards || $check->connected < $total_shards) {
 	mysqli_query($conn, "INSERT INTO trivia_graphs (entry_date, cpu, user_count, server_count, channel_count, memory_usage, games, discord_ping, trivia_ping, db_ping, kicks, commands, questions, question_total, cluster_cpu) VALUES(now(), $cpu_percent, $last->user_count, $last->server_count, $last->channel_count, $last->memory_usage, $last->games, $discord_api_ping, $tb_api_ping, $db_ping, $kicks, $cmds, $questions, $qcounter, '$cpu_all')");
 } else {
-	$current = mysqli_fetch_object(mysqli_query($conn, "SELECT SUM(user_count) as user_count, SUM(server_count) AS server_count, SUM(channel_count) AS channel_count, SUM(memory_usage) AS memory_usage, SUM(games) AS games FROM infobot_discord_counts WHERE dev = 0"));
+	$current = mysqli_fetch_object(mysqli_query($conn, "SELECT MAX(user_count) as user_count, MAX(server_count) AS server_count, SUM(channel_count) AS channel_count, SUM(memory_usage) AS memory_usage, SUM(games) AS games FROM infobot_discord_counts WHERE dev = 0"));
 	mysqli_query($conn, "INSERT INTO trivia_graphs (entry_date, cpu, user_count, server_count, channel_count, memory_usage, games, discord_ping, trivia_ping, db_ping, kicks, commands, questions, question_total, cluster_cpu) VALUES(now(), $cpu_percent, $current->user_count, $current->server_count, $current->channel_count, $current->memory_usage, $current->games, $discord_api_ping, $tb_api_ping, $db_ping, $kicks, $cmds, $questions, $qcounter, '$cpu_all')");
 }
 
