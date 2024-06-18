@@ -31,14 +31,11 @@
 class PresenceModule : public Module
 {
 	uint64_t halfminutes{};
-	uint64_t users{};
-	uint64_t channel_count{};
-	uint64_t servers{};
 
 public:
 	PresenceModule(Bot* instigator, ModuleLoader* ml) : Module(instigator, ml), halfminutes(0)
 	{
-		ml->Attach({ I_OnPresenceUpdate, I_OnGuildCreate, I_OnGuildDelete }, this);
+		ml->Attach({ I_OnPresenceUpdate, I_OnGuildCreate, I_OnGuildDelete, I_OnGuildUpdate }, this);
 	}
 
 	virtual ~PresenceModule()
@@ -72,14 +69,21 @@ public:
 		return ram;
 	}
 
-	virtual bool OnGuildCreate(const dpp::guild_create_t &guild)
+	virtual bool OnGuildCreate(const dpp::guild_create_t &event)
 	{
-		if (guild.created->is_unavailable()) {
+		if (event.created->is_unavailable()) {
 			return true;
 		}
-		users += guild.created->member_count;
-		channel_count += guild.created->channels.size();
-		servers++;
+		db::backgroundquery(
+			"INSERT INTO guild_temp_cache (id, user_count) VALUES(?,?) ON DUPLICATE KEY UPDATE user_count = ?",
+			{ event.created->id, event.created->member_count, event.created->member_count }
+		);
+		return true;
+	}
+
+	virtual bool OnGuildUpdate(const dpp::guild_update_t &gu)
+	{
+		db::backgroundquery("UPDATE guild_temp_cache SET user_count = ? WHERE id = ?", { gu.updated->member_count, gu.updated->id });
 		return true;
 	}
 
@@ -88,9 +92,7 @@ public:
 		if (gd.deleted.is_unavailable()) {
 			return true;
 		}
-		users -= gd.deleted.member_count;
-		channel_count -= gd.deleted.channels.size();
-		servers--;
+		db::backgroundquery("DELETE FROM guild_temp_cache WHERE id = ?", { gd.deleted.id });
 		return true;
 	}
 
@@ -101,12 +103,15 @@ public:
 		int64_t games = bot->counters.find("activegames") != bot->counters.end() ?  bot->counters["activegames"] : 0;
 
 		db::backgroundquery(
-			"INSERT INTO infobot_discord_counts (shard_id, cluster_id, dev, user_count, server_count, shard_count, channel_count, sent_messages, received_messages, memory_usage, games) VALUES('?','?','?','?','?','?','?','?','?','?','?') ON DUPLICATE KEY UPDATE user_count = '?', server_count = '?', shard_count = '?', channel_count = '?', sent_messages = '?', received_messages = '?', memory_usage = '?', games = '?'",
+			"INSERT INTO infobot_discord_counts (shard_id, cluster_id, dev, server_count, user_count, shard_count, channel_count, sent_messages, received_messages, memory_usage, games) "
+			"VALUES('?','?','?',(SELECT COUNT(id) FROM guild_temp_cache), (SELECT SUM(user_count) FROM guild_temp_cache) ,'?','?','?','?','?','?') "
+			"ON DUPLICATE KEY UPDATE user_count = (SELECT SUM(user_count) FROM guild_temp_cache), server_count = (SELECT COUNT(id) FROM guild_temp_cache), "
+			"shard_count = '?', channel_count = '?', sent_messages = '?', received_messages = '?', memory_usage = '?', games = '?'",
 			{
-				0, bot->GetClusterID(), bot->IsDevMode(), users, servers, bot->core->get_shards().size(),
-				channel_count, bot->sent_messages, bot->received_messages, ram, games,
-				users, servers, bot->core->get_shards().size(),
-				channel_count, bot->sent_messages, bot->received_messages, ram, games
+				0, bot->GetClusterID(), bot->IsDevMode(), bot->core->get_shards().size(),
+				0, bot->sent_messages, bot->received_messages, ram, games,
+				bot->core->get_shards().size(),
+				0, bot->sent_messages, bot->received_messages, ram, games
 			}
 		);
 		if (++halfminutes > 20) {
