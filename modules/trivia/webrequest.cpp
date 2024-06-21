@@ -276,6 +276,8 @@ std::string web_request(const std::string &_host, const std::string &_path, cons
 								if (i != module->webhooks.end()) {
 									module->webhooks.erase(i);
 								}
+								auto wh = module->webhooks;
+								module->webhooks = wh;
 							}
 							db::backgroundquery("DELETE FROM channel_webhooks WHERE channel_id = ?", {channel_id});
 						}

@@ -451,13 +451,27 @@ void TriviaModule::thinking(bool ephemeral, const dpp::interaction_create_t& eve
 bool TriviaModule::has_rl_warn(dpp::snowflake channel_id) {
 	std::shared_lock cmd_lock(cmdmutex);
 	auto check = last_rl_warning.find(channel_id);
-	return check != last_rl_warning.end() && time(NULL) < check->second;
+	bool r = check != last_rl_warning.end() && time(NULL) < check->second;
+	if (check != limits.end() && time(NULL) >= check->second) {
+		last_rl_warning.erase(check);
+	}
+	if (last_rl_warning.size() == 0) {
+		last_rl_warning = {};
+	}
+	return r;
 }
 
 bool TriviaModule::has_limit(dpp::snowflake channel_id) {
 	std::shared_lock cmd_lock(cmdmutex);
 	auto check = limits.find(channel_id);
-	return check != limits.end() && time(NULL) < check->second;
+	bool r = check != limits.end() && time(NULL) < check->second;
+	if (check != limits.end() && time(NULL) >= check->second) {
+		limits.erase(check);
+	}
+	if (limits.size() == 0) {
+		limits = {};
+	}
+	return r;
 }
 
 bool TriviaModule::set_rl_warn(dpp::snowflake channel_id) {

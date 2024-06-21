@@ -301,6 +301,8 @@ bool TriviaModule::OnGuildDelete(const dpp::guild_delete_t &gd)
 		{
 			std::unique_lock locker(settingcache_mutex);
 			settings_cache.erase(gd.deleted.id);
+			auto s = settings_cache;
+			settings_cache = s;
 		}
 		db::backgroundquery("UPDATE trivia_guild_cache SET kicked = 1 WHERE snowflake_id = ?", {gd.deleted.id});
 		bot->core->log(dpp::ll_info, fmt::format("Kicked from guild id {}", gd.deleted.id));
@@ -373,6 +375,8 @@ void TriviaModule::eraseCache(dpp::snowflake guild_id)
 	auto i = settings_cache.find(guild_id);
 	if (i != settings_cache.end()) {
 		settings_cache.erase(i);
+		auto s = settings_cache;
+		settings_cache = s;
 	}
 }
 
@@ -527,6 +531,9 @@ void TriviaModule::Tick()
 			for (auto e : expired) {
 				bot->core->log(dpp::ll_debug, fmt::format("Terminating state id {}", e));
 				states.erase(e);
+				if (states.size() == 0) {
+					states = {};
+				}
 			}
 		}
 		catch (const std::exception &e) {

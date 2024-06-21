@@ -131,6 +131,9 @@ void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 					creator->SimpleEmbed(settings, ":octagonal_sign:", _("DASH_STOP", settings), j->first, _("STOPPING", settings));
 					log_game_end(cmd.guild_id, j->first);
 					creator->states.erase(j);
+					if (creator->states.size() == 0) {
+						creator->states = {};
+					}
 					break;
 				} else {
 					creator->EmbedWithFields(cmd.interaction_token, cmd.command_id, settings, _("NOWAY", settings), {
@@ -150,6 +153,9 @@ void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 					creator->SimpleEmbed(settings, ":octagonal_sign:", _("DASH_STOP", settings), j->first, _("STOPPING", settings));
 					log_game_end(cmd.guild_id, j->first);
 					creator->states.erase(j);
+					if (creator->states.size() == 0) {
+						creator->states = {};
+					}
 					break;
 				} else {
 					number_of_games++;
@@ -260,6 +266,8 @@ void command_start_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_s
 						creator->GetBot()->core->log(dpp::ll_debug, fmt::format("Streak for channel id {} not carried over, as it is over 10 minutes old", cmd.channel_id));
 					}
 				}
+				auto streaks = creator->last_channel_streaks;
+				creator->last_channel_streaks = streaks;
 			}
 			
 			{
