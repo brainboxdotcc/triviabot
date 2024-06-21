@@ -38,6 +38,7 @@
 #include <sporks/database.h>
 #include <sporks/stringops.h>
 #include <sporks/modules.h>
+#include <malloc.h>
 
 using json = nlohmann::json;
 
@@ -164,8 +165,8 @@ int main(int argc, char** argv) {
 			default:
 				std::cerr << "Unknown parameter '" << argv[optind - 1] << "'\n";
 				std::cerr << "Usage: " << argv[0] << " [-dev] [-test] [-members]\n\n";
-				std::cerr << "-dev          Run using development token\n";
-				std::cerr << "-test:        Run using live token, but eat all outbound messages except on test server\n";
+				std::cerr << "-dev	  Run using development token\n";
+				std::cerr << "-test:	Run using live token, but eat all outbound messages except on test server\n";
 				std::cerr << "-members:     Issue a GUILD_MEMBERS intent on shard registration\n";
 				std::cerr << "-clusterid:   The current cluster id to identify for, must be set with -maxclusters\n";
 				std::cerr << "-maxclusters: The maximum number of clusters the bot is running, must be set with -clusterid\n";
@@ -265,6 +266,11 @@ int main(int argc, char** argv) {
 		bot.on_entitlement_delete(std::bind(&Bot::onEntitlementDelete, &client, std::placeholders::_1));
 
 		bot.set_websocket_protocol(dpp::ws_etf);
+
+		bot.start_timer([](dpp::timer t) {
+			/* Garbage collect free memory by consolidating free malloc() blocks */
+			malloc_trim(0);
+		}, 600);
 	
 		try {
 			/* Actually connect and start the event loop */
