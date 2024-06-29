@@ -1386,6 +1386,25 @@
         "zh": "今日十大",
         "nl": "De top tien van vandaag"
     },
+    "NOBODY_PLAYED_TODAY": {
+        "en": "Nobody has played here today! :cry:",
+        "tr": "Nobody has played here today! :cry:",
+        "pt": "Nobody has played here today! :cry:",
+        "fr": "Nobody has played here today! :cry:",
+        "es": "Nobody has played here today! :cry:",
+        "de": "Heute hat hier noch keiner gespielt! :cry:",
+        "hi": "Nobody has played here today! :cry:",
+        "sv": "Nobody has played here today! :cry:",
+        "ru": "Nobody has played here today! :cry:",
+        "it": "Nobody has played here today! :cry:",
+        "pl": "Nobody has played here today! :cry:",
+        "ko": "Nobody has played here today! :cry:",
+        "ja": "Nobody has played here today! :cry:",
+        "bg": "Nobody has played here today! :cry:",
+        "ar": "Nobody has played here today! :cry:",
+        "zh": "Nobody has played here today! :cry:",
+        "nl": "Nobody has played here today! :cry:"
+    },
     "MORE_INFO": {
         "en": "More Information",
         "tr": "Daha Fazla Bilgi",
