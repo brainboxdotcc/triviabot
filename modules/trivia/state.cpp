@@ -416,7 +416,7 @@ void state_t::tick()
 				do_end_game(settings);
 			break;
 			default:
-				creator->GetBot()->core->log(dpp::ll_warning, fmt::format("Invalid state '{}', ending round.", gamestate));
+				creator->GetBot()->core->log(dpp::ll_warning, fmt::format("Invalid state '{}', ending round.", (uint32_t)gamestate));
 				gamestate = TRIV_END;
 				terminating = true;
 			break;

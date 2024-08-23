@@ -21,6 +21,7 @@
  ************************************************************************************/
 
 #pragma once
+#include <cstdint>
 #include <string>
 #include <iomanip>
 #include <locale>
