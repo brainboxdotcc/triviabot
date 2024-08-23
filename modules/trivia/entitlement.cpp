@@ -31,6 +31,7 @@ bool TriviaModule::OnEntitlementCreate(const dpp::entitlement_create_t& entitlem
 		"VALUES(?, ?, ?, 1, now(), 'ssod-monthly', 0, now(), now()) ON DUPLICATE KEY UPDATE subscription_id = ?, active = 1",
 		{ entitlement.created.user_id, entitlement.created.guild_id, entitlement.created.subscription_id, entitlement.created.subscription_id }
 	);
+	db::query("UPDATE bot_guild_settings SET premium = 1 WHERE snowflake_id = ?", { entitlement.created.guild_id });
 	return true;
 }
 
@@ -44,6 +45,7 @@ bool TriviaModule::OnEntitlementUpdate(const dpp::entitlement_update_t& entitlem
 			entitlement.updating_entitlement.subscription_id
 		}
 	);
+	db::query("UPDATE bot_guild_settings SET premium = ? WHERE snowflake_id = ?", { entitlement.updating_entitlement.is_deleted() || entitlement.updating_entitlement.ends_at < time(nullptr) ? 0 : 1, entitlement.updating_entitlement.guild_id });
 	return true;
 }
 
@@ -53,6 +55,7 @@ bool TriviaModule::OnEntitlementDelete(const dpp::entitlement_delete_t& entitlem
 		"UPDATE premium_credits SET active = 0, cancel_date = now(), updated_at = now() WHERE user_id = ? AND subscription_id = ?",
 		{ entitlement.deleted.user_id, entitlement.deleted.subscription_id }
 	);
+	db::query("UPDATE bot_guild_settings SET premium = 0 WHERE snowflake_id = ?", { entitlement.deleted.guild_id });
 	return true;
 }
 

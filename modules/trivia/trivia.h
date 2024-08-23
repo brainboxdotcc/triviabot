@@ -38,31 +38,17 @@
 #include "state.h"
 #include "neutrino_api.h"
 
-// Number of seconds after which a game is considered hung and its thread exits.
-// This can happen if a game gets lost in a discord gateway outage (!)
-#define GAME_REAP_SECS 20000
-
 // Number of seconds between states in a normal round. Quickfire is 0.25 of this.
 #define TRIV_INTERVAL 20
 
 // Number of seconds between allowed API-bound calls, per channel
 #define PER_CHANNEL_RATE_LIMIT 4
 
-typedef std::map<dpp::snowflake, dpp::snowflake> teamlist_t;
-
 struct field_t
 {
 	std::string name;
 	std::string value;
 	bool _inline;
-};
-
-struct guild_cache_queued_t
-{
-	dpp::snowflake guild_id;
-	std::string name;
-	std::string icon;
-	dpp::snowflake owner_id;
 };
 
 struct last_streak_t {
@@ -77,25 +63,18 @@ struct last_streak_t {
 
 class TriviaModule : public Module
 {
-	PCRE* number_tidy_dollars;
-	PCRE* number_tidy_nodollars;
-	PCRE* number_tidy_positive;
-	PCRE* number_tidy_negative;
-	PCRE* prefix_match;
+	PCRE* number_tidy_dollars{};
+	PCRE* number_tidy_nodollars{};
+	PCRE* number_tidy_positive{};
+	PCRE* number_tidy_negative{};
+	PCRE* prefix_match{};
 	std::unordered_map<dpp::snowflake, time_t> limits;
 	std::unordered_map<dpp::snowflake, time_t> last_rl_warning;
 	std::vector<std::string> api_commands;
-	std::thread* presence_update;
 	bool terminating;
 	std::shared_mutex cmds_mutex;
 	std::shared_mutex cmdmutex;
-	std::mutex guildqueuemutex;
-	std::deque<in_cmd> commandqueue;
-	std::deque<in_cmd> to_process;
-	std::vector<guild_cache_queued_t> guilds_to_update;
-	std::thread* command_processor;
 	std::thread* game_tick_thread;
-	std::thread* guild_queue_thread;
 	std::shared_mutex lang_mutex;
 	time_t lastlang;
 	command_list_t commands;
@@ -103,7 +82,6 @@ class TriviaModule : public Module
 	std::unordered_map<dpp::snowflake, guild_settings_t> settings_cache;
 
 	void CheckLangReload();
-	bool booted;
 	void thinking(bool ephemeral, const dpp::interaction_create_t& event);
 	void eraseCache(dpp::snowflake guild_id);
 	bool has_rl_warn(dpp::snowflake channel_id);
@@ -112,19 +90,19 @@ class TriviaModule : public Module
 	bool set_limit(dpp::snowflake channel_id);
 public:
 	time_t startup;
-	json* lang;
-	json* achievements;
+	json* lang{};
+	json* achievements{};
 	std::mutex states_mutex;
 	std::map<dpp::snowflake, state_t> states;
 
 	std::mutex cs_mutex;
 	std::shared_mutex wh_mutex;
 	std::shared_mutex numstrlock;
-	std::unordered_map<dpp::snowflake, last_streak_t> last_channel_streaks;
+	std::map<dpp::snowflake, last_streak_t> last_channel_streaks;
 	std::unordered_map<dpp::snowflake, std::string> webhooks;
 	std::multimap<uint64_t, db::row> numstrs;
 
-	neutrino* censor;
+	neutrino* censor{};
 	
 	void ReloadNumStrs();
 
@@ -138,12 +116,9 @@ public:
 	void HandleButton(const dpp::button_click_t & event);
 	void queue_command(const std::string &message, dpp::snowflake author, dpp::snowflake channel, dpp::snowflake guild, bool mention, const std::string &username, bool from_dashboard, dpp::user u, dpp::guild_member gm);
 	void handle_command(const in_cmd &cmd, const dpp::interaction_create_t& event);
-	void ProcessCommands();
-	void ProcessGuildQueue();
 	virtual bool OnPresenceUpdate();
 	std::string _(const std::string &k, const guild_settings_t& settings);
 	virtual bool OnAllShardsReady();
-	virtual bool OnChannelDelete(const dpp::channel_delete_t &cd);
 	virtual bool OnGuildDelete(const dpp::guild_delete_t &gd);
 	virtual bool OnEntitlementCreate(const dpp::entitlement_create_t& entitlement);
 	virtual bool OnEntitlementUpdate(const dpp::entitlement_update_t& entitlement);
@@ -157,7 +132,6 @@ public:
 	uint64_t GetActiveGames();
 	uint64_t GetGuildTotal();
 	uint64_t GetMemberTotal();
-	uint64_t GetChannelTotal();
 
 	const guild_settings_t GetGuildSettings(dpp::snowflake guild_id);
 	std::string escape_json(const std::string &s);

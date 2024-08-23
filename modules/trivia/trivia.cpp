@@ -39,7 +39,7 @@
 
 using json = nlohmann::json;
 
-TriviaModule::TriviaModule(Bot* instigator, ModuleLoader* ml) : Module(instigator, ml), terminating(false), booted(false)
+TriviaModule::TriviaModule(Bot* instigator, ModuleLoader* ml) : Module(instigator, ml), terminating(false)
 {
 	/* TODO: Move to something better like mt-rand */
 	srand(time(NULL) * time(NULL));
@@ -47,7 +47,6 @@ TriviaModule::TriviaModule(Bot* instigator, ModuleLoader* ml) : Module(instigato
 	/* Attach D++ events to module */
 	ml->Attach({ I_OnMessage,
 		     I_OnPresenceUpdate,
-		     I_OnChannelDelete,
 		     I_OnGuildDelete,
 		     I_OnGuildUpdate,
 		     I_OnAllShardsReady,
@@ -73,9 +72,8 @@ TriviaModule::TriviaModule(Bot* instigator, ModuleLoader* ml) : Module(instigato
 	set_io_context(Bot::GetConfig("apikey"), bot, this);
 
 	/* Create threads */
-	presence_update = new std::thread(&TriviaModule::UpdatePresenceLine, this);
+	UpdatePresenceLine();
 	game_tick_thread = new std::thread(&TriviaModule::Tick, this);
-	guild_queue_thread = new std::thread(&TriviaModule::ProcessGuildQueue, this);
 
 	/* Get command list from API */
 	{
@@ -110,10 +108,6 @@ void TriviaModule::queue_command(const std::string &message, dpp::snowflake auth
 	handle_command(in_cmd(message, author, channel, guild, mention, username, from_dashboard, u, gm), dpp::interaction_create_t(nullptr, ""));
 }
 
-void TriviaModule::ProcessCommands()
-{
-}
-
 Bot* TriviaModule::GetBot()
 {
 	return bot;
@@ -123,8 +117,6 @@ TriviaModule::~TriviaModule()
 {
 	/* We don't just delete threads, they must go through Bot::DisposeThread which joins them first */
 	DisposeThread(game_tick_thread);
-	DisposeThread(presence_update);
-	DisposeThread(guild_queue_thread);
 
 	/* This explicitly calls the destructor on all states */
 	std::lock_guard<std::mutex> state_lock(states_mutex);
@@ -214,8 +206,6 @@ bool TriviaModule::OnAllShardsReady()
 	gethostname(hostname, 1023);
 	db::resultset active = db::query("SELECT * FROM active_games WHERE hostname = '?' AND cluster_id = '?'", {hostname, bot->GetClusterID()});
 
-	this->booted = true;
-
 	if (bot->IsTestMode()) {
 		/* Don't resume games in test mode */
 		bot->core->log(dpp::ll_debug, fmt::format("Not resuming games in test mode"));
@@ -288,12 +278,6 @@ bool TriviaModule::OnAllShardsReady()
 	return true;
 }
 
-bool TriviaModule::OnChannelDelete(const dpp::channel_delete_t &cd)
-{
-	return true;
-}
-
-
 bool TriviaModule::OnGuildDelete(const dpp::guild_delete_t &gd)
 {
 	/* Unavailable guilds means an outage. We don't remove them if it's just an outage */
@@ -353,17 +337,6 @@ uint64_t TriviaModule::GetMemberTotal()
 	auto rs = db::query("SELECT SUM(user_count) AS user_count FROM guild_temp_cache", {});
 	if (rs.size()) {
 		return from_string<uint64_t>(rs[0]["user_count"], std::dec);
-	} else {
-		return 0;
-	}
-}
-
-uint64_t TriviaModule::GetChannelTotal()
-{
-	/* Counts all games across all clusters */
-	auto rs = db::query("SELECT SUM(channel_count) AS channel_count FROM infobot_discord_counts WHERE dev = ?", {bot->IsDevMode() ? 1 : 0});
-	if (rs.size()) {
-		return from_string<uint64_t>(rs[0]["channel_count"], std::dec);
 	} else {
 		return 0;
 	}
@@ -439,21 +412,21 @@ std::string TriviaModule::GetDescription()
 
 void TriviaModule::UpdatePresenceLine()
 {
-	uint32_t ticks = 0;
-	int32_t questions = get_total_questions();
-	while (!terminating) {
+	static uint32_t presence_ticks = 0;
+	static int32_t presence_total_questions = get_total_questions();
+	bot->core->start_timer([this](dpp::timer t) {
 		try {
-			ticks++;
-			if (ticks > 100) {
-				questions = get_total_questions();
-				ticks = 0;
+			presence_ticks++;
+			if (presence_ticks > 100) {
+				presence_total_questions = get_total_questions();
+				presence_ticks = 0;
 			}
 			bot->counters["activegames"] = GetActiveLocalGames();
-			std::string presence = fmt::format("Trivia! {} questions, {} active games on {} servers through {} shards, cluster {}", Comma(questions), Comma(GetActiveGames()), Comma(this->GetGuildTotal()), Comma(bot->core->numshards), bot->GetClusterID());
+			std::string presence = fmt::format("Trivia! {} questions, {} active games on {} servers through {} shards, cluster {}", Comma(presence_total_questions), Comma(GetActiveGames()), Comma(this->GetGuildTotal()), Comma(bot->core->numshards), bot->GetClusterID());
 			bot->core->log(dpp::ll_debug, fmt::format("PRESENCE: {}", presence));
 			/* Can't translate this, it's per-shard! */
 			bot->core->set_presence(dpp::presence(dpp::ps_online, dpp::at_game, presence));
-	
+
 			if (!bot->IsTestMode()) {
 				/* Don't handle shard reconnects or queued starts in test mode */
 				CheckForQueuedStarts();
@@ -463,9 +436,7 @@ void TriviaModule::UpdatePresenceLine()
 		catch (std::exception &e) {
 			bot->core->log(dpp::ll_error, fmt::format("Exception in UpdatePresenceLine: {}", e.what()));
 		}
-		sleep(120);
-	}
-	bot->core->log(dpp::ll_debug, fmt::format("Presence thread exited."));
+	}, 120);
 }
 
 std::string TriviaModule::letterlong(std::string text, const guild_settings_t &settings)

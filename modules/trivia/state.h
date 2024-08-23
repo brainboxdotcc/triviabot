@@ -107,8 +107,8 @@ class state_t
 	bool hintless;
 	std::map<std::string, bool> insane;
 	std::map<uint64_t, time_t> activity;
-	std::unordered_map<dpp::snowflake, uint64_t> scores;
-	std::unordered_map<dpp::snowflake, uint32_t> insane_round_stats;
+	std::map<dpp::snowflake, uint64_t> scores;
+	std::map<dpp::snowflake, uint32_t> insane_round_stats;
 	std::vector<question_t> question_cache;
 
 	state_t(const state_t &) = default;

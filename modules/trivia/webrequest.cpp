@@ -420,7 +420,7 @@ void cache_guild(const dpp::guild& _guild)
 /* Store details about a user to the database. Executes when the user successfully answers a question, or when they issue a valid command */
 void cache_user(const dpp::user *_user, const dpp::guild_member* gi, dpp::snowflake guild_id)
 {
-	// Replaced with direct db query for perforamance increase - 27Dec20
+	// Replaced with direct db query for performance increase - 27Dec20
 
 	uint64_t user_id = _user->id;
 
@@ -435,7 +435,6 @@ void cache_user(const dpp::user *_user, const dpp::guild_member* gi, dpp::snowfl
 	member_roles = trim(member_roles);
 	db::backgroundquery("INSERT INTO trivia_guild_membership (guild_id, user_id, roles) VALUES('?', '?', '?') ON DUPLICATE KEY UPDATE roles = '?'",
 			{guild_id, user_id, member_roles, member_roles});
-	// TODO: Gather roles in the dashboard via a REST API request when the user wants them. No need to be constantly caching and writing them here, removes our need to check roles at all.
 }
 
 /* Fetch a question by ID from the database */

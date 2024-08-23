@@ -54,7 +54,7 @@ struct in_flight {
 /**
  * @brief Active menu states per user
  */
-std::unordered_map<dpp::snowflake, in_flight> active_menus;
+std::map<dpp::snowflake, in_flight> active_menus;
 
 /**
  * @brief Find active menu state

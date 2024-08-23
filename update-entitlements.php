@@ -50,6 +50,7 @@ do {
 	    echo "START: " .(is_object($start) ? $start->format('Y-m-d H:i:s') : 'N/A') . " END: " . (is_object($end) ? $end->format('Y-m-d H:i:s') : 'N/A') . " TYPE: " . $subscription->type . "\n\n";
 	    if (!empty($subscription->subscription_id)) {
                 mysqli_query($conn, "INSERT INTO premium_credits (user_id, subscription_id, guild_id, active, since, plan_id, payment_failed) VALUES($subscription->user_id, $subscription->subscription_id, $subscription->guild_id, 1, now(), 'triviabot-premium-monthly', 0) ON DUPLICATE KEY UPDATE active = " . ($now->between($start, $end) ? 1 : 0));
+                mysqli_query($conn, "UPDATE bot_guild_settings SET premium = " . ($now->between($start, $end) ? 1 : 0) . " WHERE snowflake_id = " . $subscription->guild_id);
             }
             $lastId = $subscription->id;
         }

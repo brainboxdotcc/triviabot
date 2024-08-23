@@ -25,167 +25,24 @@
 #include <sporks/modules.h>
 #include <sporks/stringops.h>
 
-void Bot::onTypingStart (const dpp::typing_start_t &obj)
-{
-	FOREACH_MOD(I_OnTypingStart, OnTypingStart(obj));
-}
-
-
-void Bot::onMessageUpdate (const dpp::message_update_t &obj)
-{
-	FOREACH_MOD(I_OnMessageUpdate, OnMessageUpdate(obj));
-}
-
-
-void Bot::onMessageDelete (const dpp::message_delete_t &obj)
-{
-	FOREACH_MOD(I_OnMessageDelete, OnMessageDelete(obj));
-}
-
-
-void Bot::onMessageDeleteBulk (const dpp::message_delete_bulk_t &obj)
-{
-	FOREACH_MOD(I_OnMessageDeleteBulk, OnMessageDeleteBulk(obj));
-}
-
-
 void Bot::onGuildUpdate (const dpp::guild_update_t &obj)
 {
 	FOREACH_MOD(I_OnGuildUpdate, OnGuildUpdate(obj));
 }
-
-
-void Bot::onMessageReactionAdd (const dpp::message_reaction_add_t &obj)
-{
-	FOREACH_MOD(I_OnMessageReactionAdd, OnMessageReactionAdd(obj));
-}
-
-
-void Bot::onMessageReactionRemove (const dpp::message_reaction_remove_t &obj)
-{
-	FOREACH_MOD(I_OnMessageReactionRemove, OnMessageReactionRemove(obj));
-}
-
-
-void Bot::onMessageReactionRemoveAll (const dpp::message_reaction_remove_all_t &obj)
-{
-	FOREACH_MOD(I_OnMessageReactionRemoveAll, OnMessageReactionRemoveAll(obj));
-}
-
-
-void Bot::onUserUpdate (const dpp::user_update_t &obj)
-{
-	FOREACH_MOD(I_OnUserUpdate, OnUserUpdate(obj));
-}
-
 
 void Bot::onResumed (const dpp::resumed_t &obj)
 {
 	FOREACH_MOD(I_OnResumed, OnResumed(obj));
 }
 
-
-void Bot::onChannelUpdate (const dpp::channel_update_t &obj)
-{
-	FOREACH_MOD(I_OnChannelUpdate, OnChannelUpdate(obj));
-}
-
-
-void Bot::onChannelPinsUpdate (const dpp::channel_pins_update_t &obj)
-{
-	FOREACH_MOD(I_OnChannelPinsUpdate, OnChannelPinsUpdate(obj));
-}
-
-
-void Bot::onGuildBanAdd (const dpp::guild_ban_add_t &obj)
-{
-	FOREACH_MOD(I_OnGuildBanAdd, OnGuildBanAdd(obj));
-}
-
-
-void Bot::onGuildBanRemove (const dpp::guild_ban_remove_t &obj)
-{
-	FOREACH_MOD(I_OnGuildBanRemove, OnGuildBanRemove(obj));
-}
-
-
-void Bot::onGuildEmojisUpdate (const dpp::guild_emojis_update_t &obj)
-{
-	FOREACH_MOD(I_OnGuildEmojisUpdate, OnGuildEmojisUpdate(obj));
-}
-
-
-void Bot::onGuildIntegrationsUpdate (const dpp::guild_integrations_update_t &obj)
-{
-	FOREACH_MOD(I_OnGuildIntegrationsUpdate, OnGuildIntegrationsUpdate(obj));
-}
-
-
-void Bot::onGuildMemberRemove (const dpp::guild_member_remove_t &obj)
-{
-	FOREACH_MOD(I_OnGuildMemberRemove, OnGuildMemberRemove(obj));
-}
-
-
-void Bot::onGuildMemberUpdate (const dpp::guild_member_update_t &obj)
-{
-	FOREACH_MOD(I_OnGuildMemberUpdate, OnGuildMemberUpdate(obj));
-}
-
-
-void Bot::onGuildMembersChunk (const dpp::guild_members_chunk_t &obj)
-{
-	FOREACH_MOD(I_OnGuildMembersChunk, OnGuildMembersChunk(obj));
-}
-
-
-void Bot::onGuildRoleCreate (const dpp::guild_role_create_t &obj)
-{
-	FOREACH_MOD(I_OnGuildRoleCreate, OnGuildRoleCreate(obj));
-}
-
-
-void Bot::onGuildRoleUpdate (const dpp::guild_role_update_t &obj)
-{
-	FOREACH_MOD(I_OnGuildRoleUpdate, OnGuildRoleUpdate(obj));
-}
-
-
-void Bot::onGuildRoleDelete (const dpp::guild_role_delete_t &obj)
-{
-	FOREACH_MOD(I_OnGuildRoleDelete, OnGuildRoleDelete(obj));
-}
-
-
 void Bot::onPresenceUpdate (const dpp::presence_update_t &obj)
 {
 	FOREACH_MOD(I_OnPresenceUpdateWS, OnPresenceUpdateWS(obj));
 }
 
-
-void Bot::onVoiceStateUpdate (const dpp::voice_state_update_t &obj)
-{
-	FOREACH_MOD(I_OnVoiceStateUpdate, OnVoiceStateUpdate(obj));
-}
-
-
-void Bot::onVoiceServerUpdate (const dpp::voice_server_update_t &obj)
-{
-	FOREACH_MOD(I_OnVoiceServerUpdate, OnVoiceServerUpdate(obj));
-}
-
-
 void Bot::onWebhooksUpdate (const dpp::webhooks_update_t &obj)
 {
 	FOREACH_MOD(I_OnWebhooksUpdate, OnWebhooksUpdate(obj));
-}
-
-void Bot::onChannel(const dpp::channel_create_t& channel_create) {
-	FOREACH_MOD(I_OnChannelCreate, OnChannelCreate(channel_create));
-}
-
-void Bot::onChannelDelete(const dpp::channel_delete_t& cd) {
-	FOREACH_MOD(I_OnChannelDelete, OnChannelDelete(cd));
 }
 
 void Bot::onServerDelete(const dpp::guild_delete_t& gd) {
@@ -209,23 +66,13 @@ void Bot::onServer(const dpp::guild_create_t& gc) {
 }
 
 /**
- * This runs its own thread that wakes up every 30 seconds (after an initial 2 minute warmup).
+ * This wakes up every 30 seconds
  * Modules can attach to it for a simple 30 second interval timer via the OnPresenceUpdate() method.
  */
-void Bot::UpdatePresenceThread() {
-	dpp::utility::set_thread_name("bot/presence_ev");
-	std::this_thread::sleep_for(std::chrono::seconds(120));
-	while (!this->terminate) {
+void Bot::UpdatePresenceTimerTick() {
+	core->start_timer([this](dpp::timer t) {
 		FOREACH_MOD(I_OnPresenceUpdate, OnPresenceUpdate());
-		std::this_thread::sleep_for(std::chrono::seconds(30));
-	}
-}
-
-/**
- * Stores a new guild member to the database for use in the dashboard
- */
-void Bot::onMember(const dpp::guild_member_add_t& gma) {
-	FOREACH_MOD(I_OnGuildMemberAdd, OnGuildMemberAdd(gma));
+	}, 30);
 }
 
 /**
@@ -274,11 +121,11 @@ void Bot::onMessage(const dpp::message_create_t &message) {
 		bool mentioned = false;
 		std::string mentions_removed = message.msg.content;
 		std::vector<std::string> stringmentions;
-		for (auto m = message.msg.mentions.begin(); m != message.msg.mentions.end(); ++m) {
-			stringmentions.push_back(std::to_string(m->first.id));
-			mentions_removed = ReplaceString(mentions_removed, std::string("<@") + std::to_string(m->first.id) + ">", m->first.username);
-			mentions_removed = ReplaceString(mentions_removed, std::string("<@!") + std::to_string(m->first.id) + ">", m->first.username);
-			if (m->first.id == user.id) {
+		for (const auto & mention : message.msg.mentions) {
+			stringmentions.push_back(std::to_string(mention.first.id));
+			mentions_removed = ReplaceString(mentions_removed, std::string("<@") + std::to_string(mention.first.id) + ">", mention.first.username);
+			mentions_removed = ReplaceString(mentions_removed, std::string("<@!") + std::to_string(mention.first.id) + ">", mention.first.username);
+			if (mention.first.id == user.id) {
 				mentioned = true;
 			}
 		}

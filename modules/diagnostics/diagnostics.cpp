@@ -69,18 +69,17 @@ std::string exec(const char* cmd) {
 
 class DiagnosticsModule : public Module
 {
-	PCRE* diagnosticmessage;
-	double microseconds_ping;
+	PCRE* diagnostic_message;
 public:
 	DiagnosticsModule(Bot* instigator, ModuleLoader* ml) : Module(instigator, ml)
 	{
-		ml->Attach({ I_OnMessage, I_OnRestEnd }, this);
-		diagnosticmessage = new PCRE("^sudo(\\s+(.+?))$", true);
+		ml->Attach({ I_OnMessage }, this);
+		diagnostic_message = new PCRE("^sudo(\\s+(.+?))$", true);
 	}
 
 	virtual ~DiagnosticsModule()
 	{
-		delete diagnosticmessage;
+		delete diagnostic_message;
 	}
 
 	virtual std::string GetVersion()
@@ -95,17 +94,11 @@ public:
 		return "Diagnostic Commands (sudo), '@Sporks sudo'";
 	}
 
-	virtual bool OnRestEnd(std::chrono::steady_clock::time_point start_time, uint16_t code)
-	{
-		microseconds_ping = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - start_time).count();
-		return true;
-	}
-
 	virtual bool OnMessage(const dpp::message_create_t &message, const std::string& clean_message, bool mentioned, const std::vector<std::string> &stringmentions)
 	{
 		std::vector<std::string> param;
 
-		if (mentioned && diagnosticmessage->Match(clean_message, param) && param.size() >= 3) {
+		if (mentioned && diagnostic_message->Match(clean_message, param) && param.size() >= 3) {
 
 			dpp::message msg = message.msg;
 			std::stringstream tokens(trim(param[2]));
@@ -276,14 +269,6 @@ public:
 						::sleep(5);
 						/* Note: exit here will restart, because we run the bot via run.sh which restarts the bot on quit. */
 						exit(0);
-					} else if (lowercase(subcommand) == "ping") {
-						std::chrono::steady_clock::time_point start_time = std::chrono::steady_clock::now();
-						bot->core->message_create(dpp::message(msg.channel_id, "Pinging..."), [msg, this, start_time](const dpp::confirmation_callback_t & state) {
-							double microseconds_ping = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - start_time).count();
-							dpp::snowflake mid = (std::get<dpp::message>(state.value)).id;
-							this->bot->core->message_delete(mid, msg.channel_id);
-							this->EmbedSimple(fmt::format("**Pong!** REST Response time: {:.3f} ms", microseconds_ping / 1000, 4), msg.channel_id, msg.guild_id);
-						});
 					} else if (lowercase(subcommand) == "lookup") {
 						int64_t gnum = 0;
 						tokens >> gnum;

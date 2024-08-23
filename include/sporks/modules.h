@@ -32,39 +32,13 @@ enum Implementation
 	I_BEGIN,
 	I_OnMessage,
 	I_OnReady,
-	I_OnChannelCreate,
-	I_OnChannelDelete,
-	I_OnGuildMemberAdd,
 	I_OnGuildCreate,
 	I_OnGuildDelete,
 	I_OnPresenceUpdate,
-	I_OnRestEnd,
 	I_OnAllShardsReady,
-	I_OnTypingStart,
-	I_OnMessageUpdate,
-	I_OnMessageDelete,
-	I_OnMessageDeleteBulk,
 	I_OnGuildUpdate,
-	I_OnMessageReactionAdd,
-	I_OnMessageReactionRemove,
-	I_OnMessageReactionRemoveAll,
-	I_OnUserUpdate,
 	I_OnResumed,
-	I_OnChannelUpdate,
-	I_OnChannelPinsUpdate,
-	I_OnGuildBanAdd,
-	I_OnGuildBanRemove,
-	I_OnGuildEmojisUpdate,
-	I_OnGuildIntegrationsUpdate,
-	I_OnGuildMemberRemove,
-	I_OnGuildMemberUpdate,
-	I_OnGuildMembersChunk,
-	I_OnGuildRoleCreate,
-	I_OnGuildRoleUpdate,
-	I_OnGuildRoleDelete,
 	I_OnPresenceUpdateWS,
-	I_OnVoiceStateUpdate,
-	I_OnVoiceServerUpdate,
 	I_OnWebhooksUpdate,
 	I_OnEntitlementCreate,
 	I_OnEntitlementUpdate,
@@ -129,7 +103,7 @@ class ModuleLoader {
 	std::map<std::string, ModuleNative> Modules;
 
 	/* Retrieve a named symbol from a shared object file */
-	bool GetSymbol(ModuleNative &native, const char *sym_name);
+	static bool GetSymbol(ModuleNative &native, const char *sym_name);
 
 	/* The module list as external systems see it, a map of string filenames to
 	 * module objects
@@ -144,7 +118,7 @@ public:
 	/* An array of vectors indicating which modules are watching which events */
 	std::vector<Module*> EventHandlers[I_END];
 
-	ModuleLoader(Bot* creator);
+	explicit ModuleLoader(Bot* creator);
 	virtual ~ModuleLoader();
 
 	/* Attach a module to an event. Only events a module explicitly attaches to will be
@@ -175,7 +149,7 @@ public:
 	void LoadAll();
 
 	/* Get a list of all loaded modules */
-	const ModMap& GetModuleList() const;
+	[[nodiscard]] const ModMap& GetModuleList() const;
 
 	const std::string& GetLastError();
 };
@@ -200,40 +174,15 @@ public:
 	virtual std::string GetDescription();
 
 	/* D++ events */
-	virtual bool OnChannelCreate(const dpp::channel_create_t &channel);
 	virtual bool OnReady(const dpp::ready_t &ready);
-	virtual bool OnChannelDelete(const dpp::channel_delete_t &channel);
 	virtual bool OnGuildCreate(const dpp::guild_create_t &guild);
 	virtual bool OnGuildDelete(const dpp::guild_delete_t &guild);
-	virtual bool OnGuildMemberAdd(const dpp::guild_member_add_t &gma);
 	virtual bool OnMessage(const dpp::message_create_t &message, const std::string& clean_message, bool mentioned, const std::vector<std::string> &stringmentions);
 	virtual bool OnPresenceUpdate();
 	virtual bool OnAllShardsReady();
-	virtual bool OnTypingStart(const dpp::typing_start_t &obj);
-	virtual bool OnMessageUpdate(const dpp::message_update_t &obj);
-	virtual bool OnMessageDelete(const dpp::message_delete_t &obj);
-	virtual bool OnMessageDeleteBulk(const dpp::message_delete_bulk_t &obj);
 	virtual bool OnGuildUpdate(const dpp::guild_update_t &obj);
-	virtual bool OnMessageReactionAdd(const dpp::message_reaction_add_t &obj);
-	virtual bool OnMessageReactionRemove(const dpp::message_reaction_remove_t &obj);
-	virtual bool OnMessageReactionRemoveAll(const dpp::message_reaction_remove_all_t &obj);
-	virtual bool OnUserUpdate(const dpp::user_update_t &obj);
 	virtual bool OnResumed(const dpp::resumed_t &obj);
-	virtual bool OnChannelUpdate(const dpp::channel_update_t &obj);
-	virtual bool OnChannelPinsUpdate(const dpp::channel_pins_update_t &obj);
-	virtual bool OnGuildBanAdd(const dpp::guild_ban_add_t &obj);
-	virtual bool OnGuildBanRemove(const dpp::guild_ban_remove_t &obj);
-	virtual bool OnGuildEmojisUpdate(const dpp::guild_emojis_update_t &obj);
-	virtual bool OnGuildIntegrationsUpdate(const dpp::guild_integrations_update_t &obj);
-	virtual bool OnGuildMemberRemove(const dpp::guild_member_remove_t &obj);
-	virtual bool OnGuildMemberUpdate(const dpp::guild_member_update_t &obj);
-	virtual bool OnGuildMembersChunk(const dpp::guild_members_chunk_t &obj);
-	virtual bool OnGuildRoleCreate(const dpp::guild_role_create_t &obj);
-	virtual bool OnGuildRoleUpdate(const dpp::guild_role_update_t &obj);
-	virtual bool OnGuildRoleDelete(const dpp::guild_role_delete_t &obj);
 	virtual bool OnPresenceUpdateWS(const dpp::presence_update_t &obj);
-	virtual bool OnVoiceStateUpdate(const dpp::voice_state_update_t &obj);
-	virtual bool OnVoiceServerUpdate(const dpp::voice_server_update_t &obj);
 	virtual bool OnWebhooksUpdate(const dpp::webhooks_update_t &obj);
 	virtual bool OnEntitlementCreate(const dpp::entitlement_create_t &obj);
 	virtual bool OnEntitlementUpdate(const dpp::entitlement_update_t &obj);

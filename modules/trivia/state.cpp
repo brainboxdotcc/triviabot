@@ -35,7 +35,7 @@
 #include "piglatin.h"
 #include "time.h"
 
-std::unordered_map<uint64_t, bool> banlist;
+std::map<uint64_t, bool> banlist;
 
 in_msg::in_msg(const std::string &m, uint64_t author, bool mention, const std::string &_username, dpp::user u, dpp::guild_member gm) : msg(m), author_id(author), mentions_bot(mention), username(_username), user(u), member(gm)
 {

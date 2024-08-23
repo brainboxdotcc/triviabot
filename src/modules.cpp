@@ -40,44 +40,18 @@ const char* StringNames[I_END + 1] = {
 	"I_BEGIN",
 	"I_OnMessage",
 	"I_OnReady",
-	"I_OnChannelCreate",
-	"I_OnChannelDelete",
-	"I_OnGuildMemberAdd",
 	"I_OnGuildCreate",
 	"I_OnGuildDelete",
 	"I_OnPresenceUpdate",
-	"I_OnRestEnd",
 	"I_OnAllShardsReady",
-	"I_OnTypingStart",
-	"I_OnMessageUpdate",
-	"I_OnMessageDelete",
-	"I_OnMessageDeleteBulk",
 	"I_OnGuildUpdate",
-	"I_OnMessageReactionAdd",
-	"I_OnMessageReactionRemove",
-	"I_OnMessageReactionRemoveAll",
-	"I_OnUserUpdate",
 	"I_OnResumed",
-	"I_OnChannelUpdate",
-	"I_OnChannelPinsUpdate",
-	"I_OnGuildBanAdd",
-	"I_OnGuildBanRemove",
-	"I_OnGuildEmojisUpdate",
-	"I_OnGuildIntegrationsUpdate",
-	"I_OnGuildMemberRemove",
-	"I_OnGuildMemberUpdate",
-	"I_OnGuildMembersChunk",
-	"I_OnGuildRoleCreate",
-	"I_OnGuildRoleUpdate",
-	"I_OnGuildRoleDelete",
 	"I_OnPresenceUpdateWS",
-	"I_OnVoiceStateUpdate",
-	"I_OnVoiceServerUpdate",
 	"I_OnWebhooksUpdate",
 	"I_OnEntitlementCreate",
 	"I_OnEntitlementUpdate",
 	"I_OnEntitlementDelete",
-	"I_END"
+	"I_END",
 };
 
 ModuleLoader::ModuleLoader(Bot* creator) : bot(creator)
@@ -95,12 +69,12 @@ ModuleLoader::~ModuleLoader()
  */
 void ModuleLoader::Attach(const std::vector<Implementation> &i, Module* mod)
 {
-	for (auto n = i.begin(); n != i.end(); ++n) {
-		if (std::find(EventHandlers[*n].begin(), EventHandlers[*n].end(), mod) == EventHandlers[*n].end()) {
-			EventHandlers[*n].push_back(mod);
-			bot->core->log(dpp::ll_debug, fmt::format("Module \"{}\" attached event \"{}\"", mod->GetDescription(), StringNames[*n]));
+	for (auto n : i) {
+		if (std::find(EventHandlers[n].begin(), EventHandlers[n].end(), mod) == EventHandlers[n].end()) {
+			EventHandlers[n].push_back(mod);
+			bot->core->log(dpp::ll_debug, fmt::format(R"(Module "{}" attached event "{}")", mod->GetDescription(), StringNames[n]));
 		} else {
-			bot->core->log(dpp::ll_warning, fmt::format("Module \"{}\" is already attached to event \"{}\"", mod->GetDescription(), StringNames[*n]));
+			bot->core->log(dpp::ll_warning, fmt::format(R"(Module "{}" is already attached to event "{}")", mod->GetDescription(), StringNames[n]));
 		}
 	}
 }
@@ -110,11 +84,11 @@ void ModuleLoader::Attach(const std::vector<Implementation> &i, Module* mod)
  */
 void ModuleLoader::Detach(const std::vector<Implementation> &i, Module* mod)
 {
-	for (auto n = i.begin(); n != i.end(); ++n) {
-		auto it = std::find(EventHandlers[*n].begin(), EventHandlers[*n].end(), mod);
-		if (it != EventHandlers[*n].end()) {
-			EventHandlers[*n].erase(it);
-			bot->core->log(dpp::ll_debug, fmt::format("Module \"{}\" detached event \"{}\"", mod->GetDescription(), StringNames[*n]));
+	for (auto n : i) {
+		auto it = std::find(EventHandlers[n].begin(), EventHandlers[n].end(), mod);
+		if (it != EventHandlers[n].end()) {
+			EventHandlers[n].erase(it);
+			bot->core->log(dpp::ll_debug, fmt::format(R"(Module "{}" detached event "{}")", mod->GetDescription(), StringNames[n]));
 		}
 	}
 }
@@ -133,7 +107,7 @@ const ModMap& ModuleLoader::GetModuleList() const
  */
 bool ModuleLoader::Load(const std::string &filename)
 {
-	ModuleNative m;
+	ModuleNative m{};
 
 	m.err = nullptr;
 	m.dlopen_handle = nullptr;
@@ -300,9 +274,7 @@ Module::Module(Bot* instigator, ModuleLoader* ml) : bot(instigator)
 {
 }
 
-Module::~Module()
-{
-}
+Module::~Module() = default;
 
 std::string Module::GetVersion()
 {
@@ -314,17 +286,7 @@ std::string Module::GetDescription()
 	return "";
 }
 
-bool Module::OnChannelCreate(const dpp::channel_create_t &channel)
-{
-	return true;
-} 
-
 bool Module::OnReady(const dpp::ready_t &ready)
-{
-	return true;
-}
-
-bool Module::OnChannelDelete(const dpp::channel_delete_t &channel)
 {
 	return true;
 }
@@ -335,11 +297,6 @@ bool Module::OnGuildCreate(const dpp::guild_create_t &guild)
 }
 
 bool Module::OnGuildDelete(const dpp::guild_delete_t &guild)
-{
-	return true;
-}
-
-bool Module::OnGuildMemberAdd(const dpp::guild_member_add_t &gma)
 {
 	return true;
 }
@@ -369,156 +326,20 @@ bool Module::OnEntitlementUpdate(const dpp::entitlement_update_t& ed)
 	return true;
 }
 
-bool Module::OnTypingStart(const dpp::typing_start_t &obj)
-{
-	return true;
-}
-
-
-bool Module::OnMessageUpdate(const dpp::message_update_t &obj)
-{
-	return true;
-}
-
-
-bool Module::OnMessageDelete(const dpp::message_delete_t &obj)
-{
-	return true;
-}
-
-
-bool Module::OnMessageDeleteBulk(const dpp::message_delete_bulk_t &obj)
-{
-	return true;
-}
-
-
 bool Module::OnGuildUpdate(const dpp::guild_update_t &obj)
 {
 	return true;
 }
-
-
-bool Module::OnMessageReactionAdd(const dpp::message_reaction_add_t &obj)
-{
-	return true;
-}
-
-
-bool Module::OnMessageReactionRemove(const dpp::message_reaction_remove_t &obj)
-{
-	return true;
-}
-
-
-bool Module::OnMessageReactionRemoveAll(const dpp::message_reaction_remove_all_t &obj)
-{
-	return true;
-}
-
-
-bool Module::OnUserUpdate(const dpp::user_update_t &obj)
-{
-	return true;
-}
-
 
 bool Module::OnResumed(const dpp::resumed_t &obj)
 {
 	return true;
 }
 
-
-bool Module::OnChannelUpdate(const dpp::channel_update_t &obj)
-{
-	return true;
-}
-
-
-bool Module::OnChannelPinsUpdate(const dpp::channel_pins_update_t &obj)
-{
-	return true;
-}
-
-
-bool Module::OnGuildBanAdd(const dpp::guild_ban_add_t &obj)
-{
-	return true;
-}
-
-
-bool Module::OnGuildBanRemove(const dpp::guild_ban_remove_t &obj)
-{
-	return true;
-}
-
-
-bool Module::OnGuildEmojisUpdate(const dpp::guild_emojis_update_t &obj)
-{
-	return true;
-}
-
-
-bool Module::OnGuildIntegrationsUpdate(const dpp::guild_integrations_update_t &obj)
-{
-	return true;
-}
-
-
-bool Module::OnGuildMemberRemove(const dpp::guild_member_remove_t &obj)
-{
-	return true;
-}
-
-
-bool Module::OnGuildMemberUpdate(const dpp::guild_member_update_t &obj)
-{
-	return true;
-}
-
-
-bool Module::OnGuildMembersChunk(const dpp::guild_members_chunk_t &obj)
-{
-	return true;
-}
-
-
-bool Module::OnGuildRoleCreate(const dpp::guild_role_create_t &obj)
-{
-	return true;
-}
-
-
-bool Module::OnGuildRoleUpdate(const dpp::guild_role_update_t &obj)
-{
-	return true;
-}
-
-
-bool Module::OnGuildRoleDelete(const dpp::guild_role_delete_t &obj)
-{
-	return true;
-}
-
-
 bool Module::OnPresenceUpdateWS(const dpp::presence_update_t &obj)
 {
 	return true;
 }
-
-
-bool Module::OnVoiceStateUpdate(const dpp::voice_state_update_t &obj)
-{
-	return true;
-}
-
-
-bool Module::OnVoiceServerUpdate(const dpp::voice_server_update_t &obj)
-{
-	return true;
-}
-
-
 bool Module::OnWebhooksUpdate(const dpp::webhooks_update_t &obj)
 {
 	return true;
@@ -529,7 +350,6 @@ bool Module::OnAllShardsReady()
 	return true;
 }
 
-
 /**
  * Output a simple embed to a channel consisting just of a message.
  */
@@ -538,7 +358,7 @@ void Module::EmbedSimple(const std::string &message, uint64_t channelID, uint64_
 	std::stringstream s;
 	json embed_json;
 
-	s << "{\"color\":16767488, \"description\": \"" << message << "\"}";
+	s << R"({"color":16767488, "description": ")" << message << "\"}";
 
 	try {
 		embed_json = json::parse(s.str());
@@ -549,7 +369,7 @@ void Module::EmbedSimple(const std::string &message, uint64_t channelID, uint64_
 	if (!bot->IsTestMode() || from_string<uint64_t>(Bot::GetConfig("test_server"), std::dec) == guildID) {
 		dpp::message m;
 		m.channel_id = channelID;
-		m.embeds.push_back(dpp::embed(&embed_json));
+		m.embeds.emplace_back(&embed_json);
 		bot->core->message_create(m);
 	}
 }

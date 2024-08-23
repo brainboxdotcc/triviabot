@@ -61,8 +61,8 @@ public:
 		if (half % 2 == 0) {
 			uint64_t bandwidth_websocket = 0;
 			auto& shards = bot->core->get_shards();
-			for (auto i = shards.begin(); i != shards.end(); ++i) {
-				dpp::discord_client* shard = i->second;
+			for (auto i : shards) {
+				dpp::discord_client* shard = i.second;
 				bandwidth_websocket += shard->get_bytes_in() + shard->get_bytes_out();
 			}
 			uint64_t bandwidth_last_60_seconds = bandwidth_websocket - last_bandwidth_websocket;

@@ -56,8 +56,8 @@ void command_info_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_se
 	std::stringstream s;
 	dpp::utility::uptime ut = creator->GetBot()->core->uptime();
 
-	int64_t servers = creator->GetGuildTotal();
-	int64_t users = creator->GetMemberTotal();
+	uint64_t servers = creator->GetGuildTotal();
+	uint64_t users = creator->GetMemberTotal();
 
 	char startstr[256];
 	tm _tm;
@@ -66,7 +66,7 @@ void command_info_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_se
 
 	uint64_t shard = (cmd.guild_id >> 22) % from_string<uint32_t>(Bot::GetConfig("shardcount"), std::dec);
 
-	const statusfield statusfields[] = {
+	const statusfield status_fields[] = {
 		statusfield(_("ACTIVEGAMES", settings), Comma(creator->GetActiveGames())),
 		statusfield(_("TOTALSERVERS", settings), Comma(servers)),
 		statusfield(_("CONNSINCE", settings), startstr),
@@ -85,13 +85,13 @@ void command_info_t::call(const in_cmd &cmd, std::stringstream &tokens, guild_se
 		statusfield("", "")
 	};
 
-	s << "{\"title\":\"" << creator->GetBot()->user.username << " " << _("INFO", settings);
-	s << "\",\"thumbnail\":{\"url\":\"https:\\/\\/triviabot.co.uk\\/images\\/triviabot_tl_icon.png\"},";
-	s << "\"color\":" << settings.embedcolour << ",\"url\":\"https:\\/\\/triviabot.co.uk\\/\\/\",";
-	s << "\"footer\":{\"link\":\"https:\\/\\/triviabot.co.uk\\/\",\"text\":\"" << _("POWERED_BY", settings) << "\",\"icon_url\":\"https:\\/\\/triviabot.co.uk\\/images\\/triviabot_tl_icon.png\"},\"fields\":[";
-	for (int i = 0; statusfields[i].name != ""; ++i) {
-		s << "{\"name\":\"" <<  statusfields[i].name << "\",\"value\":\"" << statusfields[i].value << "\", \"inline\": " << (i != 14 ? "true" : "false") << "}";
-		if (statusfields[i + 1].name != "") {
+	s << R"({"title":")" << creator->GetBot()->user.username << " " << _("INFO", settings);
+	s << R"(","thumbnail":{"url":"https:\/\/triviabot.co.uk\/images\/triviabot_tl_icon.png"},)";
+	s << "\"color\":" << settings.embedcolour << R"(,"url":"https:\/\/triviabot.co.uk\/\/",)";
+	s << R"("footer":{"link":"https:\/\/triviabot.co.uk\/","text":")" << _("POWERED_BY", settings) << R"(","icon_url":"https:\/\/triviabot.co.uk\/images\/triviabot_tl_icon.png"},"fields":[)";
+	for (int i = 0; status_fields[i].name != ""; ++i) {
+		s << "{\"name\":\"" << status_fields[i].name << R"(","value":")" << status_fields[i].value << R"(", "inline": )" << (i != 14 ? "true" : "false") << "}";
+		if (status_fields[i + 1].name != "") {
 			s << ",";
 		}
 	}

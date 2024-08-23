@@ -50,11 +50,10 @@ json configdocument;
 /**
  * Constructor (creates threads, loads all modules)
  */
-Bot::Bot(bool development, bool testing, bool intents, dpp::cluster* dppcluster, uint32_t cluster_id) : dev(development), test(testing), memberintents(intents), thr_presence(nullptr), terminate(false), shard_init_count(0), core(dppcluster), sent_messages(0), received_messages(0), my_cluster_id(cluster_id) {
+Bot::Bot(bool development, bool testing, bool intents, dpp::cluster* dppcluster, uint32_t cluster_id) : dev(development), test(testing), memberintents(intents), shard_init_count(0), core(dppcluster), sent_messages(0), received_messages(0), my_cluster_id(cluster_id) {
 	Loader = new ModuleLoader(this);
 	Loader->LoadAll();
-
-	thr_presence = new std::thread(&Bot::UpdatePresenceThread, this);
+	UpdatePresenceTimerTick();
 }
 
 /**
@@ -76,10 +75,6 @@ void Bot::DisposeThread(std::thread* t) {
  * Destructor
  */
 Bot::~Bot() {
-	terminate = true;
-
-	DisposeThread(thr_presence);
-
 	delete Loader;
 }
 
@@ -93,25 +88,25 @@ std::string Bot::GetConfig(const std::string &name) {
 /**
  * Returns true if the bot is running in development mode (different token)
  */
-bool Bot::IsDevMode() {
+bool Bot::IsDevMode() const {
 	return dev;
 }
 
 /**
  * Returns true if the bot is running in testing mode (live token, ignoring messages except on specific server)
  */
-bool Bot::IsTestMode() {
+bool Bot::IsTestMode() const {
 	return test;
 }
 
 /** 
  * Returns true if the bot has member intents enabled, "GUILD_MEMBERS" which will eventually require discord HQ approval process.
  */
-bool Bot::HasMemberIntents() {
+bool Bot::HasMemberIntents() const {
 	return memberintents;
 }
 
-uint32_t Bot::GetMaxClusters() {
+uint32_t Bot::GetMaxClusters() const {
        return core->maxclusters;
 }
 
@@ -139,8 +134,8 @@ int main(int argc, char** argv) {
 	uint32_t intents = dpp::i_default_intents | dpp::i_message_content;
 
 	/* Yes, getopt is ugly, but what you gonna do... */
-	int index;
-	char arg;
+	int index{};
+	int arg{};
 	bool clusters_defined = false;
 	uint32_t clusterid = 0;
 	uint32_t maxclusters = 1;
@@ -258,7 +253,6 @@ int main(int argc, char** argv) {
 		/* Attach events to the Bot class methods */
 		bot.on_message_create(std::bind(&Bot::onMessage, &client, std::placeholders::_1));
 		bot.on_ready(std::bind(&Bot::onReady, &client, std::placeholders::_1));
-		bot.on_guild_member_add(std::bind(&Bot::onMember, &client, std::placeholders::_1));
 		bot.on_guild_create(std::bind(&Bot::onServer, &client, std::placeholders::_1));
 		bot.on_guild_delete(std::bind(&Bot::onServerDelete, &client, std::placeholders::_1));
 		bot.on_entitlement_create(std::bind(&Bot::onEntitlementCreate, &client, std::placeholders::_1));
@@ -276,7 +270,7 @@ int main(int argc, char** argv) {
 			/* Actually connect and start the event loop */
 			bot.start(false);
 		}
-		catch (std::exception e) {
+		catch (const std::exception &e) {
 			bot.log(dpp::ll_error, fmt::format("Oof! {}", e.what()));
 		}
 

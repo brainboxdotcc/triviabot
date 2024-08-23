@@ -30,10 +30,10 @@
 
 class PresenceModule : public Module
 {
-	uint64_t halfminutes{};
+	uint64_t half_minutes{};
 
 public:
-	PresenceModule(Bot* instigator, ModuleLoader* ml) : Module(instigator, ml), halfminutes(0)
+	PresenceModule(Bot* instigator, ModuleLoader* ml) : Module(instigator, ml), half_minutes(0)
 	{
 		ml->Attach({ I_OnPresenceUpdate, I_OnGuildCreate, I_OnGuildDelete, I_OnGuildUpdate }, this);
 	}
@@ -114,9 +114,9 @@ public:
 				0, bot->sent_messages, bot->received_messages, ram, games
 			}
 		);
-		if (++halfminutes > 20) {
-			/* Reset counters every 10 mins. Chewey stats uses these counters and expects this */
-			halfminutes = bot->sent_messages = bot->received_messages = 0;
+		if (++half_minutes > 20) {
+			/* Reset counters every 10 minutes. Chewey stats uses these counters and expects this */
+			half_minutes = bot->sent_messages = bot->received_messages = 0;
 		}		
 		return true;
 	}
