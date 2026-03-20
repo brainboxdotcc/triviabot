@@ -30,6 +30,26 @@ require_once getenv("HOME") . '/www/functions.php';
 
 $config["live_bot"] = $settings->livetoken;
 
+function refreshGuildPremium(mysqli $conn, int $guildId): void
+{
+	$result = mysqli_query(
+		$conn,
+		"SELECT COUNT(*) AS c
+		 FROM premium_credits
+		 WHERE guild_id = $guildId
+		 AND active = 1"
+	);
+
+	$row = mysqli_fetch_assoc($result);
+	$premium = ((int)$row['c'] > 0) ? 1 : 0;
+
+	mysqli_query(
+		$conn,
+		"UPDATE bot_guild_settings
+		 SET premium = $premium
+		 WHERE snowflake_id = $guildId"
+	);
+}
 
 if (!$conn) {
 	die("Can't connect to database, check config.json\n");
@@ -39,21 +59,33 @@ mysqli_select_db($conn, $settings->dbname);
 
 $lastId = 0;
 do {
-    $subscriptions = botApiRequest(sprintf("v10/applications/%s/entitlements?exclude_ended=false&limit=100&after=$lastId", $settings->application_id));
+	$subscriptions = botApiRequest(sprintf("v10/applications/%s/entitlements?exclude_ended=false&limit=100&after=$lastId", $settings->application_id));
 
-    $now = new Carbon();
-    foreach ($subscriptions as $subscription) {
-        if (in_array($subscription->type, [1])) {
-           $start = new Carbon($subscription->starts_at ?? null);
-	   $end = !empty($subscription->ends_at) ? new Carbon($subscription->ends_at) : (new Carbon())->addMonths(1);
-	   $subscription->subscription_id = $subscription->user_id . '.' . $subscription->guild_id;;
-	    echo "SUBSCRIPTION: $subscription->subscription_id USER: $subscription->user_id GUILD: $subscription->guild_id ACTIVE: " . ($now->between($start, $end) ? 1 : 0) . " ";
-	    echo "START: " .(is_object($start) ? $start->format('Y-m-d H:i:s') : 'N/A') . " END: '$subscription->ends_at' " . (is_object($end) ? $end->format('Y-m-d H:i:s') : 'N/A') . " TYPE: " . $subscription->type . "\n\n";
-	    if (!empty($subscription->subscription_id)) {
-                mysqli_query($conn, "INSERT INTO premium_credits (user_id, subscription_id, guild_id, active, since, plan_id, payment_failed) VALUES($subscription->user_id, $subscription->subscription_id, $subscription->guild_id, 1, now(), 'triviabot-premium-monthly', 0) ON DUPLICATE KEY UPDATE active = " . ($now->between($start, $end) ? 1 : 0));
-                mysqli_query($conn, "UPDATE bot_guild_settings SET premium = " . ($now->between($start, $end) ? 1 : 0) . " WHERE snowflake_id = " . $subscription->guild_id);
-            }
-            $lastId = $subscription->id;
-        }
-    }
+	$now = new Carbon();
+	foreach ($subscriptions as $subscription) {
+		if (in_array($subscription->type, [1])) {
+			$start = new Carbon($subscription->starts_at ?? null);
+			$end = !empty($subscription->ends_at) ? new Carbon($subscription->ends_at) : (new Carbon())->addMonths(1);
+			$subscription->subscription_id = $subscription->user_id . '.' . $subscription->guild_id;
+			$active = $now->between($start, $end) ? 1 : 0;
+
+			echo "SUBSCRIPTION: $subscription->subscription_id USER: $subscription->user_id GUILD: $subscription->guild_id ACTIVE: $active ";
+			echo "START: " . (is_object($start) ? $start->format('Y-m-d H:i:s') : 'N/A') . " END: '$subscription->ends_at' " . (is_object($end) ? $end->format('Y-m-d H:i:s') : 'N/A') . " TYPE: " . $subscription->type . "\n\n";
+
+			if (!empty($subscription->subscription_id)) {
+				$subscriptionId = mysqli_real_escape_string($conn, $subscription->subscription_id);
+
+				mysqli_query(
+					$conn,
+					"INSERT INTO premium_credits (user_id, subscription_id, guild_id, active, since, plan_id, payment_failed)
+					 VALUES($subscription->user_id, '$subscriptionId', $subscription->guild_id, $active, now(), 'triviabot-premium-monthly', 0)
+					 ON DUPLICATE KEY UPDATE active = $active"
+				);
+
+				refreshGuildPremium($conn, (int)$subscription->guild_id);
+			}
+
+			$lastId = $subscription->id;
+		}
+	}
 } while (count($subscriptions) === 100);
