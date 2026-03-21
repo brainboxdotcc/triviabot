@@ -467,10 +467,10 @@ void TriviaModule::show_stats(const std::string& interaction_token, dpp::snowfla
 			msg.append(fmt::format("{}. <@{}> ({})\n", count++, r["snowflake_id"], r["dayscore"]));
 		}
 	}
-	if (msg.empty()) {
-		msg = "Nobody has played here today! :cry:";
-	}
 	guild_settings_t settings = GetGuildSettings(guild_id);
+	if (msg.empty()) {
+		msg = _("NOBODY_PLAYED_TODAY", settings);
+	}
 	if (settings.premium && !settings.custom_url.empty()) {
 		EmbedWithFields(interaction_token, command_id, settings, _("LEADERBOARD", settings), {{_("TOP_TEN", settings), msg, false}, {_("MORE_INFO", settings), fmt::format(_("LEADER_LINK", settings), settings.custom_url), false}}, channel_id);
 	} else {
