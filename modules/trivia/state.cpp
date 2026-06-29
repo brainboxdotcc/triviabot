@@ -35,10 +35,10 @@
 #include "piglatin.h"
 #include "time.h"
 
-std::map<uint64_t, bool> banlist;
+std::map<dpp::snowflake, bool> banlist;
 
 struct last_guild_t {
-	uint64_t guild_id;
+	dpp::snowflake guild_id;
 	time_t when;
 };
 
