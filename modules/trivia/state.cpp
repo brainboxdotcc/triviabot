@@ -37,6 +37,28 @@
 
 std::map<uint64_t, bool> banlist;
 
+struct last_guild_t {
+	uint64_t guild_id;
+	time_t when;
+};
+
+static std::map<uint64_t, last_guild_t> last_guild;
+static std::mutex last_guild_mutex;
+
+static bool can_score_on_guild(uint64_t user_id, uint64_t guild_id)
+{
+	time_t now = time(NULL);
+	std::lock_guard<std::mutex> lock(last_guild_mutex);
+
+	auto i = last_guild.find(user_id);
+	if (i != last_guild.end() && i->second.guild_id != guild_id && now - i->second.when < 60) {
+		return false;
+	}
+
+	last_guild[user_id] = { guild_id, now };
+	return true;
+}
+
 in_msg::in_msg(const std::string &m, uint64_t author, bool mention, const std::string &_username, dpp::user u, dpp::guild_member gm) : msg(m), author_id(author), mentions_bot(mention), username(_username), user(u), member(gm)
 {
 }
@@ -233,8 +255,10 @@ void state_t::handle_message(const in_msg& m, const guild_settings_t& settings)
 					creator->SimpleEmbed(settings, ":thumbsup:", fmt::format(_("INSANE_CORRECT", settings), m.username, homoglyph(m.msg), this->insane_left, this->insane_num), channel_id);
 				}
 				creator->CacheUser(m.author_id, m.user, m.member, channel_id);
-				update_score_only(m.author_id, guild_id, 1, channel_id);
-				add_score(m.author_id, 1);
+				if (can_score_on_guild(m.author_id, guild_id)) {
+					update_score_only(m.author_id, guild_id, 1, channel_id);
+					add_score(m.author_id, 1);
+				}
 				add_insane_stats(m.author_id);
 
 				if (done) {
@@ -288,8 +312,10 @@ void state_t::handle_message(const in_msg& m, const guild_settings_t& settings)
 					ans_message.append(fmt::format(_("RECORD_TIME", settings), m.username));
 					submit_time = time_to_answer;
 				}
-				update_score(m.author_id, guild_id, submit_time, question.id, score, question.guild_id != 0);
-				add_score(m.author_id, score);
+				if (can_score_on_guild(m.author_id, guild_id)) {
+					update_score(m.author_id, guild_id, submit_time, question.id, score, question.guild_id != 0);
+					add_score(m.author_id, score);
+				}
 				uint64_t newscore = get_score(m.author_id);
 				ans_message.append(fmt::format(_("SCORE_UPDATE", settings), m.username, newscore ? newscore : score));
 
