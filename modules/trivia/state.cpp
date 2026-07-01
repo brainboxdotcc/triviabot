@@ -47,16 +47,21 @@ static std::mutex last_guild_mutex;
 
 static bool can_score_on_guild(uint64_t user_id, uint64_t guild_id)
 {
-	time_t now = time(NULL);
-	std::lock_guard<std::mutex> lock(last_guild_mutex);
+	db::resultset rs = db::query(
+		"INSERT INTO score_locks (user_id, guild_id, updated_at) "
+		"VALUES (?, ?, UNIX_TIMESTAMP()) "
+		"ON DUPLICATE KEY UPDATE "
+		"guild_id = IF(guild_id = VALUES(guild_id) OR updated_at <= UNIX_TIMESTAMP() - 60, VALUES(guild_id), guild_id), "
+		"updated_at = IF(guild_id = VALUES(guild_id) OR updated_at <= UNIX_TIMESTAMP() - 60, VALUES(updated_at), updated_at)",
+		{user_id, guild_id}
+	);
 
-	auto i = last_guild.find(user_id);
-	if (i != last_guild.end() && i->second.guild_id != guild_id && now - i->second.when < 60) {
-		return false;
-	}
+	rs = db::query(
+		"SELECT guild_id FROM score_locks WHERE user_id = ?",
+		{user_id}
+	);
 
-	last_guild[user_id] = { guild_id, now };
-	return true;
+	return rs.size() && from_string<uint64_t>(rs[0]["guild_id"], std::dec) == guild_id;
 }
 
 in_msg::in_msg(const std::string &m, uint64_t author, bool mention, const std::string &_username, dpp::user u, dpp::guild_member gm) : msg(m), author_id(author), mentions_bot(mention), username(_username), user(u), member(gm)
