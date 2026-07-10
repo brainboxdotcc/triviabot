@@ -33,7 +33,7 @@ void neutrino::contains_bad_word(const std::string& text, swear_filter_event_t c
 		{ "catalog", "strict" },
 		{ "output-format", "JSON" },
 	}).dump();
-	this->cluster->request("https://neutrinoapi.net/bad-word-filter", dpp::m_post, [this, text, callback](const auto& rv) {
+	this->cluster->request("http://127.0.0.1:6970/bad-word-filter", dpp::m_post, [this, text, callback](const auto& rv) {
 			swear_filter_t sf;
 			nlohmann::json j;
 			if (rv.error == dpp::h_success && !rv.body.empty()) {
