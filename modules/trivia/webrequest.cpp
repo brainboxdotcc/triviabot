@@ -549,7 +549,7 @@ void runcli(guild_settings_t settings, const std::string &command, uint64_t guil
 	std::string home(getenv("HOME"));
 
 	/* IMPORTANT: dpp::utility::exec makes parameters safe */
-	dpp::utility::exec("/usr/bin/php", { fmt::format("{}/www/cli-run.php", home), command, std::to_string(guild_id), std::to_string(user_id), std::to_string(channel_id), parameters }, [channel_id, guild_id, interaction_token, command_id](const std::string &output) {
+	dpp::utility::exec("/usr/bin/php", { fmt::format("{}/www/cli-run.php", home), command, std::to_string(guild_id), std::to_string(user_id), std::to_string(channel_id), dpp::base64_encode(parameters) }, [channel_id, guild_id, interaction_token, command_id](const std::string &output) {
 		guild_settings_t s = module->GetGuildSettings(guild_id);
 		/* Output response as embed */
 		std::string reply = trim(output);
